@@ -1,17 +1,9 @@
 import LoginForm from "@/components/super-admin/login-form";
-import { Flex } from "antd";
 
 export default function SignInPage() {
   return (
-    <Flex
-      align="center"
-      justify="center"
-      style={{
-        minHeight: "100svh",
-        width: "100%",
-      }}
-    >
+    <div className="w-full min-h-screen flex items-center justify-center">
       <LoginForm />
-    </Flex>
+    </div>
   );
 }

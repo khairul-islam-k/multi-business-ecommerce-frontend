@@ -12,7 +12,7 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "NextApp",
+  title: "OneComm",
   description: "",
 };
 
