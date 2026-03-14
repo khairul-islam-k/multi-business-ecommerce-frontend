@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 
+import "antd/dist/reset.css";
+
 import "@/styles/global.css";
 import ThemeProvider from "@/providers/theme-provider";
 
