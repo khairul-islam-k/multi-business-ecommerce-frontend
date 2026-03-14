@@ -12,7 +12,6 @@ import {
   BellOutlined,
   RadarChartOutlined,
   SettingOutlined,
-  LogoutOutlined,
 } from "@ant-design/icons";
 
 import Logo from "@/components/shared/logo";
@@ -84,7 +83,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         placement="left"
         open={mobileOpen}
         onClose={onMobileClose}
-        bodyStyle={{ padding: 0 }}
+        className="p-0"
       >
         {sidebarContent}
       </Drawer>

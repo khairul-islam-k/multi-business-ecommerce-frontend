@@ -11,6 +11,9 @@ import {
   MenuOutlined,
   SearchOutlined,
   CloseOutlined,
+  LogoutOutlined,
+  UserOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
 
 import { useTheme } from "@/providers/theme-provider";
@@ -33,17 +36,20 @@ export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
   const items: MenuProps["items"] = [
     {
       key: "profile",
+      icon: <UserOutlined />,
       label: "Profile",
       onClick: () => router.push("/super-admin/dashboard/settings"),
     },
     {
       key: "account",
+      icon: <SettingOutlined />,
       label: "Account Settings",
       onClick: () => router.push("/super-admin/dashboard/settings"),
     },
     { type: "divider" },
     {
       key: "logout",
+      icon: <LogoutOutlined />,
       label: "Logout",
       onClick: logout,
     },

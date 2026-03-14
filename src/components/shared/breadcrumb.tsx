@@ -1,0 +1,48 @@
+"use client";
+
+import { Breadcrumb } from "antd";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const routeLabels: Record<string, string> = {
+  "": "Dashboard",
+  tenants: "Tenants",
+  "tenants/create": "Create Tenant",
+  packages: "Packages",
+  "packages/create": "Create Package",
+  addons: "Addons",
+  "addons/create": "Create Addon",
+  billing: "Billing",
+  reports: "Reports",
+  notifications: "Notifications",
+  monitoring: "Monitoring",
+  "monitoring/errors": "Error Monitoring",
+  "monitoring/logs": "System Logs",
+  settings: "Settings",
+};
+
+export default function Breadcrumbs() {
+  const pathname = usePathname();
+  const basePath = "/super-admin/dashboard";
+
+  const segments = pathname.split("/").filter(Boolean).slice(2);
+
+  const items: any[] = [{ title: <Link href={basePath}>Home</Link> }];
+
+  let currentPath = "";
+
+  segments.forEach((seg) => {
+    currentPath += `/${seg}`;
+    const key = currentPath.slice(1);
+    const fullPath = `${basePath}${currentPath}`;
+
+    const label = routeLabels[key] || seg;
+
+    items.push({
+      title:
+        fullPath === pathname ? label : <Link href={fullPath}>{label}</Link>,
+    });
+  });
+
+  return <Breadcrumb items={items} />;
+}
