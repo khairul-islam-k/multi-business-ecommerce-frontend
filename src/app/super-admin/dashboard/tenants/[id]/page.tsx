@@ -14,6 +14,7 @@ import {
   Row,
   Col,
   Typography,
+  theme,
 } from "antd";
 import {
   BarChart,
@@ -86,13 +87,15 @@ export default function TenantDetailPage({
       prev.map((m) =>
         m.id === id
           ? (() => {
-              msg.success(`${m.name} ${m.enabled ? "disabled" : "enabled"}`);
-              return { ...m, enabled: !m.enabled };
-            })()
+            msg.success(`${m.name} ${m.enabled ? "disabled" : "enabled"}`);
+            return { ...m, enabled: !m.enabled };
+          })()
           : m,
       ),
     );
   };
+
+  const { token } = theme.useToken();
 
   const toggleFeature = (group: string, index: number) => {
     setFeatureState((prev) => {
@@ -100,8 +103,7 @@ export default function TenantDetailPage({
       updated[group][index].enabled = !updated[group][index].enabled;
 
       msg.success(
-        `${updated[group][index].name} ${
-          updated[group][index].enabled ? "enabled" : "disabled"
+        `${updated[group][index].name} ${updated[group][index].enabled ? "enabled" : "disabled"
         }`,
       );
 
@@ -109,18 +111,60 @@ export default function TenantDetailPage({
     });
   };
 
+  const companyData = [
+  {
+    key: "1",
+    company: "Main Store",
+    websites: 1,
+    users: 5,
+  },
+  {
+    key: "2",
+    company: "Warehouse Ops",
+    websites: 2,
+    users: 10,
+  },
+  {
+    key: "3",
+    company: "Online Division",
+    websites: 3,
+    users: 15,
+  },
+];
+
+const companyColumn = [
+  {
+    title: "COMPANY",
+    dataIndex: "company",
+    key: "company",
+    render: (text: string) => <strong>{text}</strong>,
+  },
+  {
+    title: "WEBSITES",
+    dataIndex: "websites",
+    key: "websites",
+  },
+  {
+    title: "USERS",
+    dataIndex: "users",
+    key: "users",
+  },
+];
+
   return (
     <>
       {contextHolder}
 
-      <PageHeader title={tenant.business}>
-        <Button danger> Suspend </Button>
-      </PageHeader>
+      <div style={{ marginBottom: '10px' }}>
+        <PageHeader title={tenant.business}>
+          <Button danger> Suspend </Button>
+        </PageHeader>
+      </div>
 
       <Row gutter={[24, 24]}>
         {/* Tenant Info */}
         <Col xs={24} md={8}>
-          <Card title="Tenant Info">
+          <Card style={{ height: '100%' }} title="Tenant Info">
             {[
               ["Business", tenant.business],
               ["Owner", tenant.owner],
@@ -128,7 +172,7 @@ export default function TenantDetailPage({
               ["Package", tenant.package],
               ["Created", tenant.created],
             ].map(([k, v]) => (
-              <Row key={k} justify="space-between">
+              <Row key={k} style={{ marginBottom: '10px' }} justify="space-between">
                 <Text type="secondary">{k}</Text>
                 <Text strong>{v}</Text>
               </Row>
@@ -153,20 +197,39 @@ export default function TenantDetailPage({
                 children: (
                   <Row gutter={[16, 16]}>
                     {usageData.slice(0, 4).map((u) => (
-                      <Col span={12} key={u.name}>
-                        <Card>
-                          <Text type="secondary">{u.name}</Text>
-                          <Title level={4}>
+                      <Col xs={24} sm={24} md={12} key={u.name}>
+                        <Card size="small" bodyStyle={{ padding: 12 }}>
+                          <Text type="secondary" style={{ fontSize: 12 }}>
+                            {u.name}
+                          </Text>
+
+                          <Title level={5} style={{ margin: "4px 0" }}>
                             {u.used} / {u.limit}
                           </Title>
+
                           <Progress
                             percent={(u.used / u.limit) * 100}
                             showInfo={false}
+                            strokeWidth={6}
                           />
                         </Card>
                       </Col>
                     ))}
                   </Row>
+                ),
+              },
+              {
+                key: "companies",
+                label: "companies",
+                children: (
+                  <div style={{ overflowX: 'auto', overflowY: 'hidden', background: token.colorBgBase }}>
+                    <Table
+                      rowKey="id"
+                      dataSource={companyData}
+                      columns={companyColumn}
+                      pagination={false}
+                    />
+                  </div>
                 ),
               },
               {
@@ -176,10 +239,15 @@ export default function TenantDetailPage({
                   <>
                     <Row gutter={[16, 16]}>
                       {usageData.map((u) => (
-                        <Col span={12} key={u.name}>
+                        <Col xs={24} sm={24} md={12} key={u.name}>
                           <Card>
                             <Text>{u.name}</Text>
-                            <Progress percent={(u.used / u.limit) * 100} />
+
+                            <Progress
+                              percent={(u.used / u.limit) * 100}
+                              showInfo={false}
+                              strokeWidth={6}
+                            />
                           </Card>
                         </Col>
                       ))}
@@ -206,25 +274,29 @@ export default function TenantDetailPage({
                 key: "billing",
                 label: "Billing",
                 children: (
-                  <Table
-                    rowKey="id"
-                    dataSource={mockBillingHistory}
-                    columns={[
-                      { title: "Invoice", dataIndex: "id" },
-                      { title: "Amount", dataIndex: "amount" },
-                      { title: "Tax", dataIndex: "tax" },
-                      { title: "Total", dataIndex: "total" },
-                      {
-                        title: "Status",
-                        dataIndex: "status",
-                        render: (s) => (
-                          <Tag color={s === "Paid" ? "green" : "red"}>{s}</Tag>
-                        ),
-                      },
-                      { title: "Paid Date", dataIndex: "paidDate" },
-                    ]}
-                    pagination={false}
-                  />
+                  <div style={{ overflowX: 'auto', overflowY: 'hidden', background: token.colorBgBase }}>
+                    <Table
+                      rowKey="id"
+                      dataSource={mockBillingHistory}
+                      columns={[
+                        { title: "Invoice", dataIndex: "id" },
+                        { title: "Amount", dataIndex: "amount" },
+                        { title: "Tax", dataIndex: "tax" },
+                        { title: "Total", dataIndex: "total" },
+                        {
+                          title: "Status",
+                          dataIndex: "status",
+                          render: (s) => (
+                            <Tag
+                              style={{ background: s === "Paid" ? "#21c45d" : "#ef4444", color: 'white' }}
+                            >{s}</Tag>
+                          ),
+                        },
+                        { title: "Paid Date", dataIndex: "paidDate" },
+                      ]}
+                      pagination={false}
+                    />
+                  </div>
                 ),
               },
               {
@@ -232,12 +304,14 @@ export default function TenantDetailPage({
                 label: "Modules",
                 children: (
                   <Card>
+                    <h3 style={{ fontSize: '20px', fontWeight: '700' }}
+                    >Module Access</h3>
                     {modules.map((m) => (
                       <Row
                         key={m.id}
                         justify="space-between"
                         align="middle"
-                        style={{ marginBottom: 12 }}
+                        style={{ marginBottom: 12, border: `2px solid ${token.colorBorder}`, padding: '8px', borderRadius: '8px' }}
                       >
                         <div>
                           <Text strong>{m.name}</Text>
@@ -259,7 +333,9 @@ export default function TenantDetailPage({
                 children: Object.entries(featureState).map(([group, items]) => (
                   <Card key={group} title={group} style={{ marginBottom: 16 }}>
                     {items.map((f, i) => (
-                      <Row key={f.name} justify="space-between" align="middle">
+                      <Row
+                        style={{ marginBottom: '12px' }}
+                        key={f.name} justify="space-between" align="middle">
                         <Text>{f.name}</Text>
                         <Switch
                           checked={f.enabled}
@@ -274,33 +350,35 @@ export default function TenantDetailPage({
                 key: "logs",
                 label: "Logs",
                 children: (
-                  <Table
-                    rowKey="id"
-                    dataSource={mockSystemLogs.slice(0, 5)}
-                    columns={[
-                      {
-                        title: "Level",
-                        dataIndex: "level",
-                        render: (l) => (
-                          <Tag
-                            color={
-                              l === "error"
-                                ? "red"
-                                : l === "warning"
-                                  ? "orange"
-                                  : "blue"
-                            }
-                          >
-                            {l}
-                          </Tag>
-                        ),
-                      },
-                      { title: "Service", dataIndex: "service" },
-                      { title: "Message", dataIndex: "message" },
-                      { title: "Time", dataIndex: "timestamp" },
-                    ]}
-                    pagination={false}
-                  />
+                  <div style={{ overflowX: 'auto', overflowY: 'hidden', background: token.colorBgBase }}>
+                    <Table
+                      rowKey="id"
+                      dataSource={mockSystemLogs.slice(0, 5)}
+                      columns={[
+                        {
+                          title: "Level",
+                          dataIndex: "level",
+                          render: (l) => (
+                            <Tag
+                              color={
+                                l === "error"
+                                  ? "red"
+                                  : l === "warning"
+                                    ? "orange"
+                                    : "blue"
+                              }
+                            >
+                              {l}
+                            </Tag>
+                          ),
+                        },
+                        { title: "Service", dataIndex: "service" },
+                        { title: "Message", dataIndex: "message" },
+                        { title: "Time", dataIndex: "timestamp" },
+                      ]}
+                      pagination={false}
+                    />
+                  </div>
                 ),
               },
             ]}
