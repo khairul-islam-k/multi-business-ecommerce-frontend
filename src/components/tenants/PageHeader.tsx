@@ -90,7 +90,7 @@ export function PageHeader({ title, children }: PageHeaderProps) {
         align="center"
         wrap
       >
-        <Space direction="vertical" size={4}>
+        <Space direction="vertical" size={1}>
           <Title level={2} style={{ margin: 0 }}>
             {title}
           </Title>

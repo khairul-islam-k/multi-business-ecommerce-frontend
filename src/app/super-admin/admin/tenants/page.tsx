@@ -12,12 +12,14 @@ import {
   Dropdown,
   Modal,
   message,
-  theme,
+  Typography,
+  Upload,
 } from "antd";
 import {
   MoreOutlined,
   PlusOutlined,
   SearchOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import { PageHeader } from "@/components/tenants/PageHeader";
 import { mockTenants } from "@/components/demoData/mockData";
@@ -37,9 +39,7 @@ export default function TenantListPage() {
   const [suspendConfirm, setSuspendConfirm] = useState<string | null>(null);
 
   const filtered = mockTenants.filter((t) => {
-    const matchSearch =
-      !search ||
-      t.business.toLowerCase().includes(search.toLowerCase()) ||
+    const matchSearch = !search || t.business.toLowerCase().includes(search.toLowerCase()) ||
       t.email.toLowerCase().includes(search.toLowerCase());
 
     const matchStatus = statusFilter === "all" || t.status === statusFilter;
@@ -85,12 +85,16 @@ export default function TenantListPage() {
       dataIndex: "status",
       render: (status: string) => (
         <Tag
+          style={{
+            background: status === "Active" ? "#21c45d"
+              : status === "Trial" ? '#f4f4f5' : '#ef4444'
+          }}
           color={
             status === "Active"
-              ? "green"
+              ? "white"
               : status === "Trial"
-              ? "blue"
-              : "red"
+                ? "blue"
+                : "white"
           }
         >
           {status}
@@ -152,7 +156,7 @@ export default function TenantListPage() {
       <Card>
         {/* Filters */}
         <div
-        className="flex flex-wrap gap-2 mb-4">
+          className="flex flex-wrap gap-2 mb-4">
           <Input
             placeholder="Filter by name or email..."
             prefix={<SearchOutlined />}
@@ -201,10 +205,17 @@ export default function TenantListPage() {
         onOk={handleCreate}
         confirmLoading={creating}
       >
+        <Typography.Title level={5}>Business Name</Typography.Title>
         <Input placeholder="Business name" className="mb-2" />
+
+        <Typography.Title level={5}>Slug</Typography.Title>
         <Input placeholder="Slug" className="mb-2" />
+
+        <Typography.Title level={5}>Email</Typography.Title>
         <Input placeholder="Email" className="mb-2" />
-        <Input placeholder="Phone" />
+
+        <Typography.Title level={5}>Phone</Typography.Title>
+        <Input placeholder="+880156415" />
       </Modal>
 
       {/* Suspend Confirmation */}
