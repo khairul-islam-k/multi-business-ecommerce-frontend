@@ -3,12 +3,10 @@
 import { Card, Tabs } from "antd";
 import PageHeader from "@/components/shared/page-header";
 
-import SystemLogsTable, {
-  Log,
-} from "@/components/super-admin/monitoring/system-logs-table";
+import SystemLogsTable, { Log } from "./_components/system-logs-table";
 import SystemErrorsTable, {
   SystemError,
-} from "@/components/super-admin/monitoring/system-errors-table";
+} from "./_components/system-errors-table";
 
 export default function MonitoringPage() {
   const logs: Log[] = [

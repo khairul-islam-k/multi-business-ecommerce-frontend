@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, Select, Row, Col, Space, Typography } from "antd";
+
 import PageHeader from "@/components/shared/page-header";
 
 import {
@@ -21,8 +22,6 @@ import {
 
 const { Title } = Typography;
 const { Option } = Select;
-
-/* ---------------- data ---------------- */
 
 const revenueTrend = [
   { month: "Jul", value: 98000 },
@@ -64,8 +63,6 @@ const planDist = [
 ];
 
 const COLORS = ["#1677ff", "#52c41a", "#faad14"];
-
-/* ---------------- component ---------------- */
 
 export default function ReportsPage() {
   const [dateRange, setDateRange] = useState("6m");
