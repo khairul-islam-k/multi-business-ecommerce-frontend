@@ -11,21 +11,17 @@ import {
     message,
     theme,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { div } from "framer-motion/client";
 import PageHeader from "@/components/shared/page-header";
 
 const { Option } = Select;
 
 export default function CreatePackage() {
+    const { TextArea } = Input;
     const [form] = Form.useForm();
-    const [fileName, setFileName] = useState("");
 
     const onFinish = (values: any) => {
         console.log({
             ...values,
-            logo: fileName,
         });
     };
 
@@ -64,58 +60,49 @@ export default function CreatePackage() {
 
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Monthly Price ($)"
+                            label="Monthly Price"
                             name="MonthlyPrice"
                             rules={[
                                 { required: true, message: "Email is required" },
-                                { type: "email", message: "Invalid email" },
+                                { type: "number", message: "provide price" },
                             ]}
                         >
-                            <InputNumber placeholder="Monthly Price ($)" />
+                            <Input placeholder="Monthly Price ($)" />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item label="Phone" name="phone">
-                            <Input placeholder="+880156415" />
+                        <Form.Item label="Yearly Price ($)"
+                            rules={[
+                                { required: true, message: "Email is required" },
+                                { type: "number", message: "provide price" },
+                            ]}
+                            name="YearlyPrice">
+                            <Input placeholder="20" />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item label="Logo">
-                            <Upload
-                            style={{width: '100%'}}
-                                accept=".pdf,.jpg,.png"
-                                beforeUpload={(file) => {
-                                    if (file.size / 1024 / 1024 > 2) {
-                                        message.error("File must be under 2MB");
-                                        return Upload.LIST_IGNORE;
-                                    }
-                                    setFileName(file.name);
-                                    return false;
-                                }}
-                                showUploadList={false}
-                            >
-                                <Input
-                                    placeholder="Upload your file"
-                                    value={fileName}
-                                    readOnly
-                                    suffix={<UploadOutlined />}
-                                />
-                            </Upload>
+                        <Form.Item label="Description"
+                            name='description'
+                        >
+                            <TextArea
+                                placeholder="Package Description..."
+                                autoSize={{ minRows: 3, maxRows: 5 }}
+                            />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Status"
-                            name="status"
-                            initialValue="Active"
+                            label="Type"
+                            name="Type"
+                            initialValue="usage"
                         >
-                            <Select>
-                                <Option value="Active">Active</Option>
-                                <Option value="Trial">Trial</Option>
-                                <Option value="Suspended">Suspended</Option>
+                            <Select style={{ width: "100%" }}>
+                                <Option value="usage">Usage</Option>
+                                <Option value="per-unit">Per Unit</Option>
+                                <Option value="flat">Flat</Option>
                             </Select>
                         </Form.Item>
                     </Col>
@@ -132,14 +119,15 @@ export default function CreatePackage() {
 
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Currency"
-                            name="currency"
-                            initialValue="bdt"
+                            label="Status"
+                            name="Status"
+                            initialValue="active"
                         >
-                            <Select>
-                                <Option value="bdt">BDT</Option>
-                                <Option value="usd">USD</Option>
-                                <Option value="eur">EUR</Option>
+                            <Select
+                                style={{ width: "100%" }}
+                            >
+                                <Option value="active">Active</Option>
+                                <Option value="inactive">Inactive</Option>
                             </Select>
                         </Form.Item>
                     </Col>

@@ -26,6 +26,7 @@ import {
 } from "@ant-design/icons";
 import { mockModules, mockPackages } from "@/components/demoData/mockData";
 import PageHeader from "@/components/shared/page-header";
+import { useRouter } from "next/navigation";
 
 const { TextArea } = Input;
 const { useBreakpoint } = Grid;
@@ -63,6 +64,7 @@ const limits = [
 
 export default function PackageListPage() {
     const screen = useBreakpoint();
+    const router = useRouter()
     const [msgApi, contextHolder] = message.useMessage();
 
     // status
@@ -115,7 +117,7 @@ export default function PackageListPage() {
             dataIndex: "status",
             render: (s: string) => (
                 <Tag
-                style={{background: s === "Active" ? "#21c45d" : "red", color: 'white'}}
+                    style={{ background: s === "Active" ? "#21c45d" : "red", color: 'white' }}
                 >{s}</Tag>
             ),
         },
@@ -221,17 +223,30 @@ export default function PackageListPage() {
             label: "Package List",
             children: (
                 <Card>
-                    <Space style={{ marginBottom: 16 }}>
-                        <Input
-                            style={{
-                                width: screen.lg ? "330px" : "100%"
-                            }}
-                            prefix={<SearchOutlined />}
-                            placeholder="Search packages..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </Space>
+                    <Flex
+                    justify="space-between"
+                    wrap="wrap"
+                    >
+                        <Space style={{ marginBottom: 16 }}>
+                            <Input
+                                style={{
+                                    width: screen.lg ? "330px" : "100%"
+                                }}
+                                prefix={<SearchOutlined />}
+                                placeholder="Search packages..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </Space>
+
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => router.push('/super-admin/dashboard/tenants/create')}
+                        >
+                            Create Package
+                        </Button>
+                    </Flex>
 
                     <Table
                         rowKey="id"

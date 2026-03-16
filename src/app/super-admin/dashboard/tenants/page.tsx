@@ -75,8 +75,8 @@ export default function TenantListPage() {
       render: (status: string) => (
         <Tag
           style={{
-            background: status === "Active" ? "#21c45d"
-              : status === "Trial" ? '#f4f4f5' : '#ef4444'
+            background: status === "Active" ? token.colorSuccess
+              : status === "Trial" ? token.colorWarning : token.colorError
           }}
           color={
             status === "Active"
@@ -133,7 +133,7 @@ export default function TenantListPage() {
     <>
       {contextHolder}
 
-      <div style={{ marginBottom: '10px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <PageHeader title="Tenants">
         </PageHeader>
       </div>
