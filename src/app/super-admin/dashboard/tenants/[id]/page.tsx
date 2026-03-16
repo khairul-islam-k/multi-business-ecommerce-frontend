@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Card,
   Button,
@@ -66,15 +66,12 @@ const features: Record<string, { name: string; enabled: boolean }[]> = {
   ],
 };
 
-export default function TenantDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function TenantDetailPage() {
+  const {id} = useParams();
   const router = useRouter();
   const [msg, contextHolder] = message.useMessage();
 
-  const tenant = mockTenants.find((t) => t.id === params.id) || mockTenants[0];
+  const tenant = mockTenants.find((t) => t.id === id) || mockTenants[0];
 
   const [modules, setModules] = useState(
     mockModules.map((m) => ({ ...m, enabled: Math.random() > 0.3 })),
@@ -83,33 +80,42 @@ export default function TenantDetailPage({
   const [featureState, setFeatureState] = useState(features);
 
   const toggleModule = (id: string) => {
-    setModules((prev) =>
-      prev.map((m) =>
-        m.id === id
-          ? (() => {
-            msg.success(`${m.name} ${m.enabled ? "disabled" : "enabled"}`);
-            return { ...m, enabled: !m.enabled };
-          })()
-          : m,
-      ),
+  setModules(prev =>
+    prev.map(m =>
+      m.id === id ? { ...m, enabled: !m.enabled } : m
+    )
+  );
+
+  const module = modules.find(m => m.id === id);
+  if (module) {
+    msg.success(
+      `${module.name} ${module.enabled ? "disabled" : "enabled"}`
     );
-  };
+  }
+};
 
   const { token } = theme.useToken();
 
   const toggleFeature = (group: string, index: number) => {
-    setFeatureState((prev) => {
-      const updated = { ...prev };
-      updated[group][index].enabled = !updated[group][index].enabled;
+  let featureName = "";
+  let newEnabled = false;
 
-      msg.success(
-        `${updated[group][index].name} ${updated[group][index].enabled ? "enabled" : "disabled"
-        }`,
-      );
+  setFeatureState(prev => {
+    return {
+      ...prev,
+      [group]: prev[group].map((item, i) => {
+        if (i === index) {
+          featureName = item.name;
+          newEnabled = !item.enabled;
+          return { ...item, enabled: newEnabled };
+        }
+        return item;
+      }),
+    };
+  });
 
-      return { ...updated };
-    });
-  };
+  msg.success(`${featureName} ${newEnabled ? "enabled" : "disabled"}`);
+};
 
   const companyData = [
   {
@@ -198,7 +204,8 @@ const companyColumn = [
                   <Row gutter={[16, 16]}>
                     {usageData.slice(0, 4).map((u) => (
                       <Col xs={24} sm={24} md={12} key={u.name}>
-                        <Card size="small" bodyStyle={{ padding: 12 }}>
+                        <Card size="small" 
+                        >
                           <Text type="secondary" style={{ fontSize: 12 }}>
                             {u.name}
                           </Text>
@@ -210,7 +217,7 @@ const companyColumn = [
                           <Progress
                             percent={(u.used / u.limit) * 100}
                             showInfo={false}
-                            strokeWidth={6}
+                            size="small"
                           />
                         </Card>
                       </Col>
@@ -224,7 +231,6 @@ const companyColumn = [
                 children: (
                   <div style={{ overflowX: 'auto', overflowY: 'hidden', background: token.colorBgBase }}>
                     <Table
-                      rowKey="id"
                       dataSource={companyData}
                       columns={companyColumn}
                       pagination={false}
@@ -246,7 +252,7 @@ const companyColumn = [
                             <Progress
                               percent={(u.used / u.limit) * 100}
                               showInfo={false}
-                              strokeWidth={6}
+                              size='small'
                             />
                           </Card>
                         </Col>
