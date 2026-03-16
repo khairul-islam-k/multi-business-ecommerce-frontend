@@ -12,9 +12,14 @@ import {
   Dropdown,
   Modal,
   message,
+  Typography,
+  Upload,
+  Flex,
+  InputNumber,
+  theme,
 } from "antd";
 
-import { MoreOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { MoreOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import PageHeader from "@/components/shared/page-header";
 import { mockTenants } from "@/components/demoData/mockData";
 
@@ -23,6 +28,10 @@ const { Option } = Select;
 export default function TenantListPage() {
   const router = useRouter();
   const [msgApi, contextHolder] = message.useMessage();
+
+  // file upload
+  const [fileName, setFileName] = useState<string>("");
+  console.log(fileName);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -57,7 +66,7 @@ export default function TenantListPage() {
       dataIndex: "business",
       key: "business",
       render: (_: any, record: any) => (
-        <a onClick={() => router.push(`/super-admin/dashboard/${record.id}`)}>
+        <a onClick={() => router.push(`/super-admin/dashboard/tenants/${record.id}`)}>
           {record.business}
         </a>
       ),
@@ -80,8 +89,16 @@ export default function TenantListPage() {
       dataIndex: "status",
       render: (status: string) => (
         <Tag
+          style={{
+            background: status === "Active" ? "#21c45d"
+              : status === "Trial" ? '#f4f4f5' : '#ef4444'
+          }}
           color={
-            status === "Active" ? "green" : status === "Trial" ? "blue" : "red"
+            status === "Active"
+              ? "white"
+              : status === "Trial"
+                ? "blue"
+                : "white"
           }
         >
           {status}
@@ -109,7 +126,8 @@ export default function TenantListPage() {
                 key: "suspend",
                 label: "Suspend Tenant",
                 danger: true,
-                onClick: () => setSuspendConfirm(record.business),
+                onClick: () =>
+                  setSuspendConfirm(record.business),
               },
             ],
           }}
@@ -124,19 +142,23 @@ export default function TenantListPage() {
     },
   ];
 
+  const {token} = theme.useToken();
+
   return (
     <>
       {contextHolder}
 
-      <PageHeader title="Tenants">
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => setShowCreate(true)}
-        >
-          Create Tenant
-        </Button>
-      </PageHeader>
+      <div style={{ marginBottom: '10px' }}>
+        <PageHeader title="Tenants">
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setShowCreate(true)}
+          >
+            Create Tenant
+          </Button>
+        </PageHeader>
+      </div>
 
       <Card>
         {/* Filters */}
@@ -173,12 +195,15 @@ export default function TenantListPage() {
         </div>
 
         {/* Table */}
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={filtered}
-          pagination={false}
-        />
+        <div style={{ overflowX: "auto", overflowY: "hidden" }}>
+          <Table
+            rowKey="id"
+            columns={columns}
+            dataSource={filtered}
+            pagination={false}
+          />
+        </div>
+
       </Card>
 
       {/* Create Tenant Modal */}
@@ -189,10 +214,97 @@ export default function TenantListPage() {
         onOk={handleCreate}
         confirmLoading={creating}
       >
+        <Typography.Title style={{ marginTop: "8px" }} level={5}>Business Name</Typography.Title>
         <Input placeholder="Business name" className="mb-2" />
+
+        <Typography.Title style={{ marginTop: "8px" }} level={5}>Slug</Typography.Title>
         <Input placeholder="Slug" className="mb-2" />
+
+        <Typography.Title style={{ marginTop: "8px" }} level={5}>Email</Typography.Title>
         <Input placeholder="Email" className="mb-2" />
-        <Input placeholder="Phone" />
+
+        <Typography.Title style={{ marginTop: "8px" }} level={5}>Phone</Typography.Title>
+        <Input placeholder="+880156415" />
+
+        <Typography.Title style={{ marginTop: "8px" }} level={5}>Logo</Typography.Title>
+        <Upload
+          style={{ width: "100%" }}
+          accept=".pdf,.jpg,.png"
+          beforeUpload={(file) => {
+            if (file.size / 1024 / 1024 > 2) {
+              message.error("File must be under 2MB");
+              return Upload.LIST_IGNORE;
+            }
+            setFileName(file.name);
+            return false;
+          }}
+          showUploadList={false}
+        >
+          <Input
+            placeholder="Upload your file"
+            value={fileName}
+            readOnly
+            suffix={<UploadOutlined />}
+          />
+        </Upload>
+
+        <Flex gap={16}>
+          <div style={{ flex: 1 }}>
+            <Typography.Title level={5} style={{ marginTop: 8 }}>
+              Status
+            </Typography.Title>
+            <Select
+              style={{ width: '100%' }}
+              value={statusFilter}
+              onChange={setStatusFilter}
+            >
+              <Option value="all">All Status</Option>
+              <Option value="Active">Active</Option>
+              <Option value="Trial">Trial</Option>
+              <Option value="Suspended">Suspended</Option>
+            </Select>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <Typography.Title level={5} style={{ marginTop: 8 }}>
+              Trial duration (days)
+            </Typography.Title>
+            <InputNumber style={{ width: '100%' }} defaultValue={999} />
+          </div>
+        </Flex>
+
+        <Flex gap={16}>
+          <div style={{ flex: 1 }}>
+            <Typography.Title level={5} style={{ marginTop: 8 }}>
+              Currency
+            </Typography.Title>
+            <Select
+              style={{ width: '100%' }}
+              value={statusFilter}
+              onChange={setStatusFilter}
+            >
+              <Option value="bdt">BDT</Option>
+              <Option value="usd">USD</Option>
+              <Option value="eur">EUR</Option>
+            </Select>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <Typography.Title level={5} style={{ marginTop: 8 }}>
+              TimeZone
+            </Typography.Title>
+            <Select
+              style={{ width: '100%' }}
+              value={statusFilter}
+              onChange={setStatusFilter}
+            >
+              <Option value="utc">UTC</Option>
+              <Option value="est">EST</Option>
+              <Option value="pst">PST</Option>
+            </Select>
+          </div>
+        </Flex>
+
       </Modal>
 
       {/* Suspend Confirmation */}
