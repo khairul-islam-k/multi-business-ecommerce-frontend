@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 
+import { Layout } from "antd";
 import "antd/dist/reset.css";
 
 import "@/styles/global.css";
@@ -13,7 +14,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "OneComm",
-  description: "",
+  description: "All in one ECommerce ERP Solution.",
 };
 
 export default function RootLayout({
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <ThemeProvider>
       <html lang="en">
-        <body className={`${openSans.variable}`}>{children}</body>
+        <body className={`${openSans.variable}`}>
+          <Layout>{children}</Layout>
+        </body>
       </html>
     </ThemeProvider>
   );

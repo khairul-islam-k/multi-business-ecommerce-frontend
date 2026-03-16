@@ -1,15 +1,15 @@
 "use client";
 
 import { Button, Result } from "antd";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { BackwardOutlined } from "@ant-design/icons";
 
 export default function NotFoundPage() {
   const router = useRouter();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+    <div className="flex items-center justify-center min-h-screen px-4">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
