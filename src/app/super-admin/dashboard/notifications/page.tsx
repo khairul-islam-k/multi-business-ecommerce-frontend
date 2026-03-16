@@ -25,10 +25,20 @@ import PageHeader from "@/components/shared/page-header";
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
 
+type Notification = {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  channel: string;
+  isRead: boolean;
+  created: string;
+};
+
 export default function NotificationsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
-  const [selected, setSelected] = useState<any>(null);
+  const [selected, setSelected] = useState<Notification | null>(null);
   const [open, setOpen] = useState(false);
 
   const [notifications, setNotifications] = useState([
@@ -96,7 +106,7 @@ export default function NotificationsPage() {
     return matchSearch && matchFilter;
   });
 
-  const markRead = (id: string) => {
+  const markAsRead = (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
@@ -108,8 +118,8 @@ export default function NotificationsPage() {
     message.success("All notifications marked as read");
   };
 
-  const openView = (record: any) => {
-    setSelected(record);
+  const openView = (n: Notification) => {
+    setSelected(n);
     setOpen(true);
   };
 
@@ -135,8 +145,8 @@ export default function NotificationsPage() {
     {
       title: "Status",
       key: "status",
-      render: (_: any, record: any) =>
-        record.isRead ? (
+      render: (_: any, n: Notification) =>
+        n.isRead ? (
           <Badge status="default" text="Read" />
         ) : (
           <Badge status="processing" text="Unread" />
@@ -153,24 +163,24 @@ export default function NotificationsPage() {
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: any) => (
+      render: (_: any, n: Notification) => (
         <Space>
           <Tooltip title="View">
             <Button
               type="link"
               size="small"
               icon={<EyeOutlined style={{ fontSize: 18 }} />}
-              onClick={() => openView(record)}
+              onClick={() => openView(n)}
             />
           </Tooltip>
 
-          {!record.isRead && (
+          {!n.isRead && (
             <Tooltip title="Mark as read">
               <Button
                 type="link"
                 size="small"
                 icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
-                onClick={() => markRead(record.id)}
+                onClick={() => markAsRead(n.id)}
               />
             </Tooltip>
           )}

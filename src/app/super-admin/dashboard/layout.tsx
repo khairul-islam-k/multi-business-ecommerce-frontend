@@ -3,8 +3,8 @@
 import { ReactNode, useState } from "react";
 import { theme, Layout } from "antd";
 
-import Topbar from "@/components/super-admin/dashboard/topbar";
-import Sidebar from "@/components/super-admin/dashboard/sidebar";
+import Topbar from "./_components/topbar";
+import Sidebar from "./_components/sidebar";
 
 const { Header, Content } = Layout;
 

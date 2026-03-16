@@ -1,17 +1,14 @@
 "use client";
 
-import { z } from "zod";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
 import { Card, Form, Input, Button, Checkbox, Typography, Flex } from "antd";
 
-import { login } from "@/lib/utils/auth";
+import { login } from "../utils";
 import useSubmit from "@/hooks/use-submit";
 import Logo from "@/components/shared/logo";
-import { loginFormSchema } from "@/schemas/super-admin/auth";
+import { LoginFormValues } from "../schemas";
 
 const { Title, Text, Link } = Typography;
-
-type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
