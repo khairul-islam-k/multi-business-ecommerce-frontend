@@ -17,6 +17,7 @@ import {
     Row,
     Col,
     Grid,
+    Flex,
 } from "antd";
 import {
     PlusOutlined,
@@ -121,24 +122,31 @@ export default function AddonListPage() {
         <>
             {contextHolder}
 
-            <div style={{marginBottom: '8px'}}>
+            <div style={{ marginBottom: '24px' }}>
                 <PageHeader title="Addons">
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowCreate(true)}>
-                        Create Addon
-                    </Button>
                 </PageHeader>
             </div>
 
             <Card>
-                <Space style={{ marginBottom: 16 }}>
-                    <Input
-                        prefix={<SearchOutlined />}
-                        placeholder="Search addons..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        style={{ width: screens.lg ? 300 : '100%' }}
-                    />
-                </Space>
+                <Flex
+                justify="space-between"
+                wrap="wrap"
+                >
+                    <Space style={{ marginBottom: 16 }}>
+                        <Input
+                            prefix={<SearchOutlined />}
+                            placeholder="Search addons..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            style={{ width: screens.lg ? 300 : '100%' }}
+                        />
+                    </Space>
+
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowCreate(true)}>
+                        Create Addon
+                    </Button>
+                </Flex>
+
 
                 <Table
                     rowKey="id"

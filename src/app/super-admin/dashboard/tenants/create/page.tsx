@@ -33,13 +33,15 @@ export default function CreateTenantForm() {
 
     return (
         <div>
-            <PageHeader title="Create"></PageHeader>
+            <div style={{marginBottom: '24px'}}>
+                <PageHeader title="Create"></PageHeader>
+            </div>
 
             <Form
                 layout="vertical"
                 form={form}
                 onFinish={onFinish}
-                style={{ maxWidth: 900, background: token.colorBgBase, padding: '15px', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto' }}
+                style={{ maxWidth: "100%", background: token.colorBgBase, padding: '15px', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto' }}
             >
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
