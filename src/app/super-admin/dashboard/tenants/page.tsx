@@ -31,6 +31,7 @@ export default function TenantListPage() {
   const [packageFilter, setPackageFilter] = useState("all");
   const [suspendConfirm, setSuspendConfirm] = useState<string | null>(null);
 
+
   const filtered = mockTenants.filter((t) => {
     const matchSearch =
       !search ||
@@ -43,13 +44,6 @@ export default function TenantListPage() {
     return matchSearch && matchStatus && matchPkg;
   });
 
-  const handleCreate = async () => {
-    setCreating(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setCreating(false);
-    setShowCreate(false);
-    msgApi.success("Tenant created successfully");
-  };
 
   const columns = [
     {
@@ -148,6 +142,7 @@ export default function TenantListPage() {
         {/* Filters */}
         <Flex 
         justify="space-between"
+         wrap="wrap"
         >
           <div className="flex flex-wrap gap-2 mb-4">
             <Input
