@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
     Card,
     Button,
@@ -28,6 +27,11 @@ import {
 import { mockModules, mockPackages } from "@/components/demoData/mockData";
 import PageHeader from "@/components/shared/page-header";
 
+const { TextArea } = Input;
+const { useBreakpoint } = Grid;
+const { Option } = Select;
+
+/* ---------------- LIMIT DATA ---------------- */
 
 const limits = [
     {
@@ -43,18 +47,18 @@ const limits = [
 ];
 
 export default function PackageListPage() {
-    const router = useRouter();
-    const { Option } = Select;
-    const [msgApi, contextHolder] = message.useMessage();
-    const { useBreakpoint } = Grid;
     const screen = useBreakpoint();
+    const [msgApi, contextHolder] = message.useMessage();
+
+    // status
+    const [statusFilter, setStatusFilter] = useState<string>('');
 
     const [search, setSearch] = useState("");
-    // select
-    const [statusFilter, setStatusFilter] = useState("");
     const [activeTab, setActiveTab] = useState("list");
     const [showModal, setShowModal] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+    /* ---------------- MODULE MATRIX STATE ---------------- */
 
     const [moduleMatrix, setModuleMatrix] = useState<
         Record<string, Record<string, boolean>>
@@ -67,13 +71,15 @@ export default function PackageListPage() {
         )
     );
 
-    const filtered = mockPackages.filter((p) =>
+    /* ---------------- FILTER ---------------- */
+
+    const filteredPackages = mockPackages.filter((p) =>
         p.name.toLowerCase().includes(search.toLowerCase())
     );
 
-    /* ---------------- TABLE COLUMNS ---------------- */
+    /* ---------------- PACKAGE LIST TABLE ---------------- */
 
-    const columns = [
+    const packageColumns = [
         {
             title: "Package",
             dataIndex: "name",
@@ -94,8 +100,8 @@ export default function PackageListPage() {
             dataIndex: "status",
             render: (s: string) => (
                 <Tag
-                    style={{ background: s === "Active" ? "#21c45d" : "#ef4444", color: 'white' }}
-                    color={s === "active" ? "green" : "red"}>{s}</Tag>
+                style={{background: s === "Active" ? "#21c45d" : "red", color: 'white'}}
+                >{s}</Tag>
             ),
         },
         {
@@ -128,17 +134,84 @@ export default function PackageListPage() {
         },
     ];
 
-    /* ---------------- TABS CONTENT ---------------- */
+    /* ---------------- MODULE MATRIX TABLE ---------------- */
 
-    const items = [
+    const moduleMatrixColumns = [
+        {
+            title: "Module",
+            dataIndex: "name",
+            fixed: "left" as const,
+            width: 200,
+        },
+        ...mockPackages.map((p) => ({
+            title: p.name,
+            key: p.name,
+            align: "center" as const,
+            render: (_: any, record: any) => (
+                <Checkbox
+                    checked={moduleMatrix[record.id]?.[p.name]}
+                    onChange={(e) =>
+                        setModuleMatrix((prev) => ({
+                            ...prev,
+                            [record.id]: {
+                                ...prev[record.id],
+                                [p.name]: e.target.checked,
+                            },
+                        }))
+                    }
+                />
+            ),
+        })),
+    ];
+
+    const moduleMatrixData = mockModules.map((m) => ({
+        key: m.id,
+        id: m.id,
+        name: m.name,
+    }));
+
+    /* ---------------- LIMIT SETTINGS TABLE ---------------- */
+
+    const limitColumns = [
+        {
+            title: "Limit",
+            dataIndex: "label",
+            fixed: "left" as const,
+            width: 200,
+        },
+        ...mockPackages.map((p) => ({
+            title: p.name,
+            key: p.name,
+            align: "center" as const,
+            render: (_: any, record: any) => (
+                <InputNumber
+                    defaultValue={record.values[p.name]}
+                    style={{ width: 100 }}
+                />
+            ),
+        })),
+    ];
+
+    const limitData = limits.map((l) => ({
+        key: l.key,
+        label: l.label,
+        values: l.values,
+    }));
+
+    /* ---------------- TABS ---------------- */
+
+    const tabs = [
         {
             key: "list",
             label: "Package List",
             children: (
-                <Card style={{ overflowX: 'auto' }}>
+                <Card>
                     <Space style={{ marginBottom: 16 }}>
                         <Input
-                            style={{ width: screen.lg ? 300 : "100%", height: screen.lg ? 50 : 40 }}
+                            style={{
+                                width: screen.lg ? 300 : "100%",
+                                height: screen.lg ? 48 : 40,
+                            }}
                             prefix={<SearchOutlined />}
                             placeholder="Search packages..."
                             value={search}
@@ -148,90 +221,40 @@ export default function PackageListPage() {
 
                     <Table
                         rowKey="id"
-                        columns={columns}
-                        dataSource={filtered}
+                        columns={packageColumns}
+                        dataSource={filteredPackages}
                         pagination={false}
+                        scroll={{ x: "max-content" }}
                     />
                 </Card>
             ),
         },
-
         {
             key: "matrix",
             label: "Module Matrix",
             children: (
                 <Card>
-                    <div style={{ overflowX: "auto" }}>
-                        <table className="w-full">
-                            <thead>
-                                <tr>
-                                    <th>Module</th>
-                                    {mockPackages.map((p) => (
-                                        <th key={p.id}>{p.name}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {mockModules.map((m) => (
-                                    <tr key={m.id}>
-                                        <td>{m.name}</td>
-                                        {mockPackages.map((p) => (
-                                            <td key={p.id} style={{ textAlign: "center" }}>
-                                                <Checkbox
-                                                    checked={moduleMatrix[m.id][p.name]}
-                                                    onChange={(e) =>
-                                                        setModuleMatrix((prev) => ({
-                                                            ...prev,
-                                                            [m.id]: {
-                                                                ...prev[m.id],
-                                                                [p.name]: e.target.checked,
-                                                            },
-                                                        }))
-                                                    }
-                                                />
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+                        <Table
+                            columns={moduleMatrixColumns}
+                            dataSource={moduleMatrixData}
+                            pagination={false}
+                        />
                     </div>
                 </Card>
             ),
         },
-
         {
             key: "limits",
             label: "Limit Settings",
             children: (
                 <Card>
-                    <div style={{ overflowX: "auto" }}>
-                        <table className="w-full">
-                            <thead>
-                                <tr>
-                                    <th>Limit</th>
-                                    {mockPackages.map((p) => (
-                                        <th key={p.id}>{p.name}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {limits.map((l) => (
-                                    <tr key={l.key}>
-                                        <td>{l.label}</td>
-                                        {mockPackages.map((p) => (
-                                            <td key={p.id}>
-                                                <Input
-                                                    type="number"
-                                                    defaultValue={l.values[p.name]}
-                                                    style={{ width: 80 }}
-                                                />
-                                            </td>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    <div style={{ overflowX: 'auto', overflowY: 'hidden' }}>
+                        <Table
+                            columns={limitColumns}
+                            dataSource={limitData}
+                            pagination={false}
+                        />
                     </div>
 
                     <div style={{ textAlign: "right", marginTop: 16 }}>
@@ -248,18 +271,23 @@ export default function PackageListPage() {
         <>
             {contextHolder}
 
-            <div style={{ marginBottom: '10px' }}>
-                <PageHeader title='Package'>
+            <div style={{ marginBottom: 16 }}>
+                <PageHeader title="Package">
                     <Button
-                        onClick={() => setShowModal(true)}
+                        type="primary"
                         icon={<PlusOutlined />}
-                        type='primary'> create package </Button>
+                        onClick={() => setShowModal(true)}
+                    >
+                        Create Package
+                    </Button>
                 </PageHeader>
             </div>
 
-            <Tabs activeKey={activeTab} onChange={setActiveTab} items={items} />
+            <div>
+                <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
+            </div>
 
-            {/* CREATE / EDIT MODAL */}
+            {/* CREATE MODAL */}
             <Modal
                 title="Create Package"
                 open={showModal}
@@ -269,78 +297,78 @@ export default function PackageListPage() {
                     setShowModal(false);
                 }}
             >
-                <Typography.Title style={{ marginTop: "8px" }} level={5}>Business Name</Typography.Title>
-                <Input placeholder="Business name" className="mb-2" />
+                {/* Package Name */}
+                <Typography.Title level={5} style={{ marginTop: 8 }}>
+                    Package Name
+                </Typography.Title>
+                <Input placeholder="Business name" />
 
-                <Typography.Title style={{ marginTop: "8px" }} level={5}>Slug</Typography.Title>
-                <Input placeholder="Slug" className="mb-2" />
+                {/* Slug */}
+                <Typography.Title level={5} style={{ marginTop: 8 }}>
+                    Slug
+                </Typography.Title>
+                <Input placeholder="Slug" />
 
-                <Typography.Title style={{ marginTop: "8px" }} level={5}>Email</Typography.Title>
-                <Input placeholder="Email" className="mb-2" />
-
-                <Typography.Title style={{ marginTop: "8px" }} level={5}>Phone</Typography.Title>
-                <Input placeholder="+880156415" />
-
-
+                {/* Prices */}
                 <Flex gap={16}>
+                    <div style={{ flex: 1 }}>
+                        <Typography.Title level={5} style={{ marginTop: 8 }}>
+                            Monthly Price ($)
+                        </Typography.Title>
+                        <InputNumber style={{ width: "100%" }} defaultValue={149} />
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                        <Typography.Title level={5} style={{ marginTop: 8 }}>
+                            Yearly Price ($)
+                        </Typography.Title>
+                        <InputNumber style={{ width: "100%" }} defaultValue={1430} />
+                    </div>
+                </Flex>
+
+                {/* Description */}
+                <Typography.Title level={5} style={{ marginTop: 8 }}>
+                    Description
+                </Typography.Title>
+                <TextArea
+                    placeholder="Package Description..."
+                    autoSize={{ minRows: 3, maxRows: 5 }}
+                />
+
+                {/* Type & Status */}
+                <Flex gap={16}>
+                    <div style={{ flex: 1 }}>
+                        <Typography.Title level={5} style={{ marginTop: 8 }}>
+                            Type
+                        </Typography.Title>
+                        <Select
+                            style={{ width: "100%" }}
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                        >
+                            <Option value="usage">Usage</Option>
+                            <Option value="per-unit">Per Unit</Option>
+                            <Option value="flat">Flat</Option>
+                        </Select>
+                    </div>
+
                     <div style={{ flex: 1 }}>
                         <Typography.Title level={5} style={{ marginTop: 8 }}>
                             Status
                         </Typography.Title>
                         <Select
-                            style={{ width: '100%' }}
+                            style={{ width: "100%" }}
                             value={statusFilter}
                             onChange={setStatusFilter}
                         >
-                            <Option value="all">All Status</Option>
-                            <Option value="Active">Active</Option>
-                            <Option value="Trial">Trial</Option>
-                            <Option value="Suspended">Suspended</Option>
-                        </Select>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Trial duration (days)
-                        </Typography.Title>
-                        <InputNumber style={{ width: '100%' }} defaultValue={999} />
-                    </div>
-                </Flex>
-
-                <Flex gap={16}>
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Currency
-                        </Typography.Title>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={statusFilter}
-                            onChange={setStatusFilter}
-                        >
-                            <Option value="bdt">BDT</Option>
-                            <Option value="usd">USD</Option>
-                            <Option value="eur">EUR</Option>
-                        </Select>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            TimeZone
-                        </Typography.Title>
-                        <Select
-                            style={{ width: '100%' }}
-                            value={statusFilter}
-                            onChange={setStatusFilter}
-                        >
-                            <Option value="utc">UTC</Option>
-                            <Option value="est">EST</Option>
-                            <Option value="pst">PST</Option>
+                            <Option value="active">Active</Option>
+                            <Option value="inactive">Inactive</Option>
                         </Select>
                     </div>
                 </Flex>
             </Modal>
 
-            {/* DELETE CONFIRM */}
+            {/* DELETE MODAL */}
             <Modal
                 title="Delete Package"
                 open={!!deleteConfirm}
