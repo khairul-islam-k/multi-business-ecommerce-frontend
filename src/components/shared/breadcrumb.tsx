@@ -1,8 +1,9 @@
 "use client";
 
-import { Breadcrumb } from "antd";
 import Link from "next/link";
+import { Breadcrumb } from "antd";
 import { usePathname } from "next/navigation";
+import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 
 const routeLabels: Record<string, string> = {
   "": "Dashboard",
@@ -27,7 +28,16 @@ export default function Breadcrumbs() {
 
   const segments = pathname.split("/").filter(Boolean).slice(2);
 
-  const items: any[] = [{ title: <Link href={basePath}>Home</Link> }];
+  const items: any[] = [
+    {
+      title: (
+        <Link href={basePath}>
+          <HomeOutlined />
+        </Link>
+      ),
+    },
+    { title: <Link href={basePath}>Dashboard</Link> },
+  ];
 
   let currentPath = "";
 
@@ -44,5 +54,13 @@ export default function Breadcrumbs() {
     });
   });
 
-  return <Breadcrumb items={items} />;
+  return (
+    <div className="flex items-center h-6">
+      <Breadcrumb
+        items={items}
+        separator={<RightOutlined />}
+        className="m-0! p-0!"
+      />
+    </div>
+  );
 }

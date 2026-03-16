@@ -1,7 +1,9 @@
 "use client";
 
-import { theme, Layout, Menu, Drawer, MenuProps } from "antd";
+import { useState } from "react";
+import { theme, Layout, Menu, Drawer, MenuProps, Button } from "antd";
 import { usePathname, useRouter } from "next/navigation";
+
 import {
   DashboardOutlined,
   BankOutlined,
@@ -12,6 +14,8 @@ import {
   BellOutlined,
   RadarChartOutlined,
   SettingOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 
 import Logo from "@/components/shared/logo";
@@ -78,6 +82,8 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
   const pathname = usePathname();
   const { token } = theme.useToken();
 
+  const [collapsed, setCollapsed] = useState(false);
+
   const activeKey =
     navItems
       ?.find((item) => pathname.endsWith(`${BASE_PATH}${String(item?.key)}`))
@@ -90,14 +96,27 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
 
   const sidebarContent = (
     <div className="flex flex-col h-full min-h-screen">
-      {/* Logo */}
-      <div className="h-16 flex items-center px-6 border-b border-black/20">
-        <Logo />
+      {/* Logo + Toggle */}
+      <div
+        className={`h-16 flex items-center border-b border-black/10 ${
+          collapsed ? "justify-center" : "justify-between px-4"
+        }`}
+      >
+        {!collapsed && <Logo />}
+
+        <div className="hidden md:block">
+          <Button
+            type="text"
+            onClick={() => setCollapsed(!collapsed)}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          />
+        </div>
       </div>
 
       {/* Navigation */}
       <Menu
         mode="inline"
+        inlineCollapsed={collapsed}
         selectedKeys={[activeKey]}
         items={navItems}
         onClick={handleClick}
@@ -111,6 +130,9 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
       {/* Desktop Sidebar */}
       <Sider
         width={240}
+        collapsedWidth={65}
+        collapsed={collapsed}
+        trigger={null}
         className="hidden md:block"
         style={{
           background: token.colorBgContainer,
@@ -120,13 +142,13 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         {sidebarContent}
       </Sider>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Sidebar */}
       <Drawer
         placement="left"
         open={mobileOpen}
         onClose={onMobileClose}
-        className="p-0"
-        style={{ padding: 0 }}
+        closeIcon={null}
+        styles={{ body: { padding: 0 } }}
       >
         {sidebarContent}
       </Drawer>

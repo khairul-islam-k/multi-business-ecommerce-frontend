@@ -31,7 +31,7 @@ export default function SuperAdminDashboardLayout({
           <Topbar onMobileMenuToggle={() => setMobileOpen(true)} />
         </Header>
 
-        <Content className="p-6 lg:p-8">{children}</Content>
+        <Content className="p-4 lg:p-8">{children}</Content>
       </Layout>
     </Layout>
   );
