@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import useWidth from "@/hooks/use-width";
 import StatCard from "./_components/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import {
@@ -25,40 +26,40 @@ import {
 
 const { Title, Text } = Typography;
 
+const tenantColumns = [
+  {
+    title: "Business",
+    dataIndex: "business",
+    key: "business",
+    render: (v: string) => <Text strong>{v}</Text>,
+  },
+  {
+    title: "Owner",
+    dataIndex: "owner",
+    key: "owner",
+    render: (v: string) => <Text type="secondary">{v}</Text>,
+  },
+  {
+    title: "Package",
+    dataIndex: "package",
+    key: "package",
+  },
+  {
+    title: "Status",
+    dataIndex: "status",
+    key: "status",
+    render: (status: string) => {
+      if (status === "Active") return <Badge status="success" text="Active" />;
+
+      if (status === "Trial") return <Badge status="processing" text="Trial" />;
+
+      return <Badge status="error" text={status} />;
+    },
+  },
+];
+
 export default function DashboardPage() {
-  const tenantColumns = [
-    {
-      title: "Business",
-      dataIndex: "business",
-      key: "business",
-      render: (v: string) => <Text strong>{v}</Text>,
-    },
-    {
-      title: "Owner",
-      dataIndex: "owner",
-      key: "owner",
-      render: (v: string) => <Text type="secondary">{v}</Text>,
-    },
-    {
-      title: "Package",
-      dataIndex: "package",
-      key: "package",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        if (status === "Active")
-          return <Badge status="success" text="Active" />;
-
-        if (status === "Trial")
-          return <Badge status="processing" text="Trial" />;
-
-        return <Badge status="error" text={status} />;
-      },
-    },
-  ];
+  const width = useWidth();
 
   return (
     <div className="space-y-6">
@@ -68,7 +69,7 @@ export default function DashboardPage() {
       <Row gutter={[16, 16]}>
         {mockStats.map((stat) => {
           return (
-            <Col xs={12} md={8} lg={4} key={stat.label}>
+            <Col xs={width < 360 ? 24 : 12} md={8} lg={4} key={stat.label}>
               <StatCard stat={stat} />
             </Col>
           );

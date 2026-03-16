@@ -191,28 +191,42 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Notifications">
-        <Button icon={<CheckCircleOutlined />} onClick={markAllRead}>
-          Mark All Read
-        </Button>
-      </PageHeader>
+      <PageHeader title="Notifications" />
 
       <Card>
-        <div className="flex flex-col sm:flex-row gap-3 mb-4">
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder="Search notifications..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
-          />
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+          {/* Left Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+            <Input
+              prefix={<SearchOutlined />}
+              placeholder="Search notifications..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:max-w-xs"
+            />
 
-          <Select value={filter} onChange={setFilter} className="w-40">
-            <Option value="all">All</Option>
-            <Option value="unread">Unread</Option>
-            <Option value="email">Email</Option>
-            <Option value="system">System</Option>
-          </Select>
+            <Select
+              value={filter}
+              onChange={setFilter}
+              className="w-full sm:w-40"
+            >
+              <Option value="all">All</Option>
+              <Option value="unread">Unread</Option>
+              <Option value="email">Email</Option>
+              <Option value="system">System</Option>
+            </Select>
+          </div>
+
+          {/* Right Action */}
+          <div className="flex justify-start sm:justify-end">
+            <Button
+              icon={<CheckCircleOutlined />}
+              onClick={markAllRead}
+              className="w-full sm:w-auto"
+            >
+              Mark All Read
+            </Button>
+          </div>
         </div>
 
         <Table

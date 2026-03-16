@@ -1,3 +1,5 @@
+import { Typography } from "antd";
+
 import Breadcrumbs from "./breadcrumb";
 
 interface PageHeaderProps {
@@ -5,17 +7,15 @@ interface PageHeaderProps {
   children?: React.ReactNode;
 }
 
+const { Title } = Typography;
+
 export default function PageHeader({ title, children }: PageHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold leading-tight">{title}</h1>
-        <Breadcrumbs />
-      </div>
-
-      {children && (
-        <div className="flex items-center gap-2 sm:mt-1">{children}</div>
-      )}
+      <Title level={4} style={{ marginBottom: 0 }}>
+        {title}
+      </Title>
+      <Breadcrumbs />
     </div>
   );
 }

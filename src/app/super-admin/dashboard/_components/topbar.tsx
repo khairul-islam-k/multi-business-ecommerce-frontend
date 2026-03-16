@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import type { MenuProps } from "antd";
 import { useRouter } from "next/navigation";
-import { Input, Button, Dropdown, Avatar, Badge } from "antd";
+import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
 import {
   BellOutlined,
   MoonOutlined,
@@ -16,9 +15,11 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 
+import cn from "@/lib/cn";
 import { useTheme } from "@/providers/theme-provider";
 
 const { Search } = Input;
+const { useToken } = theme;
 
 interface TopbarProps {
   onMobileMenuToggle: () => void;
@@ -26,6 +27,7 @@ interface TopbarProps {
 
 export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
   const router = useRouter();
+  const { token } = useToken();
   const { theme, toggleTheme } = useTheme();
 
   const [search, setSearch] = useState("");
@@ -56,7 +58,7 @@ export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
   ];
 
   return (
-    <div className="flex items-center w-full gap-3">
+    <div className="flex items-center w-full gap-3 p-2 sm:p-4">
       {/* Mobile menu button */}
       <div className="md:hidden">
         <Button
@@ -124,8 +126,13 @@ export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
 
         {/* Profile dropdown */}
         <Dropdown menu={{ items }} trigger={["click"]}>
-          <div className="flex items-center gap-2 cursor-pointer">
-            <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=johndoe" />
+          <div
+            className={cn(
+              "flex items-center gap-2 cursor-pointer rounded-full border",
+              `border-[${token.colorPrimary}]`,
+            )}
+          >
+            <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=utshomh" />
           </div>
         </Dropdown>
       </div>
