@@ -22,10 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${openSans.variable}`}>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider>
+      <html lang="en">
+        <body className={`${openSans.variable}`}>{children}</body>
+      </html>
+    </ThemeProvider>
   );
 }
