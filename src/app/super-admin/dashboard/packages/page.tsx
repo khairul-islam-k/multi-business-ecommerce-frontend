@@ -40,9 +40,24 @@ const limits = [
         values: { Starter: 100, Growth: 1000, Enterprise: 10000 },
     },
     {
+        key: "Max Warehouses",
+        label: "Max Warehouses",
+        values: { Starter: 1, Growth: 5, Enterprise: 25 },
+    },
+    {
         key: "max_users",
         label: "Max Users",
         values: { Starter: 5, Growth: 25, Enterprise: 100 },
+    },
+    {
+        key: "Max Orders/mo",
+        label: "Max Orders/mo",
+        values: { Starter: 500, Growth: 5000, Enterprise: 50000 },
+    },
+    {
+        key: "Max Websites",
+        label: "Max Websites",
+        values: { Starter: 1, Growth: 3, Enterprise: 10 },
     },
 ];
 
@@ -209,8 +224,7 @@ export default function PackageListPage() {
                     <Space style={{ marginBottom: 16 }}>
                         <Input
                             style={{
-                                width: screen.lg ? 300 : "100%",
-                                height: screen.lg ? 48 : 40,
+                                width: screen.lg ? "330px" : "100%"
                             }}
                             prefix={<SearchOutlined />}
                             placeholder="Search packages..."
@@ -271,7 +285,7 @@ export default function PackageListPage() {
         <>
             {contextHolder}
 
-            <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: '8px' }}>
                 <PageHeader title="Package">
                     <Button
                         type="primary"
