@@ -14,7 +14,7 @@ import {
 } from "recharts";
 
 import useWidth from "@/hooks/use-width";
-import StatCard from "./_components/stat-card";
+import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import {
   mockStats,
