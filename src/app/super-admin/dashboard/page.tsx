@@ -16,6 +16,7 @@ import {
 import useWidth from "@/hooks/use-width";
 import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import {
   mockStats,
   mockMrrData,
@@ -63,7 +64,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" />
+      <PageHeader title="Dashboard" breadcrumb={superAdminBreadcrumb} />
 
       {/* Stats */}
       <Row gutter={[16, 16]}>

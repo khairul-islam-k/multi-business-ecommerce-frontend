@@ -21,6 +21,7 @@ import {
 } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
@@ -191,7 +192,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Notifications" />
+      <PageHeader title="Notifications" breadcrumb={superAdminBreadcrumb} />
 
       <Card>
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">

@@ -15,13 +15,14 @@ import {
 
 import useWidth from "@/hooks/use-width";
 import StatCard from "@/components/shared/stat-card";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import {
   mockStats,
   mockSalesOverview,
   mockCustomerGrowth,
   mockOrders,
 } from "./data";
-import PageHeader from "@/components/shared/page-header";
 
 const { Title, Text } = Typography;
 
@@ -69,7 +70,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Dashboard" />
+      <PageHeader title="Dashboard" breadcrumb={adminBreadcrumb} />
 
       {/* Stats */}
       <Row gutter={[16, 16]}>
