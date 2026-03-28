@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import {
   Card,
-  Button,
   Tabs,
   Switch,
   Progress,
