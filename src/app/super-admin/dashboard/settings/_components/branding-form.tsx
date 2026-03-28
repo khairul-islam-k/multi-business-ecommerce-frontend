@@ -2,8 +2,8 @@
 
 import { Form, Input, Button, message } from "antd";
 
-import useSubmit from "@/hooks/use-submit";
 import { brandingSchema, BrandingValues } from "../schemas";
+import useSubmit from "@/hooks/use-submit";
 
 export default function BrandingForm() {
   const [form] = Form.useForm<BrandingValues>();

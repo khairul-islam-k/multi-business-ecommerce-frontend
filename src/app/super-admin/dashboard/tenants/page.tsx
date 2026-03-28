@@ -19,6 +19,7 @@ import {
 import { MoreOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import PageHeader from "@/components/shared/page-header";
 import { mockTenants } from "@/components/demoData/mockData";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -134,7 +135,7 @@ export default function TenantListPage() {
       {contextHolder}
 
       <div style={{ marginBottom: '24px' }}>
-        <PageHeader title="Tenants">
+        <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb}>
         </PageHeader>
       </div>
 
