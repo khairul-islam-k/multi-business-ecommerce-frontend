@@ -20,6 +20,7 @@ const routeLabels: Record<string, string> = {
   "monitoring/errors": "Error Monitoring",
   "monitoring/logs": "System Logs",
   settings: "Settings",
+  editAddon: "EditAddon"
 };
 
 export default function Breadcrumbs() {

@@ -11,11 +11,9 @@ import {
     Dropdown,
     Tag,
     Checkbox,
-    Select,
     message,
     Space,
     Grid,
-    Typography,
     Flex,
     InputNumber,
 } from "antd";
@@ -28,9 +26,7 @@ import { mockModules, mockPackages } from "@/components/demoData/mockData";
 import PageHeader from "@/components/shared/page-header";
 import { useRouter } from "next/navigation";
 
-const { TextArea } = Input;
 const { useBreakpoint } = Grid;
-const { Option } = Select;
 
 /* ---------------- LIMIT DATA ---------------- */
 
@@ -67,12 +63,8 @@ export default function PackageListPage() {
     const router = useRouter()
     const [msgApi, contextHolder] = message.useMessage();
 
-    // status
-    const [statusFilter, setStatusFilter] = useState<string>('');
-
     const [search, setSearch] = useState("");
     const [activeTab, setActiveTab] = useState("list");
-    const [showModal, setShowModal] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     /* ---------------- MODULE MATRIX STATE ---------------- */
@@ -88,9 +80,9 @@ export default function PackageListPage() {
         )
     );
 
-    console.log(mockModules);
+    // console.log(mockModules);
 
-    console.log('module' ,moduleMatrix);
+    // console.log('module' ,moduleMatrix);
 
     /* ---------------- FILTER ---------------- */
 
@@ -138,7 +130,7 @@ export default function PackageListPage() {
                             {
                                 key: "edit",
                                 label: "Edit",
-                                onClick: () => setShowModal(true),
+                                onClick: () => router.push(`/super-admin/dashboard/packages/edit/${record.id}`),
                             },
                             {
                                 key: "delete",
@@ -246,7 +238,7 @@ export default function PackageListPage() {
                         <Button
                             type="primary"
                             icon={<PlusOutlined />}
-                            onClick={() => router.push('/super-admin/dashboard/tenants/create')}
+                            onClick={() => router.push('/super-admin/dashboard/packages/create')}
                         >
                             Create Package
                         </Button>
@@ -319,87 +311,7 @@ export default function PackageListPage() {
             <div>
                 <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
             </div>
-
-            {/* CREATE MODAL */}
-            <Modal
-                title="Create Package"
-                open={showModal}
-                onCancel={() => setShowModal(false)}
-                onOk={() => {
-                    msgApi.success("Package saved");
-                    setShowModal(false);
-                }}
-            >
-                {/* Package Name */}
-                <Typography.Title level={5} style={{ marginTop: 8 }}>
-                    Package Name
-                </Typography.Title>
-                <Input placeholder="Business name" />
-
-                {/* Slug */}
-                <Typography.Title level={5} style={{ marginTop: 8 }}>
-                    Slug
-                </Typography.Title>
-                <Input placeholder="Slug" />
-
-                {/* Prices */}
-                <Flex gap={16}>
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Monthly Price ($)
-                        </Typography.Title>
-                        <InputNumber style={{ width: "100%" }} defaultValue={149} />
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Yearly Price ($)
-                        </Typography.Title>
-                        <InputNumber style={{ width: "100%" }} defaultValue={1430} />
-                    </div>
-                </Flex>
-
-                {/* Description */}
-                <Typography.Title level={5} style={{ marginTop: 8 }}>
-                    Description
-                </Typography.Title>
-                <TextArea
-                    placeholder="Package Description..."
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                />
-
-                {/* Type & Status */}
-                <Flex gap={16}>
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Type
-                        </Typography.Title>
-                        <Select
-                            style={{ width: "100%" }}
-                            value={statusFilter}
-                            onChange={setStatusFilter}
-                        >
-                            <Option value="usage">Usage</Option>
-                            <Option value="per-unit">Per Unit</Option>
-                            <Option value="flat">Flat</Option>
-                        </Select>
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                        <Typography.Title level={5} style={{ marginTop: 8 }}>
-                            Status
-                        </Typography.Title>
-                        <Select
-                            style={{ width: "100%" }}
-                            value={statusFilter}
-                            onChange={setStatusFilter}
-                        >
-                            <Option value="active">Active</Option>
-                            <Option value="inactive">Inactive</Option>
-                        </Select>
-                    </div>
-                </Flex>
-            </Modal>
+            
 
             {/* DELETE MODAL */}
             <Modal

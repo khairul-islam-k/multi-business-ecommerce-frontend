@@ -4,47 +4,55 @@ import {
     Input,
     InputNumber,
     Select,
-    Upload,
     Row,
     Col,
     Button,
-    message,
     theme,
 } from "antd";
 import PageHeader from "@/components/shared/page-header";
+import TextArea from "antd/es/input/TextArea";
 
 const { Option } = Select;
 
+interface TPackagePayload {
+  packageName: string;
+  slug: string;
+  description: string;
+  monthlyPrice: number;
+  yearlyPrice: number;
+  status: "Active" | "InActive";
+  type: "Usage" | "Per Unit" | "Flat";
+}
+
 export default function CreatePackage() {
-    const { TextArea } = Input;
     const [form] = Form.useForm();
 
-    const onFinish = (values: any) => {
-        console.log({
-            ...values,
-        });
+    const onFinish = (values: TPackagePayload) => {
+        console.log(values);
     };
 
     const { token } = theme.useToken();
 
     return (
         <div>
-            <PageHeader title="Create"></PageHeader>
+            <div style={{ marginBottom: '24px' }}>
+                <PageHeader title="Create Package"></PageHeader>
+            </div>
 
             <Form
                 layout="vertical"
                 form={form}
                 onFinish={onFinish}
-                style={{ maxWidth: 900, background: token.colorBgBase, padding: '15px', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto' }}
+                style={{ maxWidth: "100%", background: token.colorBgBase, padding: '15px', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto' }}
             >
                 <Row gutter={16}>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Package Name"
-                            name="PackageName"
-                            rules={[{ required: true, message: "Business name is required" }]}
+                            label="Package name"
+                            name="packageName"
+                            rules={[{ required: true, message: "Package name is required" }]}
                         >
-                            <Input placeholder="Package Name" />
+                            <Input placeholder="Package name" />
                         </Form.Item>
                     </Col>
 
@@ -60,91 +68,64 @@ export default function CreatePackage() {
 
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Monthly Price"
-                            name="MonthlyPrice"
+                            label="Monthly price ($)"
+                            name="monthlyPrice"
                             rules={[
-                                { required: true, message: "Email is required" },
-                                { type: "number", message: "provide price" },
+                                { required: true, message: "Price is required" },
+                                { type: "number", message: "Invalid price" },
                             ]}
                         >
-                            <Input placeholder="Monthly Price ($)" />
+                            <InputNumber
+                                style={{ width: '100%' }}
+                                placeholder="20" />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
-                        <Form.Item label="Yearly Price ($)"
-                            rules={[
-                                { required: true, message: "Email is required" },
-                                { type: "number", message: "provide price" },
-                            ]}
-                            name="YearlyPrice">
-                            <Input placeholder="20" />
+                        <Form.Item label="Yearly price ($)" name="yearlyPrice">
+                            <InputNumber
+                                style={{ width: '100%' }}
+                                placeholder="415" />
                         </Form.Item>
                     </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item label="Description"
-                            name='description'
+                    <Col xs={24} md={24}>
+                        <Form.Item 
+                        label="Description"
+                        name='description'
                         >
-                            <TextArea
-                                placeholder="Package Description..."
-                                autoSize={{ minRows: 3, maxRows: 5 }}
-                            />
-                        </Form.Item>
-                    </Col>
-
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Type"
-                            name="Type"
-                            initialValue="usage"
-                        >
-                            <Select style={{ width: "100%" }}>
-                                <Option value="usage">Usage</Option>
-                                <Option value="per-unit">Per Unit</Option>
-                                <Option value="flat">Flat</Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
-
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Trial Duration (days)"
-                            name="trialDays"
-                            initialValue={999}
-                        >
-                            <InputNumber style={{ width: "100%" }} />
+                            <TextArea rows={4} placeholder="maxLength is 200" maxLength={200} />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
                         <Form.Item
                             label="Status"
-                            name="Status"
-                            initialValue="active"
+                            name="status"
+                            initialValue="Active"
                         >
-                            <Select
-                                style={{ width: "100%" }}
-                            >
-                                <Option value="active">Active</Option>
-                                <Option value="inactive">Inactive</Option>
+                            <Select>
+                                <Option value="Active">Active</Option>
+                                <Option value="InActive">INActive</Option>
                             </Select>
                         </Form.Item>
                     </Col>
 
+                    
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Time Zone"
-                            name="timezone"
-                            initialValue="utc"
+                            label="Type"
+                            name="type"
+                            initialValue="Usage"
                         >
                             <Select>
-                                <Option value="utc">UTC</Option>
-                                <Option value="est">EST</Option>
-                                <Option value="pst">PST</Option>
+                                <Option value="Usage">Usage</Option>
+                                <Option value="Per Unit">Per Unit</Option>
+                                <Option value="Flat">Flat</Option>
                             </Select>
                         </Form.Item>
                     </Col>
+
                 </Row>
 
                 <Form.Item>

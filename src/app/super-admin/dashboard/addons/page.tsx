@@ -9,13 +9,9 @@ import {
     Modal,
     Dropdown,
     Tag,
-    Select,
     message,
     Space,
     Typography,
-    Form,
-    Row,
-    Col,
     Grid,
     Flex,
 } from "antd";
@@ -27,18 +23,21 @@ import {
 import type { ColumnsType } from "antd/es/table";
 import PageHeader from "@/components/shared/page-header";
 import { mockAddons } from "@/components/demoData/mockData";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export default function AddonListPage() {
+    const router = useRouter();
+
     const { useBreakpoint } = Grid;
     const screens = useBreakpoint();
 
     const [msgApi, contextHolder] = message.useMessage();
 
     const [search, setSearch] = useState("");
-    const [showCreate, setShowCreate] = useState(false);
-    const [creating, setCreating] = useState(false);
+    
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     const filtered = mockAddons.filter((a) =>
@@ -89,7 +88,7 @@ export default function AddonListPage() {
                             {
                                 key: "edit",
                                 label: "Edit",
-                                onClick: () => setShowCreate(true),
+                                onClick: () => router.push(`/super-admin/dashboard/addons/edit/${record.id}`),
                             },
                             {
                                 key: "delete",
@@ -106,16 +105,6 @@ export default function AddonListPage() {
         },
     ];
 
-    /* ---------------- SAVE HANDLER ---------------- */
-
-    const handleSave = async () => {
-        setCreating(true);
-        await new Promise((r) => setTimeout(r, 1000));
-        setCreating(false);
-        setShowCreate(false);
-        msgApi.success("Addon created successfully");
-    };
-
     /* ---------------- RENDER ---------------- */
 
     return (
@@ -129,8 +118,8 @@ export default function AddonListPage() {
 
             <Card>
                 <Flex
-                justify="space-between"
-                wrap="wrap"
+                    justify="space-between"
+                    wrap="wrap"
                 >
                     <Space style={{ marginBottom: 16 }}>
                         <Input
@@ -142,9 +131,11 @@ export default function AddonListPage() {
                         />
                     </Space>
 
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setShowCreate(true)}>
-                        Create Addon
-                    </Button>
+                    <Link href='/super-admin/dashboard/addons/create'>
+                        <Button type="primary" icon={<PlusOutlined />} >
+                            Create Addon
+                        </Button>
+                    </Link>
                 </Flex>
 
 
@@ -156,54 +147,6 @@ export default function AddonListPage() {
                     scroll={{ x: true }}
                 />
             </Card>
-
-            {/* CREATE / EDIT MODAL */}
-            <Modal
-                title="Create Addon"
-                open={showCreate}
-                onCancel={() => setShowCreate(false)}
-                onOk={handleSave}
-                confirmLoading={creating}
-            >
-                <Form layout="vertical">
-                    <Form.Item label="Addon Name">
-                        <Input placeholder="Extra Storage" />
-                    </Form.Item>
-
-                    <Form.Item label="Slug">
-                        <Input placeholder="extra-storage" />
-                    </Form.Item>
-
-                    <Row gutter={16}>
-                        <Col xs={24} md={12}>
-                            <Form.Item label="Type">
-                                <Select defaultValue="usage" style={{ width: "100%" }}>
-                                    <Select.Option value="usage">Usage</Select.Option>
-                                    <Select.Option value="per-unit">Per Unit</Select.Option>
-                                    <Select.Option value="flat">Flat</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </Col>
-
-                        <Col xs={24} md={12}>
-                            <Form.Item label="Unit Price ($)">
-                                <Input type="number" placeholder="2.50" />
-                            </Form.Item>
-                        </Col>
-                    </Row>
-
-                    <Form.Item label="Limit Key">
-                        <Input placeholder="storage_gb" />
-                    </Form.Item>
-
-                    <Form.Item label="Status">
-                        <Select defaultValue="active">
-                            <Select.Option value="active">Active</Select.Option>
-                            <Select.Option value="inactive">Inactive</Select.Option>
-                        </Select>
-                    </Form.Item>
-                </Form>
-            </Modal>
 
             {/* DELETE CONFIRM */}
             <Modal

@@ -13,7 +13,6 @@ import {
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { div } from "framer-motion/client";
 import PageHeader from "@/components/shared/page-header";
 
 const { Option } = Select;
