@@ -141,7 +141,6 @@ export default function AdminDashboardPage() {
         <Col span={24}>
           <Card>
             <Title level={5}>Recent Orders</Title>
-
             <Table
               columns={orderColumns}
               dataSource={mockOrders.slice(0, 4)}

@@ -1,0 +1,210 @@
+"use client";
+
+import { useState } from "react";
+import {
+  SearchOutlined,
+  CheckCircleOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
+import {
+  Table,
+  Input,
+  Select,
+  Badge,
+  Tooltip,
+  Button,
+  Card,
+  message,
+  Modal,
+  Space,
+  Typography,
+} from "antd";
+
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { mockNotifications } from "./data";
+
+const { Option } = Select;
+const { Text, Paragraph } = Typography;
+
+type Notification = {
+  id: string;
+  type: string;
+  title: string;
+  message: string;
+  channel: string;
+  isRead: boolean;
+  created: string;
+};
+
+export default function NotificationsPage() {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [selected, setSelected] = useState<Notification | null>(null);
+  const [open, setOpen] = useState(false);
+
+  const [notifications, setNotifications] = useState(mockNotifications);
+
+  const filtered = notifications.filter((n) => {
+    const matchSearch =
+      !search || n.title.toLowerCase().includes(search.toLowerCase());
+
+    const matchFilter =
+      filter === "all" ||
+      (filter === "unread" && !n.isRead) ||
+      n.channel.toLowerCase() === filter;
+
+    return matchSearch && matchFilter;
+  });
+
+  const markAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
+    );
+    message.success("Notification marked as read");
+  };
+
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    message.success("All notifications marked as read");
+  };
+
+  const openView = (n: Notification) => {
+    setSelected(n);
+    setOpen(true);
+  };
+
+  const columns = [
+    {
+      title: "Type",
+      dataIndex: "type",
+      key: "type",
+      render: (type: string) => <Badge count={type} color="blue" />,
+    },
+    {
+      title: "Title",
+      dataIndex: "title",
+      key: "title",
+      render: (text: string) => <span className="font-medium">{text}</span>,
+    },
+    {
+      title: "Channel",
+      dataIndex: "channel",
+      key: "channel",
+      render: (text: string) => <span className="text-gray-500">{text}</span>,
+    },
+    {
+      title: "Status",
+      key: "status",
+      render: (_: any, n: Notification) =>
+        n.isRead ? (
+          <Badge status="default" text="Read" />
+        ) : (
+          <Badge status="processing" text="Unread" />
+        ),
+    },
+    {
+      title: "Created",
+      dataIndex: "created",
+      key: "created",
+      render: (text: string) => (
+        <span className="text-xs text-gray-500">{text}</span>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: any, n: Notification) => (
+        <Space>
+          <Tooltip title="View">
+            <Button
+              type="link"
+              size="small"
+              icon={<EyeOutlined style={{ fontSize: 18 }} />}
+              onClick={() => openView(n)}
+            />
+          </Tooltip>
+
+          {!n.isRead && (
+            <Tooltip title="Mark as read">
+              <Button
+                type="link"
+                size="small"
+                icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
+                onClick={() => markAsRead(n.id)}
+              />
+            </Tooltip>
+          )}
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Notifications" breadcrumb={adminBreadcrumb} />
+
+      <Card>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+          {/* Left Controls */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+            <Input
+              prefix={<SearchOutlined />}
+              placeholder="Search notifications..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full sm:max-w-xs"
+            />
+
+            <Select
+              value={filter}
+              onChange={setFilter}
+              className="w-full sm:w-40"
+            >
+              <Option value="all">All</Option>
+              <Option value="unread">Unread</Option>
+              <Option value="email">Email</Option>
+              <Option value="system">System</Option>
+            </Select>
+          </div>
+
+          {/* Right Action */}
+          <div className="flex justify-start sm:justify-end">
+            <Button
+              icon={<CheckCircleOutlined />}
+              onClick={markAllRead}
+              className="w-full sm:w-auto"
+            >
+              Mark All Read
+            </Button>
+          </div>
+        </div>
+
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={filtered}
+          pagination={{}}
+          scroll={{ x: "max-content" }}
+        />
+      </Card>
+
+      <Modal
+        title={selected?.title}
+        open={open}
+        footer={null}
+        onCancel={() => setOpen(false)}
+      >
+        {selected && (
+          <Space direction="vertical">
+            <Text type="secondary">Type: {selected.type}</Text>
+            <Text type="secondary">Channel: {selected.channel}</Text>
+            <Text type="secondary">Created: {selected.created}</Text>
+
+            <Paragraph>{selected.message}</Paragraph>
+          </Space>
+        )}
+      </Modal>
+    </div>
+  );
+}

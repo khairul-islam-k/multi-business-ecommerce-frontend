@@ -25,5 +25,6 @@ export const adminBreadcrumb = {
   sliceIndex: 2,
   labels: {
     "": "Dashboard",
+    notifications: "Notifications",
   },
 };
