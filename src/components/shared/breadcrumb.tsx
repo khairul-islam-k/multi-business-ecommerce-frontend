@@ -5,28 +5,20 @@ import { Breadcrumb } from "antd";
 import { usePathname } from "next/navigation";
 import { HomeOutlined, RightOutlined } from "@ant-design/icons";
 
-const routeLabels: Record<string, string> = {
-  "": "Dashboard",
-  tenants: "Tenants",
-  "tenants/create": "Create Tenant",
-  packages: "Packages",
-  "packages/create": "Create Package",
-  addons: "Addons",
-  "addons/create": "Create Addon",
-  billing: "Billing",
-  reports: "Reports",
-  notifications: "Notifications",
-  monitoring: "Monitoring",
-  "monitoring/errors": "Error Monitoring",
-  "monitoring/logs": "System Logs",
-  settings: "Settings",
+type BreadcrumbProps = {
+  basePath: string;
+  labels: Record<string, string>;
+  sliceIndex?: number;
 };
 
-export default function Breadcrumbs() {
+export default function Breadcrumbs({
+  basePath,
+  labels,
+  sliceIndex = 0,
+}: BreadcrumbProps) {
   const pathname = usePathname();
-  const basePath = "/super-admin/dashboard";
 
-  const segments = pathname.split("/").filter(Boolean).slice(2);
+  const segments = pathname.split("/").filter(Boolean).slice(sliceIndex);
 
   const items: any[] = [
     {
@@ -36,7 +28,9 @@ export default function Breadcrumbs() {
         </Link>
       ),
     },
-    { title: <Link href={basePath}>Dashboard</Link> },
+    {
+      title: <Link href={basePath}>{labels[""] || "Dashboard"}</Link>,
+    },
   ];
 
   let currentPath = "";
@@ -46,7 +40,9 @@ export default function Breadcrumbs() {
     const key = currentPath.slice(1);
     const fullPath = `${basePath}${currentPath}`;
 
-    const label = routeLabels[key] || seg;
+    const label =
+      labels[key] ||
+      seg.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
     items.push({
       title:
