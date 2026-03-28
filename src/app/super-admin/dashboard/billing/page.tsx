@@ -23,33 +23,10 @@ import {
 
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { mockStats } from "../data";
+import { mockRevenueByPackage, mockRevenueOverTime } from "./data";
 
 const { Text, Title } = Typography;
-
-const stats = [
-  { label: "Total Revenue", value: "$1,540,200", icon: DollarOutlined },
-  { label: "MRR", value: "$128,430", icon: RiseOutlined },
-  { label: "ARR", value: "$1,541,160", icon: FileTextOutlined },
-  { label: "Outstanding", value: "$12,340", icon: WarningOutlined },
-  { label: "Refunds", value: "$3,210", icon: RedoOutlined },
-];
-
-const revenueOverTime = [
-  { month: "Jul", revenue: 98000 },
-  { month: "Aug", revenue: 105000 },
-  { month: "Sep", revenue: 112000 },
-  { month: "Oct", revenue: 118000 },
-  { month: "Nov", revenue: 124000 },
-  { month: "Dec", revenue: 128000 },
-  { month: "Jan", revenue: 132000 },
-  { month: "Feb", revenue: 128430 },
-];
-
-const revenueByPackage = [
-  { name: "Starter", value: 11466 },
-  { name: "Growth", value: 84483 },
-  { name: "Enterprise", value: 56511 },
-];
 
 const COLORS = ["#1677ff", "#52c41a", "#faad14"];
 
@@ -60,7 +37,7 @@ export default function BillingOverviewPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-        {stats.map((s) => {
+        {mockStats.map((s) => {
           const Icon = s.icon;
 
           return (
@@ -91,7 +68,7 @@ export default function BillingOverviewPage() {
           className="lg:col-span-2"
         >
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={revenueOverTime}>
+            <LineChart data={mockRevenueOverTime}>
               <CartesianGrid strokeDasharray="3 3" />
 
               <XAxis dataKey="month" tick={{ fontSize: 12 }} />
@@ -129,7 +106,7 @@ export default function BillingOverviewPage() {
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
-                data={revenueByPackage}
+                data={mockRevenueByPackage}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -139,7 +116,7 @@ export default function BillingOverviewPage() {
                   `${name} ${(percent! * 100).toFixed(0)}%`
                 }
               >
-                {revenueByPackage.map((_, i) => (
+                {mockRevenueByPackage.map((_, i) => (
                   <Cell key={i} fill={COLORS[i]} />
                 ))}
               </Pie>

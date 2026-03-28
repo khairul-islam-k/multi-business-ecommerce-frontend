@@ -19,48 +19,15 @@ import {
 
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import {
+  mockChurnData,
+  mockNewSubs,
+  mockPlanDist,
+  mockRevenueTrend,
+} from "./data";
 
 const { Title } = Typography;
 const { Option } = Select;
-
-const revenueTrend = [
-  { month: "Jul", value: 98000 },
-  { month: "Aug", value: 105000 },
-  { month: "Sep", value: 112000 },
-  { month: "Oct", value: 118000 },
-  { month: "Nov", value: 124000 },
-  { month: "Dec", value: 128000 },
-  { month: "Jan", value: 132000 },
-  { month: "Feb", value: 128430 },
-];
-
-const churnData = [
-  { month: "Jul", value: 2.1 },
-  { month: "Aug", value: 1.8 },
-  { month: "Sep", value: 2.3 },
-  { month: "Oct", value: 1.5 },
-  { month: "Nov", value: 1.9 },
-  { month: "Dec", value: 1.2 },
-  { month: "Jan", value: 1.6 },
-  { month: "Feb", value: 1.4 },
-];
-
-const newSubs = [
-  { month: "Jul", value: 45 },
-  { month: "Aug", value: 52 },
-  { month: "Sep", value: 38 },
-  { month: "Oct", value: 61 },
-  { month: "Nov", value: 48 },
-  { month: "Dec", value: 55 },
-  { month: "Jan", value: 67 },
-  { month: "Feb", value: 42 },
-];
-
-const planDist = [
-  { name: "Starter", value: 234 },
-  { name: "Growth", value: 567 },
-  { name: "Enterprise", value: 189 },
-];
 
 const COLORS = ["#1677ff", "#52c41a", "#faad14"];
 
@@ -108,7 +75,7 @@ export default function ReportsPage() {
             <Title level={5}>Revenue Trend</Title>
 
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={revenueTrend}>
+              <LineChart data={mockRevenueTrend}>
                 <CartesianGrid strokeDasharray="3 3" />
 
                 <XAxis dataKey="month" />
@@ -142,7 +109,7 @@ export default function ReportsPage() {
             <Title level={5}>Subscription Churn (%)</Title>
 
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={churnData}>
+              <LineChart data={mockChurnData}>
                 <CartesianGrid strokeDasharray="3 3" />
 
                 <XAxis dataKey="month" />
@@ -176,7 +143,7 @@ export default function ReportsPage() {
             <Title level={5}>New Subscriptions</Title>
 
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={newSubs}>
+              <BarChart data={mockNewSubs}>
                 <CartesianGrid strokeDasharray="3 3" />
 
                 <XAxis dataKey="month" />
@@ -200,7 +167,7 @@ export default function ReportsPage() {
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
                 <Pie
-                  data={planDist}
+                  data={mockPlanDist}
                   cx="50%"
                   cy="50%"
                   innerRadius={50}
@@ -210,7 +177,7 @@ export default function ReportsPage() {
                     `${name} ${(percent! * 100).toFixed(0)}%`
                   }
                 >
-                  {planDist.map((_, i) => (
+                  {mockPlanDist.map((_, i) => (
                     <Cell key={i} fill={COLORS[i]} />
                   ))}
                 </Pie>
