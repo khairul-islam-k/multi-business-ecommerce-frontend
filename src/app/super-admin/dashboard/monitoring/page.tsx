@@ -4,13 +4,14 @@ import { Card, Tabs } from "antd";
 
 import { mockErrors, mockLogs } from "./data";
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import SystemLogsTable from "./_components/system-logs-table";
 import SystemErrorsTable from "./_components/system-errors-table";
 
 export default function MonitoringPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="System Monitoring" />
+      <PageHeader title="System Monitoring" breadcrumb={superAdminBreadcrumb} />
 
       <Card>
         <Tabs

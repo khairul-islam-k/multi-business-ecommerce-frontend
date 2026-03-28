@@ -8,9 +8,6 @@ import {
   WarningOutlined,
   RedoOutlined,
 } from "@ant-design/icons";
-
-import PageHeader from "@/components/shared/page-header";
-
 import {
   LineChart,
   Line,
@@ -23,6 +20,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
+import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Text, Title } = Typography;
 
@@ -56,7 +56,7 @@ const COLORS = ["#1677ff", "#52c41a", "#faad14"];
 export default function BillingOverviewPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Billing Overview" />
+      <PageHeader title="Billing Overview" breadcrumb={superAdminBreadcrumb} />
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">

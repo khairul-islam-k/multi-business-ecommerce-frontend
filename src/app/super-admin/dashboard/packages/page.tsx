@@ -25,6 +25,7 @@ import {
 import { mockModules, mockPackages } from "@/components/demoData/mockData";
 import PageHeader from "@/components/shared/page-header";
 import { useRouter } from "next/navigation";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { useBreakpoint } = Grid;
 
@@ -297,15 +298,7 @@ export default function PackageListPage() {
             {contextHolder}
 
             <div style={{ marginBottom: '8px' }}>
-                <PageHeader title="Package">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => setShowModal(true)}
-                    >
-                        Create Package
-                    </Button>
-                </PageHeader>
+                <PageHeader title="Package" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <div>

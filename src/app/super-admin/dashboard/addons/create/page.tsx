@@ -10,6 +10,7 @@ import {
     theme,
 } from "antd";
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 type TAddonPayload = {
   addonName: string;
@@ -34,7 +35,7 @@ const CreateAddons = () => {
     return (
         <div>
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Create Addon"></PageHeader>
+                <PageHeader title="Create Addon" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <Form

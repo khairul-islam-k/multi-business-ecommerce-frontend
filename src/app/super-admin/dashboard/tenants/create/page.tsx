@@ -14,6 +14,7 @@ import {
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -33,7 +34,7 @@ export default function CreateTenantForm() {
     return (
         <div>
             <div style={{marginBottom: '24px'}}>
-                <PageHeader title="Create"></PageHeader>
+                <PageHeader title="Create" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <Form

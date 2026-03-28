@@ -12,6 +12,7 @@ import {
 import PageHeader from "@/components/shared/page-header";
 import TextArea from "antd/es/input/TextArea";
 import { useParams } from "next/navigation";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -39,7 +40,7 @@ const EditPackage = () => {
     return (
         <div>
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Edit Package"></PageHeader>
+                <PageHeader title="Edit Package" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <Form

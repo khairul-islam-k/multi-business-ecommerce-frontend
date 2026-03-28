@@ -11,6 +11,7 @@ import {
 } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import TextArea from "antd/es/input/TextArea";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -36,7 +37,7 @@ export default function CreatePackage() {
     return (
         <div>
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Create Package"></PageHeader>
+                <PageHeader title="Create Package" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <Form

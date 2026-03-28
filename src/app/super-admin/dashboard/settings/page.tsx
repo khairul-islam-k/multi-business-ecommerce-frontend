@@ -14,6 +14,7 @@ import {
 } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 import GeneralSettingsForm from "./_components/general-settings-form";
 import SecuritySettingsForm from "./_components/security-settings-form";
@@ -28,7 +29,7 @@ import EmailSettingsForm from "./_components/email-settings-form";
 export default function SettingsPage() {
   return (
     <div className="space-y-6">
-      <PageHeader title="Platform Settings" />
+      <PageHeader title="Platform Settings" breadcrumb={superAdminBreadcrumb} />
 
       <Card>
         <Tabs

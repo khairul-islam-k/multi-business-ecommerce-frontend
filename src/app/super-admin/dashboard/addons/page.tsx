@@ -25,6 +25,7 @@ import PageHeader from "@/components/shared/page-header";
 import { mockAddons } from "@/components/demoData/mockData";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Text } = Typography;
 
@@ -112,7 +113,7 @@ export default function AddonListPage() {
             {contextHolder}
 
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Addons">
+                <PageHeader title="Addons" breadcrumb={superAdminBreadcrumb} >
                 </PageHeader>
             </div>
 

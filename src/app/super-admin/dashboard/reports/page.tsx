@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 import { Card, Select, Row, Col, Space, Typography } from "antd";
-
-import PageHeader from "@/components/shared/page-header";
-
 import {
   LineChart,
   Line,
@@ -19,6 +16,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+
+import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -70,7 +70,7 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Revenue Reports" />
+      <PageHeader title="Revenue Reports" breadcrumb={superAdminBreadcrumb} />
 
       {/* Filters */}
 

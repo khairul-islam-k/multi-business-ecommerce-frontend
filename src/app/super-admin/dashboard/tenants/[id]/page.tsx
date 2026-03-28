@@ -33,6 +33,7 @@ import {
   mockSystemLogs,
 } from "@/components/demoData/mockData";
 import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
 
@@ -164,8 +165,7 @@ const companyColumn = [
       {contextHolder}
 
       <div style={{ marginBottom: '10px' }}>
-        <PageHeader title={tenant.business}>
-          <Button danger> Suspend </Button>
+        <PageHeader title={tenant.business} breadcrumb={superAdminBreadcrumb}>
         </PageHeader>
       </div>
 

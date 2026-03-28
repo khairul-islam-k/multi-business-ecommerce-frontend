@@ -21,6 +21,7 @@ type TAddonPayload = {
 };
 
 import { useParams } from "next/navigation";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -39,7 +40,7 @@ const EditAddon = () => {
     return (
         <div>
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Edit Addon"></PageHeader>
+                <PageHeader title="Edit Addon" breadcrumb={superAdminBreadcrumb}></PageHeader>
             </div>
 
             <Form
