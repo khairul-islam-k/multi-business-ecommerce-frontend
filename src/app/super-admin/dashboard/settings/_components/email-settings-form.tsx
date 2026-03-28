@@ -3,12 +3,12 @@
 import { Form, Input, Button, message } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 
-import useSubmit from "@/hooks/use-submit";
+import  from "@/hooks/use-submit";
 import { emailSettingsSchema, EmailSettingsValues } from "../schemas";
 
 export default function EmailSettingsForm() {
   const [form] = Form.useForm<EmailSettingsValues>();
-  const { loading, handler } = useSubmit(async () => {
+  const { loading, handler } = (async () => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Saved!");
   });

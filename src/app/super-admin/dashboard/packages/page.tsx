@@ -88,6 +88,10 @@ export default function PackageListPage() {
         )
     );
 
+    console.log(mockModules);
+
+    console.log('module' ,moduleMatrix);
+
     /* ---------------- FILTER ---------------- */
 
     const filteredPackages = mockPackages.filter((p) =>

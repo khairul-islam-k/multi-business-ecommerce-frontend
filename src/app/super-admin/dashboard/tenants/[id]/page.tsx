@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   Card,
   Button,
@@ -68,7 +68,6 @@ const features: Record<string, { name: string; enabled: boolean }[]> = {
 
 export default function TenantDetailPage() {
   const {id} = useParams();
-  const router = useRouter();
   const [msg, contextHolder] = message.useMessage();
 
   const tenant = mockTenants.find((t) => t.id === id) || mockTenants[0];
@@ -77,7 +76,10 @@ export default function TenantDetailPage() {
     mockModules.map((m) => ({ ...m, enabled: Math.random() > 0.3 })),
   );
 
+
   const [featureState, setFeatureState] = useState(features);
+  console.log('normal',features)
+  console.log('entries',Object.entries(featureState));
 
   const toggleModule = (id: string) => {
   setModules(prev =>
@@ -186,7 +188,10 @@ const companyColumn = [
 
             <Row justify="space-between" style={{ marginTop: 8 }}>
               <Text type="secondary">Status</Text>
-              <Tag color={tenant.status === "Active" ? "green" : "red"}>
+              <Tag
+              style={{background: tenant.status === "Active" ? token.colorSuccess : "red", color: token.colorWhite}}
+              // color={tenant.status === "Active" ? "green" : "red"}
+              >
                 {tenant.status}
               </Tag>
             </Row>
@@ -294,7 +299,7 @@ const companyColumn = [
                           dataIndex: "status",
                           render: (s) => (
                             <Tag
-                              style={{ background: s === "Paid" ? "#21c45d" : "#ef4444", color: 'white' }}
+                              style={{ background: s === "Paid" ? token.colorSuccess : token.colorError, color: token.colorWhite }}
                             >{s}</Tag>
                           ),
                         },
