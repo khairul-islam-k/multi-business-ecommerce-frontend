@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { theme, Layout, Menu, Drawer, MenuProps, Button } from "antd";
+import { Layout, Menu, Drawer, Button, theme, MenuProps } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 
 import {
@@ -21,55 +21,18 @@ import {
 import Logo from "@/components/shared/logo";
 
 const { Sider } = Layout;
-
 const BASE_PATH = "/super-admin/dashboard";
 
 const navItems: MenuProps["items"] = [
-  {
-    key: "/",
-    icon: <DashboardOutlined />,
-    label: "Dashboard",
-  },
-  {
-    key: "/tenants",
-    icon: <BankOutlined />,
-    label: "Tenants",
-  },
-  {
-    key: "/packages",
-    icon: <AppstoreOutlined />,
-    label: "Packages",
-  },
-  {
-    key: "/addons",
-    icon: <ClusterOutlined />,
-    label: "Addons",
-  },
-  {
-    key: "/billing",
-    icon: <CreditCardOutlined />,
-    label: "Billing",
-  },
-  {
-    key: "/reports",
-    icon: <BarChartOutlined />,
-    label: "Reports",
-  },
-  {
-    key: "/notifications",
-    icon: <BellOutlined />,
-    label: "Notifications",
-  },
-  {
-    key: "/monitoring",
-    icon: <RadarChartOutlined />,
-    label: "Monitoring",
-  },
-  {
-    key: "/settings",
-    icon: <SettingOutlined />,
-    label: "Settings",
-  },
+  { key: "/", icon: <DashboardOutlined />, label: "Dashboard" },
+  { key: "/tenants", icon: <BankOutlined />, label: "Tenants" },
+  { key: "/packages", icon: <AppstoreOutlined />, label: "Packages" },
+  { key: "/addons", icon: <ClusterOutlined />, label: "Addons" },
+  { key: "/billing", icon: <CreditCardOutlined />, label: "Billing" },
+  { key: "/reports", icon: <BarChartOutlined />, label: "Reports" },
+  { key: "/notifications", icon: <BellOutlined />, label: "Notifications" },
+  { key: "/monitoring", icon: <RadarChartOutlined />, label: "Monitoring" },
+  { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
 ];
 
 interface Props {
@@ -81,12 +44,11 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const { token } = theme.useToken();
-
   const [collapsed, setCollapsed] = useState(false);
 
   const activeKey =
     navItems
-      ?.find((item) => pathname.endsWith(`${BASE_PATH}${String(item?.key)}`))
+      .find((item) => pathname.endsWith(`${BASE_PATH}${item?.key}`))
       ?.key?.toString() ?? "/";
 
   const handleClick: MenuProps["onClick"] = ({ key }) => {
@@ -98,11 +60,11 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
     <div className="flex flex-col h-full min-h-screen">
       {/* Logo + Toggle */}
       <div
-        className={`h-16 flex items-center border-b border-black/10 ${
-          collapsed ? "justify-center" : "justify-between px-4"
+        className={`h-16 flex items-center border-b border-black/10 transition-all duration-300 ${
+          collapsed ? "justify-center px-2" : "justify-between px-4"
         }`}
       >
-        {!collapsed && <Logo />}
+        <Logo collapsed={collapsed} />
 
         <div className="hidden md:block">
           <Button
@@ -133,7 +95,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         collapsedWidth={65}
         collapsed={collapsed}
         trigger={null}
-        className="hidden md:block"
+        className="hidden md:block transition-all duration-300"
         style={{
           background: token.colorBgContainer,
           borderRight: `1px solid ${token.colorBorderSecondary}`,
@@ -148,7 +110,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         open={mobileOpen}
         onClose={onMobileClose}
         closeIcon={null}
-        styles={{ body: { padding: 0 } }}
+        bodyStyle={{ padding: 0 }}
       >
         {sidebarContent}
       </Drawer>

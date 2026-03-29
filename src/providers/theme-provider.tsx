@@ -19,21 +19,12 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 const lightTheme: ThemeConfig = {
   token: {
     colorPrimary: "#6366F1",
-    colorSuccess: "#22C55E",
-    colorWarning: "#F97316",
-    colorError: "#EF4444",
-
     colorBgBase: "#FFFFFF",
     colorBgContainer: "#FFFFFF",
-    colorBgElevated: "#FFFFFF",
-
     colorText: "#0F172A",
     colorTextSecondary: "#64748B",
-
     colorBorder: "#E4E4E7",
-
     borderRadius: 8,
-
     controlItemBgActive: "#EEF2FF",
     controlItemBgHover: "#F5F7FF",
   },
@@ -42,22 +33,12 @@ const lightTheme: ThemeConfig = {
 const darkTheme: ThemeConfig = {
   token: {
     colorPrimary: "#6366F1",
-
-    colorSuccess: "#22C55E",
-    colorWarning: "#F97316",
-    colorError: "#DC2626",
-
     colorBgBase: "#0B0B0F",
     colorBgContainer: "#111113",
-    colorBgElevated: "#111113",
-
     colorText: "#F4F4F5",
     colorTextSecondary: "#A1A1AA",
-
     colorBorder: "#27272A",
-
     borderRadius: 8,
-
     controlItemBgActive: "#1E1E2F",
     controlItemBgHover: "#191927",
   },
@@ -69,20 +50,15 @@ export default function ThemeProvider({
   children: React.ReactNode;
 }) {
   const [theme, setTheme] = useState<Theme>("light");
+  const [mounted, setMounted] = useState(false); // wait until theme is loaded
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
+    if (stored) setTheme(stored);
+    else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+      setTheme("dark");
 
-    if (stored) {
-      setTheme(stored);
-      return;
-    }
-
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-
-    setTheme(prefersDark ? "dark" : "light");
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -97,6 +73,8 @@ export default function ThemeProvider({
     ...(theme === "dark" ? darkTheme : lightTheme),
   };
 
+  if (!mounted) return null; // prevent FOUC on SSR
+
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
       <ConfigProvider theme={config}>{children}</ConfigProvider>
@@ -106,10 +84,6 @@ export default function ThemeProvider({
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-
-  if (!context) {
-    throw new Error("useTheme must be used inside ThemeProvider");
-  }
-
+  if (!context) throw new Error("useTheme must be used inside ThemeProvider");
   return context;
 }

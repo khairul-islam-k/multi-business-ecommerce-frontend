@@ -5,8 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockCompanies } from "../data";
 import Form from "../_components/form";
+import { mockCompanies } from "../data";
 
 const { Title } = Typography;
 
@@ -22,6 +22,16 @@ export default function EditCompanyPage() {
     message.success("Company updated successfully!");
     router.push("/admin/dashboard/companies");
   };
+
+  if (!id || !company) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Typography.Text type="danger">
+          {id ? "Company not found" : "Invalid company ID"}
+        </Typography.Text>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
