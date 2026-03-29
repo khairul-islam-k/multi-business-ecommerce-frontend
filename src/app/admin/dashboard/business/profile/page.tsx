@@ -12,6 +12,7 @@ const { TextArea } = Input;
 const BusinessProfile = () => {
     const [form] = Form.useForm();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    console.log(imageUrl);
 
     const handleUpload = (file: File) => {
         const reader = new FileReader();
