@@ -48,7 +48,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
 
   const activeKey =
     navItems
-      .find((item) => pathname.endsWith(`${BASE_PATH}${item?.key}`))
+      ?.find((item) => pathname.endsWith(`${BASE_PATH}${String(item?.key)}`))
       ?.key?.toString() ?? "/";
 
   const handleClick: MenuProps["onClick"] = ({ key }) => {
