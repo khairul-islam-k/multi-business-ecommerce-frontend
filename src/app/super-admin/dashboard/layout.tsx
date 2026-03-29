@@ -22,8 +22,12 @@ export default function SuperAdminDashboardLayout({
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
       />
-
-      <Layout>
+      <Layout
+        style={{
+          marginLeft: mobileOpen ? 256 : 0,
+          transition: "margin-left 0.2s",
+        }}
+      >
         <Header
           className="flex items-center"
           style={{ background: token.colorBgBase, paddingInline: 12 }}

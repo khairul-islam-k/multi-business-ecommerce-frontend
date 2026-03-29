@@ -5,11 +5,16 @@ import Link from "next/link";
 import { Layout, Menu, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
+    AppstoreAddOutlined,
     AppstoreOutlined,
+    ArrowUpOutlined,
+    CreditCardOutlined,
     DashboardOutlined,
     FileTextOutlined,
+    HistoryOutlined,
     ProfileOutlined,
     SettingOutlined,
+    SyncOutlined,
     TeamOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
@@ -28,24 +33,24 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             label: <Link href="/admin/dashboard">Dashboard</Link>,
         },
         {
-            key: "business-owner",
+            key: "business",
             icon: <TeamOutlined />,
-            label: "Business Owner",
+            label: "Business",
             children: [
                 {
-                    key: "business-profile",
+                    key: "profile",
                     icon: <ProfileOutlined />,
-                    label: <Link href="/admin/dashboard/business/profile">Business Profile</Link>,
+                    label: <Link href="/admin/dashboard/business/profile">Profile</Link>,
                 },
                 {
-                    key: "business-branding",
+                    key: "branding",
                     icon: <AppstoreOutlined />,
-                    label: <Link href="/admin/dashboard/business/branding">Business Branding</Link>,
+                    label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
                 },
                 {
-                    key: "business-settings",
+                    key: "settings",
                     icon: <SettingOutlined />,
-                    label: <Link href="/admin/dashboard/business/settings">Business Settings</Link>,
+                    label: <Link href="/admin/dashboard/business/settings">Settings</Link>,
                 },
                 {
                     key: "usage-limit",
@@ -54,6 +59,33 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
                 },
             ],
         },
+        {
+            key: "billing",
+            icon: <CreditCardOutlined />, // Billing / Payments
+            label: "Billing",
+            children: [
+                {
+                    key: "addons",
+                    icon: <AppstoreAddOutlined />, // Add-ons / extras
+                    label: <Link href="/admin/dashboard/billing/addons">Addons</Link>,
+                },
+                {
+                    key: "history",
+                    icon: <HistoryOutlined />, // Payment / invoice history
+                    label: <Link href="/admin/dashboard/billing/history">History</Link>,
+                },
+                {
+                    key: "subscription",
+                    icon: <SyncOutlined />, // Subscription / recurring
+                    label: <Link href="/admin/dashboard/billing/subscription">Subscription</Link>,
+                },
+                {
+                    key: "upgrade-plan",
+                    icon: <ArrowUpOutlined />, // Upgrade
+                    label: <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>,
+                },
+            ],
+        }
     ];
 
     const { token } = theme.useToken();
