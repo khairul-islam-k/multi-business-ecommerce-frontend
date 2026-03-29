@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
 import {
   BellOutlined,
-  MoonOutlined,
-  SunOutlined,
   MenuOutlined,
   SearchOutlined,
   CloseOutlined,
@@ -16,7 +14,7 @@ import {
 } from "@ant-design/icons";
 
 import cn from "@/lib/cn";
-import { useTheme } from "@/providers/theme-provider";
+import ThemeToggle from "@/components/shared/theme-toggle";
 
 const { Search } = Input;
 const { useToken } = theme;
@@ -28,7 +26,6 @@ interface TopbarProps {
 export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
   const router = useRouter();
   const { token } = useToken();
-  const { theme, toggleTheme } = useTheme();
 
   const [search, setSearch] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -118,11 +115,7 @@ export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
         </Badge>
 
         {/* Theme toggle */}
-        <Button
-          type="text"
-          icon={theme === "dark" ? <SunOutlined /> : <MoonOutlined />}
-          onClick={toggleTheme}
-        />
+        <ThemeToggle />
 
         {/* Profile dropdown */}
         <Dropdown menu={{ items }} trigger={["click"]}>
