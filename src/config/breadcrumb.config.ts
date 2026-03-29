@@ -26,5 +26,12 @@ export const adminBreadcrumb = {
   labels: {
     "": "Dashboard",
     notifications: "Notifications",
+    companies: "Companies",
+    "companies/create": "Create Company",
+    "companies/edit": "Edit Company",
+    "billing/addons": "Addons",
+    "billing/history": "History",
+    "billing/subscription": "Subscription",
+    "billing/upgrade-plan": "Upgrade Plan",
   },
 };

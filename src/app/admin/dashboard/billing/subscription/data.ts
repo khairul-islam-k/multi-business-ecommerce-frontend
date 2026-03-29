@@ -1,0 +1,22 @@
+export const mockPlan = {
+  name: "Business",
+  monthly: "৳12,000",
+  yearly: "৳120,000",
+  features: [
+    "10 companies",
+    "10 websites",
+    "30 users",
+    "25,000 products",
+    "75,000 orders/month",
+    "15 warehouses",
+    "full finance module",
+    "expense management",
+    "role & permission matrix",
+    "AI marketing assistant",
+    "AI website generator",
+    "API access",
+    "multi-gateway config",
+    "15,000 SMS/month",
+    "phone support",
+  ],
+};

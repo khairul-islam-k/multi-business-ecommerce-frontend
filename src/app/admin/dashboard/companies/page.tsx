@@ -19,6 +19,7 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import PageHeader from "@/components/shared/page-header";
 import { mockCompanies } from "./data";
 import ViewModal from "./_components/view-modal";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -81,20 +82,17 @@ export default function CompaniesPage() {
               setSelectedCompany(record);
               setIsViewOpen(true);
             }}
-          >
-            View
-          </Button>
+            icon={<EyeOutlined />}
+          />
 
           {/* Edit (navigate) */}
           <Button
             size="small"
-            type="link"
             onClick={() =>
-              router.push(`/admin/dashboard/companies/edit?id=${record.id}`)
+              router.push(`/admin/dashboard/companies/edit/${record.id}`)
             }
-          >
-            Edit
-          </Button>
+            icon={<EditOutlined />}
+          />
         </Space>
       ),
     },

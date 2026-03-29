@@ -1,19 +1,18 @@
 "use client";
 
 import { Card, message, Typography } from "antd";
-import { useRouter, useSearchParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 
+import Form from "../../_components/form";
+import { mockCompanies } from "../../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Form from "../_components/form";
-import { mockCompanies } from "../data";
 
 const { Title } = Typography;
 
 export default function EditCompanyPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
+  const { id } = useParams();
 
   const company = mockCompanies.find((c) => c.id === id);
 
@@ -23,15 +22,7 @@ export default function EditCompanyPage() {
     router.push("/admin/dashboard/companies");
   };
 
-  if (!id || !company) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Typography.Text type="danger">
-          {id ? "Company not found" : "Invalid company ID"}
-        </Typography.Text>
-      </div>
-    );
-  }
+  if (!id || !company) throw notFound();
 
   return (
     <div className="space-y-6">

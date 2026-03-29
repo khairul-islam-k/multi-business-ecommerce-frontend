@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   Typography,
@@ -12,38 +13,15 @@ import {
   Flex,
 } from "antd";
 
+import { mockPlan } from "./data";
 import Feature from "./_components/feature";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useState } from "react";
 
 const { Title, Text } = Typography;
 
 export default function SubscriptionPage() {
   const [yearly, setYearly] = useState(false);
-
-  const plan = {
-    name: "Business",
-    monthly: "৳12,000",
-    yearly: "৳120,000",
-    features: [
-      "10 companies",
-      "10 websites",
-      "30 users",
-      "25,000 products",
-      "75,000 orders/month",
-      "15 warehouses",
-      "full finance module",
-      "expense management",
-      "role & permission matrix",
-      "AI marketing assistant",
-      "AI website generator",
-      "API access",
-      "multi-gateway config",
-      "15,000 SMS/month",
-      "phone support",
-    ],
-  };
 
   return (
     <div className="p-6">
@@ -57,7 +35,7 @@ export default function SubscriptionPage() {
             <div className="flex justify-between items-center mb-4">
               <div>
                 <Title level={4} className="mb-0">
-                  {plan.name} Plan
+                  {mockPlan.name} Plan
                 </Title>
                 <Text type="secondary">Your current active subscription</Text>
               </div>
@@ -78,7 +56,7 @@ export default function SubscriptionPage() {
               <Col span={6}>
                 <Text type="secondary">Price</Text>
                 <div>
-                  {yearly ? plan.yearly : plan.monthly}/
+                  {yearly ? mockPlan.yearly : mockPlan.monthly}/
                   {yearly ? "year" : "month"}
                 </div>
               </Col>
@@ -101,16 +79,16 @@ export default function SubscriptionPage() {
             {/* FEATURES */}
             <Row gutter={16}>
               <Col xs={24} md={12}>
-                {plan.features
-                  .slice(0, Math.ceil(plan.features.length / 2))
+                {mockPlan.features
+                  .slice(0, Math.ceil(mockPlan.features.length / 2))
                   .map((f, i) => (
                     <Feature key={i} text={f} />
                   ))}
               </Col>
 
               <Col xs={24} md={12}>
-                {plan.features
-                  .slice(Math.ceil(plan.features.length / 2))
+                {mockPlan.features
+                  .slice(Math.ceil(mockPlan.features.length / 2))
                   .map((f, i) => (
                     <Feature key={i} text={f} />
                   ))}

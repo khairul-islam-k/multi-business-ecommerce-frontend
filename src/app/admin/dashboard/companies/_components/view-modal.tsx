@@ -14,7 +14,7 @@ export default function ViewModal({ open, onClose, company }: Props) {
   return (
     <Modal open={open} onCancel={onClose} footer={null} title="Company Details">
       {company && (
-        <Space direction="vertical">
+        <Space orientation="vertical">
           <Text strong>Name: {company.companyName}</Text>
           <Text type="secondary">Industry: {company.industry}</Text>
           <Text>Employees: {company.employees}</Text>

@@ -22,8 +22,6 @@ const { Search } = Input;
 const { Title } = Typography;
 
 export default function BillingHistoryPage() {
-  const router = useRouter();
-
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
