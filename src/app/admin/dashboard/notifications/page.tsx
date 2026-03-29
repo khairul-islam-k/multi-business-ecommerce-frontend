@@ -23,19 +23,10 @@ import {
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { mockNotifications } from "./data";
+import { Notification } from "./type";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
-
-type Notification = {
-  id: string;
-  type: string;
-  title: string;
-  message: string;
-  channel: string;
-  isRead: boolean;
-  created: string;
-};
 
 export default function NotificationsPage() {
   const [search, setSearch] = useState("");

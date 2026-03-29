@@ -1,23 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Badge,
   Button,
   Card,
   Col,
   Input,
-  Modal,
   Row,
   Select,
   Space,
   Table,
   Typography,
 } from "antd";
-import { useRouter } from "next/navigation";
 
-import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import PageHeader from "@/components/shared/page-header";
+import { mockCompanies } from "./data";
+import ViewModal from "./_components/view-modal";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -26,61 +28,11 @@ export default function CompaniesPage() {
   const router = useRouter();
 
   const [selectedCompany, setSelectedCompany] = useState<any>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
-  // Mock Data (no owner + added description)
-  const mockCompanies = [
-    {
-      id: "CMP-1001",
-      companyName: "TechNova Solutions",
-      industry: "Software",
-      employees: "120",
-      plan: "Pro",
-      status: "Active",
-      description: "A SaaS company building modern cloud solutions.",
-    },
-    {
-      id: "CMP-1002",
-      companyName: "GreenFields Agro",
-      industry: "Agriculture",
-      employees: "85",
-      plan: "Basic",
-      status: "Trial",
-      description: "Focused on sustainable agriculture and farming tech.",
-    },
-    {
-      id: "CMP-1003",
-      companyName: "UrbanBuild Co.",
-      industry: "Construction",
-      employees: "230",
-      plan: "Enterprise",
-      status: "Active",
-      description: "Large scale infrastructure and urban development.",
-    },
-    {
-      id: "CMP-1004",
-      companyName: "HealthFirst",
-      industry: "Healthcare",
-      employees: "150",
-      plan: "Pro",
-      status: "Inactive",
-      description: "Private healthcare services and clinics.",
-    },
-    {
-      id: "CMP-1005",
-      companyName: "EduSmart",
-      industry: "Education",
-      employees: "60",
-      plan: "Basic",
-      status: "Trial",
-      description: "EdTech platform for online learning.",
-    },
-  ];
-
-  // Filtering logic
   const filteredData = mockCompanies.filter((company) => {
     const matchesSearch = company.companyName
       .toLowerCase()
@@ -91,67 +43,56 @@ export default function CompaniesPage() {
     return matchesSearch && matchesStatus;
   });
 
-  // Columns
-  const companiesColumns = [
+  const columns = [
     {
       title: "Company",
       dataIndex: "companyName",
-      key: "companyName",
       render: (v: string) => <Text strong>{v}</Text>,
     },
     {
       title: "Industry",
       dataIndex: "industry",
-      key: "industry",
     },
     {
       title: "Employees",
       dataIndex: "employees",
-      key: "employees",
     },
     {
       title: "Plan",
       dataIndex: "plan",
-      key: "plan",
     },
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
       render: (status: string) => {
         if (status === "Active")
           return <Badge status="success" text="Active" />;
-
-        if (status === "Trial")
-          return <Badge status="processing" text="Trial" />;
-
+        if (status === "Trial") return <Badge status="warning" text="Trial" />;
         return <Badge status="default" text={status} />;
       },
     },
     {
       title: "Actions",
-      key: "actions",
       render: (_: any, record: any) => (
         <Space>
+          {/* View */}
           <Button
             size="small"
             onClick={() => {
               setSelectedCompany(record);
-              setIsModalOpen(true);
+              setIsViewOpen(true);
             }}
-          >
-            View
-          </Button>
+            icon={<EyeOutlined />}
+          />
 
+          {/* Edit (navigate) */}
           <Button
             size="small"
-            type="link"
             onClick={() =>
-              router.push(`/admin/dashboard/companies/edit?id=${record.id}`)
+              router.push(`/admin/dashboard/companies/edit/${record.id}`)
             }
-          >
-            Edit
-          </Button>
+            icon={<EditOutlined />}
+          />
         </Space>
       ),
     },
@@ -161,9 +102,8 @@ export default function CompaniesPage() {
     <div className="space-y-6">
       <PageHeader title="Companies" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls Row */}
+      {/* Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        {/* Left: Search + Filter */}
         <div className="flex gap-3">
           <Search
             placeholder="Search companies"
@@ -185,10 +125,10 @@ export default function CompaniesPage() {
           />
         </div>
 
-        {/* Right: Add Button */}
+        {/* Add (navigate) */}
         <Button
           type="primary"
-          onClick={() => router.push("/admin/dashboard/companies/add")}
+          onClick={() => router.push("/admin/dashboard/companies/create")}
         >
           + Add Company
         </Button>
@@ -201,7 +141,7 @@ export default function CompaniesPage() {
             <Title level={5}>List of Companies</Title>
 
             <Table
-              columns={companiesColumns}
+              columns={columns}
               dataSource={filteredData}
               rowKey="id"
               size="small"
@@ -215,21 +155,12 @@ export default function CompaniesPage() {
         </Col>
       </Row>
 
-      {/* ✅ View Modal */}
-      <Modal
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={null}
-        title="Company Details"
-      >
-        {selectedCompany && (
-          <Space direction="vertical">
-            <Text strong>{selectedCompany.companyName}</Text>
-            <Text type="secondary">{selectedCompany.industry}</Text>
-            <Text>{selectedCompany.description}</Text>
-          </Space>
-        )}
-      </Modal>
+      {/* View Modal */}
+      <ViewModal
+        open={isViewOpen}
+        onClose={() => setIsViewOpen(false)}
+        company={selectedCompany}
+      />
     </div>
   );
 }
