@@ -6,6 +6,7 @@ import "antd/dist/reset.css";
 
 import AntdRegistry from "@/providers/antd-registry";
 import ThemeProvider from "@/providers/theme-provider";
+import { Layout } from "antd";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -26,7 +27,9 @@ export default function RootLayout({
     <html lang="en" className={`${openSans.variable}`}>
       <body>
         <ThemeProvider>
-          <AntdRegistry>{children}</AntdRegistry>
+          <AntdRegistry>
+            <Layout>{children}</Layout>
+          </AntdRegistry>
         </ThemeProvider>
       </body>
     </html>
