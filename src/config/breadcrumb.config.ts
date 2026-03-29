@@ -17,6 +17,7 @@ export const superAdminBreadcrumb = {
     notifications: "Notifications",
     monitoring: "Monitoring",
     settings: "Settings",
+    "business/usageLimit": "Usage & limit"
   },
 };
 

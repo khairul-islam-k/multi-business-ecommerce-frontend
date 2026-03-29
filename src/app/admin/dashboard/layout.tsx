@@ -1,18 +1,74 @@
 "use client";
 
-import { Layout } from "antd";
-import { ReactNode } from "react";
+import React, { useState } from "react";
+import { Layout, Drawer, theme } from "antd";
+import Sidebar from "./components/Sidebar";
+import TopBar from "./components/TopBar";
 
-const { Content } = Layout;
+const { Header, Sider, Content } = Layout;
 
 export default function AdminDashboardLayout({
   children,
-}: Readonly<{
-  children: ReactNode;
-}>) {
+}: {
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const { token } = theme.useToken();
+
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Content className="p-4 lg:p-8">{children}</Content>
+    <Layout hasSider style={{ maxHeight: "100vh", overflow: 'hidden' }}>
+      {/* Desktop Sidebar */}
+      <Sider
+        width={260}
+        breakpoint="md"
+        collapsedWidth="0"
+        trigger={null}
+        style={{ background: token.colorBgBase }}
+      >
+        <Sidebar />
+      </Sider>
+
+      {/* Mobile Sidebar */}
+      <Drawer
+        placement="left"
+        open={open}
+        onClose={() => setOpen(false)}
+        width={260}
+        bodyStyle={{ padding: 0 }}
+        headerStyle={{ display: "none" }}
+      >
+        <Sidebar close={() => setOpen(false)} />
+      </Drawer>
+
+      {/* Right Side (Header + Content) */}
+      <Layout>
+        {/* Mobile Topbar */}
+        <Header style={{
+          padding: 0,
+          background: token.colorBgBase,
+          display: 'flex',
+          alignItems: 'center',
+          borderLeft: `1px solid ${token.colorBorder}`
+        }}>
+          <TopBar toggle={() => setOpen(true)} />
+        </Header>
+
+
+        {/* Page Content */}
+          <Content style={{ overflowY: 'auto', overflowX: 'hidden', padding: '20px' }}>
+            {children}
+          </Content>
+
+      </Layout>
+
+      {/* Desktop-only header visibility */}
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .desktop-header {
+            display: block;
+          }
+        }
+      `}</style>
     </Layout>
   );
 }
