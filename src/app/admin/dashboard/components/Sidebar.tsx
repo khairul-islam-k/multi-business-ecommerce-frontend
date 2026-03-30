@@ -16,11 +16,13 @@ import {
     HomeOutlined,
     IdcardOutlined,
     ProfileOutlined,
+    SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
+    UserOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./BusinessDropdown";
@@ -125,6 +127,31 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
                     icon: <ArrowUpOutlined />, // Upgrade
                     label: <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>,
                 },
+            ],
+        },
+        {
+            key: "User-Permission",
+            icon: <SafetyOutlined />, // Permissions / access control
+            label: "Users / Permission",
+            children: [
+                {
+                    key: "users",
+                    icon: <UserOutlined />, // Users list
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/users">
+                            Users
+                        </Link>
+                    ),
+                },
+                {
+                    key: "roles",
+                    icon: <TeamOutlined />, // Represents groups/roles
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/roles">
+                            Roles
+                        </Link>
+                    ),
+                }
             ],
         }
     ];
