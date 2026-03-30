@@ -55,12 +55,26 @@ const orderColumns = [
     key: "status",
     render: (status: string) => {
       if (status === "Delivered")
-        return <Badge status="success" text="Delivered" />;
+        return (
+          <Badge
+            status="success"
+            text="Delivered"
+            key={new Date().toTimeString()}
+          />
+        );
 
       if (status === "Processing")
-        return <Badge status="processing" text="Processing" />;
+        return (
+          <Badge
+            status="processing"
+            text="Processing"
+            key={new Date().toTimeString()}
+          />
+        );
 
-      return <Badge status="error" text={status} />;
+      return (
+        <Badge status="error" text={status} key={new Date().toTimeString()} />
+      );
     },
   },
 ];
