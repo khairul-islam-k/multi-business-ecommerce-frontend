@@ -76,7 +76,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full min-h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       {/* Logo Section */}
       <div
         className={`h-16 flex items-center transition-all duration-300 ${
@@ -105,7 +105,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         inlineCollapsed={collapsed}
         selectedKeys={[activeKey]}
         onClick={handleClick}
-        className="border-r-0 flex-1 px-2 custom-menu"
+        className="border-r-0 flex-1 px-2 overflow-y-auto"
         items={navItems?.map((group: any) => ({
           ...group,
           children: group.children.map((item: any) => ({
@@ -137,6 +137,9 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
               : "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
           borderRight: `1px solid ${token.colorBorderSecondary}`,
           transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          position: "sticky",
+          top: 0,
+          height: "100vh",
         }}
       >
         {sidebarContent}
