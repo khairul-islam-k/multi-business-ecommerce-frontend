@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Form,
   Input,
@@ -8,29 +9,22 @@ import {
   Col,
   Button,
   theme,
+  message,
 } from "antd";
+
+import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
-type TAddonPayload = {
-  addonName: string;
-  limit: number;
-  slug: string;
-  status: string;
-  type: string;
-  usagePrice: number;
-};
-
 const { Option } = Select;
 
-const CreateAddons = () => {
+export default function CreateAddon() {
   const [form] = Form.useForm();
-
-  const onFinish = (values: TAddonPayload) => {
-    console.log(values);
-  };
-
   const { token } = theme.useToken();
+  const { loading, handler } = useSubmit(async () => {
+    await new Promise((r) => setTimeout(r, 1000));
+    message.success("Addon updated!");
+  });
 
   return (
     <div>
@@ -44,7 +38,7 @@ const CreateAddons = () => {
       <Form
         layout="vertical"
         form={form}
-        onFinish={onFinish}
+        onFinish={(values) => handler(values)}
         style={{
           maxWidth: "100%",
           background: token.colorBgBase,
@@ -102,12 +96,9 @@ const CreateAddons = () => {
             <Form.Item
               label="Limit key"
               name="limitKey"
-              rules={[
-                { required: true, message: "limit is required" },
-                { type: "number", message: "Invalid Limit" },
-              ]}
+              rules={[{ required: true, message: "limit is required" }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Storage-gb" />
+              <InputNumber style={{ width: "100%" }} placeholder="storage-gb" />
             </Form.Item>
           </Col>
 
@@ -122,13 +113,11 @@ const CreateAddons = () => {
         </Row>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Create Addon
           </Button>
         </Form.Item>
       </Form>
     </div>
   );
-};
-
-export default CreateAddons;
+}

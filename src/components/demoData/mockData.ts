@@ -122,49 +122,6 @@ export const mockPackages = [
   },
 ];
 
-export const mockAddons = [
-  {
-    id: "1",
-    name: "Extra Storage",
-    type: "Usage",
-    limitKey: "storage_gb",
-    unitPrice: 2.5,
-    status: "Active",
-  },
-  {
-    id: "2",
-    name: "Additional Users",
-    type: "Per Unit",
-    limitKey: "max_users",
-    unitPrice: 5,
-    status: "Active",
-  },
-  {
-    id: "3",
-    name: "API Calls Pack",
-    type: "Usage",
-    limitKey: "api_calls",
-    unitPrice: 0.01,
-    status: "Active",
-  },
-  {
-    id: "4",
-    name: "SMS Credits",
-    type: "Usage",
-    limitKey: "sms_credits",
-    unitPrice: 0.05,
-    status: "Active",
-  },
-  {
-    id: "5",
-    name: "Custom Domain",
-    type: "Flat",
-    limitKey: "custom_domains",
-    unitPrice: 10,
-    status: "Active",
-  },
-];
-
 export const mockModules = [
   { id: "1", name: "Inventory", description: "Product and stock management" },
   { id: "2", name: "Orders", description: "Order processing and fulfillment" },
