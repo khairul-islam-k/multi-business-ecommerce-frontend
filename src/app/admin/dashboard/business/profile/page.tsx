@@ -1,7 +1,7 @@
 "use client";
 
 import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { CameraOutlined, UserOutlined } from "@ant-design/icons";
 import { Avatar, Button, Col, DatePicker, Form, Input, Row, Select, Space, Tabs, theme, Upload } from "antd";
 import { useState } from "react";
@@ -30,7 +30,7 @@ const BusinessProfile = () => {
         <div>
 
             <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Business Profile" breadcrumb={superAdminBreadcrumb}>
+                <PageHeader title="Business Profile" breadcrumb={adminBreadcrumb}>
                 </PageHeader>
             </div>
 

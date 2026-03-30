@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Layout, Menu, theme } from "antd";
+import { Grid, Layout, Menu, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
     AppstoreAddOutlined,
@@ -12,12 +12,17 @@ import {
     DashboardOutlined,
     FileTextOutlined,
     HistoryOutlined,
+    HomeOutlined,
+    IdcardOutlined,
     ProfileOutlined,
     SettingOutlined,
+    ShopOutlined,
     SyncOutlined,
+    TagsOutlined,
     TeamOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
+import BusinessDropdown from "./BusinessDropdown";
 
 const { Sider } = Layout;
 
@@ -31,6 +36,36 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             key: "dashboard",
             icon: <DashboardOutlined />,
             label: <Link href="/admin/dashboard">Dashboard</Link>,
+        },
+        {
+            key: "Category-List",
+            icon: <AppstoreOutlined />,
+            label: <Link href="/admin/dashboard/categoryList">Category List</Link>,
+        },
+        {
+            key: "Brand-list",
+            icon: <TagsOutlined />,
+            label: <Link href="/admin/dashboard/brandList">Brand List</Link>,
+        },
+        {
+            key: "Warehouse-list",
+            icon: <HomeOutlined />,
+            label: <Link href="/admin/dashboard/warehouseList">Warehouse List</Link>,
+        },
+        {
+            key: "Showroom-list",
+            icon: <ShopOutlined />,
+            label: <Link href="/admin/dashboard/showroomList">Showroom List</Link>,
+        },
+        {
+            key: "Supplier-list",
+            icon: <TeamOutlined />,
+            label: <Link href="/admin/dashboard/supplierList">Supplier List</Link>,
+        },
+        {
+            key: "Supplier-details",
+            icon: <IdcardOutlined />,
+            label: <Link href="/admin/dashboard/supplierDetails">Supplier Details</Link>,
         },
         {
             key: "business",
@@ -50,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
                 {
                     key: "settings",
                     icon: <SettingOutlined />,
-                    label: <Link href="/admin/dashboard/business/settings">Settings</Link>,
+                    label: <Link href="/admin/dashboard/business/setting">Settings</Link>,
                 },
                 {
                     key: "usage-limit",
@@ -90,6 +125,10 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
 
     const { token } = theme.useToken();
 
+    const { useBreakpoint } = Grid;
+    const screens = useBreakpoint();
+
+
     return (
         <Sider
             width={260}
@@ -119,6 +158,18 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
                 onClick={close}
                 style={{ borderRight: 0 }}
             />
+
+            <div
+                style={{
+                    display: screens.xs ? "flex" : "none",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderTop: `1px solid ${token.colorBorder}`,
+                    paddingTop: 20
+                }}
+            >
+                <BusinessDropdown />
+            </div>
         </Sider>
     );
 };
