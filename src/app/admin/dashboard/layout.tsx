@@ -33,9 +33,11 @@ export default function AdminDashboardLayout({
         placement="left"
         open={open}
         onClose={() => setOpen(false)}
-        width={260}
-        bodyStyle={{ padding: 0 }}
-        headerStyle={{ display: "none" }}
+        size={260} // instead of width
+        styles={{
+          body: { padding: 0 }, // instead of bodyStyle
+          // header: { display: "none" }, // instead of headerStyle
+        }}
       >
         <Sidebar close={() => setOpen(false)} />
       </Drawer>
@@ -55,9 +57,9 @@ export default function AdminDashboardLayout({
 
 
         {/* Page Content */}
-          <Content style={{ overflowY: 'auto', overflowX: 'hidden', padding: '20px' }}>
-            {children}
-          </Content>
+        <Content style={{ overflowY: 'auto', overflowX: 'hidden', padding: '20px' }}>
+          {children}
+        </Content>
 
       </Layout>
 

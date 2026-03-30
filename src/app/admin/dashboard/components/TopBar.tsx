@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { Layout, Space, Badge, Avatar, Button, theme } from "antd";
+import { Layout, Space, Badge, Avatar, Button, theme, Grid } from "antd";
 import { BellOutlined, MenuOutlined } from "@ant-design/icons";
-import Image from "next/image";
 import GlobalSearch from "./GlobalSearch";
 import BusinessDropdown from "./BusinessDropdown";
+import ThemeToggle from "@/components/shared/theme-toggle";
 
 const { Header } = Layout;
 
@@ -15,6 +15,8 @@ type TopbarProps = {
 
 const TopBar: React.FC<TopbarProps> = ({ toggle }) => {
     const { token } = theme.useToken();
+    const {useBreakpoint} = Grid;
+    const screens = useBreakpoint();
     return (
     <>
       <Header
@@ -36,22 +38,17 @@ const TopBar: React.FC<TopbarProps> = ({ toggle }) => {
           </div>
 
           <Space size="small" align="center">
-            <BusinessDropdown />
+            <ThemeToggle />
+
+            <div style={{display: screens.xs ? 'none':'block'}}>
+              <BusinessDropdown />
+            </div>
+
             <Badge dot>
               <BellOutlined style={{ fontSize: 18 }} />
             </Badge>
 
-            <Avatar
-              size={30}
-              src={
-                <Image
-                  src="/github-logo.jpeg"
-                  width={30}
-                  height={30}
-                  alt="profile"
-                />
-              }
-            />
+            <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=utshomh" />
 
             {/* Mobile menu button */}
             <Button
