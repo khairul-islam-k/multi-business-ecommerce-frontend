@@ -1,0 +1,32 @@
+export const mockBrands = [
+  {
+    id: "1",
+    tenant_id: "t1",
+    company_id: "c1",
+    name: "Apple",
+    slug: "apple",
+    logo: "https://placehold.co/600x400/000000/FFF",
+    description: "Premium electronics brand",
+    status: "Active",
+  },
+  {
+    id: "2",
+    tenant_id: "t1",
+    company_id: null,
+    name: "Samsung",
+    slug: "samsung",
+    logo: "https://placehold.co/600x400/000000/FFF",
+    description: "Global tech company",
+    status: "Active",
+  },
+  {
+    id: "3",
+    tenant_id: "t1",
+    company_id: null,
+    name: "IKEA",
+    slug: "ikea",
+    logo: "https://placehold.co/600x400/000000/FFF",
+    description: "Furniture & home goods",
+    status: "Inactive",
+  },
+];
