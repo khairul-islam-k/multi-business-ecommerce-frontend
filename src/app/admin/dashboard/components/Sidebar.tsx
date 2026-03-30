@@ -27,13 +27,12 @@ import {
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./BusinessDropdown";
 
-const { Sider } = Layout;
-
 type SidebarProps = {
     close?: () => void;
+    collapsed?: boolean;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ close }) => {
+const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     const items: MenuProps["items"] = [
         {
             key: "dashboard",
@@ -163,8 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
 
 
     return (
-        <Sider
-            width={260}
+        <div
             style={{
                 background: token.colorBgBase,
                 overflow: "auto",
@@ -187,6 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             {/* Menu */}
             <Menu
                 mode="inline"
+                inlineCollapsed={collapsed}
                 items={items}
                 onClick={close}
                 style={{ borderRight: 0 }}
@@ -203,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             >
                 <BusinessDropdown />
             </div>
-        </Sider>
+        </div>
     );
 };
 

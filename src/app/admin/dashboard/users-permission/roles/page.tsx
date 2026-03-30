@@ -1,10 +1,13 @@
 "use client";
-import { DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Dropdown, Flex, Row, theme } from 'antd';
+import PageHeader from '@/components/shared/page-header';
+import { adminBreadcrumb } from '@/config/breadcrumb.config';
+import { DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined, PlusOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Card, Col, Dropdown, Flex, Grid, Input, Row, Space, theme } from 'antd';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
 const RolesPage = () => {
+    const screens = Grid.useBreakpoint();
     const { token } = theme.useToken();
     const router = useRouter();
     const roles = [
@@ -66,8 +69,43 @@ const RolesPage = () => {
         year: "numeric",
     });
 
+    const handleSearch = (searchData: string) => {
+        console.log('searcha', searchData);
+    }
+
     return (
         <div>
+
+            <div style={{marginBottom: '24px'}}>
+                <PageHeader title='Roles & Permissions' breadcrumb={adminBreadcrumb}></PageHeader>
+            </div>
+            <p>5 roles configured · Manage access levels for your team</p>
+
+            {/* Search field */}
+            <Flex
+                    justify="space-between"
+                    wrap="wrap"
+                    style={{marginBottom: '10px'}}
+                >
+                    <Space style={{ marginBottom: 16 }}>
+                        <Input
+                            style={{
+                                width: screens.lg ? "330px" : "100%"
+                            }}
+                            prefix={<SearchOutlined />}
+                            placeholder="Search packages..."
+                            onChange={(e) => handleSearch(e.target.value)}
+                        />
+                    </Space>
+
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => router.push('/admin/dashboard/users-permission/users/create-user')}
+                    >
+                        New Role
+                    </Button>
+                </Flex>
 
             <Row gutter={[16, 16]}>
                 {
