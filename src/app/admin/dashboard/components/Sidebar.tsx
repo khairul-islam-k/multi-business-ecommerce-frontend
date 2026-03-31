@@ -16,22 +16,23 @@ import {
     HomeOutlined,
     IdcardOutlined,
     ProfileOutlined,
+    SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
+    UserOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./BusinessDropdown";
 
-const { Sider } = Layout;
-
 type SidebarProps = {
     close?: () => void;
+    collapsed?: boolean;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ close }) => {
+const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     const items: MenuProps["items"] = [
         {
             key: "dashboard",
@@ -126,6 +127,31 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
                     label: <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>,
                 },
             ],
+        },
+        {
+            key: "User-Permission",
+            icon: <SafetyOutlined />, // Permissions / access control
+            label: "Users / Permission",
+            children: [
+                {
+                    key: "users",
+                    icon: <UserOutlined />, // Users list
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/users">
+                            Users
+                        </Link>
+                    ),
+                },
+                {
+                    key: "roles",
+                    icon: <TeamOutlined />, // Represents groups/roles
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/roles">
+                            Roles
+                        </Link>
+                    ),
+                }
+            ],
         }
     ];
 
@@ -136,8 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
 
 
     return (
-        <Sider
-            width={260}
+        <div
             style={{
                 background: token.colorBgBase,
                 overflow: "auto",
@@ -160,6 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             {/* Menu */}
             <Menu
                 mode="inline"
+                inlineCollapsed={collapsed}
                 items={items}
                 onClick={close}
                 style={{ borderRight: 0 }}
@@ -176,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close }) => {
             >
                 <BusinessDropdown />
             </div>
-        </Sider>
+        </div>
     );
 };
 

@@ -38,7 +38,7 @@ const BusinessDropdown = () => {
             trigger={['click']}
         >
             <Button>
-                Select Company <DownOutlined />
+                Select Business <DownOutlined />
             </Button>
         </Dropdown>
     );
