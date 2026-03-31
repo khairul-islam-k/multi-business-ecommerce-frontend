@@ -1,0 +1,61 @@
+export const mockWarehouses = [
+  { id: "w1", name: "Main Warehouse" },
+  { id: "w2", name: "Secondary Warehouse" },
+];
+
+export const mockProducts = [
+  { id: "p1", name: "Product A", sku: "SKU-A" },
+  { id: "p2", name: "Product B", sku: "SKU-B" },
+  { id: "p3", name: "Product C", sku: "SKU-C" },
+];
+
+export const mockInventoryTransactions = [
+  {
+    id: "it-1",
+    tenant_id: "t1",
+    company_id: "c1",
+    warehouse_id: "w1",
+    product_id: "p1",
+    variant_id: null,
+    transaction_type: "IN",
+    reference_type: "PO",
+    reference_id: "PO-1001",
+    qty: 50,
+    unit_cost: 12.5,
+    note: "Received from supplier",
+    created_by: "Admin User",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "it-2",
+    tenant_id: "t1",
+    company_id: "c1",
+    warehouse_id: "w2",
+    product_id: "p2",
+    variant_id: null,
+    transaction_type: "OUT",
+    reference_type: "SO",
+    reference_id: "SO-2001",
+    qty: -10,
+    unit_cost: 15.0,
+    note: "Shipped to customer",
+    created_by: "Warehouse Manager",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "it-3",
+    tenant_id: "t1",
+    company_id: "c1",
+    warehouse_id: "w1",
+    product_id: "p3",
+    variant_id: null,
+    transaction_type: "ADJUST",
+    reference_type: "ADJ",
+    reference_id: "ADJ-3001",
+    qty: -5,
+    unit_cost: null,
+    note: "Damaged stock adjustment",
+    created_by: "Admin User",
+    created_at: new Date().toISOString(),
+  },
+];
