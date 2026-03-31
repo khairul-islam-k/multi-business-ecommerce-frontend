@@ -5,24 +5,35 @@ import Link from "next/link";
 import { Grid, Layout, Menu, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
+    AlertOutlined,
     AppstoreAddOutlined,
     AppstoreOutlined,
     ArrowUpOutlined,
+    AuditOutlined,
+    BarcodeOutlined,
     BellOutlined,
     CreditCardOutlined,
     DashboardOutlined,
+    DollarOutlined,
+    ExportOutlined,
     FileTextOutlined,
     HistoryOutlined,
     HomeOutlined,
     IdcardOutlined,
+    KeyOutlined,
+    PlusSquareOutlined,
     ProfileOutlined,
+    QuestionCircleOutlined,
     SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
+    ShoppingOutlined,
+    SwapOutlined,
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
     UserOutlined,
+    WarningOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./BusinessDropdown";
@@ -150,9 +161,159 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                             Roles
                         </Link>
                     ),
+                },
+                {
+                    key: "permission",
+                    icon: <KeyOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/permission">
+                            Permission
+                        </Link>
+                    ),
+                },
+                {
+                    key: "assignment",
+                    icon: <FileTextOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/assignment">
+                            Assignment
+                        </Link>
+                    ),
+                },
+                {
+                    key: "login-history",
+                    icon: <HistoryOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/login-history">
+                            Login History
+                        </Link>
+                    ),
+                },
+                {
+                    key: "activity-logs",
+                    icon: <AuditOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/users-permission/activity-logs">
+                            Activity Logs
+                        </Link>
+                    ),
                 }
             ],
+        },
+        {
+            key: "products-management",
+            icon: <ShoppingOutlined />, // Product / inventory related
+            label: "Products Management",
+            children: [
+                {
+                    key: "products",
+                    icon: <BarcodeOutlined />, // Individual products
+                    label: (
+                        <Link href="/admin/dashboard/products-management/products">
+                            Products
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "inventory",
+            icon: <ShopOutlined />, // Inventory / store
+            label: "Inventory",
+            children: [
+                {
+                    key: "stock-overview",
+                    icon: <DashboardOutlined />, // Overview / summary
+                    label: (
+                        <Link href="/admin/dashboard/inventory">
+                            Stock Overview
+                        </Link>
+                    ),
+                },
+                {
+                    key: "warehouse-stocks",
+                    icon: <HomeOutlined />, // Warehouse
+                    label: (
+                        <Link href="/admin/dashboard/inventory/warehouse-stock">
+                            Warehouse Stocks
+                        </Link>
+                    ),
+                },
+                {
+                    key: "inventory-transactions",
+                    icon: <SwapOutlined />, // In / out transactions
+                    label: (
+                        <Link href="/admin/dashboard/inventory/transactions">
+                            Inventory Transactions
+                        </Link>
+                    ),
+                },
+                {
+                    key: "stock-entry",
+                    icon: <PlusSquareOutlined />, // Add stock
+                    label: (
+                        <Link href="/admin/dashboard/inventory/stock-entry">
+                            Stock Entry
+                        </Link>
+                    ),
+                },
+                {
+                    key: "stock-adjustments",
+                    icon: <SettingOutlined />, // Adjust / configure
+                    label: (
+                        <Link href="/admin/dashboard/inventory/stock-adjustments">
+                            Stock Adjustments
+                        </Link>
+                    ),
+                },
+                {
+                    key: "stock-transfers",
+                    icon: <ExportOutlined />, // Transfer between locations
+                    label: (
+                        <Link href="/admin/dashboard/inventory/stock-transfers">
+                            Stock Transfers
+                        </Link>
+                    ),
+                },
+                {
+                    key: "damaged-product",
+                    icon: <WarningOutlined />, // Damaged / issue
+                    label: (
+                        <Link href="/admin/dashboard/inventory/damage-products">
+                            Damaged Products
+                        </Link>
+                    ),
+                },
+                {
+                    key: "low-stock",
+                    icon: <AlertOutlined />, // Low stock alert
+                    label: (
+                        <Link href="/admin/dashboard/inventory/low-stock-alert">
+                            Low Stocks
+                        </Link>
+                    ),
+                },
+                {
+                    key: "inventory-value",
+                    icon: <DollarOutlined />, // Inventory value
+                    label: (
+                        <Link href="/admin/dashboard/inventory/value-report">
+                            Inventory Value
+                        </Link>
+                    ),
+                },
+                {
+                    key: "missing-products",
+                    icon: <QuestionCircleOutlined />, // Missing items
+                    label: (
+                        <Link href="/admin/dashboard/inventory/missing-products">
+                            Missing Products
+                        </Link>
+                    ),
+                },
+            ],
         }
+
     ];
 
     const { token } = theme.useToken();

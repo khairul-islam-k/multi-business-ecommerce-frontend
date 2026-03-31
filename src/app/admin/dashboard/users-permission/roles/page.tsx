@@ -101,7 +101,7 @@ const RolesPage = () => {
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => router.push('/admin/dashboard/users-permission/users/create-user')}
+                        onClick={() => router.push('/admin/dashboard/users-permission/roles/create')}
                     >
                         New Role
                     </Button>
@@ -145,7 +145,7 @@ const RolesPage = () => {
                                             {
                                                 key: "edit",
                                                 label: <div><EditOutlined /> Edit</div>,
-                                                onClick: () => router.push(`/admin/dashboard/users-permission/users/edit-user/${data.id}`),
+                                                onClick: () => router.push(`/admin/dashboard/users-permission/roles/edit/${data.id}`),
                                             },
                                             {
                                                 key: "delete",
