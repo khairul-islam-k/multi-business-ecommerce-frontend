@@ -1,11 +1,7 @@
 "use client";
 
 import { Table, Typography, Badge, Space } from "antd";
-import {
-  ApiOutlined,
-  WarningOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+import { ApiOutlined, ClockCircleOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
