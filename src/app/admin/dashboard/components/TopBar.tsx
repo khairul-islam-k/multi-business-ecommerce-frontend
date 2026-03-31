@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Layout, Space, Badge, Avatar, Button, theme, Grid } from "antd";
-import { BellOutlined, MenuOutlined } from "@ant-design/icons";
+import { Layout, Space, Badge, Avatar, Button, theme, Grid, Flex } from "antd";
+import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
 import GlobalSearch from "./GlobalSearch";
 import BusinessDropdown from "./BusinessDropdown";
 import ThemeToggle from "@/components/shared/theme-toggle";
@@ -11,13 +11,14 @@ const { Header } = Layout;
 
 type TopbarProps = {
   toggle: () => void;
+  toggleSidebar: () => void;
 };
 
-const TopBar: React.FC<TopbarProps> = ({ toggle }) => {
-    const { token } = theme.useToken();
-    const {useBreakpoint} = Grid;
-    const screens = useBreakpoint();
-    return (
+const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
+  const { token } = theme.useToken();
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
+  return (
     <>
       <Header
         style={{
@@ -33,14 +34,27 @@ const TopBar: React.FC<TopbarProps> = ({ toggle }) => {
           style={{ width: "100%", justifyContent: "space-between" }}
           align="center"
         >
-          <div>
+
+          <Flex
+            style={{ gap: '8px' }}
+            align="center"
+          >
+            <div
+              onClick={toggleSidebar}
+              style={{
+                display: screens.xs ? 'none' : 'block',
+                cursor: 'pointer'
+              }}>
+              <LayoutOutlined style={{ fontSize: '20px' }} />
+            </div>
+
             <GlobalSearch />
-          </div>
+          </Flex>
 
           <Space size="small" align="center">
             <ThemeToggle />
 
-            <div style={{display: screens.xs ? 'none':'block'}}>
+            <div style={{ display: screens.xs ? 'none' : 'block' }}>
               <BusinessDropdown />
             </div>
 

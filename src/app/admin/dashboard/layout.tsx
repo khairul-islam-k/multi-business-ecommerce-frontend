@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Layout, Drawer, theme } from "antd";
+import { Layout, Drawer, theme, Grid } from "antd";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 
@@ -12,21 +12,26 @@ export default function AdminDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const screens = Grid.useBreakpoint();
+  const [collapsed, setCollapsed] = useState<boolean>(false); // 👈 desktop collapse
   const [open, setOpen] = useState(false);
   const { token } = theme.useToken();
 
   return (
     <Layout hasSider style={{ maxHeight: "100vh", overflow: 'hidden' }}>
       {/* Desktop Sidebar */}
-      <Sider
-        width={260}
-        breakpoint="md"
-        collapsedWidth="0"
-        trigger={null}
-        style={{ background: token.colorBgBase }}
-      >
-        <Sidebar />
-      </Sider>
+      {
+        !screens.xs && <Sider
+          width={260}
+          collapsed={collapsed}
+          breakpoint="md"
+          // collapsedWidth="0"
+          trigger={null}
+          style={{ background: token.colorBgBase }}
+        >
+          <Sidebar collapsed={collapsed} />
+        </Sider>
+      }
 
       {/* Mobile Sidebar */}
       <Drawer
@@ -52,7 +57,9 @@ export default function AdminDashboardLayout({
           alignItems: 'center',
           borderLeft: `1px solid ${token.colorBorder}`
         }}>
-          <TopBar toggle={() => setOpen(true)} />
+          <TopBar
+            toggleSidebar={() => setCollapsed(!collapsed)} // 👈 toggle
+            toggle={() => setOpen(true)} />
         </Header>
 
 
