@@ -8,18 +8,25 @@ import {
   Card,
   Col,
   Input,
+  message,
+  Popconfirm,
   Row,
   Select,
   Space,
   Table,
   Typography,
 } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import PageHeader from "@/components/shared/page-header";
 import { mockCompanies } from "./data";
 import ViewModal from "./_components/view-modal";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -42,6 +49,11 @@ export default function CompaniesPage() {
 
     return matchesSearch && matchesStatus;
   });
+
+  const handleDelete = async (id: string) => {
+    await Promise.resolve(() => setTimeout(() => {}, 1000));
+    message.success("Category deleted");
+  };
 
   const columns = [
     {
@@ -93,6 +105,15 @@ export default function CompaniesPage() {
             }
             icon={<EditOutlined />}
           />
+
+          {/* Delete (popup) */}
+          <Popconfirm
+            title="Delete category?"
+            description="This action cannot be undone"
+            onConfirm={() => handleDelete(record.id)}
+          >
+            <Button size="small" danger icon={<DeleteOutlined />} />
+          </Popconfirm>
         </Space>
       ),
     },
@@ -129,8 +150,9 @@ export default function CompaniesPage() {
         <Button
           type="primary"
           onClick={() => router.push("/admin/dashboard/companies/create")}
+          icon={<PlusOutlined />}
         >
-          + Add Company
+          Add Company
         </Button>
       </div>
 

@@ -9,29 +9,34 @@ import {
   Select,
   Table,
   Tag,
-  Dropdown,
-  Modal,
   message,
   Flex,
+  Space,
+  Tooltip,
+  Popconfirm,
   theme,
 } from "antd";
 
-import { MoreOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EyeOutlined,
+  StopOutlined,
+} from "@ant-design/icons";
+
+import { mockTenants } from "./data";
 import PageHeader from "@/components/shared/page-header";
-import { mockTenants } from "@/components/demoData/mockData";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
 export default function TenantListPage() {
   const router = useRouter();
-  const [msgApi, contextHolder] = message.useMessage();
+  const { token } = theme.useToken();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [packageFilter, setPackageFilter] = useState("all");
-  const [suspendConfirm, setSuspendConfirm] = useState<string | null>(null);
-
 
   const filtered = mockTenants.filter((t) => {
     const matchSearch =
@@ -45,14 +50,22 @@ export default function TenantListPage() {
     return matchSearch && matchStatus && matchPkg;
   });
 
+  const handleSuspend = async (record: any) => {
+    // simulate API
+    await Promise.resolve();
+    message.warning(`${record.business} suspended`);
+  };
 
   const columns = [
     {
       title: "Business Name",
       dataIndex: "business",
-      key: "business",
       render: (_: any, record: any) => (
-        <a onClick={() => router.push(`/super-admin/dashboard/tenants/${record.id}`)}>
+        <a
+          onClick={() =>
+            router.push(`/super-admin/dashboard/tenants/${record.id}`)
+          }
+        >
           {record.business}
         </a>
       ),
@@ -76,16 +89,14 @@ export default function TenantListPage() {
       render: (status: string) => (
         <Tag
           style={{
-            background: status === "Active" ? token.colorSuccess
-              : status === "Trial" ? token.colorWarning : token.colorError
+            background:
+              status === "Active"
+                ? token.colorSuccess
+                : status === "Trial"
+                  ? token.colorWarning
+                  : token.colorError,
+            color: "white",
           }}
-          color={
-            status === "Active"
-              ? "white"
-              : status === "Trial"
-                ? "blue"
-                : "white"
-          }
         >
           {status}
         </Tag>
@@ -96,55 +107,41 @@ export default function TenantListPage() {
       dataIndex: "created",
     },
     {
-      title: "",
-      key: "actions",
+      title: "Actions",
+      width: 90,
       render: (_: any, record: any) => (
-        <Dropdown
-          menu={{
-            items: [
-              {
-                key: "view",
-                label: "View Details",
-                onClick: () =>
-                  router.push(`/super-admin/dashboard/tenants/${record.id}`),
-              },
-              {
-                key: "suspend",
-                label: "Suspend Tenant",
-                danger: true,
-                onClick: () =>
-                  setSuspendConfirm(record.business),
-              },
-            ],
-          }}
-        >
-          <Button
-            type="text"
-            icon={<MoreOutlined />}
-            onClick={(e) => e.stopPropagation()}
-          />
-        </Dropdown>
+        <Space>
+          <Tooltip title="View Details">
+            <Button
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() =>
+                router.push(`/super-admin/dashboard/tenants/${record.id}`)
+              }
+            />
+          </Tooltip>
+
+          <Popconfirm
+            title="Suspend tenant?"
+            description="This will restrict access"
+            onConfirm={() => handleSuspend(record)}
+          >
+            <Tooltip title="Suspend">
+              <Button size="small" danger icon={<StopOutlined />} />
+            </Tooltip>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];
 
-  const { token } = theme.useToken();
-
   return (
-    <>
-      {contextHolder}
-
-      <div style={{ marginBottom: '24px' }}>
-        <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb}>
-        </PageHeader>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb} />
 
       <Card>
         {/* Filters */}
-        <Flex 
-        justify="space-between"
-         wrap="wrap"
-        >
+        <Flex justify="space-between" wrap="wrap">
           <div className="flex flex-wrap gap-2 mb-4">
             <Input
               placeholder="Filter by name or email..."
@@ -180,7 +177,7 @@ export default function TenantListPage() {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => router.push('/super-admin/dashboard/tenants/create')}
+            onClick={() => router.push("/super-admin/dashboard/tenants/create")}
           >
             Create Tenant
           </Button>
@@ -195,22 +192,7 @@ export default function TenantListPage() {
             pagination={false}
           />
         </div>
-
       </Card>
-
-      {/* Suspend Confirmation */}
-      <Modal
-        title="Confirm Suspension"
-        open={!!suspendConfirm}
-        onCancel={() => setSuspendConfirm(null)}
-        onOk={() => {
-          msgApi.warning(`${suspendConfirm} suspended`);
-          setSuspendConfirm(null);
-        }}
-        okButtonProps={{ danger: true }}
-      >
-        Are you sure you want to suspend <strong>{suspendConfirm}</strong>?
-      </Modal>
-    </>
+    </div>
   );
 }

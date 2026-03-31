@@ -1,142 +1,131 @@
-"use client"
+"use client";
+
+import { notFound, useParams } from "next/navigation";
 import {
-    Form,
-    Input,
-    InputNumber,
-    Select,
-    Row,
-    Col,
-    Button,
-    theme,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Row,
+  Col,
+  Button,
+  theme,
+  message,
 } from "antd";
+
+import { mockAddons } from "../../data";
+import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
-
-type TAddonPayload = {
-    addonName: string;
-    limit: number;
-    slug: string;
-    status: string;
-    type: string;
-    usagePrice: number;
-};
-
-import { useParams } from "next/navigation";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
+export default function EditAddon() {
+  const { id } = useParams();
+  const [form] = Form.useForm();
+  const addon = mockAddons.find((addon) => addon.id === id);
 
-const EditAddon = () => {
-    const { id } = useParams();
-    console.log(id);
-    const [form] = Form.useForm();
+  const { loading, handler } = useSubmit(async () => {
+    await new Promise((r) => setTimeout(r, 1000));
+    message.success("Addon updated!");
+  });
 
-    const onFinish = (values: TAddonPayload) => {
-        console.log(values);
-    };
+  const { token } = theme.useToken();
 
-    const { token } = theme.useToken();
+  if (!addon) return notFound();
 
-    return (
-        <div>
-            <div style={{ marginBottom: '24px' }}>
-                <PageHeader title="Edit Addon" breadcrumb={superAdminBreadcrumb}></PageHeader>
-            </div>
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Edit Addon" breadcrumb={superAdminBreadcrumb} />
 
-            <Form
-                layout="vertical"
-                form={form}
-                onFinish={onFinish}
-                style={{ maxWidth: "100%", background: token.colorBgBase, padding: '15px', borderRadius: '8px', marginLeft: 'auto', marginRight: 'auto' }}
+      <Form
+        initialValues={{ ...addon }}
+        layout="vertical"
+        form={form}
+        onFinish={(values) => handler(values)}
+        style={{
+          maxWidth: "100%",
+          background: token.colorBgBase,
+          padding: "15px",
+          borderRadius: "8px",
+          marginLeft: "auto",
+          marginRight: "auto",
+        }}
+      >
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Addon Name"
+              name="name"
+              rules={[{ required: true, message: "Addon name is required" }]}
             >
-                <Row gutter={16}>
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Addon Name"
-                            name="name"
-                            rules={[{ required: true, message: "Addon name is required" }]}
-                        >
-                            <Input placeholder="Addon name" />
-                        </Form.Item>
-                    </Col>
+              <Input placeholder="Addon name" />
+            </Form.Item>
+          </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Slug"
-                            name="slug"
-                            rules={[{ required: true, message: "Slug is required" }]}
-                        >
-                            <Input placeholder="Slug" />
-                        </Form.Item>
-                    </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Slug"
+              name="slug"
+              rules={[{ required: true, message: "Slug is required" }]}
+            >
+              <Input placeholder="Slug" />
+            </Form.Item>
+          </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Type"
-                            name="type"
-                            initialValue="Usages"
-                        >
-                            <Select>
-                                <Option value="Usages">Usages</Option>
-                                <Option value="PerUnit">PerUnit</Option>
-                                <Option value="Flat">Flat</Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Type" name="type">
+              <Select>
+                <Option value="Usages">Usages</Option>
+                <Option value="PerUnit">PerUnit</Option>
+                <Option value="Flat">Flat</Option>
+              </Select>
+            </Form.Item>
+          </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Usage Unit price ($)"
-                            name="unitPrice"
-                            rules={[
-                                { required: true, message: "Price is required" },
-                                { type: "number", message: "Invalid Price" },
-                            ]}
-                        >
-                            <InputNumber
-                            style={{width: '100%'}}
-                            placeholder="15" />
-                        </Form.Item>
-                    </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Usage Unit price ($)"
+              name="unitPrice"
+              rules={[
+                { required: true, message: "Price is required" },
+                { type: "number", message: "Invalid Price" },
+              ]}
+            >
+              <InputNumber
+                style={{ width: "100%" }}
+                placeholder="15"
+                defaultValue={addon.unitPrice}
+              />
+            </Form.Item>
+          </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Limit key"
-                            name="limitKey"
-                            rules={[
-                                { required: true, message: "limit is required" },
-                                { type: "number", message: "Invalid Limit" },
-                            ]}
-                        >
-                            <InputNumber
-                            style={{width: '100%'}}
-                            placeholder="Storage-gb" />
-                        </Form.Item>
-                    </Col>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Limit key"
+              name="limitKey"
+              rules={[{ required: true, message: "limit is required" }]}
+            >
+              <Input style={{ width: "100%" }} placeholder="Storage-gb" />
+            </Form.Item>
+          </Col>
 
-                    <Col xs={24} md={12}>
-                        <Form.Item
-                            label="Status"
-                            name="status"
-                            initialValue="Active"
-                        >
-                            <Select>
-                                <Option value="Active">Active</Option>
-                                <Option value="InActive">InActive</Option>
-                            </Select>
-                        </Form.Item>
-                    </Col>
+          <Col xs={24} md={12}>
+            <Form.Item label="Status" name="status">
+              <Select>
+                <Option value="Active">Active</Option>
+                <Option value="InActive">InActive</Option>
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
-                </Row>
-
-                <Form.Item>
-                    <Button type="primary" htmlType="submit">
-                        Save Addon
-                    </Button>
-                </Form.Item>
-            </Form>
-        </div>
-    );
-};
-
-export default EditAddon;
+        <Form.Item className="ml-auto">
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Update Addon
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
+  );
+}

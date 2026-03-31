@@ -3,21 +3,6 @@ export const superAdminBreadcrumb = {
   sliceIndex: 2,
   labels: {
     "": "Dashboard",
-    tenants: "Tenants",
-    "tenants/create": "Create Tenant",
-    "tenants/edit": "Edit Tenant",
-    packages: "Packages",
-    "packages/create": "Create Package",
-    "packages/edit": "Edit Package",
-    addons: "Addons",
-    "addons/create": "Create Addon",
-    "addons/edit": "Edit Addon",
-    billing: "Billing",
-    reports: "Reports",
-    notifications: "Notifications",
-    monitoring: "Monitoring",
-    settings: "Settings",
-    "business/usageLimit": "Usage & limit"
   },
 };
 
@@ -26,13 +11,5 @@ export const adminBreadcrumb = {
   sliceIndex: 2,
   labels: {
     "": "Dashboard",
-    notifications: "Notifications",
-    companies: "Companies",
-    "companies/create": "Create Company",
-    "companies/edit": "Edit Company",
-    "billing/addons": "Addons",
-    "billing/history": "History",
-    "billing/subscription": "Subscription",
-    "billing/upgrade-plan": "Upgrade Plan",
   },
 };
