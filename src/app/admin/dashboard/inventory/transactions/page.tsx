@@ -6,7 +6,7 @@ import { Card, Col, Row, Table, Typography, Badge, Input, Select } from "antd";
 import { mockInventoryTransactions } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { formatCurrency, formatDate, getProduct, getWarehouse } from "./utils";
+import { formatCurrency, formatDate } from "./utils";
 
 const { Search } = Input;
 const { Title, Text } = Typography;
@@ -16,8 +16,7 @@ export default function InventoryTransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<string | undefined>();
 
   const filteredData = mockInventoryTransactions.filter((t) => {
-    const productName = getProduct(t.product_id)?.name || "";
-    const matchesSearch = productName
+    const matchesSearch = t.product_name
       .toLowerCase()
       .includes(search.toLowerCase());
     const matchesType = typeFilter ? t.transaction_type === typeFilter : true;
@@ -34,12 +33,12 @@ export default function InventoryTransactionsPage() {
     {
       title: "Product",
       render: (_: any, record: any) => (
-        <Text strong>{getProduct(record.product_id)?.name}</Text>
+        <Text strong>{record.product_name}</Text>
       ),
     },
     {
       title: "Warehouse",
-      render: (_: any, record: any) => getWarehouse(record.warehouse_id)?.name,
+      render: (_: any, record: any) => record.warehouse_name,
     },
     {
       title: "Type",

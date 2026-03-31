@@ -3,23 +3,11 @@ export const mockWarehouses = [
   { id: "wh-2", name: "East Distribution", location: "Boston" },
   { id: "wh-3", name: "West Coast Hub", location: "Los Angeles" },
 ];
-
-export const mockProducts = [
-  { id: "p-1", name: "Widget A", sku: "WA-001", category: "Components" },
-  { id: "p-2", name: "Gadget B", sku: "GB-002", category: "Electronics" },
-  { id: "p-3", name: "Part C", sku: "PC-003", category: "Components" },
-  { id: "p-4", name: "Module D", sku: "MD-004", category: "Assemblies" },
-  { id: "p-5", name: "Sensor E", sku: "SE-005", category: "Electronics" },
-  { id: "p-6", name: "Cable F", sku: "CF-006", category: "Accessories" },
-  { id: "p-7", name: "Board G", sku: "BG-007", category: "Electronics" },
-  { id: "p-8", name: "Housing H", sku: "HH-008", category: "Assemblies" },
-];
-
 export const mockInventories = [
   {
     id: "inv-1",
     warehouse_id: "wh-1",
-    product_id: "p-1",
+    product_name: "Wireless Mouse",
     variant_id: null,
     available_qty: 245,
     reserved_qty: 30,
@@ -30,7 +18,7 @@ export const mockInventories = [
   {
     id: "inv-2",
     warehouse_id: "wh-1",
-    product_id: "p-2",
+    product_name: "Mechanical Keyboard",
     variant_id: null,
     available_qty: 89,
     reserved_qty: 12,
@@ -41,7 +29,7 @@ export const mockInventories = [
   {
     id: "inv-3",
     warehouse_id: "wh-2",
-    product_id: "p-3",
+    product_name: "USB-C Charging Cable",
     variant_id: null,
     available_qty: 502,
     reserved_qty: 50,
@@ -52,7 +40,7 @@ export const mockInventories = [
   {
     id: "inv-4",
     warehouse_id: "wh-1",
-    product_id: "p-4",
+    product_name: "27-inch Monitor",
     variant_id: null,
     available_qty: 15,
     reserved_qty: 5,
@@ -63,7 +51,7 @@ export const mockInventories = [
   {
     id: "inv-5",
     warehouse_id: "wh-3",
-    product_id: "p-5",
+    product_name: "External Hard Drive 1TB",
     variant_id: null,
     available_qty: 320,
     reserved_qty: 0,
@@ -74,7 +62,7 @@ export const mockInventories = [
   {
     id: "inv-6",
     warehouse_id: "wh-2",
-    product_id: "p-6",
+    product_name: "Notebook A5",
     variant_id: null,
     available_qty: 1050,
     reserved_qty: 200,
@@ -85,7 +73,7 @@ export const mockInventories = [
   {
     id: "inv-7",
     warehouse_id: "wh-3",
-    product_id: "p-7",
+    product_name: "Bluetooth Speaker",
     variant_id: null,
     available_qty: 7,
     reserved_qty: 3,
@@ -96,7 +84,7 @@ export const mockInventories = [
   {
     id: "inv-8",
     warehouse_id: "wh-1",
-    product_id: "p-8",
+    product_name: "Office Chair",
     variant_id: null,
     available_qty: 42,
     reserved_qty: 10,

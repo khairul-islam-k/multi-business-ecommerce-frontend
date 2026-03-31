@@ -15,9 +15,9 @@ import {
 import { useRouter } from "next/navigation";
 import useSubmit from "@/hooks/use-submit";
 
+import { mockWarehouses, mockProducts } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockWarehouses, mockProducts } from "./data";
 
 const { Title } = Typography;
 

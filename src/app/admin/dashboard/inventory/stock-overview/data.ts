@@ -4,30 +4,15 @@ import {
   WarningOutlined,
   DollarOutlined,
 } from "@ant-design/icons";
+
 import { formatCurrency } from "./utils";
-
-export const mockWarehouses = [
-  { id: "wh-1", name: "Main Warehouse", location: "New York" },
-  { id: "wh-2", name: "East Distribution", location: "Boston" },
-  { id: "wh-3", name: "West Coast Hub", location: "Los Angeles" },
-];
-
-export const mockProducts = [
-  { id: "p-1", name: "Widget A", sku: "WA-001", category: "Components" },
-  { id: "p-2", name: "Gadget B", sku: "GB-002", category: "Electronics" },
-  { id: "p-3", name: "Part C", sku: "PC-003", category: "Components" },
-  { id: "p-4", name: "Module D", sku: "MD-004", category: "Assemblies" },
-  { id: "p-5", name: "Sensor E", sku: "SE-005", category: "Electronics" },
-  { id: "p-6", name: "Cable F", sku: "CF-006", category: "Accessories" },
-  { id: "p-7", name: "Board G", sku: "BG-007", category: "Electronics" },
-  { id: "p-8", name: "Housing H", sku: "HH-008", category: "Assemblies" },
-];
 
 export const mockInventories = [
   {
     id: "inv-1",
-    warehouse_id: "wh-1",
-    product_id: "p-1",
+    warehouse_name: "Main Warehouse",
+    product_name: "Widget A",
+    product_sku: "WA-001",
     variant_id: null,
     available_qty: 245,
     reserved_qty: 30,
@@ -37,8 +22,9 @@ export const mockInventories = [
   },
   {
     id: "inv-2",
-    warehouse_id: "wh-1",
-    product_id: "p-2",
+    warehouse_name: "Main Warehouse",
+    product_name: "Gadget B",
+    product_sku: "GB-002",
     variant_id: null,
     available_qty: 89,
     reserved_qty: 12,
@@ -48,8 +34,9 @@ export const mockInventories = [
   },
   {
     id: "inv-3",
-    warehouse_id: "wh-2",
-    product_id: "p-3",
+    warehouse_name: "East Distribution",
+    product_name: "Part C",
+    product_sku: "PC-003",
     variant_id: null,
     available_qty: 502,
     reserved_qty: 50,
@@ -59,8 +46,9 @@ export const mockInventories = [
   },
   {
     id: "inv-4",
-    warehouse_id: "wh-1",
-    product_id: "p-4",
+    warehouse_name: "Main Warehouse",
+    product_name: "Module D",
+    product_sku: "MD-004",
     variant_id: null,
     available_qty: 15,
     reserved_qty: 5,
@@ -70,8 +58,9 @@ export const mockInventories = [
   },
   {
     id: "inv-5",
-    warehouse_id: "wh-3",
-    product_id: "p-5",
+    warehouse_name: "West Coast Hub",
+    product_name: "Sensor E",
+    product_sku: "SE-005",
     variant_id: null,
     available_qty: 320,
     reserved_qty: 0,
@@ -81,8 +70,9 @@ export const mockInventories = [
   },
   {
     id: "inv-6",
-    warehouse_id: "wh-2",
-    product_id: "p-6",
+    warehouse_name: "East Distribution",
+    product_name: "Cable F",
+    product_sku: "CF-006",
     variant_id: null,
     available_qty: 1050,
     reserved_qty: 200,
@@ -92,8 +82,9 @@ export const mockInventories = [
   },
   {
     id: "inv-7",
-    warehouse_id: "wh-3",
-    product_id: "p-7",
+    warehouse_name: "West Coast Hub",
+    product_name: "Board G",
+    product_sku: "BG-007",
     variant_id: null,
     available_qty: 7,
     reserved_qty: 3,
@@ -103,8 +94,9 @@ export const mockInventories = [
   },
   {
     id: "inv-8",
-    warehouse_id: "wh-1",
-    product_id: "p-8",
+    warehouse_name: "Main Warehouse",
+    product_name: "Housing H",
+    product_sku: "HH-008",
     variant_id: null,
     available_qty: 42,
     reserved_qty: 10,

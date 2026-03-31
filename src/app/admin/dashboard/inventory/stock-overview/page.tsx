@@ -7,7 +7,7 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 import { mockInventories, mockStats } from "./data";
-import { getProduct, getWarehouse, formatCurrency } from "./utils";
+import { formatCurrency } from "./utils";
 
 const { Title, Text } = Typography;
 
@@ -16,22 +16,19 @@ export default function StockOverviewPage() {
     {
       title: "Product",
       render: (_: any, record: any) => {
-        const p = getProduct(record.product_id);
-        return <Text strong>{p?.name}</Text>;
+        return <Text strong>{record.product_name}</Text>;
       },
     },
     {
       title: "SKU",
       render: (_: any, record: any) => {
-        const p = getProduct(record.product_id);
-        return <Text type="secondary">{p?.sku}</Text>;
+        return <Text type="secondary">{record.product_sku}</Text>;
       },
     },
     {
       title: "Warehouse",
       render: (_: any, record: any) => {
-        const w = getWarehouse(record.warehouse_id);
-        return w?.name;
+        return record.warehouse_name;
       },
     },
     {
@@ -86,6 +83,7 @@ export default function StockOverviewPage() {
               dataSource={mockInventories}
               rowKey="id"
               size="small"
+              pagination={{ pageSize: 5 }}
               scroll={{ x: "max-content" }}
             />
           </Card>

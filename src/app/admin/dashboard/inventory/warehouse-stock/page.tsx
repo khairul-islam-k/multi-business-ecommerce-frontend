@@ -2,7 +2,7 @@
 
 import { Card, Table, Tabs, Typography, Empty } from "antd";
 
-import { formatCurrency, getProduct } from "./utils";
+import { formatCurrency } from "./utils";
 import PageHeader from "@/components/shared/page-header";
 import { mockInventories, mockWarehouses } from "./data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -53,10 +53,9 @@ export default function WarehouseStock() {
           ];
 
           const dataSource = items.map((inv) => {
-            const p = getProduct(inv.product_id);
             return {
               key: inv.id,
-              name: p?.name,
+              name: inv.product_name,
               available: inv.available_qty,
               reserved: inv.reserved_qty,
               damaged: inv.damaged_qty,
