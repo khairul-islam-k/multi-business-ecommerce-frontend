@@ -214,6 +214,15 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                         </Link>
                     ),
                 },
+                {
+                    key: "variant",
+                    icon: <ProfileOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/products-management/variant">
+                            Variant Manager
+                        </Link>
+                    ),
+                }
             ],
         },
         {
