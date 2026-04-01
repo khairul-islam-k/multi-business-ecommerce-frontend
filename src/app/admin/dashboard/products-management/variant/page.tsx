@@ -1,10 +1,12 @@
 "use client";
 
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Grid, Input, Select } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { Card, Grid, Input, Select } from "antd";
 import { useState } from "react";
 import VariantHeader from "./components/VariantHeader";
 import VariantTable from "./components/VariantTable";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 
@@ -17,9 +19,16 @@ const VariantManagement = () => {
     return (
         <div>
 
+            {/* header */}
+            <div style={{marginBottom: '24px'}}>
+                <PageHeader title='Product Variant Manager' breadcrumb={adminBreadcrumb}></PageHeader>
+            </div>
+
+            <p>Manage SKUs, pricing, and stock levels across all product variants.</p>
+
             <VariantHeader />
             
-            <Card>
+            <Card title='All Variants'>
                     <div
                     //  className="flex overflow-auto gap-2 mb-4"
                     style={{display: 'flex', flexWrap: screens.xs ? 'wrap': 'initial', gap: '8px'}}
@@ -39,8 +48,7 @@ const VariantManagement = () => {
                         >
                             <Option value="all">All Status</Option>
                             <Option value="Active">Active</Option>
-                            <Option value="Trial">Trial</Option>
-                            <Option value="Suspended">Suspended</Option>
+                            <Option value="InActive">InActive</Option>
                         </Select>
 
                         <Select

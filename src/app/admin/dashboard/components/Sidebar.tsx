@@ -10,6 +10,7 @@ import {
     AppstoreOutlined,
     ArrowUpOutlined,
     AuditOutlined,
+    BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
     CreditCardOutlined,
@@ -21,9 +22,12 @@ import {
     HomeOutlined,
     IdcardOutlined,
     KeyOutlined,
+    LineChartOutlined,
+    PictureOutlined,
     PlusSquareOutlined,
     ProfileOutlined,
     QuestionCircleOutlined,
+    RollbackOutlined,
     SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
@@ -32,6 +36,8 @@ import {
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
+    UnorderedListOutlined,
+    UploadOutlined,
     UserOutlined,
     WarningOutlined,
 } from "@ant-design/icons";
@@ -222,6 +228,42 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                             Variant Manager
                         </Link>
                     ),
+                },
+                {
+                    key: "status-history",
+                    icon: <FileTextOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/products-management/status-history">
+                            Status History
+                        </Link>
+                    ),
+                },
+                {
+                    key: "top-selling",
+                    icon: <BarChartOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/products-management/top-selling">
+                            Top Selling
+                        </Link>
+                    ),
+                },
+                {
+                    key: "image-manager",
+                    icon: <PictureOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/products-management/image-manager">
+                            Image Manager
+                        </Link>
+                    ),
+                },
+                {
+                    key: "bulk-import",
+                    icon: <UploadOutlined />,
+                    label: (
+                        <Link href="/admin/dashboard/products-management/bulk-import">
+                            Bulk Import
+                        </Link>
+                    ),
                 }
             ],
         },
@@ -234,7 +276,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     key: "stock-overview",
                     icon: <DashboardOutlined />, // Overview / summary
                     label: (
-                        <Link href="/admin/dashboard/inventory">
+                        <Link href="/admin/dashboard/inventory/stock-overview">
                             Stock Overview
                         </Link>
                     ),
@@ -288,7 +330,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     key: "damaged-product",
                     icon: <WarningOutlined />, // Damaged / issue
                     label: (
-                        <Link href="/admin/dashboard/inventory/damage-products">
+                        <Link href="/admin/dashboard/inventory/damaged-products">
                             Damaged Products
                         </Link>
                     ),
@@ -321,6 +363,49 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     ),
                 },
             ],
+        },
+        {
+            key: "orders",
+            icon: <ShopOutlined />, // Orders / Store
+            label: "Orders",
+            children: [
+                {
+                    key: "all-orders",
+                    icon: <UnorderedListOutlined />, // Order list
+                    label: (
+                        <Link href="/admin/dashboard/orders">
+                            All Orders
+                        </Link>
+                    ),
+                },
+                {
+                    key: "returns",
+                    icon: <RollbackOutlined />, // Returns / refunds
+                    label: (
+                        <Link href="/admin/dashboard/orders/returns">
+                            Returns
+                        </Link>
+                    ),
+                },
+                {
+                    key: "payments",
+                    icon: <CreditCardOutlined />, // Payments
+                    label: (
+                        <Link href="/admin/dashboard/orders/payments">
+                            Payments
+                        </Link>
+                    ),
+                },
+                {
+                    key: "analytics",
+                    icon: <LineChartOutlined />, // Order analytics
+                    label: (
+                        <Link href="/admin/dashboard/orders/analytics">
+                            Analytics
+                        </Link>
+                    ),
+                },
+            ],
         }
 
     ];
@@ -349,7 +434,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     borderBottom: `1px solid ${token.colorBorder}`
                 }}
             >
-                <Logo />
+                <Logo collapsed={collapsed} />
             </div>
 
             {/* Menu */}

@@ -1,5 +1,5 @@
 import { DollarOutlined, ShoppingCartOutlined, WarningOutlined } from '@ant-design/icons';
-import { Card, Grid, theme, Typography } from 'antd';
+import { Card, Grid, theme } from 'antd';
 import React from 'react';
 
 const VariantHeader = () => {
