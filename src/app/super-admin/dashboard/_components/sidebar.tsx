@@ -55,14 +55,18 @@ const navItems: MenuProps["items"] = [
 
 interface Props {
   mobileOpen: boolean;
+  collapsed: boolean;
   onMobileClose: () => void;
 }
 
-export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
+export default function Sidebar({
+  collapsed,
+  mobileOpen,
+  onMobileClose,
+}: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const { token } = theme.useToken();
-  const [collapsed, setCollapsed] = useState(false);
 
   const activeKey =
     navItems
@@ -89,14 +93,6 @@ export default function Sidebar({ mobileOpen, onMobileClose }: Props) {
         }}
       >
         <Logo collapsed={collapsed} />
-
-        <div className="hidden md:block">
-          <Button
-            type="text"
-            onClick={() => setCollapsed(!collapsed)}
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          />
-        </div>
       </div>
 
       {/* Menu */}

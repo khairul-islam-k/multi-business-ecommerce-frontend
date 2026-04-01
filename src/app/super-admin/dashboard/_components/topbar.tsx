@@ -11,6 +11,8 @@ import {
   LogoutOutlined,
   UserOutlined,
   SettingOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 
 import cn from "@/lib/cn";
@@ -21,14 +23,19 @@ const { useToken } = theme;
 
 interface TopbarProps {
   onMobileMenuToggle: () => void;
+  onSidebarToggle: () => void;
 }
 
-export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
+export default function Topbar({
+  onMobileMenuToggle,
+  onSidebarToggle,
+}: TopbarProps) {
   const router = useRouter();
   const { token } = useToken();
 
   const [search, setSearch] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const logout = () => {};
 
@@ -66,7 +73,18 @@ export default function Topbar({ onMobileMenuToggle }: TopbarProps) {
       </div>
 
       {/* Desktop search */}
-      <div className="hidden md:flex flex-1 max-w-md">
+      <div className="hidden md:flex items-center flex-1 max-w-md gap-3">
+        <div className="hidden md:block">
+          <Button
+            type="text"
+            onClick={() => {
+              setCollapsed(!collapsed);
+              onSidebarToggle();
+            }}
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          />
+        </div>
+
         <Search
           placeholder="Search tenants, packages..."
           value={search}

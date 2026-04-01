@@ -14,11 +14,15 @@ export default function SuperAdminDashboardLayout({
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const { token } = theme.useToken();
+
+  console.log(collapsed);
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar
+        collapsed={collapsed}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
       />
@@ -32,7 +36,10 @@ export default function SuperAdminDashboardLayout({
           className="flex items-center"
           style={{ background: token.colorBgBase, paddingInline: 12 }}
         >
-          <Topbar onMobileMenuToggle={() => setMobileOpen(true)} />
+          <Topbar
+            onMobileMenuToggle={() => setMobileOpen(true)}
+            onSidebarToggle={() => setCollapsed(!collapsed)}
+          />
         </Header>
 
         <Content className="p-4 lg:p-8">{children}</Content>
