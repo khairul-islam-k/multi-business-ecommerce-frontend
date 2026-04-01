@@ -23,7 +23,7 @@ export default function Logo({ collapsed = false }: LogoProps) {
           height: 36,
           borderRadius: 8,
           background: "#6366f1",
-          display: collapsed ? "none" : "flex",
+          display: "flex",
           alignItems: "center",
           justifyContent: "center",
           color: "#fff",
