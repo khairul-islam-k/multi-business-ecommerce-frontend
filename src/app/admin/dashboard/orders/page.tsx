@@ -23,12 +23,12 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const statusColors: Record<string, any> = {
-  pending: "warning",
+  pending: "#722ed1",
   processing: "processing",
   shipped: "default",
   delivered: "success",
-  cancelled: "error",
-  returned: "purple",
+  cancelled: "warning",
+  returned: "error",
 };
 
 export default function OrdersList() {
@@ -80,12 +80,22 @@ export default function OrdersList() {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => (
-        <Badge
-          status={statusColors[status] || "default"}
-          text={status.charAt(0).toUpperCase() + status.slice(1)}
-        />
-      ),
+      render: (status: string) => {
+        const color = statusColors[status];
+        const isPreset = [
+          "success",
+          "processing",
+          "default",
+          "error",
+          "warning",
+        ].includes(color);
+        return (
+          <Badge
+            {...(isPreset ? { status: color } : { color })}
+            text={status.charAt(0).toUpperCase() + status.slice(1)}
+          />
+        );
+      },
     },
     {
       title: "Channel",

@@ -28,15 +28,15 @@ const statuses = [
   "cancelled",
   "returned",
 ];
-const products = [
-  { name: "Wireless Headphones Pro", sku: "WHP-001", price: 149.99 },
-  { name: "USB-C Hub Adapter", sku: "UCH-042", price: 59.99 },
-  { name: "Mechanical Keyboard", sku: "MKB-107", price: 189.99 },
-  { name: "Laptop Stand Aluminum", sku: "LSA-023", price: 79.99 },
-  { name: "Monitor Light Bar", sku: "MLB-015", price: 49.99 },
-  { name: "Ergonomic Mouse", sku: "ERM-088", price: 69.99 },
-  { name: "Webcam 4K", sku: "WC4-033", price: 129.99 },
-  { name: "Desk Mat XL", sku: "DMX-011", price: 34.99 },
+export const mockProducts = [
+  { id: "p-1", name: "Wireless Headphones Pro", sku: "WHP-001", price: 149.99 },
+  { id: "P-2", name: "USB-C Hub Adapter", sku: "UCH-042", price: 59.99 },
+  { id: "P-3", name: "Mechanical Keyboard", sku: "MKB-107", price: 189.99 },
+  { id: "P-4", name: "Laptop Stand Aluminum", sku: "LSA-023", price: 79.99 },
+  { id: "P-5", name: "Monitor Light Bar", sku: "MLB-015", price: 49.99 },
+  { id: "P-6", name: "Ergonomic Mouse", sku: "ERM-088", price: 69.99 },
+  { id: "P-7", name: "Webcam 4K", sku: "WC4-033", price: 129.99 },
+  { id: "P-8", name: "Desk Mat XL", sku: "DMX-011", price: 34.99 },
 ];
 
 function randomFrom<T>(arr: T[]): T {
@@ -45,7 +45,9 @@ function randomFrom<T>(arr: T[]): T {
 
 function generateOrderItems(orderId: string) {
   const count = Math.floor(Math.random() * 4) + 1;
-  const picked = [...products].sort(() => Math.random() - 0.5).slice(0, count);
+  const picked = [...mockProducts]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, count);
   return picked.map((p, i) => {
     const qty = Math.floor(Math.random() * 3) + 1;
     const discount =
