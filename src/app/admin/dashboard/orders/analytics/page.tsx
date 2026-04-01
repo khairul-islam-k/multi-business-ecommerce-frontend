@@ -16,11 +16,10 @@ import {
   YAxis,
 } from "recharts";
 
-import { mockOrders } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import StatCard from "@/components/shared/stat-card";
-import { mockStats } from "./data";
+import { mockStats, mockOrders } from "./data";
 
 const { Title } = Typography;
 
@@ -68,6 +67,37 @@ export default function OrderAnalytics() {
   const dailyData = Object.entries(dailyOrders)
     .map(([name, count]) => ({ name, count }))
     .slice(-14);
+
+  const regionData: Record<string, { count: number; revenue: number }> = {};
+  mockOrders.forEach((o) => {
+    if (!regionData[o.region]) regionData[o.region] = { count: 0, revenue: 0 };
+    regionData[o.region].count++;
+    regionData[o.region].revenue += o.total;
+  });
+
+  const regionChartData = Object.entries(regionData)
+    .map(([region, data]) => ({
+      region,
+      ...data,
+      revenue: Math.round(data.revenue),
+    }))
+    .sort((a, b) => b.revenue - a.revenue);
+
+  const channelData: Record<string, { count: number; revenue: number }> = {};
+  mockOrders.forEach((o) => {
+    if (!channelData[o.channel])
+      channelData[o.channel] = { count: 0, revenue: 0 };
+    channelData[o.channel].count++;
+    channelData[o.channel].revenue += o.total;
+  });
+
+  const channelChartData = Object.entries(channelData)
+    .map(([channel, data]) => ({
+      name: channel,
+      ...data,
+      revenue: Math.round(data.revenue),
+    }))
+    .sort((a, b) => b.revenue - a.revenue);
 
   return (
     <div className="space-y-6">
@@ -146,6 +176,58 @@ export default function OrderAnalytics() {
                   dot={{ r: 4 }}
                 />
               </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <Card>
+            <Title level={4}>Channel Distribution</Title>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={channelChartData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  innerRadius={60}
+                  dataKey="revenue"
+                  label={({ name, percent }) =>
+                    `${name} ${(percent || 0 * 100).toFixed(0)}%`
+                  }
+                  fontSize={12}
+                >
+                  {channelChartData.map((_, i) => (
+                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={12}>
+          <Card>
+            <Title level={4}>Revenue by Region</Title>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={regionChartData} layout="vertical">
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(220,13%,90%)"
+                />
+                <XAxis type="number" fontSize={12} />
+                <YAxis
+                  dataKey="region"
+                  type="category"
+                  fontSize={12}
+                  width={120}
+                />
+                <Tooltip />
+                <Bar dataKey="revenue" fill={COLORS[0]} radius={[0, 4, 4, 0]} />
+              </BarChart>
             </ResponsiveContainer>
           </Card>
         </Col>
