@@ -64,12 +64,10 @@ export default function OrderAnalytics() {
     });
     dailyOrders[day] = (dailyOrders[day] || 0) + 1;
   });
+
   const dailyData = Object.entries(dailyOrders)
     .map(([name, count]) => ({ name, count }))
     .slice(-14);
-
-  const avgOrderValue =
-    mockOrders.reduce((s, o) => s + o.total, 0) / mockOrders.length;
 
   return (
     <div className="space-y-6">
