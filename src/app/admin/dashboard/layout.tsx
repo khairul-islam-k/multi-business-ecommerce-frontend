@@ -64,7 +64,7 @@ export default function AdminDashboardLayout({
 
 
         {/* Page Content */}
-        <Content style={{ overflowY: 'auto', overflowX: 'hidden', padding: '20px' }}>
+        <Content style={{ overflowY: 'auto', overflowX: 'hidden', padding: screens.xs? '10px': '24px' }}>
           {children}
         </Content>
 
