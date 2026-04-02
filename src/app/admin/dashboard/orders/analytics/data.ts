@@ -86,6 +86,16 @@ function randomFrom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function randomDateLastDays(days: number) {
+  const now = new Date();
+  const past = new Date();
+  past.setDate(now.getDate() - days);
+
+  return new Date(
+    past.getTime() + Math.random() * (now.getTime() - past.getTime()),
+  );
+}
+
 function generateOrderItems(orderId: string) {
   const count = Math.floor(Math.random() * 4) + 1;
   const picked = [...mockProducts]
@@ -139,7 +149,7 @@ export const mockOrders = Array.from({ length: 50 }, (_, i) => {
     region: randomFrom(regions),
     courier: randomFrom(couriers),
     supplier: randomFrom(suppliers),
-    created_at: date.toISOString(),
+    created_at: randomDateLastDays(7),
     items,
   };
 });
