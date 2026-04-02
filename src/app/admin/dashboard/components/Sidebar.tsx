@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Grid, Layout, Menu, theme } from "antd";
+import { Grid, Menu, theme } from "antd";
 import type { MenuProps } from "antd";
 import {
     AlertOutlined,
@@ -10,6 +10,7 @@ import {
     AppstoreOutlined,
     ArrowUpOutlined,
     AuditOutlined,
+    BankOutlined,
     BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
@@ -39,6 +40,7 @@ import {
     UnorderedListOutlined,
     UploadOutlined,
     UserOutlined,
+    WalletOutlined,
     WarningOutlined,
 } from "@ant-design/icons";
 import Logo from "@/components/shared/logo";
@@ -55,31 +57,6 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
             key: "dashboard",
             icon: <DashboardOutlined />,
             label: <Link href="/admin/dashboard">Dashboard</Link>,
-        },
-        {
-            key: "Categories",
-            icon: <AppstoreOutlined />,
-            label: <Link href="/admin/dashboard/categories">Categories</Link>,
-        },
-        {
-            key: "Brand-list",
-            icon: <TagsOutlined />,
-            label: <Link href="/admin/dashboard/brands">Brands</Link>,
-        },
-        {
-            key: "Warehouse-list",
-            icon: <HomeOutlined />,
-            label: <Link href="/admin/dashboard/warehouses">Warehouses</Link>,
-        },
-        {
-            key: "Showrooms",
-            icon: <ShopOutlined />,
-            label: <Link href="/admin/dashboard/showrooms">Showrooms</Link>,
-        },
-        {
-            key: "Supplier-list",
-            icon: <TeamOutlined />,
-            label: <Link href="/admin/dashboard/suppliers">Suppliers</Link>,
         },
         {
             key: "companies",
@@ -402,6 +379,106 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     label: (
                         <Link href="/admin/dashboard/orders/analytics">
                             Analytics
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "masters-settings",
+            icon: <ShopOutlined />, // Orders / Store
+            label: "Masters / Settings",
+            children: [
+                {
+                    key: "Categories",
+                    icon: <AppstoreOutlined />,
+                    label: <Link href="/admin/dashboard/masters/categories">Categories</Link>,
+                },
+                {
+                    key: "Brand-list",
+                    icon: <TagsOutlined />,
+                    label: <Link href="/admin/dashboard/masters/brands">Brands</Link>,
+                },
+                {
+                    key: "Warehouse-list",
+                    icon: <HomeOutlined />,
+                    label: <Link href="/admin/dashboard/masters/warehouses">Warehouses</Link>,
+                },
+                {
+                    key: "Showrooms",
+                    icon: <ShopOutlined />,
+                    label: <Link href="/admin/dashboard/masters/showrooms">Showrooms</Link>,
+                },
+                {
+                    key: "Supplier-list",
+                    icon: <TeamOutlined />,
+                    label: <Link href="/admin/dashboard/masters/suppliers">Suppliers</Link>,
+                },
+            ],
+        },
+        {
+            key: "finance-account",
+            icon: <BankOutlined />, // Finance / Accounts
+            label: "Finance",
+            children: [
+                {
+                    key: "accounts",
+                    icon: <WalletOutlined />, // Accounts
+                    label: (
+                        <Link href="/admin/dashboard/finance/accounts">
+                            Accounts
+                        </Link>
+                    ),
+                },
+                {
+                    key: "overview",
+                    icon: <DashboardOutlined />, // Overview
+                    label: (
+                        <Link href="/admin/dashboard/finance/accounts/overview">
+                            Overview
+                        </Link>
+                    ),
+                },
+                {
+                    key: "profit-loss",
+                    icon: <LineChartOutlined />, // Profit & Loss
+                    label: (
+                        <Link href="/admin/dashboard/finance/accounts/profit-loss">
+                            Profit & Loss
+                        </Link>
+                    ),
+                },
+                {
+                    key: "transactions",
+                    icon: <SwapOutlined />, // Transactions
+                    label: (
+                        <Link href="/admin/dashboard/finance/accounts/transactions">
+                            Transactions
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "finance-expense",
+            icon: <DollarOutlined />, // Expenses
+            label: "Finance / Expenses",
+            children: [
+                {
+                    key: "expenses",
+                    icon: <DollarOutlined />, // Expense list
+                    label: (
+                        <Link href="/admin/dashboard/finance/expenses">
+                            Expenses
+                        </Link>
+                    ),
+                },
+                {
+                    key: "categories",
+                    icon: <TagsOutlined />, // Expense Categories
+                    label: (
+                        <Link href="/admin/dashboard/finance/accounts/expenses/categories">
+                            Categories
                         </Link>
                     ),
                 },

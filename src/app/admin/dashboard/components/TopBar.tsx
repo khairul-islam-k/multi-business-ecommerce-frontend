@@ -52,11 +52,13 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
           </Flex>
 
           <Space size="small" align="center">
-            <ThemeToggle />
 
             <div style={{ display: screens.xs ? 'none' : 'block' }}>
               <BusinessDropdown />
             </div>
+
+            {/* theme toggle */}
+            <ThemeToggle />
 
             <Badge dot>
               <BellOutlined style={{ fontSize: 18 }} />
