@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.35);
+  border-radius: 1px;
+}
+
 * {
   font-family: var(--font-open-sans);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 100, 100, 0.35) transparent;
 }

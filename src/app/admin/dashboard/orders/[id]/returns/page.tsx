@@ -24,13 +24,13 @@ const { Text } = Typography;
 
 export default function OrderReturnForm() {
   const { id } = useParams();
-  console.log(id);
-  const order = mockOrders.find((order) => order.id === id);
-  const returns = mockReturns.filter((_return) => _return.order_id === id);
 
   const [reason, setReason] = useState("");
   const [condition, setCondition] = useState("Unopened");
   const [refundAmount, setRefundAmount] = useState("");
+
+  const order = mockOrders.find((order) => order.id === id);
+  const returns = mockReturns.filter((_return) => _return.order_id === id);
 
   if (!order) return notFound();
 
