@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Card, Input, Switch } from "antd";
-import { BackwardOutlined, SaveOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -15,7 +15,7 @@ export default function PaymentGatewayConfigurations() {
 
       <div className="flex items-center justify-end gap-3">
         <Link href="/admin/dashboard/payment-gateway/gateways">
-          <Button icon={<BackwardOutlined />}>Back to Gateways</Button>
+          <Button icon={<ArrowLeftOutlined />}>Back to Gateways</Button>
         </Link>
         <Button type="primary" icon={<SaveOutlined />}>
           Save All

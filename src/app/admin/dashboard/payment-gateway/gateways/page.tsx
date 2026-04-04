@@ -41,7 +41,7 @@ export default function PaymentGatewayList() {
           {
             header: "Status",
             accessor: (r: any) => (
-              <StatusBadge status={r.status.toUpperCase()} />
+              <StatusBadge status={r.status} text={r.status.toUpperCase()} />
             ),
           },
           {
