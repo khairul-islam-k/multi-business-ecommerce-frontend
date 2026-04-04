@@ -1,0 +1,42 @@
+export const mockGateways = [
+  {
+    id: "1",
+    name: "Razorpay",
+    slug: "razorpay",
+    status: "active",
+    transactions: "12,450",
+    volume: "৳24,50,000",
+  },
+  {
+    id: "2",
+    name: "Stripe",
+    slug: "stripe",
+    status: "active",
+    transactions: "8,320",
+    volume: "৳18,20,000",
+  },
+  {
+    id: "3",
+    name: "PayU",
+    slug: "payu",
+    status: "inactive",
+    transactions: "0",
+    volume: "৳0",
+  },
+  {
+    id: "4",
+    name: "Cashfree",
+    slug: "cashfree",
+    status: "active",
+    transactions: "3,100",
+    volume: "৳6,80,000",
+  },
+  {
+    id: "5",
+    name: "PhonePe PG",
+    slug: "phonepe",
+    status: "inactive",
+    transactions: "0",
+    volume: "৳0",
+  },
+];
