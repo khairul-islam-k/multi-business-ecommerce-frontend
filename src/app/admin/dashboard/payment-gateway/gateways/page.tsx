@@ -40,7 +40,9 @@ export default function PaymentGatewayList() {
           { header: "Slug", dataIndex: "slug" },
           {
             header: "Status",
-            accessor: (r: any) => <StatusBadge status={r.status} />,
+            accessor: (r: any) => (
+              <StatusBadge status={r.status.toUpperCase()} />
+            ),
           },
           {
             header: "Transactions",
