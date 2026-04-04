@@ -1,12 +1,13 @@
 "use client";
 
-import { Badge, Table, Typography } from "antd";
+import { Badge, Col, Select, Table, Input, Typography, Row } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { mockLedgers } from "./data";
 
 const { Link } = Typography;
+const { Search } = Input;
 
 const columns = [
   {
@@ -25,15 +26,29 @@ const columns = [
         <Badge status="error" text={r.status} />
       ),
   },
-  { title: "Entry", dataIndex: "entry" },
+  { title: "Entries", dataIndex: "entries" },
 ];
 
 export default function LadgersPage() {
-  <div className="space-y-6">
-    <PageHeader title="Ledgers" breadcrumb={adminBreadcrumb} />
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Ledgers" breadcrumb={adminBreadcrumb} />
 
-    <div className="w-full">
-      <Table columns={columns} dataSource={mockLedgers} />
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={8}>
+          <Search placeholder="Search Ledger" />
+        </Col>
+        <Col xs={24} lg={6} style={{ width: "100%" }}>
+          <Select defaultValue="Filter Ledgers">
+            <Select.Option>Active</Select.Option>
+            <Select.Option>Inactive</Select.Option>
+          </Select>
+        </Col>
+      </Row>
+
+      <div className="w-full">
+        <Table columns={columns} dataSource={mockLedgers} />
+      </div>
     </div>
-  </div>;
+  );
 }
