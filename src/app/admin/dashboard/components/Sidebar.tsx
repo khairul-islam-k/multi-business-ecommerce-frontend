@@ -14,20 +14,26 @@ import {
     BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
+    BranchesOutlined,
+    CarOutlined,
     CreditCardOutlined,
     DashboardOutlined,
     DollarOutlined,
     ExportOutlined,
+    FileDoneOutlined,
     FileTextOutlined,
     HistoryOutlined,
     HomeOutlined,
     IdcardOutlined,
+    InboxOutlined,
     KeyOutlined,
     LineChartOutlined,
     PictureOutlined,
+    PlusCircleOutlined,
     PlusSquareOutlined,
     ProfileOutlined,
     QuestionCircleOutlined,
+    RiseOutlined,
     RollbackOutlined,
     SafetyOutlined,
     SettingOutlined,
@@ -540,12 +546,12 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
         },
         {
             key: "suppliers-procurement",
-            icon: <TeamOutlined />, // Customers module
+            icon: <ShopOutlined />, // Suppliers & Procurement
             label: "Suppliers & Procurement",
             children: [
                 {
-                    key: "supplier-Products",
-                    icon: <UserOutlined />, // Individual customers
+                    key: "supplier-products",
+                    icon: <InboxOutlined />, // Products supplied by vendors
                     label: (
                         <Link href="/admin/dashboard/suppliers/supplier-products">
                             Supplier Products
@@ -554,7 +560,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                 },
                 {
                     key: "purchase-order",
-                    icon: <UserOutlined />, // Individual customers
+                    icon: <FileTextOutlined />, // Purchase orders / documents
                     label: (
                         <Link href="/admin/dashboard/suppliers/purchase-order">
                             Purchase Order
@@ -563,7 +569,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                 },
                 {
                     key: "receive-po",
-                    icon: <UserOutlined />, // Individual customers
+                    icon: <InboxOutlined />, // Receiving inventory
                     label: (
                         <Link href="/admin/dashboard/suppliers/receive-po">
                             Receive PO
@@ -572,6 +578,180 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                 },
             ],
         },
+        {
+            key: "payment-gateway",
+            icon: <CreditCardOutlined />, // Payment Gateway / Transactions
+            label: "Payment Gateway",
+            children: [
+                {
+                    key: "gateway-list",
+                    icon: <UnorderedListOutlined />, // List of gateways
+                    label: (
+                        <Link href="/admin/dashboard/payment-gateway/gateways">
+                            Gateway List
+                        </Link>
+                    ),
+                },
+                {
+                    key: "gateway-config",
+                    icon: <SettingOutlined />, // Configuration & setup
+                    label: (
+                        <Link href="/admin/dashboard/payment-gateway/configurations">
+                            Gateway Config
+                        </Link>
+                    ),
+                },
+                {
+                    key: "gateway-rules",
+                    icon: <BranchesOutlined />, // Routing / rules logic
+                    label: (
+                        <Link href="/admin/dashboard/payment-gateway/gateway-rules">
+                            Gateway Rules
+                        </Link>
+                    ),
+                },
+                {
+                    key: "cod-settings",
+                    icon: <DollarOutlined />, // Cash on Delivery
+                    label: (
+                        <Link href="/admin/dashboard/payment-gateway/cod-settings">
+                            COD Settings
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "invoices",
+            icon: <FileDoneOutlined />, // Invoices / Billing
+            label: "Invoices",
+            children: [
+                {
+                    key: "invoice-list",
+                    icon: <UnorderedListOutlined />, // Invoice list
+                    label: (
+                        <Link href="/admin/dashboard/invoices">
+                            Invoices
+                        </Link>
+                    ),
+                },
+                {
+                    key: "create-invoice",
+                    icon: <PlusCircleOutlined />, // Create new invoice
+                    label: (
+                        <Link href="/admin/dashboard/invoices/create">
+                            Create Invoice
+                        </Link>
+                    ),
+                },
+                {
+                    key: "invoice-templates",
+                    icon: <FileTextOutlined />, // Invoice templates
+                    label: (
+                        <Link href="/admin/dashboard/invoices/templates">
+                            Invoice Templates
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "reports-analytics",
+            icon: <BarChartOutlined />, // Reports & Analytics
+            label: "Reports & Analytics",
+            children: [
+                {
+                    key: "reports-overview",
+                    icon: <DashboardOutlined />, // Summary dashboard
+                    label: (
+                        <Link href="/admin/dashboard/reports">
+                            Reports Overview
+                        </Link>
+                    ),
+                },
+                {
+                    key: "sales-reports",
+                    icon: <LineChartOutlined />, // Sales trend
+                    label: (
+                        <Link href="/admin/dashboard/reports/sales">
+                            Sales Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "order-reports",
+                    icon: <ShoppingCartOutlined />, // Orders
+                    label: (
+                        <Link href="/admin/dashboard/reports/orders">
+                            Order Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "inventory-reports",
+                    icon: <AppstoreOutlined />, // Inventory / stock
+                    label: (
+                        <Link href="/admin/dashboard/reports/inventory">
+                            Inventory Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "supplier-reports",
+                    icon: <TeamOutlined />, // Suppliers
+                    label: (
+                        <Link href="/admin/dashboard/reports/suppliers">
+                            Supplier Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "courier-reports",
+                    icon: <CarOutlined />, // Logistics
+                    label: (
+                        <Link href="/admin/dashboard/reports/couriers">
+                            Courier Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "expense-reports",
+                    icon: <WalletOutlined />, // Expenses
+                    label: (
+                        <Link href="/admin/dashboard/reports/expenses">
+                            Expense Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "financial-reports",
+                    icon: <DollarOutlined />, // Finance
+                    label: (
+                        <Link href="/admin/dashboard/reports/financial">
+                            Financial Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "revenue-reports",
+                    icon: <RiseOutlined />, // Revenue growth
+                    label: (
+                        <Link href="/admin/dashboard/reports/revenue">
+                            Revenue Reports
+                        </Link>
+                    ),
+                },
+                {
+                    key: "profit-reports",
+                    icon: <RiseOutlined />, // Profit analysis
+                    label: (
+                        <Link href="/admin/dashboard/reports/profit">
+                            Profit Reports
+                        </Link>
+                    ),
+                },
+            ],
+        }
 
     ];
 
