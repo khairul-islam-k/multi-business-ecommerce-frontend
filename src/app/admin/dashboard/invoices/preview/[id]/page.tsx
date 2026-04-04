@@ -43,7 +43,7 @@ export default function InvoicePreview() {
       <PageHeader title="Invoice Preview" breadcrumb={adminBreadcrumb} />
 
       <div className="mb-6 flex justify-between">
-        <Link href="/invoices">
+        <Link href="/admin/dashboard/invoices">
           <span className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
             <ArrowLeftOutlined /> Back
           </span>

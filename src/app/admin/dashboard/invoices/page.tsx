@@ -1,21 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Button, Card } from "antd";
-import {
-  PlusOutlined,
-  DownloadOutlined,
-  FileTextOutlined,
-  DollarOutlined,
-  ClockCircleOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+import { Button } from "antd";
+import { PlusOutlined, DownloadOutlined } from "@ant-design/icons";
 
 import { mockInvoices } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import DataTable from "./_components/data-model";
 import StatusBadge from "./_components/badge";
+import StatCard from "@/components/shared/stat-card";
+import { mockStats } from "./data";
 
 export default function InvoiceList() {
   return (
@@ -34,18 +29,9 @@ export default function InvoiceList() {
 
       {/* Stats */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <FileTextOutlined /> Total: 156{" "}
-        </Card>
-        <Card>
-          <DollarOutlined /> Revenue: ৳32L{" "}
-        </Card>
-        <Card>
-          <ClockCircleOutlined /> Pending: 23{" "}
-        </Card>
-        <Card>
-          <WarningOutlined /> Overdue: 5{" "}
-        </Card>
+        {mockStats.map((stat, i) => (
+          <StatCard key={i} stat={stat} />
+        ))}
       </div>
 
       <DataTable
@@ -55,9 +41,7 @@ export default function InvoiceList() {
             header: "Invoice #",
             accessor: (r: any) => (
               <Link href={`/admin/dashboard/invoices/${r.id}`}>
-                <span className="text-blue-500 cursor-pointer">
-                  {r.invoiceNo}
-                </span>
+                <span className="cursor-pointer">{r.invoiceNo}</span>
               </Link>
             ),
           },
