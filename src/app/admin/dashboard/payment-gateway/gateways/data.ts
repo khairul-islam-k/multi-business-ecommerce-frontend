@@ -5,7 +5,7 @@ export const mockGateways = [
     slug: "razorpay",
     status: "active",
     transactions: "12,450",
-    volume: "₹24,50,000",
+    volume: "৳24,50,000",
   },
   {
     id: "2",
@@ -13,7 +13,7 @@ export const mockGateways = [
     slug: "stripe",
     status: "active",
     transactions: "8,320",
-    volume: "₹18,20,000",
+    volume: "৳18,20,000",
   },
   {
     id: "3",
@@ -21,7 +21,7 @@ export const mockGateways = [
     slug: "payu",
     status: "inactive",
     transactions: "0",
-    volume: "₹0",
+    volume: "৳0",
   },
   {
     id: "4",
@@ -29,7 +29,7 @@ export const mockGateways = [
     slug: "cashfree",
     status: "active",
     transactions: "3,100",
-    volume: "₹6,80,000",
+    volume: "৳6,80,000",
   },
   {
     id: "5",
@@ -37,6 +37,6 @@ export const mockGateways = [
     slug: "phonepe",
     status: "inactive",
     transactions: "0",
-    volume: "₹0",
+    volume: "৳0",
   },
 ];
