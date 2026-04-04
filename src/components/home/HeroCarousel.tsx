@@ -35,6 +35,7 @@ const slides: Slide[] = [
 
 const HeroCarousel = () => {
   const [index, setIndex] = useState(0);
+  // console.log('index',index);
   const [isHovering, setIsHovering] = useState(false);
 
   const nextSlide = () =>

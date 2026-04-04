@@ -32,11 +32,13 @@ import {
     SafetyOutlined,
     SettingOutlined,
     ShopOutlined,
+    ShoppingCartOutlined,
     ShoppingOutlined,
     SwapOutlined,
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
+    TrophyOutlined,
     UnorderedListOutlined,
     UploadOutlined,
     UserOutlined,
@@ -483,7 +485,93 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
                     ),
                 },
             ],
-        }
+        },
+        {
+            key: "customers",
+            icon: <TeamOutlined />, // Customers module
+            label: "Customers",
+            children: [
+                {
+                    key: "customer-list",
+                    icon: <UserOutlined />, // Individual customers
+                    label: (
+                        <Link href="/admin/dashboard/customers/customer-list">
+                            Customer List
+                        </Link>
+                    ),
+                },
+                {
+                    key: "order-history",
+                    icon: <ShoppingCartOutlined />, // Orders
+                    label: (
+                        <Link href="/admin/dashboard/customers/order-history">
+                            Order History
+                        </Link>
+                    ),
+                },
+                {
+                    key: "address-book",
+                    icon: <HomeOutlined />, // Addresses
+                    label: (
+                        <Link href="/admin/dashboard/customers/address-book">
+                            Address Book
+                        </Link>
+                    ),
+                },
+                {
+                    key: "top-customers",
+                    icon: <TrophyOutlined />, // Best customers
+                    label: (
+                        <Link href="/admin/dashboard/customers/top-customers">
+                            Top Customers
+                        </Link>
+                    ),
+                },
+                {
+                    key: "reports",
+                    icon: <LineChartOutlined />, // Analytics / reports
+                    label: (
+                        <Link href="/admin/dashboard/customers/reports">
+                            Acquisition Report
+                        </Link>
+                    ),
+                },
+            ],
+        },
+        {
+            key: "suppliers-procurement",
+            icon: <TeamOutlined />, // Customers module
+            label: "Suppliers & Procurement",
+            children: [
+                {
+                    key: "supplier-Products",
+                    icon: <UserOutlined />, // Individual customers
+                    label: (
+                        <Link href="/admin/dashboard/suppliers/supplier-products">
+                            Supplier Products
+                        </Link>
+                    ),
+                },
+                {
+                    key: "purchase-order",
+                    icon: <UserOutlined />, // Individual customers
+                    label: (
+                        <Link href="/admin/dashboard/suppliers/purchase-order">
+                            Purchase Order
+                        </Link>
+                    ),
+                },
+                {
+                    key: "receive-po",
+                    icon: <UserOutlined />, // Individual customers
+                    label: (
+                        <Link href="/admin/dashboard/suppliers/receive-po">
+                            Receive PO
+                        </Link>
+                    ),
+                },
+            ],
+        },
 
     ];
 
