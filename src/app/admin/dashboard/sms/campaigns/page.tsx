@@ -1,0 +1,98 @@
+"use client";
+
+import PageHeader from "@/components/shared/page-header";
+import { DataTable, Column } from "@/components/shared/data-table";
+import { Tag, Button, Space } from "antd";
+import {
+  BarChartOutlined,
+  UserOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+import { mockCampaigns, SmsCampaign } from "./data";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import Link from "next/link";
+
+const statusColor: Record<string, string> = {
+  draft: "default",
+  scheduled: "blue",
+  running: "processing",
+  completed: "green",
+  failed: "red",
+};
+
+const columns: Column<SmsCampaign>[] = [
+  { key: "name", label: "Campaign", sortable: true },
+  {
+    key: "target_type",
+    label: "Target",
+    sortable: true,
+    filterOptions: ["all_customers", "segment", "manual"],
+  },
+  {
+    key: "status",
+    label: "Status",
+    sortable: true,
+    filterOptions: ["draft", "scheduled", "running", "completed", "failed"],
+    render: (r) => (
+      <Tag color={statusColor[r.status]}>{r.status.toUpperCase()}</Tag>
+    ),
+  },
+  { key: "total_recipients", label: "Recipients", sortable: true },
+  { key: "total_sent", label: "Sent", sortable: true },
+  {
+    key: "total_failed",
+    label: "Failed",
+    sortable: true,
+    render: (r) => (
+      <span className={r.total_failed > 0 ? "text-red-500 font-medium" : ""}>
+        {r.total_failed}
+      </span>
+    ),
+  },
+  {
+    key: "scheduled_at",
+    label: "Scheduled",
+    sortable: true,
+    render: (r) =>
+      r.scheduled_at ? new Date(r.scheduled_at).toLocaleDateString() : "—",
+  },
+];
+
+export default function CampaignList() {
+  const router = useRouter();
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="SMS Campaigns" breadcrumb={adminBreadcrumb} />
+
+      <DataTable
+        data={mockCampaigns}
+        columns={columns}
+        searchKeys={["name"]}
+        toolbarEnd={
+          <Link href="/admin/dashboard/sms/campaigns/create">
+            <Button type="primary">Create Campaign</Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              icon={<BarChartOutlined />}
+              onClick={() =>
+                router.push("/admin/dashboard/sms/campaigns/analytics")
+              }
+            />
+            <Button
+              icon={<UserOutlined />}
+              onClick={() =>
+                router.push("/admin/dashboard/sms/campaigns/recipients")
+              }
+            />
+            <Button icon={<EditOutlined />} />
+          </Space>
+        )}
+      />
+    </div>
+  );
+}
