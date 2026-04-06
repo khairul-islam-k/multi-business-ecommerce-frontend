@@ -1,5 +1,6 @@
 import {
     AlertOutlined,
+    ApartmentOutlined,
     AppstoreAddOutlined,
     AppstoreOutlined,
     ArrowUpOutlined,
@@ -8,14 +9,15 @@ import {
     BarChartOutlined,
     BarcodeOutlined,
     BellOutlined,
-    BranchesOutlined,
+    BulbOutlined,
+    CalendarOutlined,
     CarOutlined,
+    CommentOutlined,
     CreditCardOutlined,
     DashboardOutlined,
     DollarOutlined,
     EnvironmentOutlined,
     ExportOutlined,
-    FileDoneOutlined,
     FileTextOutlined,
     HistoryOutlined,
     HomeOutlined,
@@ -29,7 +31,9 @@ import {
     PlusSquareOutlined,
     ProfileOutlined,
     QuestionCircleOutlined,
+    ReadOutlined,
     RiseOutlined,
+    RobotOutlined,
     RollbackOutlined,
     SafetyOutlined,
     ScheduleOutlined,
@@ -42,6 +46,7 @@ import {
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
+    ThunderboltOutlined,
     TrophyOutlined,
     TruckOutlined,
     UnorderedListOutlined,
@@ -96,6 +101,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // billing
     {
         key: "billing",
         icon: <CreditCardOutlined />, // Billing / Payments
@@ -123,6 +130,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // User-Permission
     {
         key: "User-Permission",
         icon: <SafetyOutlined />, // Permissions / access control
@@ -184,6 +193,8 @@ export const items: MenuProps["items"] = [
             }
         ],
     },
+
+    // products-management
     {
         key: "products-management",
         icon: <ShoppingOutlined />, // Product / inventory related
@@ -598,6 +609,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // couriers
     {
         key: "couriers",
         icon: <TruckOutlined />, // Couriers main
@@ -659,6 +672,80 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // Website Builder
+    {
+        key: "Website-builder",
+        icon: <TruckOutlined />, // Couriers main
+        label: "Website Builder",
+        children: [
+            {
+                key: "websites",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/websites">
+                        Website List
+                    </Link>
+                ),
+            },
+            {
+                key: "Section-editor",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/section-editor">
+                        Section Editor
+                    </Link>
+                ),
+            },
+            {
+                key: "page-builder",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/page-builder">
+                        Page Builder
+                    </Link>
+                ),
+            },
+            {
+                key: "menu-builder",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/menu-builder">
+                        Menu Builder
+                    </Link>
+                ),
+            },
+            {
+                key: "template",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/template">
+                        Template
+                    </Link>
+                ),
+            },
+            {
+                key: "domains",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/domains">
+                        Domain Manager
+                    </Link>
+                ),
+            },
+            {
+                key: "publish-setting",
+                icon: <ShopOutlined />, // Courier companies
+                label: (
+                    <Link href="/admin/dashboard/website-builder/publish-setting">
+                        Publish Setting
+                    </Link>
+                ),
+            },
+        ],
+    },
+
+    // sms-marketing
     {
         key: "sms-marketing",
         icon: <MessageOutlined />, // SMS / messaging
@@ -757,77 +844,104 @@ export const items: MenuProps["items"] = [
         ],
     },
     {
-        key: "payment-gateway",
-        icon: <CreditCardOutlined />, // Payment Gateway / Transactions
-        label: "Payment Gateway",
+        key: "marketing-assistant",
+        icon: <RobotOutlined />, // AI / assistant
+        label: "Marketing Assistant",
         children: [
             {
-                key: "gateway-list",
-                icon: <UnorderedListOutlined />, // List of gateways
+                key: "marketing-chat",
+                icon: <CommentOutlined />, // AI chat
                 label: (
-                    <Link href="/admin/dashboard/payment-gateway/gateways">
-                        Gateway List
+                    <Link href="/admin/dashboard/ai/chat">
+                        Marketing Chat
                     </Link>
                 ),
             },
             {
-                key: "gateway-config",
-                icon: <SettingOutlined />, // Configuration & setup
+                key: "generated-product-descriptions",
+                icon: <FileTextOutlined />, // Product descriptions
                 label: (
-                    <Link href="/admin/dashboard/payment-gateway/configurations">
-                        Gateway Config
+                    <Link href="/admin/dashboard/ai/descriptions">
+                        G Product Descriptions
                     </Link>
                 ),
             },
             {
-                key: "gateway-rules",
-                icon: <BranchesOutlined />, // Routing / rules logic
+                key: "generated-promo-text",
+                icon: <ReadOutlined />, // Promo / ad copy
                 label: (
-                    <Link href="/admin/dashboard/payment-gateway/gateway-rules">
-                        Gateway Rules
+                    <Link href="/admin/dashboard/ai/promos">
+                        G Promo Text
                     </Link>
                 ),
             },
             {
-                key: "cod-settings",
-                icon: <DollarOutlined />, // Cash on Delivery
+                key: "generated-slogans",
+                icon: <BulbOutlined />, // Creative slogans
                 label: (
-                    <Link href="/admin/dashboard/payment-gateway/cod-settings">
-                        COD Settings
+                    <Link href="/admin/dashboard/ai/slogans">
+                        Generated Slogans
+                    </Link>
+                ),
+            },
+            {
+                key: "generation-history",
+                icon: <HistoryOutlined />, // Past generations
+                label: (
+                    <Link href="/admin/dashboard/ai/generation-history">
+                        Generation History
                     </Link>
                 ),
             },
         ],
     },
     {
-        key: "invoices",
-        icon: <FileDoneOutlined />, // Invoices / Billing
-        label: "Invoices",
+        key: "promotion-automation",
+        icon: <ThunderboltOutlined />, // Automation / triggers
+        label: "Promotion Automation",
         children: [
             {
-                key: "invoice-list",
-                icon: <UnorderedListOutlined />, // Invoice list
+                key: "promotions",
+                icon: <TagsOutlined />, // Discounts / offers
                 label: (
-                    <Link href="/admin/dashboard/invoices">
-                        Invoices
+                    <Link href="/admin/dashboard/promotions">
+                        Promotions
                     </Link>
                 ),
             },
             {
-                key: "create-invoice",
-                icon: <PlusCircleOutlined />, // Create new invoice
+                key: "create-promotion",
+                icon: <PlusCircleOutlined />, // Create new promotion
                 label: (
-                    <Link href="/admin/dashboard/invoices/create">
-                        Create Invoice
+                    <Link href="/admin/dashboard/promotions/create">
+                        Create Promotion
                     </Link>
                 ),
             },
             {
-                key: "invoice-templates",
-                icon: <FileTextOutlined />, // Invoice templates
+                key: "promotion-rules-builder",
+                icon: <ApartmentOutlined />, // Rules / conditions builder
                 label: (
-                    <Link href="/admin/dashboard/invoices/templates">
-                        Invoice Templates
+                    <Link href="/admin/dashboard/promotions/rules-builders">
+                        Promotion Rules Builder
+                    </Link>
+                ),
+            },
+            {
+                key: "promotion-calendar",
+                icon: <CalendarOutlined />, // Scheduling promotions
+                label: (
+                    <Link href="/admin/dashboard/promotions/calendar">
+                        Promotion Calendar
+                    </Link>
+                ),
+            },
+            {
+                key: "promotion-performance",
+                icon: <LineChartOutlined />, // Performance analytics
+                label: (
+                    <Link href="/admin/dashboard/promotions/performance">
+                        Promotion Performance
                     </Link>
                 ),
             },
