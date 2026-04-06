@@ -1,5 +1,6 @@
-import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { EyeOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, Flex, Grid, Input, Select, Space, Table, Tag } from 'antd';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 const { Option } = Select;
@@ -109,6 +110,14 @@ const PurchaseProductTable = () => {
                 return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
             },
         },
+        {
+            title: "",
+            render: (_: string, record: any) => (
+                <Link href={`/admin/dashboard/suppliers/purchase-order/detail/${record.id}`}>
+                    <Button type="text" icon={<EyeOutlined />} />
+                </Link>
+            ),
+        },
     ];
 
     return (
@@ -148,10 +157,12 @@ const PurchaseProductTable = () => {
                     </Space>
 
                     <div>
-                        <Button
-                        type='primary'
-                        icon={<PlusOutlined />}
-                        >Create PO</Button>
+                        <Link href='/admin/dashboard/suppliers/create-po'>
+                            <Button
+                                type='primary'
+                                icon={<PlusOutlined />}
+                            >Create PO</Button>
+                        </Link>
                     </div>
                 </Flex>
 
