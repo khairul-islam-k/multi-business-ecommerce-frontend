@@ -20,7 +20,9 @@ export default function PageHeader({ title, breadcrumb }: PageHeaderProps) {
         {title}
       </Title>
 
-      <Breadcrumbs {...breadcrumb} />
+      <div className="hidden md:block">
+        <Breadcrumbs {...breadcrumb} />
+      </div>
     </div>
   );
 }
