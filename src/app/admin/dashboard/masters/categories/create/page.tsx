@@ -15,7 +15,7 @@ export default function CreateCategoryPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Category created!");
-    router.push("/admin/dashboard/settings/categories");
+    router.push("/admin/dashboard/masters/categories");
   };
 
   return (

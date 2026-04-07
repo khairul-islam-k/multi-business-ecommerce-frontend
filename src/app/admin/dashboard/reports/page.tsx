@@ -116,14 +116,16 @@ export default function ReportsOverview() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card>
-        <Title level={4} style={{ margin: 0 }}>
-          Reports & Analytics
-        </Title>
-        <Text type="secondary">
-          Comprehensive business intelligence and reporting
-        </Text>
-      </Card>
+      <div>
+        <Card>
+          <Title level={4} style={{ margin: 0 }}>
+            Reports & Analytics
+          </Title>
+          <Text type="secondary">
+            Comprehensive business intelligence and reporting
+          </Text>
+        </Card>
+      </div>
 
       {/* Stats */}
       <Row gutter={[16, 16]}>
@@ -148,7 +150,7 @@ export default function ReportsOverview() {
                   hoverable
                   style={{ height: "100%" }}
                   bodyStyle={{ padding: 16 }}
-                >
+                >  
                   <div style={{ display: "flex", gap: 12 }}>
                     <div
                       style={{

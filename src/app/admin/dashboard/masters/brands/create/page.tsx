@@ -15,7 +15,7 @@ export default function CreateBrandPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Brand created!");
-    router.push("/admin/dashboard/settings/brands");
+    router.push("/admin/dashboard/masters/brands");
   };
 
   return (

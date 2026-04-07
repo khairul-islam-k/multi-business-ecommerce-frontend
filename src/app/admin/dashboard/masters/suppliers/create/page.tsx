@@ -14,7 +14,7 @@ export default function CreateSupplierPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Supplier created!");
-    router.push("/admin/dashboard/settings/suppliers");
+    router.push("/admin/dashboard/masters/suppliers");
   };
 
   return (

@@ -21,7 +21,7 @@ export default function EditBrandPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Brand updated!");
-    router.push("/admin/dashboard/settings/brands");
+    router.push("/admin/dashboard/masters/brands");
   };
 
   return (

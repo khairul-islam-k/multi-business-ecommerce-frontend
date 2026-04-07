@@ -94,7 +94,7 @@ export default function BrandsPage() {
             size="small"
             icon={<EditOutlined />}
             onClick={() =>
-              router.push(`/admin/dashboard/settings/brands/edit/${record.id}`)
+              router.push(`/admin/dashboard/masters/brands/edit/${record.id}`)
             }
           />
 
@@ -139,7 +139,7 @@ export default function BrandsPage() {
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          onClick={() => router.push("/admin/dashboard/settings/brands/create")}
+          onClick={() => router.push("/admin/dashboard/masters/brands/create")}
         >
           Add Brand
         </Button>

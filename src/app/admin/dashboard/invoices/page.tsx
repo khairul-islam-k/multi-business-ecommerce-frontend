@@ -59,10 +59,10 @@ export default function InvoiceList() {
             header: "",
             accessor: (r: any) => (
               <div className="flex gap-2">
-                <Link href={`/invoices/preview/${r.id}`}>
+                <Link href={`/admin/dashboard/invoices/preview/${r.id}`}>
                   <Button size="small">Preview</Button>
                 </Link>
-                <Link href={`/invoices/download/${r.id}`}>
+                <Link href={`/admin/dashboard/invoices/preview/${r.id}`}>
                   <Button size="small">PDF</Button>
                 </Link>
               </div>

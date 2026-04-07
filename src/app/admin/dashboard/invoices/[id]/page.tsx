@@ -46,13 +46,13 @@ export default function InvoiceDetails() {
       />
 
       <div className="flex items-center justify-end gap-3">
-        <Link href={`/invoices/preview/${id}`}>
+        <Link href={`/admin/dashboard/invoices/preview/${id}`}>
           <Button icon={<PrinterOutlined />}>Preview</Button>
         </Link>
 
         <Button icon={<SendOutlined />}>Send</Button>
 
-        <Link href={`/invoices/download/${id}`}>
+        <Link href={`/admin/dashboard/invoices/preview/${id}`}>
           <Button type="primary" icon={<DownloadOutlined />}>
             Download
           </Button>

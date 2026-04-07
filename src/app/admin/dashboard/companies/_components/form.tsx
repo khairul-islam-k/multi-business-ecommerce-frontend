@@ -35,6 +35,16 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
         </Col>
 
         <Col xs={24} md={12}>
+          <AntdForm.Item
+            name="companyDomain"
+            label="Company Domain"
+            rules={[{ required: true }]}
+          >
+            <Input prefix="https://" />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
           <AntdForm.Item name="industry" label="Industry">
             <Input />
           </AntdForm.Item>

@@ -89,7 +89,7 @@ export default function SuppliersPage() {
             icon={<EditOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/settings/suppliers/edit/${record.id}`,
+                `/admin/dashboard/masters/suppliers/edit/${record.id}`,
               )
             }
           />
@@ -133,7 +133,7 @@ export default function SuppliersPage() {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() =>
-            router.push("/admin/dashboard/settings/suppliers/create")
+            router.push("/admin/dashboard/masters/suppliers/create")
           }
         >
           Add Supplier
