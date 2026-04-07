@@ -19,7 +19,7 @@ export default function EditSupplierPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Supplier updated!");
-    router.push("/admin/dashboard/settings/suppliers");
+    router.push("/admin/dashboard/masters/suppliers");
   };
 
   return (

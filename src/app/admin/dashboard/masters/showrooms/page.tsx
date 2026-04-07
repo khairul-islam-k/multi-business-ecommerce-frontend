@@ -101,7 +101,7 @@ export default function ShowroomsPage() {
             icon={<EditOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/settings/showrooms/edit/${record.id}`,
+                `/admin/dashboard/masters/showrooms/edit/${record.id}`,
               )
             }
           />
@@ -148,7 +148,7 @@ export default function ShowroomsPage() {
           type="primary"
           icon={<PlusOutlined />}
           onClick={() =>
-            router.push("/admin/dashboard/settings/showrooms/create")
+            router.push("/admin/dashboard/masters/showrooms/create")
           }
         >
           Add Showroom

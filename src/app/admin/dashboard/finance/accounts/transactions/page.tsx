@@ -41,7 +41,7 @@ export default function TransactionsList() {
       key: "id",
       render: (_: any, record: any) => (
         <Link
-          href={`/admin/dashboard/finance/transactions/${record.id}`}
+          href={`/admin/dashboard/finance/accounts/transactions/${record.id}`}
           className="font-mono text-sm"
         >
           {record.id}

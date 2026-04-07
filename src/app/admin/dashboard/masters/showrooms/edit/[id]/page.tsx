@@ -20,7 +20,7 @@ export default function EditShowroomPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Showroom updated!");
-    router.push("/admin/dashboard/settings/showrooms");
+    router.push("/admin/dashboard/masters/showrooms");
   };
 
   return (
