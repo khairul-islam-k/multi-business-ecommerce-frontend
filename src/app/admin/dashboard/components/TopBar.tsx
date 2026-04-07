@@ -6,6 +6,8 @@ import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
 import GlobalSearch from "./GlobalSearch";
 import BusinessDropdown from "./BusinessDropdown";
 import ThemeToggle from "@/components/shared/theme-toggle";
+import Link from "next/link";
+import ProfileDropdown from "./ProfileDropdown";
 
 const { Header } = Layout;
 
@@ -60,11 +62,13 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
             {/* theme toggle */}
             <ThemeToggle />
 
-            <Badge dot>
-              <BellOutlined style={{ fontSize: 18 }} />
-            </Badge>
+            <Link href="/admin/dashboard/notifications">
+              <Badge dot>
+                <BellOutlined style={{ fontSize: 18 }} />
+              </Badge>
+            </Link>
 
-            <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=utshomh" />
+            <ProfileDropdown />
 
             {/* Mobile menu button */}
             <Button

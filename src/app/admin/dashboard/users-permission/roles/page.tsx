@@ -150,7 +150,7 @@ const RolesPage = () => {
                                             {
                                                 key: "delete",
                                                 danger: true,
-                                                label: <div><DeleteOutlined /> Edit</div>,
+                                                label: <div><DeleteOutlined /> Delete</div>,
                                     
                                             },
                                         ],

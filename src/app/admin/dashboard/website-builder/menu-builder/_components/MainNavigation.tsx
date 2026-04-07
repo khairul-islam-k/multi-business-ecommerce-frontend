@@ -1,72 +1,112 @@
-import { useState } from "react";
-import { Card, List, Button } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from '@ant-design/icons';
+import { Card, Flex, theme, Typography } from 'antd';
+import React from 'react';
 
-export interface MenuItem {
+interface MenuItem {
     id: number;
     nav: string;
     slug: string;
     children?: MenuItem[];
 }
 
-const initialMenuData: MenuItem[] = [
-    { id: 1, nav: "Home", slug: "/" },
-    {
-        id: 2,
-        nav: "Products",
-        slug: "/Products",
-        children: [
-            { id: 1, nav: "New Arrivals", slug: "/products/new" },
-            { id: 2, nav: "Sale", slug: "/products/sale" },
-        ],
-    },
-    { id: 3, nav: "About", slug: "/about" },
-    { id: 4, nav: "Contact", slug: "/contact" },
-];
+const { Text } = Typography;
 
 const MainNavigation = () => {
-    const [menu, setMenu] = useState<MenuItem[]>(initialMenuData);
+    const { token } = theme.useToken();
 
-    const handleDelete = (id: number, parentId?: number) => {
-        if (parentId) {
-            setMenu((prev) =>
-                prev.map((item) =>
-                    item.id === parentId
-                        ? { ...item, children: item.children?.filter((c) => c.id !== id) }
-                        : item
-                )
-            );
-        } else {
-            setMenu((prev) => prev.filter((item) => item.id !== id));
-        }
-    };
-
-    const renderMenu = (items: MenuItem[], parentId?: number) => (
-        <List
-            dataSource={items}
-            renderItem={(item) => (
-                <List.Item
-                    actions={[
-                        <span className="text-gray-500">{item.slug}</span>,
-                        <Button
-                            type="text"
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => handleDelete(item.id, parentId)}
-                        />,
-                    ]}
-                >
-                    <List.Item.Meta title={item.nav} />
-                    {item.children && renderMenu(item.children, item.id)}
-                </List.Item>
-            )}
-        />
-    );
+    const initialMenuData: MenuItem[] = [
+        { id: 1, nav: "Home", slug: "/" },
+        {
+            id: 2,
+            nav: "Products",
+            slug: "/Products",
+            children: [
+                { id: 1, nav: "New Arrivals", slug: "/products/new" },
+                { id: 2, nav: "Sale", slug: "/products/sale" },
+            ],
+        },
+        { id: 3, nav: "About", slug: "/about" },
+        { id: 4, nav: "Contact", slug: "/contact" },
+    ];
 
     return (
-        <Card title="Menu Items" style={{ maxWidth: 600, margin: "20px auto" }}>
-            {renderMenu(menu)}
-        </Card>
+        <div>
+            <Card>
+                {
+                    initialMenuData.map(item => {
+
+                        if (!item.children) {
+                            return (
+                                <div key={item.id}>
+                                    <Card style={{marginBottom: '8px'}}>
+                                        <Flex justify='space-between'>
+                                            <h3 style={{ fontSize: '17px' }}>{item.nav}</h3>
+
+                                            <div>
+                                                <Text>{item.slug}</Text>
+                                                <DeleteOutlined style={{
+                                                    color: token.colorErrorActive,
+                                                    marginLeft: '8px',
+                                                }} />
+                                            </div>
+                                        </Flex>
+                                    </Card>
+                                </div>
+                            )
+                        }
+
+                        // with child
+                        return (
+                            <div key={item.id}>
+
+                                {/* parent */}
+                                <Card style={{marginBottom: '8px'}}>
+                                    <Flex justify='space-between'>
+                                        <h3 style={{ fontSize: '17px' }}>{item.nav}</h3>
+
+                                        <div>
+                                            <Text>{item.slug}</Text>
+                                            <DeleteOutlined style={{
+                                                color: token.colorErrorActive,
+                                                marginLeft: '8px',
+                                            }} />
+                                        </div>
+                                    </Flex>
+                                </Card>
+
+                                {/* child */}
+                                <div>
+                                    {
+                                        item.children.map(child => {
+                                            return <div key={child.id}>
+                                                <Card style={{marginLeft: '20px',
+                                                    marginBottom: '8px'
+                                                }}>
+                                                    <Flex justify='space-between'>
+                                                        <h3 style={{ fontSize: '17px' }}>{child.nav}</h3>
+
+                                                        <div>
+                                                            <Text>{child.slug}</Text>
+                                                            <DeleteOutlined style={{
+                                                                color: token.colorErrorActive,
+                                                                marginLeft: '8px',
+                                                            }} />
+                                                        </div>
+                                                    </Flex>
+                                                </Card>
+                                            </div>
+                                        })
+                                    }
+                                </div>
+
+                            </div>
+                        )
+
+
+                    })
+                }
+            </Card>
+        </div>
     );
 };
 
