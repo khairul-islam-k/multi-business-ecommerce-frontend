@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, Row, Col, Typography } from "antd";
+import Link from 'next/link';
 
 interface Theme {
     id: number;
@@ -55,31 +56,33 @@ const GalleryCard = () => {
             <Row gutter={[24, 24]}>
                 {themes.map((theme) => (
                     <Col key={theme.id} xs={24} sm={12} md={8}>
-                        <Card
-                            hoverable
-                            cover={
-                                <img
-                                    src={theme.imageUrl}
-                                    alt={theme.title}
-                                    style={{ height: 200, objectFit: "cover" }}
-                                />
-                            }
-                        >
-                            {/* Title + Slug Row */}
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    marginBottom: 8,
-                                }}
+                        <Link href='/admin/dashboard/ai-websites/generated-preview'>
+                            <Card
+                                hoverable
+                                cover={
+                                    <img
+                                        src={theme.imageUrl}
+                                        alt={theme.title}
+                                        style={{ height: 200, objectFit: "cover" }}
+                                    />
+                                }
                             >
-                                <Text strong>{theme.title}</Text>
-                                <Text type="secondary">{theme.slug}</Text>
-                            </div>
+                                {/* Title + Slug Row */}
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        marginBottom: 8,
+                                    }}
+                                >
+                                    <Text strong>{theme.title}</Text>
+                                    <Text type="secondary">{theme.slug}</Text>
+                                </div>
 
-                            <Text type="secondary">{theme.description}</Text>
-                        </Card>
+                                <Text type="secondary">{theme.description}</Text>
+                            </Card>
+                        </Link>
                     </Col>
                 ))}
             </Row>

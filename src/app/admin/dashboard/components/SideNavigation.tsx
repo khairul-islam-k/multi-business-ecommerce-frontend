@@ -83,16 +83,13 @@ export const items: MenuProps["items"] = [
         icon: <BellOutlined />,
         label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
     },
+
+    // business
     {
         key: "business",
         icon: <TeamOutlined />,
         label: "Business",
         children: [
-            {
-                key: "profile",
-                icon: <ProfileOutlined />,
-                label: <Link href="/admin/dashboard/business/profile">Profile</Link>,
-            },
             {
                 key: "branding",
                 icon: <AppstoreOutlined />,
