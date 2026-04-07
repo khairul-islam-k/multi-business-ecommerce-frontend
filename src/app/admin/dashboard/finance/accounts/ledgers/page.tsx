@@ -1,19 +1,23 @@
 "use client";
 
-import { Badge, Col, Select, Table, Input, Typography, Row } from "antd";
+import Link from "next/link";
+import { Badge, Col, Select, Table, Input, Row } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { mockLedgers } from "./data";
 
-const { Link } = Typography;
 const { Search } = Input;
 
 const columns = [
   {
     title: "Name",
     dataIndex: "name",
-    render: (_: any, r: any) => <Link>{r.name}</Link>,
+    render: (_: any, r: any) => (
+      <Link href={`/admin/dashboard/finance/accounts/ledgers/${r.id}`}>
+        {r.name}
+      </Link>
+    ),
   },
   { title: "Type", dataIndex: "type" },
   {

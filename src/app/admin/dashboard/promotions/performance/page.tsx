@@ -116,7 +116,7 @@ export default function PromotionPerformance() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="uses" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="uses" radius={[4, 4, 0, 0]} fill="#52c41a" />
               </BarChart>
             </ResponsiveContainer>
           </Card>

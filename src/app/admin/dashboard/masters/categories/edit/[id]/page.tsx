@@ -21,7 +21,7 @@ export default function EditCategoryPage() {
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     message.success("Category updated!");
-    router.push("/admin/dashboard/settings/categories");
+    router.push("/admin/dashboard/masters/categories");
   };
 
   return (

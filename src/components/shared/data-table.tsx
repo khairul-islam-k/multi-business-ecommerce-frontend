@@ -9,6 +9,7 @@ import {
   Card,
   Pagination,
   Grid,
+  Descriptions,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState, useMemo } from "react";
@@ -134,54 +135,36 @@ export function DataTable<T extends Record<string, any>>({
       : []),
   ];
 
-  // 🎴 Modern Card Renderer
   const renderCard = (row: T) => {
     const primary = columns.find((c) => c.type === "primary") || columns[0];
-    const secondary = columns.filter((c) => c.type === "secondary");
-    const meta = columns.filter((c) => c.type === "meta");
+
+    // everything except primary goes into descriptions
+    const rest = columns.filter((c) => c.key !== primary.key);
 
     return (
       <Card
         key={row.id}
-        className="w-full rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all"
-        bodyStyle={{ padding: 16 }}
+        className="w-full rounded-2xl border border-gray-100 shadow-sm"
+        bodyStyle={{ padding: 12 }}
       >
         <div className="space-y-3">
-          {/* 🔥 Primary */}
-          <div className="text-base font-semibold leading-tight">
+          {/* 🔥 Title */}
+          <div className="text-[15px] font-semibold">
             {primary.render ? primary.render(row) : row[primary.key]}
           </div>
 
-          {/* 🧩 Secondary (grid) */}
-          {secondary.length > 0 && (
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              {secondary.map((col) => (
-                <div key={col.key} className="flex flex-col">
-                  <span className="text-[11px] text-gray-400 uppercase">
-                    {col.label}
-                  </span>
-                  <span className="text-sm font-medium">
-                    {col.render ? col.render(row) : row[col.key]}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* 🏷 Meta */}
-          {meta.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {meta.map((col) => (
-                <span key={col.key} className="text-xs">
-                  {col.render ? col.render(row) : row[col.key]}
-                </span>
-              ))}
-            </div>
-          )}
+          {/* 📋 Descriptions-style data */}
+          <Descriptions column={1} size="small">
+            {rest.map((col) => (
+              <Descriptions.Item key={col.key} label={col.label}>
+                {col.render ? col.render(row) : row[col.key]}
+              </Descriptions.Item>
+            ))}
+          </Descriptions>
 
           {/* ⚡ Actions */}
           {actions && (
-            <div className="pt-3 border-t flex justify-end gap-2">
+            <div className="pt-2 border-t flex justify-end gap-2">
               {actions(row)}
             </div>
           )}
@@ -189,7 +172,6 @@ export function DataTable<T extends Record<string, any>>({
       </Card>
     );
   };
-
   return (
     <div className="space-y-4">
       {/* 🔧 Toolbar */}

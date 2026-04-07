@@ -103,7 +103,7 @@ export default function CategoriesPage() {
             icon={<EditOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/settings/categories/edit/${record.id}`,
+                `/admin/dashboard/masters/categories/edit/${record.id}`,
               )
             }
           />
@@ -149,7 +149,7 @@ export default function CategoriesPage() {
         <Button
           type="primary"
           onClick={() =>
-            router.push("/admin/dashboard/settings/categories/create")
+            router.push("/admin/dashboard/masters/categories/create")
           }
           icon={<PlusOutlined />}
         >

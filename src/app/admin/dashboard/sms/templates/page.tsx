@@ -48,8 +48,6 @@ const columns: Column<SmsTemplate>[] = [
 ];
 
 export default function SmsTemplateList() {
-  const router = useRouter();
-
   return (
     <div className="space-y-6">
       <PageHeader title="SMS Templates" breadcrumb={adminBreadcrumb} />

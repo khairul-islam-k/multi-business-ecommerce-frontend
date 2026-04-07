@@ -4,6 +4,7 @@ export const mockCompanies: Company[] = [
   {
     id: "CMP-1001",
     companyName: "TechNova Solutions",
+    companyDomain: "technova.com",
     industry: "Software",
     employees: "120",
     plan: "Pro",
@@ -13,6 +14,7 @@ export const mockCompanies: Company[] = [
   {
     id: "CMP-1002",
     companyName: "GreenFields Agro",
+    companyDomain: "greenfieldsagro.com",
     industry: "Agriculture",
     employees: "85",
     plan: "Basic",
@@ -22,6 +24,7 @@ export const mockCompanies: Company[] = [
   {
     id: "CMP-1003",
     companyName: "UrbanBuild Co.",
+    companyDomain: "urbanbuild.co",
     industry: "Construction",
     employees: "230",
     plan: "Enterprise",
@@ -31,6 +34,7 @@ export const mockCompanies: Company[] = [
   {
     id: "CMP-1004",
     companyName: "HealthFirst",
+    companyDomain: "healthfirst.com",
     industry: "Healthcare",
     employees: "150",
     plan: "Pro",
@@ -40,6 +44,7 @@ export const mockCompanies: Company[] = [
   {
     id: "CMP-1005",
     companyName: "EduSmart",
+    companyDomain: "edusmart.io",
     industry: "Education",
     employees: "60",
     plan: "Basic",
