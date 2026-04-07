@@ -1,7 +1,9 @@
 'use client';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { Card, Table, Tag } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { Button, Card, Table, Tag } from 'antd';
+import Link from 'next/link';
 import React from 'react';
 
 const courierAccounts = [
@@ -95,6 +97,14 @@ const CourierConfig = () => {
                 </Tag>
             ),
         },
+        {
+            title: "",
+            render: (_: string, record: any) => (<Link href={`/admin/dashboard/couriers/courier-config/update-courier/${record.id}`}>
+                <Button
+                    icon={<EditOutlined />}
+                    type='text'></Button>
+            </Link>),
+        },
     ];
 
 
@@ -102,11 +112,11 @@ const CourierConfig = () => {
     return (
         <div>
 
-            <div style={{marginBottom: '24px'}}>
+            <div style={{ marginBottom: '24px' }}>
                 <PageHeader title="Courier Configurations" breadcrumb={adminBreadcrumb}></PageHeader>
+                <p>API integration settings for each courier</p>
             </div>
 
-            <p>API integration settings for each courier</p>
 
             <Card>
                 <div style={{

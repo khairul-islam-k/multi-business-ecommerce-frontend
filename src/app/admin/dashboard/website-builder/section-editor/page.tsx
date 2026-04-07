@@ -4,7 +4,6 @@ import { adminBreadcrumb } from '@/config/breadcrumb.config';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Grid, Select, Space } from 'antd';
 import React, { useState } from 'react';
-import SectionCollapse from './_components/SectionCollapse';
 import ConfigCollapse from './_components/SectionCollapse';
 
 const { Option } = Select;

@@ -104,8 +104,8 @@ const CourierCompanies = () => {
                 marginBottom: '24px',
             }}>
                 <PageHeader title='Courier Companies' breadcrumb={adminBreadcrumb}></PageHeader>
+                <p>Manage delivery partners</p>
             </div>
-            <p>Manage delivery partners</p>
 
             <Card>
                 <Table

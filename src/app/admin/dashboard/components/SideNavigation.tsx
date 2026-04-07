@@ -12,19 +12,26 @@ import {
     BulbOutlined,
     CalendarOutlined,
     CarOutlined,
+    CloudUploadOutlined,
     CommentOutlined,
+    CopyOutlined,
     CreditCardOutlined,
     DashboardOutlined,
     DollarOutlined,
+    EditOutlined,
     EnvironmentOutlined,
     ExportOutlined,
     FileTextOutlined,
+    GlobalOutlined,
     HistoryOutlined,
     HomeOutlined,
     IdcardOutlined,
     InboxOutlined,
     KeyOutlined,
+    LayoutOutlined,
     LineChartOutlined,
+    LinkOutlined,
+    MenuOutlined,
     MessageOutlined,
     PictureOutlined,
     PlusCircleOutlined,
@@ -42,11 +49,13 @@ import {
     ShopOutlined,
     ShoppingCartOutlined,
     ShoppingOutlined,
+    SnippetsOutlined,
     SwapOutlined,
     SyncOutlined,
     TagsOutlined,
     TeamOutlined,
     ThunderboltOutlined,
+    ToolOutlined,
     TrophyOutlined,
     TruckOutlined,
     UnorderedListOutlined,
@@ -74,16 +83,13 @@ export const items: MenuProps["items"] = [
         icon: <BellOutlined />,
         label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
     },
+
+    // business
     {
         key: "business",
         icon: <TeamOutlined />,
         label: "Business",
         children: [
-            {
-                key: "profile",
-                icon: <ProfileOutlined />,
-                label: <Link href="/admin/dashboard/business/profile">Profile</Link>,
-            },
             {
                 key: "branding",
                 icon: <AppstoreOutlined />,
@@ -253,9 +259,20 @@ export const items: MenuProps["items"] = [
                         Bulk Import
                     </Link>
                 ),
-            }
+            },
+            {
+                key: "bulk-export",
+                icon: <UploadOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/products-management/bulk-export">
+                        Bulk Export
+                    </Link>
+                ),
+            },
         ],
     },
+
+    // inventory
     {
         key: "inventory",
         icon: <ShopOutlined />, // Inventory / store
@@ -353,6 +370,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // orders
     {
         key: "orders",
         icon: <ShopOutlined />, // Orders / Store
@@ -396,6 +415,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // masters-settings
     {
         key: "masters-settings",
         icon: <ShopOutlined />, // Orders / Store
@@ -428,6 +449,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // finance-account
     {
         key: "finance-account",
         icon: <BankOutlined />, // Finance / Accounts
@@ -471,10 +494,12 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // finance-expense
     {
         key: "finance-expense",
         icon: <DollarOutlined />, // Expenses
-        label: "Finance / Expenses",
+        label: "Expenses",
         children: [
             {
                 key: "expenses",
@@ -489,13 +514,96 @@ export const items: MenuProps["items"] = [
                 key: "categories",
                 icon: <TagsOutlined />, // Expense Categories
                 label: (
-                    <Link href="/admin/dashboard/finance/accounts/expenses/categories">
+                    <Link href="/admin/dashboard/finance/expenses/categories">
                         Categories
                     </Link>
                 ),
             },
         ],
     },
+
+    // Payment Gateway
+    {
+        key: "payment-gateway",
+        icon: <CreditCardOutlined />, // Main menu
+        label: "Payment Gateway",
+        children: [
+            {
+                key: "gateway-list",
+                icon: <FileTextOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/payment-gateway/gateways">
+                        Gateway List
+                    </Link>
+                ),
+            },
+            {
+                key: "configurations",
+                icon: <SettingOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/payment-gateway/configurations">
+                        Gateway Config
+                    </Link>
+                ),
+            },
+            {
+                key: "gateway-rules",
+                icon: <SnippetsOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/payment-gateway/gateway-rules">
+                        Gateway Rules
+                    </Link>
+                ),
+            },
+            {
+                key: "cod-settings",
+                icon: <ToolOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/payment-gateway/cod-settings">
+                        COD Settings
+                    </Link>
+                ),
+            },
+        ],
+    },
+
+    // Invoices
+    {
+        key: "invoices",
+        icon: <FileTextOutlined />, // Main menu (Invoices)
+        label: "Invoices",
+        children: [
+            {
+                key: "invoice-list",
+                icon: <UnorderedListOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/invoices">
+                        Invoice List
+                    </Link>
+                ),
+            },
+            {
+                key: "create",
+                icon: <EditOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/invoices/create">
+                        Create Invoice
+                    </Link>
+                ),
+            },
+            {
+                key: "templates",
+                icon: <CopyOutlined />,
+                label: (
+                    <Link href="/admin/dashboard/invoices/templates">
+                        Invoice Templates
+                    </Link>
+                ),
+            },
+        ],
+    },
+
+    // customers
     {
         key: "customers",
         icon: <TeamOutlined />, // Customers module
@@ -548,6 +656,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // suppliers-procurement
     {
         key: "suppliers-procurement",
         icon: <ShopOutlined />,
@@ -675,13 +785,13 @@ export const items: MenuProps["items"] = [
 
     // Website Builder
     {
-        key: "Website-builder",
-        icon: <TruckOutlined />, // Couriers main
+        key: "website-builder",
+        icon: <AppstoreOutlined />, // Website Builder (main)
         label: "Website Builder",
         children: [
             {
                 key: "websites",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <GlobalOutlined />, // List of websites
                 label: (
                     <Link href="/admin/dashboard/website-builder/websites">
                         Website List
@@ -689,8 +799,8 @@ export const items: MenuProps["items"] = [
                 ),
             },
             {
-                key: "Section-editor",
-                icon: <ShopOutlined />, // Courier companies
+                key: "section-editor",
+                icon: <LayoutOutlined />, // Sections & layouts
                 label: (
                     <Link href="/admin/dashboard/website-builder/section-editor">
                         Section Editor
@@ -699,7 +809,7 @@ export const items: MenuProps["items"] = [
             },
             {
                 key: "page-builder",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <FileTextOutlined />, // Pages / content
                 label: (
                     <Link href="/admin/dashboard/website-builder/page-builder">
                         Page Builder
@@ -708,7 +818,7 @@ export const items: MenuProps["items"] = [
             },
             {
                 key: "menu-builder",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <MenuOutlined />, // Navigation menus
                 label: (
                     <Link href="/admin/dashboard/website-builder/menu-builder">
                         Menu Builder
@@ -717,7 +827,7 @@ export const items: MenuProps["items"] = [
             },
             {
                 key: "template",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <CopyOutlined />, // Templates
                 label: (
                     <Link href="/admin/dashboard/website-builder/template">
                         Template
@@ -726,7 +836,7 @@ export const items: MenuProps["items"] = [
             },
             {
                 key: "domains",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <LinkOutlined />, // Domains
                 label: (
                     <Link href="/admin/dashboard/website-builder/domains">
                         Domain Manager
@@ -735,7 +845,7 @@ export const items: MenuProps["items"] = [
             },
             {
                 key: "publish-setting",
-                icon: <ShopOutlined />, // Courier companies
+                icon: <CloudUploadOutlined />, // Publish settings
                 label: (
                     <Link href="/admin/dashboard/website-builder/publish-setting">
                         Publish Setting
@@ -743,6 +853,15 @@ export const items: MenuProps["items"] = [
                 ),
             },
         ],
+    },
+    {
+        key: "ai-websites",
+        icon: <RobotOutlined />, // AI Website Generator
+        label: (
+            <Link href="/admin/dashboard/ai-websites">
+                Website Generator
+            </Link>
+        ),
     },
 
     // sms-marketing
@@ -843,6 +962,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // marketing-assistant
     {
         key: "marketing-assistant",
         icon: <RobotOutlined />, // AI / assistant
@@ -895,6 +1016,8 @@ export const items: MenuProps["items"] = [
             },
         ],
     },
+
+    // promotion-automation
     {
         key: "promotion-automation",
         icon: <ThunderboltOutlined />, // Automation / triggers
