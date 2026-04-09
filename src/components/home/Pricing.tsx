@@ -152,9 +152,8 @@ export default function Pricing() {
               }}
             >
               <Card
-                className={`h-full rounded-2xl ${
-                  plan.current ? "border border-blue-500" : ""
-                }`}
+                className={`h-full rounded-2xl ${plan.current ? "border border-blue-500" : ""
+                  }`}
               >
                 {/* HEADER */}
                 <div className="mb-3">
@@ -221,7 +220,7 @@ export default function Pricing() {
                 </div>
 
                 {/* ACTION */}
-                <div className="mt-6">
+                {/* <div className="mt-6">
                   {plan.current ? (
                     <Button block disabled>
                       Current Plan
@@ -235,7 +234,13 @@ export default function Pricing() {
                       Upgrade
                     </Button>
                   )}
-                </div>
+                </div> */}
+
+                <Button type="primary" block>
+                  Get started
+                </Button>
+
+
               </Card>
             </motion.div>
           </Col>
