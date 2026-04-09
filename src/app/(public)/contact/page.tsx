@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Row, Col, Form, Input, Button, Typography, Card } from 'antd';
-import { MailOutlined, PhoneOutlined, EnvironmentOutlined } from '@ant-design/icons';
-import { motion, Variants } from 'framer-motion';
+import React from "react";
+import { Row, Col, Form, Input, Button, Typography, Card } from "antd";
+import {
+  MailOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
+} from "@ant-design/icons";
+import { motion, Variants } from "framer-motion";
 
 const { Title, Text } = Typography;
 
@@ -30,10 +34,9 @@ const rightVariants: Variants = {
 
 const ContactUs = () => {
   return (
-    <section style={{ padding: '80px 16px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <section style={{ padding: "80px 16px" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
         <Row gutter={[32, 32]} align="middle">
-
           {/* LEFT: CONTACT INFO */}
           <Col xs={24} md={12}>
             <motion.div
@@ -48,18 +51,20 @@ const ContactUs = () => {
               </Text>
 
               <div style={{ marginTop: 32 }}>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <MailOutlined style={{ fontSize: 20, color: '#fa8c16' }} />
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <MailOutlined style={{ fontSize: 20, color: "#fa8c16" }} />
                   <Text>support@fleekstore.com</Text>
                 </div>
 
-                <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                  <PhoneOutlined style={{ fontSize: 20, color: '#fa8c16' }} />
+                <div style={{ display: "flex", gap: 12, marginBottom: 16 }}>
+                  <PhoneOutlined style={{ fontSize: 20, color: "#fa8c16" }} />
                   <Text>+880 1234 567 890</Text>
                 </div>
 
-                <div style={{ display: 'flex', gap: 12 }}>
-                  <EnvironmentOutlined style={{ fontSize: 20, color: '#fa8c16' }} />
+                <div style={{ display: "flex", gap: 12 }}>
+                  <EnvironmentOutlined
+                    style={{ fontSize: 20, color: "#fa8c16" }}
+                  />
                   <Text>Dhaka, Bangladesh</Text>
                 </div>
               </div>
@@ -81,7 +86,9 @@ const ContactUs = () => {
                       <Form.Item
                         label="First Name"
                         name="firstName"
-                        rules={[{ required: true, message: 'First name required' }]}
+                        rules={[
+                          { required: true, message: "First name required" },
+                        ]}
                       >
                         <Input placeholder="John" />
                       </Form.Item>
@@ -91,7 +98,9 @@ const ContactUs = () => {
                       <Form.Item
                         label="Last Name"
                         name="lastName"
-                        rules={[{ required: true, message: 'Last name required' }]}
+                        rules={[
+                          { required: true, message: "Last name required" },
+                        ]}
                       >
                         <Input placeholder="Doe" />
                       </Form.Item>
@@ -102,8 +111,8 @@ const ContactUs = () => {
                     label="Email"
                     name="email"
                     rules={[
-                      { required: true, message: 'Email required' },
-                      { type: 'email', message: 'Invalid email' },
+                      { required: true, message: "Email required" },
+                      { type: "email", message: "Invalid email" },
                     ]}
                   >
                     <Input placeholder="john@example.com" />
@@ -112,7 +121,7 @@ const ContactUs = () => {
                   <Form.Item
                     label="Subject"
                     name="subject"
-                    rules={[{ required: true, message: 'Subject required' }]}
+                    rules={[{ required: true, message: "Subject required" }]}
                   >
                     <Input placeholder="How can we help?" />
                   </Form.Item>
@@ -120,9 +129,12 @@ const ContactUs = () => {
                   <Form.Item
                     label="Message"
                     name="message"
-                    rules={[{ required: true, message: 'Message required' }]}
+                    rules={[{ required: true, message: "Message required" }]}
                   >
-                    <Input.TextArea rows={4} placeholder="Write your message..." />
+                    <Input.TextArea
+                      rows={4}
+                      placeholder="Write your message..."
+                    />
                   </Form.Item>
 
                   <Button type="primary" block size="large">
@@ -132,7 +144,6 @@ const ContactUs = () => {
               </Card>
             </motion.div>
           </Col>
-
         </Row>
       </div>
     </section>
