@@ -1,4 +1,3 @@
-// components/FooterSection.tsx
 import Logo from "@/components/shared/logo";
 
 export const FooterSection = () => {
@@ -22,7 +21,7 @@ export const FooterSection = () => {
   ];
 
   return (
-    <footer className="bg-gray-950 text-gray-400 border-t border-gray-800">
+    <footer className="bg-gray-900 text-gray-400 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           {/* Logo & Description */}

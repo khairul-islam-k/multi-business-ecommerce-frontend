@@ -1,4 +1,3 @@
-// components/FAQSection.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,14 +11,14 @@ const faqs = [
       "You can launch your store within minutes. Our guided setup helps you add products, configure payments, and go live quickly.",
   },
   {
-    question: "Do I need technical knowledge to use ZatiqEasy?",
+    question: "Do I need technical knowledge to use OneComm?",
     answer:
-      "No technical skills are required. ZatiqEasy is built for non-technical users while still offering advanced features for developers.",
+      "No technical skills are required. OneComm is built for non-technical users while still offering advanced features for developers.",
   },
   {
     question: "Can I use my own domain name?",
     answer:
-      "Yes. You can connect your own custom domain or purchase one directly through ZatiqEasy.",
+      "Yes. You can connect your own custom domain or purchase one directly through OneComm.",
   },
   {
     question: "What payment methods are supported?",

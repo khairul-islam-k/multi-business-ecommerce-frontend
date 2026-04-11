@@ -1,24 +1,29 @@
 // components/Steps.tsx
 "use client";
+import {
+  LineChartOutlined,
+  ShoppingCartOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import { motion } from "framer-motion";
 
 const steps = [
   {
     number: "01",
     title: "Create an Account",
-    icon: "👤",
+    icon: <UserOutlined />,
     desc: "Welcome to OneComm! Sign up to launch your online store and access powerful tools.",
   },
   {
     number: "02",
     title: "Set Up Your Store",
-    icon: "🛒",
+    icon: <ShoppingCartOutlined />,
     desc: "Add your store name, select your country and category to launch in minutes.",
   },
   {
     number: "03",
     title: "Start Your Sales",
-    icon: "📈",
+    icon: <LineChartOutlined />,
     desc: "Start selling by adding your product. Enter product details like name, price, and photos.",
   },
 ];

@@ -1,5 +1,6 @@
-// components/FeaturesSection.tsx
 "use client";
+
+import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Car, Radio, Landmark } from "lucide-react";
@@ -8,7 +9,6 @@ import automotive from "../_assets/automotive.avif";
 import finance from "../_assets/finance.avif";
 import retail from "../_assets/retail.avif";
 import telecom from "../_assets/telecom.avif";
-import Image from "next/image";
 
 const industries = [
   {
@@ -68,7 +68,7 @@ export default function FeaturesSection() {
         </div>
 
         {/* Tabs */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
+        <div className="flex justify-center gap-3 mb-2 flex-wrap">
           {industries.map((ind) => {
             const Icon = ind.icon;
             const isActive = ind.key === active;

@@ -91,11 +91,11 @@ export default function Pricing() {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <section className="py-20 px-6 bg-gray-50">
+    <section className="py-10 md:py-20 px-6 bg-gray-50">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-emerald-600 font-semibold tracking-widest text-sm">
+          <span className="text-blue-600 font-semibold tracking-widest text-sm">
             PRICING
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
@@ -107,7 +107,7 @@ export default function Pricing() {
             <button
               onClick={() => setIsYearly(!isYearly)}
               className={`relative w-14 h-7 rounded-full transition-colors flex items-center px-1 ${
-                isYearly ? "bg-emerald-600" : "bg-gray-300"
+                isYearly ? "bg-blue-600" : "bg-gray-300"
               }`}
             >
               <motion.div
@@ -118,7 +118,7 @@ export default function Pricing() {
 
             <div className="flex items-center gap-2">
               <span className="text-gray-600 font-medium">Yearly</span>
-              <span className="bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full">
+              <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">
                 Save 20%
               </span>
             </div>
@@ -138,13 +138,13 @@ export default function Pricing() {
               className="relative"
             >
               {plan.current && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-semibold px-6 py-1 rounded-full shadow">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-semibold px-6 py-1 rounded-full shadow">
                   CURRENT PLAN
                 </div>
               )}
 
               <div
-                className={`bg-white rounded-3xl p-8 h-full flex flex-col border ${plan.current ? "border-emerald-500 shadow-xl" : "border-gray-100 hover:border-gray-200"} transition-all`}
+                className={`bg-white rounded-3xl p-8 h-full flex flex-col border ${plan.current ? "border-blue-500 shadow-xl" : "border-gray-100 hover:border-gray-200"} transition-all`}
               >
                 {/* Plan Info */}
                 <div className="mb-8">
@@ -175,7 +175,7 @@ export default function Pricing() {
                   <ul className="space-y-3">
                     {plan.included.map((feature, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-emerald-500 mt-0.5 flex-shrink-0" />
+                        <Check className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
                         <span className="text-gray-600">{feature}</span>
                       </li>
                     ))}
@@ -187,7 +187,7 @@ export default function Pricing() {
                   className={`mt-10 w-full py-4 rounded-2xl font-semibold text-lg transition-all ${
                     plan.current
                       ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                      : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200"
+                      : "bg-blue-600 hover:bg-blue-700 text-white! shadow-lg shadow-blue-200"
                   }`}
                 >
                   {plan.current ? "Current Plan" : "Get Started"}
