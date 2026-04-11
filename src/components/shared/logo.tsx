@@ -2,19 +2,26 @@
 
 import { Typography, Flex } from "antd";
 import { CloudOutlined } from "@ant-design/icons";
+import cn from "@/lib/cn";
 
 const { Text } = Typography;
 
 interface LogoProps {
   collapsed?: boolean;
+  className?: string;
+  white?: boolean;
 }
 
-export default function Logo({ collapsed = false }: LogoProps) {
+export default function Logo({
+  collapsed = false,
+  className = "",
+  white = false,
+}: LogoProps) {
   return (
     <Flex
       align="center"
       gap={collapsed ? 0 : 10}
-      className="overflow-hidden transition-all duration-300"
+      className={cn("overflow-hidden transition-all duration-300", className)}
       style={{ transition: "all 0.3s ease" }}
     >
       <div
@@ -43,6 +50,7 @@ export default function Logo({ collapsed = false }: LogoProps) {
           whiteSpace: "nowrap",
           overflow: "hidden",
           transition: "all 0.3s ease",
+          color: white ? "white" : "inherit",
         }}
       >
         {!collapsed && "OneComm"}
