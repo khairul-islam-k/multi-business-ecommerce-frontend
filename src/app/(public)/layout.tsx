@@ -3,11 +3,11 @@ import { Navbar } from "./_components/navbar";
 
 const MainLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
-    <>
+    <div className="w-full overflow-x-hidden">
       <Navbar />
       {children}
       <FooterSection />
-    </>
+    </div>
   );
 };
 

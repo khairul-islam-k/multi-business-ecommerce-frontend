@@ -9,7 +9,7 @@ export default function CTA() {
         <motion.h2
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="text-5xl font-bold text-white mb-6"
+          className="text-4xl md:text-5xl font-bold text-white mb-6"
         >
           Explore the Full Demo and
           <br />

@@ -39,7 +39,7 @@ export default function FAQSection() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-emerald-600 font-semibold tracking-widest">
+          <span className="text-blue-600 font-semibold tracking-widest">
             FAQ
           </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-4 mb-4">
@@ -76,7 +76,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.3 }}
                   >
                     {isOpen ? (
-                      <Minus className="w-6 h-6 text-emerald-600" />
+                      <Minus className="w-6 h-6 text-blue-600" />
                     ) : (
                       <Plus className="w-6 h-6 text-gray-400" />
                     )}
