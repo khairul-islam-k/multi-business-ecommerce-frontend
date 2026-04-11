@@ -1,131 +1,160 @@
-// components/Testimonials.tsx
 "use client";
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
   {
     id: 1,
     logo: "DATACENTERHAWK",
-    content:
-      "Broadleaf has transformed how we manage our complex infrastructure and customer accounts. The platform's flexibility and scalability are unmatched.",
+    review:
+      "Broadleaf transformed how we manage our complex infrastructure and customer accounts.",
     author: "Sarah Chen",
     role: "CTO at DataCenterHawk",
-    image: "https://via.placeholder.com/80", // Replace with real logo/image
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
   },
   {
     id: 2,
     logo: "MLB",
-    content:
-      "Implementing Broadleaf allowed us to unify our entire e-commerce ecosystem. The results have been incredible in terms of performance and user experience.",
+    review:
+      "Implementing Broadleaf unified our entire e-commerce ecosystem with incredible results.",
     author: "Michael Rodriguez",
     role: "Head of Digital, MLB",
-    image: "https://via.placeholder.com/80",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rodriguez",
   },
   {
     id: 3,
-    logo: "Pharmacy",
-    content:
-      "The compliance and security features give us peace of mind while handling sensitive customer data. Best enterprise commerce platform we've used.",
+    logo: "PHARMACY",
+    review:
+      "The compliance and security features give us complete peace of mind with sensitive data.",
     author: "Dr. Aisha Patel",
     role: "Operations Director",
-    image: "https://via.placeholder.com/80",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aisha",
+  },
+  {
+    id: 4,
+    logo: "RETAILCO",
+    review:
+      "OneComm helped us scale from 3 to 47 stores seamlessly. Best decision we made.",
+    author: "Rahim Khan",
+    role: "CEO at RetailCo",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahim",
   },
 ];
 
 export default function Testimonials() {
-  const [current, setCurrent] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const router = useRouter();
 
-  const next = () => setCurrent((prev) => (prev + 1) % testimonials.length);
-  const prev = () =>
-    setCurrent(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length,
-    );
+  const visibleCount = 2.5;
+  const maxIndex = testimonials.length - visibleCount;
+
+  const next = () => {
+    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
+  };
+
+  const prev = () => {
+    setCurrentIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  const handleCardClick = (id: number) => {
+    router.push(`/review/${id}`);
+  };
 
   return (
-    <section className="bg-blue-700 text-white! py-24">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row gap-16 items-center">
-          {/* Left Side - Heading */}
-          <div className="md:w-5/12">
-            <h2 className="text-5xl font-bold leading-tight mb-6">
-              What Our
-              <br />
-              Customers Say
+    <section className="py-24 bg-blue-600 text-white! overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Header */}
+        <div className="w-full md:w-3/4 flex flex-col gap-5 mb-12">
+          <div>
+            <h2 className="text-5xl font-bold leading-tight mb-4">
+              What Our Customers Say
             </h2>
-            <p className="text-blue-100! text-xl mb-10">
-              Discover what you can achieve with our platform and transform from
-              case studies across every industry.
+            <p className="text-gray-200! text-xl max-w-md">
+              Real stories from businesses transforming with OneComm
             </p>
-            <button className="border border-blue-400 hover:bg-blue-800 text-blue-100! px-8 py-3.5 rounded-full font-medium transition-all">
-              All Customer Stories →
-            </button>
           </div>
 
-          {/* Testimonial Carousel */}
-          <div className="md:w-7/12 relative">
-            <div className="relative h-105 overflow-hidden">
-              <AnimatePresence mode="wait">
-                {testimonials.map(
-                  (testimonial, index) =>
-                    index === current && (
-                      <motion.div
-                        key={testimonial.id}
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                      >
-                        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 h-full flex flex-col justify-between">
-                          <div>
-                            <div className="text-6xl text-blue-100! mb-8">
-                              “
-                            </div>
-                            <p className="text-2xl leading-relaxed text-white! mb-10">
-                              {testimonial.content}
-                            </p>
-                          </div>
+          <button className="mt-6 md:mt-0 border border-white hover:border-blue-400 hover:text-white px-8 py-3 rounded-full text-sm font-medium transition-all">
+            View All Stories
+          </button>
+        </div>
 
-                          <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-2xl font-bold">
-                              {testimonial.logo[0]}
-                            </div>
-                            <div>
-                              <p className="font-semibold">
-                                {testimonial.author}
-                              </p>
-                              <p className="text-blue-100! text-sm">
-                                {testimonial.role}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ),
-                )}
-              </AnimatePresence>
-            </div>
+        {/* Carousel Container */}
+        <div className="relative">
+          <div className="overflow-hidden">
+            <motion.div
+              className="flex gap-4"
+              animate={{
+                x: `calc(-${currentIndex * (100 / visibleCount)}% - ${currentIndex * 24}px)`,
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {testimonials.map((testimonial) => (
+                <motion.div
+                  key={testimonial.id}
+                  onClick={() => handleCardClick(testimonial.id)}
+                  whileTap={{ scale: 1.01 }}
+                  whileHover={{ scale: 0.98 }}
+                  className="border border-white hover:border-blue-500/50 rounded-3xl p-8 min-w-64 cursor-pointer transition-all duration-300 flex flex-col"
+                >
+                  {/* Logo */}
+                  <div className="relative size-10 rounded-full overflow-hidden ring-2 ring-blue-400 mb-4">
+                    <Image
+                      src={testimonial.avatar}
+                      alt={testimonial.author}
+                      width={100}
+                      height={100}
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </div>
 
-            {/* Navigation Buttons */}
-            <div className="flex gap-4 mt-8">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={prev}
-                className="w-14 h-14 border border-white/30 hover:border-white/60 rounded-2xl flex items-center justify-center transition-all"
-              >
-                ←
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={next}
-                className="w-14 h-14 border border-white/30 hover:border-white/60 rounded-2xl flex items-center justify-center transition-all"
-              >
-                →
-              </motion.button>
-            </div>
+                  {/* Review */}
+                  <p className="text-gray-300 text-[17px] leading-relaxed flex-1 mb-8">
+                    “{testimonial.review}”
+                  </p>
+
+                  {/* Author */}
+                  <div className="flex items-center">
+                    <div>
+                      <p className="font-semibold text-white">
+                        {testimonial.author}
+                      </p>
+                      <p className="text-sm text-gray-300">
+                        {testimonial.role}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-4 mt-10 justify-center md:justify-start">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={prev}
+              disabled={currentIndex === 0}
+              className="w-14 h-14 flex items-center justify-center border border-gray-700 hover:border-gray-400 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={next}
+              disabled={currentIndex >= maxIndex}
+              className="w-14 h-14 flex items-center justify-center border border-gray-700 hover:border-gray-400 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </motion.button>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Row, Col, Form, Input, Button, Typography, Card } from "antd";
 import {
   MailOutlined,

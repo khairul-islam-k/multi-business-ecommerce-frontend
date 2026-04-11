@@ -41,7 +41,7 @@ export default function AppointmentBooking() {
                   onClick={() => setSelectedDate(i + 1)}
                   className={`h-10 w-10 rounded-xl flex items-center justify-center text-sm font-medium transition-all ${
                     selectedDate === i + 1
-                      ? "bg-blue-600 text-white shadow-md"
+                      ? "bg-blue-600 text-white! shadow-md"
                       : "hover:bg-gray-100"
                   }`}
                 >
@@ -79,12 +79,12 @@ export default function AppointmentBooking() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="mt-8 p-6 bg-green-50 rounded-2xl border border-green-100"
+                className="mt-8 p-6 bg-blue-50 rounded-2xl border border-blue-100"
               >
-                <p className="text-green-700 font-medium">
+                <p className="text-blue-700 font-medium">
                   ✓ {selectedTime} on April {selectedDate}, 2026 (Online)
                 </p>
-                <button className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-2xl font-semibold">
+                <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white! py-3 rounded-2xl font-semibold">
                   Confirm Meeting
                 </button>
               </motion.div>

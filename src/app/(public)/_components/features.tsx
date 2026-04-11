@@ -1,5 +1,6 @@
-// components/FeaturesSection.tsx
 "use client";
+
+import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Car, Radio, Landmark } from "lucide-react";
@@ -8,7 +9,6 @@ import automotive from "../_assets/automotive.avif";
 import finance from "../_assets/finance.avif";
 import retail from "../_assets/retail.avif";
 import telecom from "../_assets/telecom.avif";
-import Image from "next/image";
 
 const industries = [
   {

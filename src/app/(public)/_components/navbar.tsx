@@ -7,13 +7,12 @@ import { Menu, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const navLinks = [
-  "Home",
-  "Pricing",
-  "Experts",
-  "Funding",
-  "Learn",
-  "Affiliates",
-  "About Us",
+  { name: "Home", href: "/" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Experts", href: "/" },
+  { name: "Features", href: "/features" },
+  { name: "Funding", href: "/" },
+  { name: "About Us", href: "/about" },
 ];
 
 export const Navbar = () => {
@@ -30,14 +29,14 @@ export const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {navLinks.map((link, i) => (
             <motion.a
-              key={link}
-              href="#"
+              key={i}
+              href={link.href}
               whileHover={{ y: -2 }}
               className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
             >
-              {link}
+              {link.name}
             </motion.a>
           ))}
         </div>
@@ -73,21 +72,21 @@ export const Navbar = () => {
             className="md:hidden border-t bg-white"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
-              {navLinks.map((link) => (
+              {navLinks.map((link, i) => (
                 <a
-                  key={link}
-                  href="#"
+                  key={i}
+                  href={link.href}
                   className="text-lg font-medium text-gray-700 hover:text-gray-900"
                 >
-                  {link}
+                  {link.name}
                 </a>
               ))}
               <div className="pt-6 border-t flex flex-col gap-4">
                 <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white! px-6 py-3 rounded-full font-semibold text-lg flex items-center gap-3 transition-all hover:scale-105"
+                  className="bg-blue-600 hover:bg-blue-700 text-white! px-6 py-3 rounded-full font-semibold text-lg flex items-center gap-3 transition-all hover:scale-[1.025]"
                   onClick={() => router.push("/admin/sign-in")}
                 >
-                  Create Your Store
+                  Sign In
                 </button>
               </div>
             </div>
