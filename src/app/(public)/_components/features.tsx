@@ -68,7 +68,7 @@ export default function FeaturesSection() {
         </div>
 
         {/* Tabs */}
-        <div className="flex justify-center gap-3 mb-12 flex-wrap">
+        <div className="flex justify-center gap-3 mb-2 flex-wrap">
           {industries.map((ind) => {
             const Icon = ind.icon;
             const isActive = ind.key === active;

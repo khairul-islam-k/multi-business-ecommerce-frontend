@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Hero({ onBookAppointment }: any) {
   return (
-    <section className="min-h-screen bg-linear-to-br from-blue-100 via-white to-purple-200 flex items-center">
+    <section className="min-h-screen bg-linear-to-br from-blue-200 via-purple-200 to-blue-100 flex items-center">
       <div className="max-w-7xl mx-auto px-6 py-14">
         <div className="text-center max-w-4xl mx-auto">
           <motion.div
@@ -13,7 +13,7 @@ export default function Hero({ onBookAppointment }: any) {
             transition={{ duration: 0.6 }}
             className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md px-6 py-2 rounded-full border border-blue-200 mb-8"
           >
-            <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse" />
+            <div className="w-3 h-3 bg-blue-700 rounded-full animate-pulse" />
             <span className="text-sm font-medium text-blue-700">
               No.1 Online Business Partner
             </span>
@@ -23,11 +23,11 @@ export default function Hero({ onBookAppointment }: any) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-900 leading-tighter mb-4"
+            className="text-4xl sm:text-5xl md:text-7xl font-black text-gray-900 leading-tighter mb-4"
           >
             One Platform.
             <br />
-            <span className="bg-linear-to-br from-blue-600 via-blue-700 to-purple-700 bg-clip-text text-transparent">
+            <span className="bg-linear-to-br from-purple-700 via-blue-700 to-blue-600 bg-clip-text text-transparent">
               Thousands of Success Stories
             </span>
           </motion.h1>

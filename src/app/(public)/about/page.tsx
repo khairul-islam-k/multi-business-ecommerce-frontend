@@ -7,7 +7,7 @@ import Image from "next/image";
 
 export default function AboutPage() {
   return (
-    <section className="py-10 px-6 bg-white">
+    <section className="py-10 md:py-20 px-6 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
@@ -39,7 +39,7 @@ export default function AboutPage() {
               repeat: Infinity,
               repeatType: "reverse",
             }}
-            className="hidden lg:block h-105 rounded-3xl relative overflow-hidden shadow-2xl"
+            className="h-105 rounded-3xl relative overflow-hidden shadow-2xl"
           >
             <Image
               src={analytics}
@@ -50,7 +50,7 @@ export default function AboutPage() {
             />
             <div className="absolute inset-0 bg-black/20" />
             <div className="absolute bottom-10 left-10 text-white">
-              <p className="text-sm uppercase tracking-widest">Since 2020</p>
+              <p className="text-sm uppercase tracking-widest">Since 2026</p>
               <p className="text-4xl font-bold mt-2">120+ Countries</p>
             </div>
           </motion.div>

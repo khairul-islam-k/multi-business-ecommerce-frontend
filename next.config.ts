@@ -2,7 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [{ hostname: "api.dicebear.com" }],
+    remotePatterns: [
+      { hostname: "api.dicebear.com" },
+      { hostname: "images.unsplash.com" },
+    ],
   },
 };
 

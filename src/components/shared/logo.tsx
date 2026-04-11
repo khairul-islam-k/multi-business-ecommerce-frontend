@@ -1,7 +1,9 @@
 "use client";
 
 import { Typography, Flex } from "antd";
+import { useRouter } from "next/navigation";
 import { CloudOutlined } from "@ant-design/icons";
+
 import cn from "@/lib/cn";
 
 const { Text } = Typography;
@@ -17,19 +19,25 @@ export default function Logo({
   className = "",
   white = false,
 }: LogoProps) {
+  const router = useRouter();
+
   return (
     <Flex
       align="center"
       gap={collapsed ? 0 : 10}
-      className={cn("overflow-hidden transition-all duration-300", className)}
+      className={cn(
+        "overflow-hidden transition-all duration-300 cursor-pointer",
+        className,
+      )}
       style={{ transition: "all 0.3s ease" }}
+      onClick={() => router.push("/")}
     >
       <div
         style={{
           width: 36,
           height: 36,
           borderRadius: 8,
-          background: "#6366f1",
+          background: "#2563EB",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

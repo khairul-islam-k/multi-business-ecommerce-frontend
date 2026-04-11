@@ -1,35 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 const testimonials = [
   {
     id: 1,
     logo: "DATACENTERHAWK",
-    review:
-      "Broadleaf transformed how we manage our complex infrastructure and customer accounts.",
+    review: "Transformed how we manage infrastructure.",
     author: "Sarah Chen",
-    role: "CTO at DataCenterHawk",
+    role: "CTO",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
   },
   {
     id: 2,
     logo: "MLB",
-    review:
-      "Implementing Broadleaf unified our entire e-commerce ecosystem with incredible results.",
+    review: "Unified our entire e-commerce ecosystem.",
     author: "Michael Rodriguez",
-    role: "Head of Digital, MLB",
+    role: "Head of Digital",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rodriguez",
   },
   {
     id: 3,
     logo: "PHARMACY",
-    review:
-      "The compliance and security features give us complete peace of mind with sensitive data.",
+    review: "Top-notch compliance and security.",
     author: "Dr. Aisha Patel",
     role: "Operations Director",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aisha",
@@ -37,10 +34,9 @@ const testimonials = [
   {
     id: 4,
     logo: "RETAILCO",
-    review:
-      "OneComm helped us scale from 3 to 47 stores seamlessly. Best decision we made.",
+    review: "Scaled from 3 to 47 stores easily.",
     author: "Rahim Khan",
-    role: "CEO at RetailCo",
+    role: "CEO",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Rahim",
   },
 ];
@@ -52,81 +48,74 @@ export default function Testimonials() {
   const visibleCount = 2.5;
   const maxIndex = testimonials.length - visibleCount;
 
-  const next = () => {
-    setCurrentIndex((prev) => Math.min(prev + 1, maxIndex));
-  };
-
-  const prev = () => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
-  };
+  const next = () => setCurrentIndex((p) => Math.min(p + 1, maxIndex));
+  const prev = () => setCurrentIndex((p) => Math.max(p - 1, 0));
 
   const handleCardClick = (id: number) => {
     router.push(`/review/${id}`);
   };
 
   return (
-    <section className="py-24 bg-blue-600 text-white! overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section className="py-24 bg-linear-to-br from-blue-600 to-blue-800 text-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10">
         {/* Header */}
-        <div className="w-full md:w-3/4 flex flex-col gap-5 mb-12">
-          <div>
-            <h2 className="text-5xl font-bold leading-tight mb-4">
-              What Our Customers Say
-            </h2>
-            <p className="text-gray-200! text-xl max-w-md">
-              Real stories from businesses transforming with OneComm
-            </p>
-          </div>
+        <div className="flex flex-col gap-6">
+          <h2 className="text-4xl md:text-5xl font-bold">What Customers Say</h2>
+          <p className="text-blue-100! text-lg max-w-md">
+            Discover how businesses like yours are using OneComm to boost
+            efficiency, <br className="hidden md:block" /> increase revenue, and
+            simplify their daily workflows.
+          </p>
 
-          <button className="mt-6 md:mt-0 border border-white hover:border-blue-400 hover:text-white px-8 py-3 rounded-full text-sm font-medium transition-all">
-            View All Stories
+          <button className="w-fit border border-white/40 hover:border-white px-8 py-3 rounded-full text-sm backdrop-blur-sm cursor-pointer">
+            View All
           </button>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative">
-          <div className="overflow-hidden">
+        {/* Carousel */}
+        <div>
+          <div className="overflow-x-hidden">
             <motion.div
-              className="flex gap-4"
+              className="flex gap-5"
               animate={{
-                x: `calc(-${currentIndex * (100 / visibleCount)}% - ${currentIndex * 24}px)`,
+                x: `calc(-${currentIndex * (100 / visibleCount)}% - ${currentIndex * 20}px)`,
               }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ type: "spring", stiffness: 250, damping: 25 }}
             >
-              {testimonials.map((testimonial) => (
+              {testimonials.map((t) => (
                 <motion.div
-                  key={testimonial.id}
-                  onClick={() => handleCardClick(testimonial.id)}
-                  whileTap={{ scale: 1.01 }}
-                  whileHover={{ scale: 0.98 }}
-                  className="border border-white hover:border-blue-500/50 rounded-3xl p-8 min-w-64 cursor-pointer transition-all duration-300 flex flex-col"
+                  key={t.id}
+                  onClick={() => handleCardClick(t.id)}
+                  whileHover={{ scale: 0.975 }}
+                  whileTap={{ scale: 1.025 }}
+                  className="bg-white/5 backdrop-blur-lg border border-white/10 hover:border-white/30 rounded-2xl p-6 min-w-60 cursor-pointer flex flex-col justify-between shadow-lg z-10"
                 >
-                  {/* Logo */}
-                  <div className="relative size-10 rounded-full overflow-hidden ring-2 ring-blue-400 mb-4">
-                    <Image
-                      src={testimonial.avatar}
-                      alt={testimonial.author}
-                      width={100}
-                      height={100}
-                      unoptimized
-                      className="object-cover"
-                    />
+                  {/* Top */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs tracking-wider text-blue-200">
+                      {t.logo}
+                    </span>
+                    <Quote className="w-5 h-5 text-blue-300" />
                   </div>
 
                   {/* Review */}
-                  <p className="text-gray-300 text-[17px] leading-relaxed flex-1 mb-8">
-                    “{testimonial.review}”
+                  <p className="text-sm text-blue-100 leading-relaxed mb-6">
+                    “{t.review}”
                   </p>
 
                   {/* Author */}
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src={t.avatar}
+                      alt={t.author}
+                      width={36}
+                      height={36}
+                      className="rounded-full"
+                      unoptimized
+                    />
                     <div>
-                      <p className="font-semibold text-white">
-                        {testimonial.author}
-                      </p>
-                      <p className="text-sm text-gray-300">
-                        {testimonial.role}
-                      </p>
+                      <p className="text-sm font-medium">{t.author}</p>
+                      <p className="text-xs text-blue-300">{t.role}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -134,27 +123,23 @@ export default function Testimonials() {
             </motion.div>
           </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex gap-4 mt-10 justify-center md:justify-start">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+          {/* Controls */}
+          <div className="flex gap-3 mt-8">
+            <button
               onClick={prev}
               disabled={currentIndex === 0}
-              className="w-14 h-14 flex items-center justify-center border border-gray-700 hover:border-gray-400 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40"
             >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
+              <ChevronLeft />
+            </button>
 
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
               onClick={next}
               disabled={currentIndex >= maxIndex}
-              className="w-14 h-14 flex items-center justify-center border border-gray-700 hover:border-gray-400 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 disabled:opacity-40"
             >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
+              <ChevronRight />
+            </button>
           </div>
         </div>
       </div>
