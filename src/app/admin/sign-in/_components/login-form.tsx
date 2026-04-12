@@ -5,10 +5,9 @@ import { Card, Form, Input, Button, Checkbox, Typography, Flex } from "antd";
 
 import { login } from "../utils";
 import useSubmit from "@/hooks/use-submit";
-import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
 
-const { Title, Text, Link } = Typography;
+const { Link } = Typography;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
@@ -18,15 +17,7 @@ export default function LoginForm() {
   });
 
   return (
-    <Card style={{ width: 420 }}>
-      <Flex vertical align="center" gap="small">
-        <Logo />
-        <Title level={3} style={{ margin: 0 }}>
-          Admin Login
-        </Title>
-        <Text type="secondary">Sign in to manage your business</Text>
-      </Flex>
-
+    <Card style={{ width: "full" }}>
       <Form<LoginFormValues>
         form={form}
         layout="vertical"
