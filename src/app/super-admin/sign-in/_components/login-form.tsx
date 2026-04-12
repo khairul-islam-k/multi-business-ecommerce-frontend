@@ -1,17 +1,49 @@
 "use client";
 
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { Card, Form, Input, Button, Checkbox, Typography, Flex } from "antd";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  Typography,
+  Flex,
+  message,
+} from "antd";
 
-import { login } from "../utils";
 import useSubmit from "@/hooks/use-submit";
 import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
+import { useRouter } from "next/navigation";
+import { setCredentials } from "@/store/auth-slice";
+import api from "@/lib/axios";
 
 const { Title, Text, Link } = Typography;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
+  const router = useRouter();
+
+  const login = async (values: LoginFormValues) => {
+    try {
+      const { email, password } = values;
+      await new Promise((r) => setTimeout(r, 2000));
+      const response = await api
+        .post("/auth/login", { email, password })
+        .then((res) => res.data);
+      const { accessToken } = response.data;
+      setCredentials({ accessToken });
+      message.success("Successfully signed-in!");
+      router.push("/super-admin/dashboard");
+    } catch (e: any) {
+      message.error(
+        e?.message && e.message.includes("400")
+          ? "Invalid Credentials."
+          : "Couldn't sign in. Try again later",
+      );
+    }
+  };
 
   const { loading, handler } = useSubmit<LoginFormValues>(async (values) => {
     await login(values);

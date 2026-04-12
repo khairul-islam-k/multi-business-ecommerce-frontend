@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function CTA() {
   return (
-    <section className="bg-linear-to-br from-blue-900 via-blue-800 to-blue-950 py-24 rounded-3xl mx-4 my-12 overflow-hidden relative">
+    <section className="bg-blue-800 py-24 rounded-3xl mx-4 my-12 overflow-hidden relative">
       <div className="max-w-4xl mx-auto text-center px-6 relative z-10">
         <motion.h2
           initial={{ opacity: 0 }}
