@@ -11,6 +11,7 @@ import Testimonials from "./_components/testimonials";
 import BusinessSmarter from "./_components/business-smarter";
 import FAQSection from "./_components/faq";
 import Pricing from "./_components/pricing";
+import IndustrySolutions from "./_components/industries";
 
 export default function Homepage() {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
@@ -19,6 +20,7 @@ export default function Homepage() {
     <div>
       <HeroSection onBookAppointment={() => setAppointmentOpen(true)} />
       <FeaturesSection />
+      <IndustrySolutions />
       <Pricing />
       <CTA />
       <BusinessSmarter />

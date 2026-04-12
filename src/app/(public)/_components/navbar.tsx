@@ -30,7 +30,7 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 left-0 z-50 transition-all duration-300 ${
         scrolled
           ? "bg-white/80 backdrop-blur-xl shadow-sm"
           : "bg-white/95 backdrop-blur-md"
