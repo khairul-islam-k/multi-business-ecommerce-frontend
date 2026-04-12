@@ -1,40 +1,119 @@
-import { Table, Checkbox } from "antd";
+"use client";
+import { EyeOutlined } from "@ant-design/icons";
+import LineItemAddFrom from "./LineItemAddFrom";
+import { Table, Tag, Space, Button, Card } from "antd";
+import type { ColumnsType } from "antd/es/table";
 
-import { mockModules } from "../data";
+export type ModuleStatus = "Active" | "Inactive";
 
-export default function ModuleMatrixTable({
-  packages,
-  matrix,
-  onToggle,
-}: {
-  packages: any[];
-  matrix: Record<string, Record<string, boolean>>;
-  onToggle: (moduleId: string, packageName: string, value: boolean) => void;
-}) {
-  const columns = [
+export interface ModuleItem {
+  name: string;
+  slug: string;
+  detail: string;
+  icon: string;
+  routePath: string;
+  sortOrder: number;
+  isCore?: boolean;
+  status: ModuleStatus;
+}
+
+export const moduleData: ModuleItem[] = [
+  {
+    name: "Inventory",
+    slug: "inventory",
+    detail: "Manage stock and products",
+    icon: "boxes",
+    routePath: "/inventory",
+    sortOrder: 1,
+    isCore: true,
+    status: "Active",
+  },
+  {
+    name: "Orders",
+    slug: "orders",
+    detail: "Order management system",
+    icon: "shopping-cart",
+    routePath: "/orders",
+    sortOrder: 2,
+    status: "Active",
+  },
+];
+
+export default function ModuleMatrixTable() {
+
+  const columns: ColumnsType<ModuleItem> = [
     {
-      title: "Module",
+      title: "Module Name",
       dataIndex: "name",
-      fixed: "left" as const,
-      width: 200,
-    },
-    ...packages.map((p) => ({
-      title: p.name,
-      align: "center" as const,
-      render: (_: any, record: any) => (
-        <Checkbox
-          checked={matrix[record.id]?.[p.name]}
-          onChange={(e) => onToggle(record.id, p.name, e.target.checked)}
-        />
+      key: "name",
+      render: (text, record) => (
+        <Space>
+          <strong>{text}</strong>
+          {record.isCore && <Tag color="blue">Core</Tag>}
+        </Space>
       ),
-    })),
+    },
+    {
+      title: "Slug",
+      dataIndex: "slug",
+      key: "slug",
+    },
+    {
+      title: "Detail",
+      dataIndex: "detail",
+      key: "detail",
+    },
+    {
+      title: "Route",
+      dataIndex: "routePath",
+      key: "routePath",
+    },
+    {
+      title: "Order",
+      dataIndex: "sortOrder",
+      key: "sortOrder",
+      sorter: (a, b) => a.sortOrder - b.sortOrder,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => (
+        <Tag color={status === "Active" ? "green" : "red"}>
+          {status}
+        </Tag>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: () => (
+        <Space>
+          <Button
+          type="text"
+          icon={<EyeOutlined />}
+          ></Button>
+        </Space>
+      ),
+    },
   ];
 
-  const data = mockModules.map((m) => ({
-    key: m.id,
-    id: m.id,
-    name: m.name,
-  }));
-
-  return <Table columns={columns} dataSource={data} pagination={false} />;
+  return <div>
+    {/* table */}
+    <Table
+      rowKey="slug"
+      columns={columns}
+      dataSource={moduleData}
+      pagination={false}
+      bordered
+    />
+    {/* ItemAddForm */}
+    <Card
+      style={{
+        marginTop: '10px'
+      }}
+    >
+      <LineItemAddFrom />
+    </Card>
+  </div>;
 }

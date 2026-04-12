@@ -158,9 +158,6 @@ const LineItemsForm = () => {
           )}
         </strong>
 
-        {/* <Button type="primary" onClick={handleSubmit}>
-          Submit
-        </Button> */}
       </div>
     </Card>
   );
