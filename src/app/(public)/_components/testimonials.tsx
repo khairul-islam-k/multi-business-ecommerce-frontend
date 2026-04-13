@@ -43,10 +43,10 @@ export default function Testimonials() {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-blue-900 to-blue-950 text-white py-24 overflow-hidden">
+    <section className="relative bg-linear-to-br from-blue-900 to-blue-950 text-white py-24 overflow-hidden">
       {/* Decorative background */}
       <div className="absolute bottom-0 left-0 w-full h-64 pointer-events-none">
-        <div className="absolute -bottom-20 -left-32 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl" />
+        <div className="absolute -bottom-20 -left-32 w-125 h-125 bg-blue-500/10 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto px-6">
@@ -84,7 +84,7 @@ export default function Testimonials() {
                     key={customer.id}
                     onClick={() => handleCardClick(customer.id)}
                     whileHover={{ scale: 0.98 }}
-                    className="group relative bg-white min-w-[260px] h-[180px] rounded-3xl flex items-center justify-center p-8 cursor-pointer overflow-hidden border border-white/10 shadow-sm"
+                    className="group relative bg-white min-w-65 h-45 rounded-3xl flex items-center justify-center p-8 cursor-pointer overflow-hidden border border-white/10 shadow-sm"
                   >
                     {/* Initial State - Only Logo */}
                     <div className="flex items-center justify-center h-full w-full transition-all duration-300 group-hover:opacity-0">
@@ -112,13 +112,10 @@ export default function Testimonials() {
 
                       {/* Overlay Content */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-                        <Eye className="w-12 h-12 text-white mb-4 drop-shadow-md" />
-                        <p className="text-white font-semibold text-2xl tracking-wide">
+                        <p className="text-white font-semibold text-2xl tracking-wide m-0!">
                           {customer.name}
                         </p>
-                        <p className="text-blue-100 text-sm mt-2">
-                          View Case Study
-                        </p>
+                        <Eye className="w-10 h-10 text-white drop-shadow-md" />
                       </div>
                     </div>
                   </motion.div>
