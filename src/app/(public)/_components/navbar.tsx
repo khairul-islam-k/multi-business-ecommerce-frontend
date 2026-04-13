@@ -49,7 +49,7 @@ export const Navbar = () => {
               key={link.name}
               href={link.href}
               whileHover={{ y: -2 }}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-gray-600! hover:text-gray-900! transition-colors pb-1 border-b-[1.5px] border-b-transparent hover:border-b-gray-800"
             >
               {link.name}
             </motion.a>
