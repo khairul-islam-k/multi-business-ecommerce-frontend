@@ -15,6 +15,7 @@ import AnimatedProduct from "./_components/AnimatedProduct";
 import IndustrySolutions from "./_components/industries";
 import ProductGrid from "./_components/product-grid";
 import WhyUs from "./_components/why-us";
+import BlazingFast from "./_components/BlazingFast";
 
 export default function Homepage() {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
@@ -33,6 +34,10 @@ export default function Homepage() {
       <BusinessSmarter />
       <Testimonials />
       <StepsSection />
+
+      {/* Blazing */}
+      <BlazingFast />
+
       <ProductGrid />
       <FAQSection />
       <AppointmentModal
