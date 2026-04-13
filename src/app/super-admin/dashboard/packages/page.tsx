@@ -66,11 +66,7 @@ export default function PackagesPage() {
       key: "matrix",
       label: "Module Matrix",
       children: (
-        <ModuleMatrixTable
-          packages={mockPackages}
-          matrix={matrix}
-          onToggle={toggle}
-        />
+        <ModuleMatrixTable />
       ),
     },
     {

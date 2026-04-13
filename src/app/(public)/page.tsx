@@ -11,6 +11,7 @@ import Testimonials from "./_components/testimonials";
 import BusinessSmarter from "./_components/business-smarter";
 import FAQSection from "./_components/faq";
 import Pricing from "./_components/pricing";
+import AnimatedProduct from "./_components/AnimatedProduct";
 
 export default function Homepage() {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
@@ -19,6 +20,9 @@ export default function Homepage() {
     <div>
       <HeroSection onBookAppointment={() => setAppointmentOpen(true)} />
       <FeaturesSection />
+      {/* animated product */}
+      <AnimatedProduct />
+
       <Pricing />
       <CTA />
       <BusinessSmarter />
