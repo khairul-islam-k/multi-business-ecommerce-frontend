@@ -16,6 +16,7 @@ import IndustrySolutions from "./_components/industries";
 import ProductGrid from "./_components/product-grid";
 import WhyUs from "./_components/why-us";
 import BlazingFast from "./_components/BlazingFast";
+import TrustOwner from "./_components/TrustOwner";
 
 export default function Homepage() {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
@@ -26,6 +27,8 @@ export default function Homepage() {
       <FeaturesSection />
       {/* animated product */}
       <AnimatedProduct />
+
+      <TrustOwner />
 
       <IndustrySolutions />
       <Pricing />
