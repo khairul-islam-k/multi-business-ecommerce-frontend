@@ -82,7 +82,7 @@
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  animation: spin 20s linear infinite;
+  animation: spin 120s linear infinite;
   transform-style: preserve-3d;
 }
 
@@ -93,5 +93,50 @@
 
   to {
     transform: rotateY(360deg);
+  }
+}
+
+/* global css */
+
+.scroll-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+
+  background: #1677ff;
+  color: #fff;
+  font-size: 22px;
+  border: none;
+  cursor: pointer;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+
+  z-index: 1000;
+}
+
+.scroll-top.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.scroll-top:hover {
+  background: #0958d9;
+}
+
+/* Mobile friendly */
+@media (max-width: 768px) {
+  .scroll-top {
+    bottom: 20px;
+    right: 20px;
+    width: 42px;
+    height: 42px;
   }
 }
