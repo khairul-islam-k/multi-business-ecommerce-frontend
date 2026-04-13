@@ -5,6 +5,7 @@ const MainLayout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <div className="w-full overflow-x-hidden">
       <Navbar />
+      <div className="py-8" />
       {children}
       <FooterSection />
     </div>

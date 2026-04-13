@@ -30,9 +30,9 @@ export const Navbar = () => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 backdrop-blur-xl shadow-sm"
+          ? "bg-white/10 backdrop-blur-xl shadow-sm"
           : "bg-white/95 backdrop-blur-md"
       }`}
     >
@@ -49,7 +49,7 @@ export const Navbar = () => {
               key={link.name}
               href={link.href}
               whileHover={{ y: -2 }}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-gray-600! hover:text-gray-900! transition-colors pb-1 border-b-[1.5px] border-b-transparent hover:border-b-gray-800"
             >
               {link.name}
             </motion.a>
