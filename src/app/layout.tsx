@@ -1,3 +1,4 @@
+import { Layout } from "antd";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 
@@ -6,7 +7,8 @@ import "antd/dist/reset.css";
 
 import AntdRegistry from "@/providers/antd-registry";
 import ThemeProvider from "@/providers/theme-provider";
-import { Layout } from "antd";
+import AuthProvider from "@/providers/auth-provider";
+import ReduxProvider from "@/providers/redux-provider";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -28,7 +30,11 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <AntdRegistry>
-            <Layout>{children}</Layout>
+            <ReduxProvider>
+              <AuthProvider>
+                <Layout>{children}</Layout>
+              </AuthProvider>
+            </ReduxProvider>
           </AntdRegistry>
         </ThemeProvider>
       </body>
