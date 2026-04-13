@@ -66,13 +66,7 @@ export default function PackagesPage() {
       key: "matrix",
       label: "Module Matrix",
       children: (
-        <Card>
-          <ModuleMatrixTable
-            packages={mockPackages}
-            matrix={matrix}
-            onToggle={toggle}
-          />
-        </Card>
+        <ModuleMatrixTable />
       ),
     },
     {
@@ -89,7 +83,6 @@ export default function PackagesPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Package" breadcrumb={superAdminBreadcrumb} />
-
       <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
     </div>
   );
