@@ -52,7 +52,7 @@ export default function IndustriesSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-4">
           {industries.map((ind, i) => (
             <div
               key={ind.name}

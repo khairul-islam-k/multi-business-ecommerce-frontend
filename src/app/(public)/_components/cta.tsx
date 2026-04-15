@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function CTA() {
   return (
-    <section className="bg-blue-800 py-24 rounded-3xl mx-4 my-12 overflow-hidden relative">
+    <section className="bg-blue-700 py-24 rounded-3xl mx-4 my-12 overflow-hidden relative">
       <div className="max-w-4xl mx-auto text-center px-6 relative z-10">
         <motion.h2
           initial={{ opacity: 0 }}
@@ -15,7 +15,7 @@ export default function CTA() {
           <br />
           Discover What&apos;s Possible
         </motion.h2>
-        <p className="text-emerald-100 text-xl mb-10">
+        <p className="text-emerald-100 text-sm sm:text-xl mb-10">
           Step inside the OneComm experience and preview how your store will
           look, function, and grow.
         </p>
