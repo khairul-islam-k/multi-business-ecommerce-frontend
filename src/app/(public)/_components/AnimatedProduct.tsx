@@ -8,19 +8,17 @@ import product_5 from '@/assets/animate-product/shoes.png';
 import product_6 from '@/assets/animate-product/sit.png';
 import product_7 from '@/assets/animate-product/sunglass.png';
 import { motion } from "framer-motion";
-import { Grid, theme, Typography } from 'antd';
+import { Grid, theme } from 'antd';
 
 const AnimatedProduct = () => {
     const {token} = theme.useToken();
     const screens = Grid.useBreakpoint();
 
-    const {Title} = Typography;
-
     return (
         <div>
             <div
             style={{
-                background: token.colorBgTextActive,
+                background: token.colorPrimary,
                 display: screens.xs ? 'none': 'block'
             }}
             className='banner'>
