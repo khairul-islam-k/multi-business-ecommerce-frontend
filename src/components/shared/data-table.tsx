@@ -24,7 +24,6 @@ export interface Column<T> {
   render?: (row: T) => React.ReactNode;
   filterOptions?: string[];
 
-  // ✨ NEW (optional, no breaking change)
   type?: "primary" | "secondary" | "meta";
 }
 
@@ -60,7 +59,6 @@ export function DataTable<T extends Record<string, any>>({
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [page, setPage] = useState(1);
 
-  // 🔍 Filtering
   const filteredData = useMemo(() => {
     let result = [...data];
 
@@ -84,18 +82,15 @@ export function DataTable<T extends Record<string, any>>({
     return result;
   }, [data, debouncedSearch, searchKeys, filters]);
 
-  // 🔄 Reset page on filter/search change
   useMemo(() => {
     setPage(1);
   }, [debouncedSearch, filters]);
 
-  // 📄 Pagination
   const paginatedData = useMemo(() => {
     const start = (page - 1) * pageSize;
     return filteredData.slice(start, start + pageSize);
   }, [filteredData, page, pageSize]);
 
-  // 🔽 Sorter
   const getSorter = (key: string) => (a: any, b: any) => {
     const av = a[key];
     const bv = b[key];

@@ -46,7 +46,7 @@ export const FooterSection = () => {
                   <li key={link}>
                     <a
                       href="#"
-                      className="hover:text-white transition-all duration-200 hover:translate-x-0.5 inline-block"
+                      className="text-white! hover:text-gray-400! transition-all duration-200 hover:translate-x-0.5 inline-block"
                     >
                       {link}
                     </a>
@@ -64,10 +64,16 @@ export const FooterSection = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
             <p>© 2026 OneComm. All rights reserved.</p>
             <div className="flex items-center gap-6 text-xs">
-              <a href="#" className="hover:text-gray-400 transition-colors">
+              <a
+                href="#"
+                className="text-white! hover:text-gray-400! transition-colors"
+              >
                 Privacy Policy
               </a>
-              <a href="#" className="hover:text-gray-400 transition-colors">
+              <a
+                href="#"
+                className="text-white! hover:text-gray-400! transition-colors"
+              >
                 Terms of Service
               </a>
             </div>
