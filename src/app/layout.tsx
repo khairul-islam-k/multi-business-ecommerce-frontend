@@ -8,7 +8,6 @@ import "antd/dist/reset.css";
 import AntdRegistry from "@/providers/antd-registry";
 import ThemeProvider from "@/providers/theme-provider";
 import AuthProvider from "@/providers/auth-provider";
-import ReduxProvider from "@/providers/redux-provider";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -30,11 +29,9 @@ export default function RootLayout({
       <body>
         <ThemeProvider>
           <AntdRegistry>
-            <ReduxProvider>
-              <AuthProvider>
-                <Layout>{children}</Layout>
-              </AuthProvider>
-            </ReduxProvider>
+            <AuthProvider>
+              <Layout>{children}</Layout>
+            </AuthProvider>
           </AntdRegistry>
         </ThemeProvider>
       </body>

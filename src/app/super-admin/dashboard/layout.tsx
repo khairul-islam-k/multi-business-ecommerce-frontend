@@ -1,12 +1,12 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, use, useState } from "react";
 import { theme, Layout } from "antd";
 
 import Topbar from "./_components/topbar";
 import Sidebar from "./_components/sidebar";
-import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import { AuthContext } from "@/providers/auth-provider";
 
 const { Header, Content } = Layout;
 
@@ -18,12 +18,14 @@ export default function SuperAdminDashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const { token } = theme.useToken();
-  // const { accessToken } = useAuth();
-  // const router = useRouter();
+  const { loading, user } = use(AuthContext);
+  const router = useRouter();
 
-  // if (!accessToken) {
-  //   return router.push("/super-admin/sign-in");
-  // }
+  if (loading) return <h1>Loading...</h1>;
+
+  if (!user) {
+    return router.push("/super-admin/sign-in");
+  }
 
   return (
     <Layout style={{ minHeight: "100vh" }}>

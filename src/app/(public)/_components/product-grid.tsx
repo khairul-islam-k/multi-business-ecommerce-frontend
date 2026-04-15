@@ -40,7 +40,7 @@ export default function SocialCommerceWave() {
     <section className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h1 className="text-6xl font-bold text-zinc-900 tracking-tight leading-tight">
+          <h1 className="text-4xl md:text-6xl font-bold text-zinc-900 tracking-tight leading-tight">
             What is Social Commerce?
             <br />
             Trends and Key Insights for 2025

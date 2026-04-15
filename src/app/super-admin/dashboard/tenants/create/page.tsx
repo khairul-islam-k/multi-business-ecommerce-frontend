@@ -11,7 +11,11 @@ import {
   message,
   theme,
 } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import {
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import { useState } from "react";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
@@ -59,6 +63,16 @@ export default function CreateTenantForm() {
 
           <Col xs={24} md={12}>
             <Form.Item
+              label="Owner Name"
+              name="ownerName"
+              rules={[{ required: true, message: "Owner name is required" }]}
+            >
+              <Input placeholder="Business name" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Form.Item
               label="Slug"
               name="slug"
               rules={[{ required: true, message: "Slug is required" }]}
@@ -82,7 +96,7 @@ export default function CreateTenantForm() {
 
           <Col xs={24} md={12}>
             <Form.Item label="Phone" name="phone">
-              <Input placeholder="+880156415" />
+              <Input placeholder="+880123456789" />
             </Form.Item>
           </Col>
 
@@ -108,6 +122,28 @@ export default function CreateTenantForm() {
                   suffix={<UploadOutlined />}
                 />
               </Upload>
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Form.Item label="Password" name="password">
+              <Input.Password
+                placeholder="********"
+                iconRender={(visible) =>
+                  visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
+                }
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Form.Item label="Confirm Password" name="confirmPassword">
+              <Input.Password
+                placeholder="********"
+                iconRender={(visible) =>
+                  visible ? <EyeOutlined /> : <EyeInvisibleOutlined />
+                }
+              />
             </Form.Item>
           </Col>
 

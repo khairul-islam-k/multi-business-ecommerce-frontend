@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -27,6 +28,7 @@ import {
 import { mockTenants } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+// import { DataTable } from "@/components/shared/data-table";
 
 const { Option } = Select;
 
@@ -51,42 +53,40 @@ export default function TenantListPage() {
   });
 
   const handleSuspend = async (record: any) => {
-    // simulate API
     await Promise.resolve();
     message.warning(`${record.business} suspended`);
   };
 
   const columns = [
     {
-      title: "Business Name",
-      dataIndex: "business",
-      render: (_: any, record: any) => (
-        <a
-          onClick={() =>
-            router.push(`/super-admin/dashboard/tenants/${record.id}`)
-          }
+      label: "Business Name",
+      key: "business",
+      render: (record: any) => (
+        <Link
+          href={`/super-admin/dashboard/tenants/${record.id}`}
+          className={`text-[${token.colorTextBase}]!`}
         >
           {record.business}
-        </a>
+        </Link>
       ),
     },
     {
-      title: "Owner",
-      dataIndex: "owner",
+      label: "Owner",
+      key: "owner",
     },
     {
-      title: "Email",
-      dataIndex: "email",
+      label: "Email",
+      key: "email",
     },
     {
-      title: "Package",
-      dataIndex: "package",
-      render: (pkg: string) => <Tag>{pkg}</Tag>,
+      label: "Package",
+      key: "package",
+      render: (pkg: any) => <Tag>{pkg}</Tag>,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status: string) => (
+      label: "Status",
+      key: "status",
+      render: (status: any) => (
         <Tag
           style={{
             background:
@@ -103,13 +103,13 @@ export default function TenantListPage() {
       ),
     },
     {
-      title: "Created",
-      dataIndex: "created",
+      label: "Created",
+      key: "created",
     },
     {
-      title: "Actions",
+      label: "Actions",
       width: 90,
-      render: (_: any, record: any) => (
+      render: (record: any) => (
         <Space>
           <Tooltip title="View Details">
             <Button
@@ -138,6 +138,8 @@ export default function TenantListPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb} />
+
+      {/* <DataTable columns={columns} data={mockTenants} /> */}
 
       <Card>
         {/* Filters */}

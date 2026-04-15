@@ -70,7 +70,7 @@ export default function WhyUs() {
                 {/* Circular Diagram */}
                 <div className="relative h-80 flex items-center justify-center">
                   <div className="relative w-72 h-72">
-                    <div className="relative w-[300px] h-[300px]">
+                    <div className="relative w-75 h-75">
                       {/* Dashed Circle */}
                       <div className="absolute inset-0 border-[3px] border-dashed border-zinc-300 rounded-full" />
 
@@ -130,7 +130,7 @@ export default function WhyUs() {
               <span className="text-blue-600 font-semibold tracking-widest text-sm">
                 WHY ONECOMM?
               </span>
-              <h2 className="text-5xl font-bold text-zinc-900 leading-tight mt-4">
+              <h2 className="text-4xl md:text-6xl font-bold text-zinc-900 leading-tight mt-4">
                 Ecommerce solutions that can boost your digital revenue
               </h2>
             </div>

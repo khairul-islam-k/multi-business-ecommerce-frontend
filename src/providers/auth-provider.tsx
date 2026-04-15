@@ -1,30 +1,65 @@
 "use client";
 
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-
 import api from "@/lib/axios";
-import { setUser, logout } from "@/store/auth-slice";
+import { useEffect, useState, createContext } from "react";
+
+export const AuthContext = createContext({
+  loading: false,
+  user: null,
+  accessToken: null,
+  refreshToken: null,
+  setUser: (user: any) => {},
+  setLoading: (loading: boolean) => {},
+  setAccessToken: (accessToken: any) => {},
+  setRefreshToken: (refreshToken: any) => {},
+});
 
 export default function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const [accessToken, setAccessToken] = useState(null);
+  const [refreshToken, setRefreshToken] = useState(null);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const res = await api.get("/auth/profile");
-        dispatch(setUser(res.data));
-      } catch {
-        dispatch(logout());
-      }
-    };
+    const raw = localStorage.getItem("accessToken");
+    const token = raw ? JSON.parse(raw) : null;
+    setAccessToken(token);
+  }, []);
 
-    initAuth();
-  }, [dispatch]);
+  useEffect(() => {
+    if (accessToken) {
+      setLoading(true);
 
-  return <>{children}</>;
+      api
+        .get("/auth/profile")
+        .then((res) => console.log(res.data))
+        .then((data) => {
+          console.log(data);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [accessToken]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        refreshToken,
+        loading,
+        setAccessToken,
+        setRefreshToken,
+        setLoading,
+        setUser,
+        user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

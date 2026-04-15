@@ -16,24 +16,26 @@ import useSubmit from "@/hooks/use-submit";
 import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
 import { useRouter } from "next/navigation";
-import { setCredentials } from "@/store/auth-slice";
 import api from "@/lib/axios";
+import { use } from "react";
+import { AuthContext } from "@/providers/auth-provider";
 
 const { Title, Text, Link } = Typography;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
   const router = useRouter();
+  const { setAccessToken, setRefreshToken } = use(AuthContext);
 
   const login = async (values: LoginFormValues) => {
     try {
       const { email, password } = values;
-      await new Promise((r) => setTimeout(r, 2000));
       const response = await api
         .post("/auth/login", { email, password })
         .then((res) => res.data);
-      const { accessToken } = response.data;
-      setCredentials({ accessToken });
+      const { accessToken, refreshToken } = response.data;
+      setAccessToken(accessToken);
+      setRefreshToken(refreshToken);
       message.success("Successfully signed-in!");
       router.push("/super-admin/dashboard");
     } catch (e: any) {
