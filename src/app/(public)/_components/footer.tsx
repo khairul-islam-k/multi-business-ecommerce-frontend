@@ -38,7 +38,7 @@ export const FooterSection = () => {
           {/* Links Columns */}
           {columns.map((col) => (
             <div key={col.title} className="flex flex-col">
-              <h4 className="text-white font-semibold text-sm tracking-[0.5px] mb-6">
+              <h4 className="text-white text-xl! font-bold text-sm tracking-[0.5px] mb-6">
                 {col.title}
               </h4>
               <ul className="space-y-3 text-sm">
