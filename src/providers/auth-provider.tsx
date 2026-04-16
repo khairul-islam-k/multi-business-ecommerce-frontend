@@ -1,65 +1,19 @@
 "use client";
 
-import api from "@/lib/axios";
-import { useEffect, useState, createContext } from "react";
+import React, { useEffect } from "react";
 
-export const AuthContext = createContext({
-  loading: false,
-  user: null,
-  accessToken: null,
-  refreshToken: null,
-  setUser: (user: any) => {},
-  setLoading: (loading: boolean) => {},
-  setAccessToken: (accessToken: any) => {},
-  setRefreshToken: (refreshToken: any) => {},
-});
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [loading, setLoading] = useState(false);
-  const [accessToken, setAccessToken] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
-  const [user, setUser] = useState(null);
+  const init = useAuthStore((s) => s.init);
 
   useEffect(() => {
-    const raw = localStorage.getItem("accessToken");
-    const token = raw ? JSON.parse(raw) : null;
-    setAccessToken(token);
-  }, []);
+    init();
+  }, [init]);
 
-  useEffect(() => {
-    if (accessToken) {
-      setLoading(true);
-
-      api
-        .get("/auth/profile")
-        .then((res) => console.log(res.data))
-        .then((data) => {
-          console.log(data);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
-  }, [accessToken]);
-
-  return (
-    <AuthContext.Provider
-      value={{
-        accessToken,
-        refreshToken,
-        loading,
-        setAccessToken,
-        setRefreshToken,
-        setLoading,
-        setUser,
-        user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 }

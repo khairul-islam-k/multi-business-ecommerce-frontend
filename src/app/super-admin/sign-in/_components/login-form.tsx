@@ -16,26 +16,20 @@ import useSubmit from "@/hooks/use-submit";
 import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
 import { useRouter } from "next/navigation";
-import api from "@/lib/axios";
-import { use } from "react";
-import { AuthContext } from "@/providers/auth-provider";
+import { useAuthStore } from "@/stores/auth.store";
 
 const { Title, Text, Link } = Typography;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
   const router = useRouter();
-  const { setAccessToken, setRefreshToken } = use(AuthContext);
+  const login = useAuthStore((s) => s.login);
+  const loading = useAuthStore((s) => s.loading);
 
-  const login = async (values: LoginFormValues) => {
+  const handleLogin = async (values: LoginFormValues) => {
     try {
       const { email, password } = values;
-      const response = await api
-        .post("/auth/login", { email, password })
-        .then((res) => res.data);
-      const { accessToken, refreshToken } = response.data;
-      setAccessToken(accessToken);
-      setRefreshToken(refreshToken);
+      await login(email, password);
       message.success("Successfully signed-in!");
       router.push("/super-admin/dashboard");
     } catch (e: any) {
@@ -47,8 +41,8 @@ export default function LoginForm() {
     }
   };
 
-  const { loading, handler } = useSubmit<LoginFormValues>(async (values) => {
-    await login(values);
+  const { handler } = useSubmit<LoginFormValues>(async (values) => {
+    await handleLogin(values);
   });
 
   return (
