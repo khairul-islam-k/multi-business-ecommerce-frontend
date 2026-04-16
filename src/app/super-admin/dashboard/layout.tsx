@@ -18,7 +18,7 @@ export default function SuperAdminDashboardLayout({
   const { token } = theme.useToken();
 
   return (
-    <AuthGuard redirectUrl="/super-admin/sign-in">
+    <AuthGuard redirectUrl="/super-admin/sign-in" role="Admin">
       <Layout style={{ minHeight: "100vh" }}>
         <Sidebar
           collapsed={collapsed}

@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
+import {
+  Input,
+  Button,
+  Dropdown,
+  Avatar,
+  Badge,
+  MenuProps,
+  theme,
+  message,
+} from "antd";
 import {
   BellOutlined,
   MenuOutlined,
@@ -17,6 +26,7 @@ import {
 
 import cn from "@/lib/cn";
 import ThemeToggle from "@/components/shared/theme-toggle";
+import { useAuthStore } from "@/stores/auth.store";
 
 const { Search } = Input;
 const { useToken } = theme;
@@ -32,12 +42,17 @@ export default function Topbar({
 }: TopbarProps) {
   const router = useRouter();
   const { token } = useToken();
+  const logout = useAuthStore((s) => s.logout);
 
   const [search, setSearch] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  const logout = () => {};
+  const handleLogout = async () => {
+    logout();
+    message.info("Logged out successfully");
+    router.push("/super-admin/dashboard");
+  };
 
   const items: MenuProps["items"] = [
     {
@@ -57,7 +72,7 @@ export default function Topbar({
       key: "logout",
       icon: <LogoutOutlined />,
       label: "Logout",
-      onClick: logout,
+      onClick: handleLogout,
     },
   ];
 

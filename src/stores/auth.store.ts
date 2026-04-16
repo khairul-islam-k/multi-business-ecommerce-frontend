@@ -1,10 +1,13 @@
 import { create } from "zustand";
+
 import api from "@/lib/axios";
 
 type User = {
   id: number;
+  name: string;
   email: string;
-  role?: string;
+  phone: string;
+  user_type: string;
 };
 
 type AuthState = {
@@ -36,42 +39,42 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // SET ACCESS TOKEN
   // =========================
   setAccessToken: (token) => {
-    console.log("🟡 [setAccessToken] called:", token);
+    // console.log("🟡 [setAccessToken] called:", token);
 
     if (token) {
       localStorage.setItem("accessToken", JSON.stringify(token));
-      console.log("💾 [setAccessToken] saved to localStorage");
+      // console.log("💾 [setAccessToken] saved to localStorage");
     } else {
       localStorage.removeItem("accessToken");
-      console.log("🧹 [setAccessToken] removed from localStorage");
+      // console.log("🧹 [setAccessToken] removed from localStorage");
     }
 
     set({ accessToken: token });
 
-    console.log("🟢 [setAccessToken] state updated");
+    // console.log("🟢 [setAccessToken] state updated");
   },
 
   // =========================
   // SET REFRESH TOKEN
   // =========================
   setRefreshToken: (token) => {
-    console.log("🟡 [setRefreshToken] called:", token);
+    // console.log("🟡 [setRefreshToken] called:", token);
 
     if (token) {
       localStorage.setItem("refreshToken", JSON.stringify(token));
-      console.log("💾 [setRefreshToken] saved to localStorage");
+      // console.log("💾 [setRefreshToken] saved to localStorage");
     } else {
       localStorage.removeItem("refreshToken");
-      console.log("🧹 [setRefreshToken] removed from localStorage");
+      // console.log("🧹 [setRefreshToken] removed from localStorage");
     }
 
     set({ refreshToken: token });
 
-    console.log("🟢 [setRefreshToken] state updated");
+    // console.log("🟢 [setRefreshToken] state updated");
   },
 
   setUser: (user) => {
-    console.log("👤 [setUser] called:", user);
+    // console.log("👤 [setUser] called:", user);
     set({ user });
   },
 
@@ -136,7 +139,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       // console.log("✅ [fetchProfile] response:", res.data);
 
-      set({ user: res.data });
+      set({ user: res.data.data });
 
       // console.log("👤 [fetchProfile] user set");
     } catch (err) {
