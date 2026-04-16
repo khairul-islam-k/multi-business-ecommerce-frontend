@@ -1,15 +1,42 @@
-import { Card, Row, Switch, Typography } from "antd";
+"use client";
+
+import { Card, Row, Switch, Typography, Empty } from "antd";
 
 const { Text } = Typography;
 
-export default function FeaturesTab({ featureState, toggleFeature }: any) {
+type FeatureItem = {
+  id: number;
+  name: string;
+  enabled: boolean;
+};
+
+type FeatureGroup = {
+  group: string;
+  items: FeatureItem[];
+};
+
+export default function FeaturesTab({
+  features = [],
+  toggleFeature,
+}: {
+  features: FeatureGroup[];
+  toggleFeature?: (featureId: number) => void;
+}) {
+  if (!features.length) {
+    return <Empty description="No features found" />;
+  }
+
   return (
     <>
-      {Object.entries(featureState).map(([group, items]: any) => (
-        <Card key={group} title={group} style={{ marginBottom: 16 }}>
-          {items.map((f: any, i: number) => (
+      {features.map((group) => (
+        <Card
+          key={group.group}
+          title={group.group}
+          style={{ marginBottom: 16 }}
+        >
+          {group.items.map((f) => (
             <Row
-              key={f.name}
+              key={f.id}
               justify="space-between"
               align="middle"
               style={{ marginBottom: 12 }}
@@ -18,7 +45,7 @@ export default function FeaturesTab({ featureState, toggleFeature }: any) {
 
               <Switch
                 checked={f.enabled}
-                onChange={() => toggleFeature(group, i)}
+                onChange={() => toggleFeature?.(f.id)}
               />
             </Row>
           ))}

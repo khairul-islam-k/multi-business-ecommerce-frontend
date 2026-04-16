@@ -1,3 +1,5 @@
+"use client";
+
 import { Row, Col, Card, Progress, Typography } from "antd";
 import {
   BarChart,
@@ -9,32 +11,43 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import { mockUsageData, mockApiUsageByDay } from "../data";
-
 const { Text } = Typography;
 
-export default function UsageTab() {
+type UsageItem = {
+  name: string;
+  used: number;
+  limit: number;
+};
+
+export default function UsageTab({ tenant }: { tenant: any }) {
+  const usage: UsageItem[] = tenant?.usage || [];
+  const apiUsage = tenant?.api_usage_last_7_days || [];
+
   return (
     <>
       <Row gutter={[16, 16]}>
-        {mockUsageData.map((u) => (
-          <Col xs={24} md={12} key={u.name}>
-            <Card>
-              <Text>{u.name}</Text>
+        {usage.map((u) => {
+          const percent = u.limit ? (u.used / u.limit) * 100 : 0;
 
-              <Progress
-                percent={(u.used / u.limit) * 100}
-                showInfo={false}
-                size="small"
-              />
-            </Card>
-          </Col>
-        ))}
+          return (
+            <Col xs={24} md={12} key={u.name}>
+              <Card>
+                <Text>{u.name}</Text>
+
+                <Progress
+                  percent={Math.min(percent, 100)}
+                  showInfo={false}
+                  size="small"
+                />
+              </Card>
+            </Col>
+          );
+        })}
       </Row>
 
       <Card title="API Calls (Last 7 Days)" style={{ marginTop: 16 }}>
         <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={mockApiUsageByDay}>
+          <BarChart data={apiUsage}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="day" />
             <YAxis />

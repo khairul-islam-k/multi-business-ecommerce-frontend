@@ -1,6 +1,13 @@
+"use client";
+
 import { Table, theme } from "antd";
 
-export default function TableWrapper({ data, columns, rowKey }: any) {
+export default function TableWrapper({
+  data = [],
+  columns = [],
+  rowKey = "id",
+  loading = false,
+}: any) {
   const { token } = theme.useToken();
 
   return (
@@ -9,7 +16,8 @@ export default function TableWrapper({ data, columns, rowKey }: any) {
         dataSource={data}
         columns={columns}
         rowKey={rowKey}
-        pagination={false}
+        loading={loading}
+        pagination={{ pageSize: 5 }}
       />
     </div>
   );
