@@ -37,7 +37,7 @@ export default function IndustriesSection() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section id="industries" className="py-20 bg-surface-dark">
+    <section id="industries" className="py-20 bg-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           <div className="w-10 h-1 bg-primary rounded mb-6" />

@@ -30,7 +30,7 @@ const steps = [
 
 export default function StepsSection() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-gray-200">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -49,7 +49,7 @@ export default function StepsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-white p-8 rounded-3xl hover:shadow-xl transition-all group border border-blue-300 hover:border-blue-600"
+              className="bg-blue-100 p-8 rounded-3xl hover:shadow-xl transition-all group border border-blue-300 hover:border-blue-600"
             >
               <div className="text-5xl mb-6">{step.icon}</div>
               <div className="inline-block bg-blue-100 text-blue-700 text-sm font-bold px-4 py-1 rounded-full mb-4">
