@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Badge,
@@ -8,12 +8,9 @@ import {
   Card,
   Col,
   Input,
-  message,
-  Popconfirm,
   Row,
   Select,
   Space,
-  Table,
   Typography,
 } from "antd";
 import {
@@ -22,108 +19,164 @@ import {
   EyeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-
-import { mockCompanies } from "./data";
-import ViewModal from "./_components/view-modal";
+import Swal from "sweetalert2";
+import axios from "axios";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { DataTable } from "@/components/shared/data-table";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
 
+/* ================= TYPES ================= */
+
+export interface TCompany {
+  id: number;
+  uuid: string;
+  name: string;
+  code?: string;
+  domain?: string;
+  subdomain?: string;
+  website_id?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  district?: string;
+  country?: string;
+  logo_url?: string;
+  default_currency?: string;
+  status: "Active" | "Inactive";
+  tenant_id?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+}
+
+/* ================= COMPONENT ================= */
+
 export default function CompaniesPage() {
   const router = useRouter();
 
-  const [selectedCompany, setSelectedCompany] = useState<any>(null);
-  const [isViewOpen, setIsViewOpen] = useState(false);
+  // ✅ LIST STATE
+  const [companies, setCompanies] = useState<TCompany[]>([]);
+
+  console.log(companies);
+
+  // ✅ SINGLE COMPANY STATE
+  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
-  const filteredData = mockCompanies.filter((company) => {
-    const matchesSearch = company.companyName
-      .toLowerCase()
-      .includes(searchText.toLowerCase());
+  /* ================= FETCH ================= */
 
-    const matchesStatus = statusFilter ? company.status === statusFilter : true;
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const res = await axios.get(
+        "http://localhost:5002/onecomm/api/v1/companies"
+      );
+      setCompanies(res.data.data);
+    };
 
-    return matchesSearch && matchesStatus;
-  });
+    fetchCompanies();
+  }, []);
 
-  const handleDelete = async (id: string) => {
-    await Promise.resolve(() => setTimeout(() => {}, 1000));
-    message.success("Category deleted");
+  /* ================= DELETE ================= */
+
+  const handleDelete = async (id: number) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axios.delete(
+          `http://localhost:5002/onecomm/api/v1/companies/${id}`
+        );
+
+        // ✅ Remove from UI instantly
+        setCompanies((prev) => prev.filter((c) => c.id !== id));
+
+        Swal.fire("Deleted!", "Company has been deleted.", "success");
+      }
+    });
   };
+
 
   const columns = [
     {
-      title: "Company",
-      dataIndex: "companyName",
-      render: (v: string) => <Text strong>{v}</Text>,
+      label: "Company",
+      key: "name",
+      render: (row: TCompany) => <Text strong>{row.name}</Text>,
     },
     {
-      title: "Industry",
-      dataIndex: "industry",
+      label: "City",
+      key: "city",
     },
     {
-      title: "Employees",
-      dataIndex: "employees",
+      label: "Domain",
+      key: "domain",
     },
     {
-      title: "Plan",
-      dataIndex: "plan",
+      label: "Country",
+      key: "country",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status: string) => {
-        if (status === "Active")
-          return <Badge status="success" text="Active" />;
-        if (status === "Trial") return <Badge status="warning" text="Trial" />;
-        return <Badge status="default" text={status} />;
-      },
+      label: "Status",
+      key: "status",
+      render: (row: TCompany) =>
+        row.status === "Active" ? (
+          <Badge status="success" text="Active" />
+        ) : (
+          <Badge status="default" text="Inactive" />
+        ),
     },
     {
-      title: "Actions",
-      render: (_: any, record: any) => (
+      label: "Actions",
+      key: "actions",
+      render: (record: TCompany) => (
         <Space>
-          {/* View */}
           <Button
             size="small"
-            onClick={() => {
-              setSelectedCompany(record);
-              setIsViewOpen(true);
-            }}
             icon={<EyeOutlined />}
+            onClick={() => {
+              router.push(
+                `/admin/dashboard/companies/detail/${record.id}`
+              )
+            }}
           />
 
-          {/* Edit (navigate) */}
           <Button
             size="small"
-            onClick={() =>
-              router.push(`/admin/dashboard/companies/edit/${record.id}`)
-            }
             icon={<EditOutlined />}
+            onClick={() =>
+              router.push(
+                `/admin/dashboard/companies/edit/${record.id}`
+              )
+            }
           />
 
-          {/* Delete (popup) */}
-          <Popconfirm
-            title="Delete category?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
+          <Button
+            size="small"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.id)}
+          />
         </Space>
       ),
     },
   ];
 
+  /* ================= RENDER ================= */
+
   return (
     <div className="space-y-6">
       <PageHeader title="Companies" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls */}
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex gap-3">
           <Search
@@ -140,17 +193,17 @@ export default function CompaniesPage() {
             onChange={(v) => setStatusFilter(v)}
             options={[
               { label: "Active", value: "Active" },
-              { label: "Trial", value: "Trial" },
               { label: "Inactive", value: "Inactive" },
             ]}
           />
         </div>
 
-        {/* Add (navigate) */}
         <Button
           type="primary"
-          onClick={() => router.push("/admin/dashboard/companies/create")}
           icon={<PlusOutlined />}
+          onClick={() =>
+            router.push("/admin/dashboard/companies/create")
+          }
         >
           Add Company
         </Button>
@@ -162,27 +215,14 @@ export default function CompaniesPage() {
           <Card>
             <Title level={5}>List of Companies</Title>
 
-            <Table
+            <DataTable
+              data={companies}
               columns={columns}
-              dataSource={filteredData}
-              rowKey="id"
-              size="small"
-              scroll={{ x: "max-content" }}
-              pagination={{
-                pageSize: 5,
-                showSizeChanger: true,
-              }}
             />
           </Card>
         </Col>
       </Row>
 
-      {/* View Modal */}
-      <ViewModal
-        open={isViewOpen}
-        onClose={() => setIsViewOpen(false)}
-        company={selectedCompany}
-      />
     </div>
   );
 }
