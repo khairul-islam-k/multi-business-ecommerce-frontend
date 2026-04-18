@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound, useParams } from "next/navigation";
+import { notFound, useParams, useRouter } from "next/navigation";
 import {
   Form,
   Input,
@@ -13,24 +13,47 @@ import {
   message,
 } from "antd";
 
-import { mockAddons } from "../../data";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+
 import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import Loader from "@/components/shared/loader";
+import { queryClient } from "@/providers/query-provider";
 
 const { Option } = Select;
 
 export default function EditAddon() {
   const { id } = useParams();
+  const router = useRouter();
   const [form] = Form.useForm();
-  const addon = mockAddons.find((addon) => addon.id === id);
+  const { token } = theme.useToken();
 
-  const { loading, handler } = useSubmit(async () => {
-    await new Promise((r) => setTimeout(r, 1000));
-    message.success("Addon updated!");
+  const { data, isLoading } = useQuery({
+    queryKey: ["addon", id],
+    queryFn: async () => api.get(`/addons/${id}`).then((res) => res.data),
   });
 
-  const { token } = theme.useToken();
+  const { loading, handler } = useSubmit(async (values: any) => {
+    try {
+      await api.patch(`/addons/${id}`, values);
+
+      message.success("Addon updated successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
+
+      router.push("/super-admin/dashboard/addons");
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || "Failed to update addon");
+    }
+  });
+
+  if (isLoading) return <Loader />;
+
+  const addon = data?.data || data;
+
+  console.log(addon);
 
   if (!addon) return notFound();
 
@@ -39,45 +62,37 @@ export default function EditAddon() {
       <PageHeader title="Edit Addon" breadcrumb={superAdminBreadcrumb} />
 
       <Form
-        initialValues={{ ...addon }}
         layout="vertical"
         form={form}
-        onFinish={(values) => handler(values)}
+        initialValues={addon}
+        onFinish={handler}
         style={{
-          maxWidth: "100%",
           background: token.colorBgBase,
-          padding: "15px",
+          padding: "16px",
           borderRadius: "8px",
-          marginLeft: "auto",
-          marginRight: "auto",
         }}
       >
         <Row gutter={16}>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Addon Name"
               name="name"
-              rules={[{ required: true, message: "Addon name is required" }]}
+              label="Addon Name"
+              rules={[{ required: true }]}
             >
-              <Input placeholder="Addon name" />
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item
-              label="Slug"
-              name="slug"
-              rules={[{ required: true, message: "Slug is required" }]}
-            >
-              <Input placeholder="Slug" />
+            <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Type" name="type">
+            <Form.Item name="type" label="Type">
               <Select>
-                <Option value="Usages">Usages</Option>
-                <Option value="PerUnit">PerUnit</Option>
+                <Option value="Usage">Usage</Option>
                 <Option value="Flat">Flat</Option>
               </Select>
             </Form.Item>
@@ -85,42 +100,35 @@ export default function EditAddon() {
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Usage Unit price ($)"
-              name="unitPrice"
-              rules={[
-                { required: true, message: "Price is required" },
-                { type: "number", message: "Invalid Price" },
-              ]}
+              name="unit_price"
+              label="Unit Price ($)"
+              rules={[{ required: true }]}
             >
-              <InputNumber
-                style={{ width: "100%" }}
-                placeholder="15"
-                defaultValue={addon.unitPrice}
-              />
+              <InputNumber style={{ width: "100%" }} />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Limit key"
-              name="limitKey"
-              rules={[{ required: true, message: "limit is required" }]}
+              name="limit_key"
+              label="Limit Key"
+              rules={[{ required: true }]}
             >
-              <Input style={{ width: "100%" }} placeholder="Storage-gb" />
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Status" name="status">
+            <Form.Item name="status" label="Status">
               <Select>
                 <Option value="Active">Active</Option>
-                <Option value="InActive">InActive</Option>
+                <Option value="Inactive">Inactive</Option>
               </Select>
             </Form.Item>
           </Col>
         </Row>
 
-        <Form.Item className="ml-auto">
+        <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>
             Update Addon
           </Button>
