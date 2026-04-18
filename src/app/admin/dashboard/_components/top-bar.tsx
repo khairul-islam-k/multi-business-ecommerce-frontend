@@ -3,11 +3,11 @@
 import React from "react";
 import { Layout, Space, Badge, Avatar, Button, theme, Grid, Flex } from "antd";
 import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
-import GlobalSearch from "./GlobalSearch";
-import BusinessDropdown from "./BusinessDropdown";
+import GlobalSearch from "./global-search";
+import BusinessDropdown from "./business-owner";
 import ThemeToggle from "@/components/shared/theme-toggle";
 import Link from "next/link";
-import ProfileDropdown from "./ProfileDropdown";
+import ProfileDropdown from "./profile-dropdown";
 
 const { Header } = Layout;
 
@@ -36,26 +36,22 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
           style={{ width: "100%", justifyContent: "space-between" }}
           align="center"
         >
-
-          <Flex
-            style={{ gap: '8px' }}
-            align="center"
-          >
+          <Flex style={{ gap: "8px" }} align="center">
             <div
               onClick={toggleSidebar}
               style={{
-                display: screens.xs ? 'none' : 'block',
-                cursor: 'pointer'
-              }}>
-              <LayoutOutlined style={{ fontSize: '20px' }} />
+                display: screens.xs ? "none" : "block",
+                cursor: "pointer",
+              }}
+            >
+              <LayoutOutlined style={{ fontSize: "20px" }} />
             </div>
 
             <GlobalSearch />
           </Flex>
 
           <Space size="small" align="center">
-
-            <div style={{ display: screens.xs ? 'none' : 'block' }}>
+            <div style={{ display: screens.xs ? "none" : "block" }}>
               <BusinessDropdown />
             </div>
 

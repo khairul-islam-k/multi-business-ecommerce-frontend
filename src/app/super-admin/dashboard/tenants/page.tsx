@@ -1,200 +1,128 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  Button,
-  Input,
-  Select,
-  Table,
-  Tag,
-  message,
-  Flex,
-  Space,
-  Tooltip,
-  Popconfirm,
-  theme,
-} from "antd";
 
-import {
-  PlusOutlined,
-  SearchOutlined,
-  EyeOutlined,
-  StopOutlined,
-} from "@ant-design/icons";
-
-import { mockTenants } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-// import { DataTable } from "@/components/shared/data-table";
-
-const { Option } = Select;
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { Column, DataTable } from "@/components/shared/data-table";
+import Link from "next/link";
+import { Button, Space } from "antd";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import Loader from "@/components/shared/loader";
 
 export default function TenantListPage() {
   const router = useRouter();
-  const { token } = theme.useToken();
-
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [packageFilter, setPackageFilter] = useState("all");
-
-  const filtered = mockTenants.filter((t) => {
-    const matchSearch =
-      !search ||
-      t.business.toLowerCase().includes(search.toLowerCase()) ||
-      t.email.toLowerCase().includes(search.toLowerCase());
-
-    const matchStatus = statusFilter === "all" || t.status === statusFilter;
-    const matchPkg = packageFilter === "all" || t.package === packageFilter;
-
-    return matchSearch && matchStatus && matchPkg;
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-tenants"],
+    queryFn: async () => api.get("/auth-tenant").then((res) => res.data),
   });
 
-  const handleSuspend = async (record: any) => {
-    await Promise.resolve();
-    message.warning(`${record.business} suspended`);
-  };
+  if (isLoading) return <Loader />;
 
-  const columns = [
+  const columns: Column<any>[] = [
     {
-      label: "Business Name",
-      key: "business",
-      render: (record: any) => (
-        <Link
-          href={`/super-admin/dashboard/tenants/${record.id}`}
-          className={`text-[${token.colorTextBase}]!`}
-        >
-          {record.business}
-        </Link>
-      ),
+      key: "business_name",
+      label: "Business",
+      type: "primary",
+      sortable: true,
     },
+
     {
-      label: "Owner",
-      key: "owner",
-    },
-    {
-      label: "Email",
-      key: "email",
-    },
-    {
-      label: "Package",
-      key: "package",
-      render: (pkg: any) => <Tag>{pkg}</Tag>,
-    },
-    {
-      label: "Status",
       key: "status",
-      render: (status: any) => (
-        <Tag
-          style={{
-            background:
-              status === "Active"
-                ? token.colorSuccess
-                : status === "Trial"
-                  ? token.colorWarning
-                  : token.colorError,
-            color: "white",
-          }}
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive", "Suspended"],
+      render: (r: any) => (
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            r.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : r.status === "Suspended"
+                ? "bg-red-100 text-red-600"
+                : "bg-gray-100 text-gray-600"
+          }`}
         >
-          {status}
-        </Tag>
+          {r.status}
+        </span>
       ),
     },
-    {
-      label: "Created",
-      key: "created",
-    },
-    {
-      label: "Actions",
-      width: 90,
-      render: (record: any) => (
-        <Space>
-          <Tooltip title="View Details">
-            <Button
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() =>
-                router.push(`/super-admin/dashboard/tenants/${record.id}`)
-              }
-            />
-          </Tooltip>
 
-          <Popconfirm
-            title="Suspend tenant?"
-            description="This will restrict access"
-            onConfirm={() => handleSuspend(record)}
-          >
-            <Tooltip title="Suspend">
-              <Button size="small" danger icon={<StopOutlined />} />
-            </Tooltip>
-          </Popconfirm>
-        </Space>
-      ),
+    {
+      key: "phone",
+      label: "Phone",
+    },
+
+    {
+      key: "email",
+      label: "Email",
+      render: (r) => r.email ?? "—",
+    },
+
+    {
+      key: "owner_name",
+      label: "Owner",
+      render: (r) => r.owner?.name ?? "—",
+    },
+
+    {
+      key: "currency",
+      label: "Currency",
+      render: (r) => r.currency ?? "—",
+    },
+
+    {
+      key: "timezone",
+      label: "Timezone",
+      render: (r) => r.timezone ?? "—",
+    },
+
+    {
+      key: "trial_ends_at",
+      label: "Trial Ends",
+      render: (r) =>
+        r.trial_ends_at ? new Date(r.trial_ends_at).toLocaleDateString() : "—",
+    },
+
+    {
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
   ];
+
+  const tenants = data.data;
 
   return (
     <div className="space-y-6">
       <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb} />
 
-      {/* <DataTable columns={columns} data={mockTenants} /> */}
-
-      <Card>
-        {/* Filters */}
-        <Flex justify="space-between" wrap="wrap">
-          <div className="flex flex-wrap gap-2 mb-4">
-            <Input
-              placeholder="Filter by name or email..."
-              prefix={<SearchOutlined />}
-              style={{ maxWidth: 280 }}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+      <DataTable
+        data={tenants}
+        columns={columns}
+        loading={isLoading}
+        searchKeys={["business_name", "email", "phone", "status", "owner_name"]}
+        toolbarEnd={
+          <Link href="/super-admin/dashboard/tenants/create">
+            <Button type="primary">Create Tenant</Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() =>
+                router.push(`/super-admin/dashboard/tenants/${row.id}`)
+              }
             />
 
-            <Select
-              value={statusFilter}
-              style={{ width: 140 }}
-              onChange={setStatusFilter}
-            >
-              <Option value="all">All Status</Option>
-              <Option value="Active">Active</Option>
-              <Option value="Trial">Trial</Option>
-              <Option value="Suspended">Suspended</Option>
-            </Select>
-
-            <Select
-              value={packageFilter}
-              style={{ width: 140 }}
-              onChange={setPackageFilter}
-            >
-              <Option value="all">All Packages</Option>
-              <Option value="Starter">Starter</Option>
-              <Option value="Growth">Growth</Option>
-              <Option value="Enterprise">Enterprise</Option>
-            </Select>
-          </div>
-
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => router.push("/super-admin/dashboard/tenants/create")}
-          >
-            Create Tenant
-          </Button>
-        </Flex>
-
-        {/* Table */}
-        <div style={{ overflowX: "auto", overflowY: "hidden" }}>
-          <Table
-            rowKey="id"
-            columns={columns}
-            dataSource={filtered}
-            pagination={false}
-          />
-        </div>
-      </Card>
+            <Button type="text" danger icon={<DeleteOutlined />} />
+          </Space>
+        )}
+      />
     </div>
   );
 }

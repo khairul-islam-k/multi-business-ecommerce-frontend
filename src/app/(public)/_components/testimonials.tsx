@@ -124,7 +124,7 @@ export default function Testimonials() {
             </div>
 
             {/* Navigation Arrows */}
-            <div className="flex gap-4 mt-10 justify-end">
+            <div className="flex gap-4 mt-0 md:mt-10 justify-center md:justify-end">
               <button
                 onClick={prev}
                 disabled={currentIndex === 0}

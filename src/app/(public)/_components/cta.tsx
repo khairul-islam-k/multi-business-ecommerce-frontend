@@ -15,7 +15,7 @@ export default function CTA() {
           <br />
           Discover What&apos;s Possible
         </motion.h2>
-        <p className="text-emerald-100 text-xl mb-10">
+        <p className="text-emerald-100 text-sm sm:text-xl mb-10">
           Step inside the OneComm experience and preview how your store will
           look, function, and grow.
         </p>

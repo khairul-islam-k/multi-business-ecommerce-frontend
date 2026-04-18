@@ -25,10 +25,6 @@ export default function Homepage() {
     <div>
       <HeroSection onBookAppointment={() => setAppointmentOpen(true)} />
       <FeaturesSection />
-      {/* animated product */}
-      <AnimatedProduct />
-
-      <TrustOwner />
 
       <IndustrySolutions />
       <Pricing />
@@ -38,11 +34,16 @@ export default function Homepage() {
       <Testimonials />
       <StepsSection />
 
-      {/* Blazing */}
+      <ProductGrid />
+
       <BlazingFast />
 
-      <ProductGrid />
+      <TrustOwner />
+
+      <AnimatedProduct />
+
       <FAQSection />
+
       <AppointmentModal
         open={appointmentOpen}
         onClose={() => setAppointmentOpen(false)}

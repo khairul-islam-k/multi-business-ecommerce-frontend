@@ -1,19 +1,34 @@
 "use client";
 
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import { Card, Form, Input, Button, Checkbox, Typography, Flex } from "antd";
+import {
+  Card,
+  Form,
+  Input,
+  Button,
+  Checkbox,
+  Typography,
+  Flex,
+  message,
+} from "antd";
 
-import { login } from "../utils";
 import useSubmit from "@/hooks/use-submit";
 import { LoginFormValues } from "../schemas";
+import { useAuthStore } from "@/stores/auth.store";
+import { useRouter } from "next/navigation";
 
 const { Link } = Typography;
 
 export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
+  const { login, loading } = useAuthStore();
+  const router = useRouter();
 
-  const { loading, handler } = useSubmit<LoginFormValues>(async (values) => {
-    await login(values);
+  const { handler } = useSubmit<LoginFormValues>(async (values) => {
+    const { email, password } = values;
+    await login(email, password);
+    message.success("Logged in successfully");
+    router.push("/admin/dashboard");
   });
 
   return (

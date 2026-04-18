@@ -77,37 +77,61 @@ export const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t bg-white/95 backdrop-blur-xl"
+            className="fixed inset-0 top-16 z-40 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
           >
-            <div className="px-6 py-8 flex flex-col gap-6 text-lg">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-black/40 min-h-screen w-full"
+              onClick={() => setIsOpen(false)}
+            />
 
-              <button
-                onClick={() => {
-                  router.push("/admin/sign-in");
-                  setIsOpen(false);
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white! py-4 rounded-2xl font-semibold transition-all"
-              >
-                Create Your Store
-              </button>
-            </div>
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 260, damping: 25 }}
+              onClick={(e) => e.stopPropagation()} // 👈 prevents closing when clicking inside
+              className="absolute top-0 right-0 w-[85%] max-w-sm h-fit bg-white/95 backdrop-blur-xl shadow-2xl rounded-l-lg"
+            >
+              <div className="px-6 py-6 flex flex-col gap-6 text-lg relative">
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition"
+                >
+                  <X size={22} />
+                </button>
+
+                {navLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className="text-gray-700 hover:text-gray-900 font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                ))}
+
+                <button
+                  onClick={() => {
+                    router.push("/admin/sign-in");
+                    setIsOpen(false);
+                  }}
+                  className="bg-blue-600 text-white! py-4 rounded-2xl font-semibold"
+                >
+                  Create Your Store
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
