@@ -12,68 +12,71 @@ import {
   message,
 } from "antd";
 
-import useSubmit from "@/hooks/use-submit";
+import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import useSubmit from "@/hooks/use-submit";
+import api from "@/lib/axios";
+import { queryClient } from "@/providers/query-provider";
 
 const { Option } = Select;
 
 export default function CreateAddon() {
   const [form] = Form.useForm();
   const { token } = theme.useToken();
-  const { loading, handler } = useSubmit(async () => {
-    await new Promise((r) => setTimeout(r, 1000));
-    message.success("Addon updated!");
+  const router = useRouter();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { loading, handler } = useSubmit(async (values: any) => {
+    try {
+      await api.post("/addons", values);
+
+      message.success("Addon created successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
+
+      form.resetFields();
+      router.push("/super-admin/dashboard/addons");
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || "Failed to create addon");
+    }
   });
 
   return (
-    <div>
-      <div style={{ marginBottom: "24px" }}>
-        <PageHeader
-          title="Create Addon"
-          breadcrumb={superAdminBreadcrumb}
-        ></PageHeader>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Create Addon" breadcrumb={superAdminBreadcrumb} />
 
       <Form
         layout="vertical"
         form={form}
-        onFinish={(values) => handler(values)}
+        onFinish={handler}
         style={{
-          maxWidth: "100%",
           background: token.colorBgBase,
-          padding: "15px",
+          padding: "16px",
           borderRadius: "8px",
-          marginLeft: "auto",
-          marginRight: "auto",
         }}
       >
         <Row gutter={16}>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Addon Name"
               name="name"
-              rules={[{ required: true, message: "Addon name is required" }]}
+              label="Addon Name"
+              rules={[{ required: true }]}
             >
-              <Input placeholder="Addon name" />
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item
-              label="Slug"
-              name="slug"
-              rules={[{ required: true, message: "Slug is required" }]}
-            >
-              <Input placeholder="Slug" />
+            <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Type" name="type" initialValue="Usages">
+            <Form.Item name="type" label="Type" initialValue="Usage">
               <Select>
-                <Option value="Usages">Usages</Option>
-                <Option value="PerUnit">PerUnit</Option>
+                <Option value="Usage">Usage</Option>
                 <Option value="Flat">Flat</Option>
               </Select>
             </Form.Item>
@@ -81,32 +84,29 @@ export default function CreateAddon() {
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Usage Unit price ($)"
-              name="unitPrice"
-              rules={[
-                { required: true, message: "Price is required" },
-                { type: "number", message: "Invalid Price" },
-              ]}
+              name="unit_price"
+              label="Unit Price ($)"
+              rules={[{ required: true }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="15" />
+              <InputNumber style={{ width: "100%" }} />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Limit key"
-              name="limitKey"
-              rules={[{ required: true, message: "limit is required" }]}
+              name="limit_key"
+              label="Limit Key"
+              rules={[{ required: true }]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="storage-gb" />
+              <Input placeholder="e.g. storage-gb" />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Status" name="status" initialValue="Active">
+            <Form.Item name="status" label="Status" initialValue="Active">
               <Select>
                 <Option value="Active">Active</Option>
-                <Option value="InActive">InActive</Option>
+                <Option value="Inactive">Inactive</Option>
               </Select>
             </Form.Item>
           </Col>

@@ -1,151 +1,124 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  Button,
-  Input,
-  Table,
-  Tag,
-  message,
-  Space,
-  Typography,
-  Grid,
-  Flex,
-  Popconfirm,
-} from "antd";
-import {
-  PlusOutlined,
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import Link from "next/link";
 
-import { mockAddons } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
-const { Text } = Typography;
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+
+import { Column, DataTable } from "@/components/shared/data-table";
+import { Button, message, Popconfirm, Space } from "antd";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+
+import Loader from "@/components/shared/loader";
+import { queryClient } from "@/providers/query-provider";
 
 export default function AddonsPage() {
   const router = useRouter();
 
-  const { useBreakpoint } = Grid;
-  const screens = useBreakpoint();
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-addons"],
+    queryFn: async () => api.get("/addons").then((res) => res.data),
+  });
 
-  const [msgApi, contextHolder] = message.useMessage();
+  if (isLoading) return <Loader />;
 
-  const [search, setSearch] = useState("");
-
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const filtered = mockAddons.filter((a) =>
-    a.name.toLowerCase().includes(search.toLowerCase()),
-  );
-
-  const handleDelete = async (id: string) => {
-    await Promise.resolve(() => setTimeout(() => {}, 1000));
-    message.success("Addon deleted");
-  };
-
-  const columns = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (v: string) => <Text>{v}</Text>,
+      key: "name",
+      label: "Name",
+      type: "primary",
+      sortable: true,
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      render: (v: string) => <Tag>{v}</Tag>,
+      key: "type",
+      label: "Type",
+      render: (r) => r.type ?? "-",
     },
     {
-      title: "Limit Key",
-      dataIndex: "limitKey",
-      render: (v: string) => (
-        <Text style={{ fontFamily: "monospace", fontSize: 12 }}>{v}</Text>
-      ),
+      key: "limit_key",
+      label: "Limit Key",
+      render: (r) => <span className="font-mono text-xs">{r.limit_key}</span>,
     },
     {
-      title: "Unit Price",
-      dataIndex: "unitPrice",
-      render: (v: string) => `$${v}`,
+      key: "unit_price",
+      label: "Unit Price",
+      sortable: true,
+      render: (r) => `$${r.unit_price}`,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (status: string) => (
-        <Tag
-          style={{
-            background: status === "Active" ? "#21c45d" : "#ef4444",
-            color: "white",
-          }}
-          color={status === "Active" ? "green" : "red"}
+      key: "status",
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive"],
+      render: (r) => (
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            r.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-red-100 text-red-600"
+          }`}
         >
-          {status}
-        </Tag>
+          {r.status}
+        </span>
       ),
     },
     {
-      title: "Actions",
-      width: 60,
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(`/super-admin/dashboard/addons/edit/${record.id}`)
-            }
-          />
-
-          <Popconfirm
-            title="Delete addon?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
   ];
 
+  const handleDelete = async (id: string) => {
+    await api.delete(`/addons/${id}`);
+    message.info("Addon deleted successfully.");
+    queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
+  };
+
+  const addons = data.data;
+
   return (
     <div className="space-y-6">
-      {contextHolder}
-
       <PageHeader title="Addons" breadcrumb={superAdminBreadcrumb} />
 
-      <Card>
-        <Flex justify="space-between" wrap="wrap">
-          <Space style={{ marginBottom: 16 }}>
-            <Input
-              prefix={<SearchOutlined />}
-              placeholder="Search addons..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: screens.lg ? 300 : "100%" }}
-            />
-          </Space>
-
+      <DataTable
+        data={addons}
+        columns={columns}
+        loading={isLoading}
+        searchKeys={["name", "limit_key", "status"]}
+        toolbarEnd={
           <Link href="/super-admin/dashboard/addons/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Create Addon
-            </Button>
+            <Button type="primary">Create Addon</Button>
           </Link>
-        </Flex>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(`/super-admin/dashboard/addons/edit/${row.id}`)
+              }
+            />
 
-        <Table
-          rowKey="id"
-          columns={columns}
-          dataSource={filtered}
-          pagination={{ pageSize: 5 }}
-          scroll={{ x: true }}
-        />
-      </Card>
+            <Popconfirm
+              title="Delete addon?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.id)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
     </div>
   );
 }
