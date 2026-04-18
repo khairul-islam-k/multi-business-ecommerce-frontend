@@ -35,9 +35,11 @@ export default function CreateTenantForm() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     if (values.password && values.password !== values.confirmPassword) {
-      return message.error("Passwords do not match");
+      message.error("Passwords do not match");
+      return;
     }
 
     try {
@@ -80,6 +82,7 @@ export default function CreateTenantForm() {
       setFileName("");
 
       router.push("/super-admin/dashboard/tenants");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       message.error(err?.response?.data?.message || "Failed to create tenant");
     }

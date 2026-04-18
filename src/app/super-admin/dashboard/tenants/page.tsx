@@ -8,9 +8,10 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
 import { Column, DataTable } from "@/components/shared/data-table";
 import Link from "next/link";
-import { Button, Space } from "antd";
+import { Button, message, Popconfirm, Space } from "antd";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import Loader from "@/components/shared/loader";
+import { queryClient } from "@/providers/query-provider";
 
 export default function TenantListPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function TenantListPage() {
 
   if (isLoading) return <Loader />;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: Column<any>[] = [
     {
       key: "business_name",
@@ -34,6 +36,7 @@ export default function TenantListPage() {
       label: "Status",
       sortable: true,
       filterOptions: ["Active", "Inactive", "Suspended"],
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (r: any) => (
         <span
           className={`px-2 py-1 rounded text-xs ${
@@ -93,6 +96,12 @@ export default function TenantListPage() {
     },
   ];
 
+  const handleDelete = async (id: string) => {
+    await api.delete(`/auth-tenant/${id}`);
+    message.info("Tenant delete successfully.");
+    queryClient.invalidateQueries({ queryKey: ["fetch-tenants"] });
+  };
+
   const tenants = data.data;
 
   return (
@@ -118,8 +127,15 @@ export default function TenantListPage() {
                 router.push(`/super-admin/dashboard/tenants/${row.id}`)
               }
             />
-
-            <Button type="text" danger icon={<DeleteOutlined />} />
+            <Popconfirm
+              title="Delete this item?"
+              description="Are you sure you want to delete this record?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.id)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
           </Space>
         )}
       />
