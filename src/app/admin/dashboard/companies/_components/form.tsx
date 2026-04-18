@@ -26,7 +26,7 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
           <AntdForm.Item
-            name="companyName"
+            name="name"
             label="Company Name"
             rules={[{ required: true }]}
           >
@@ -36,7 +36,7 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
 
         <Col xs={24} md={12}>
           <AntdForm.Item
-            name="companyDomain"
+            name="domain"
             label="Company Domain"
             rules={[{ required: true }]}
           >
@@ -45,26 +45,65 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="industry" label="Industry">
+          <AntdForm.Item name="code" label="Code">
             <Input />
           </AntdForm.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="employees" label="Employees">
+          <AntdForm.Item name="logo_url" label="Logo Url">
             <Input />
           </AntdForm.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="plan" label="Plan">
-            <Select
-              options={[
-                { label: "Basic", value: "Basic" },
-                { label: "Pro", value: "Pro" },
-                { label: "Enterprise", value: "Enterprise" },
-              ]}
-            />
+          <AntdForm.Item name="phone" label="Phone number"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item name="district"
+            rules={[{ required: true }]}
+            label="District">
+            <Input />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item name="city"
+            rules={[{ required: true }]}
+            label="City">
+            <Input />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item name="country"
+            rules={[{ required: true }]}
+            label="Country">
+            <Input />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item
+            rules={[{ required: true }]}
+            name="subdomain" label="subdomain">
+            <Input />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item name="email"
+            rules={[
+              { required: true, message: 'Email is required' },
+              { type: 'email', message: 'Please enter a valid email address' },
+            ]}
+            label="Email">
+            <Input />
           </AntdForm.Item>
         </Col>
 
@@ -73,8 +112,19 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
             <Select
               options={[
                 { label: "Active", value: "Active" },
-                { label: "Trial", value: "Trial" },
                 { label: "Inactive", value: "Inactive" },
+              ]}
+            />
+          </AntdForm.Item>
+        </Col>
+
+        <Col xs={24} md={12}>
+          <AntdForm.Item name="default_currency" label="Default currency">
+            <Select
+              options={[
+                { label: "BDT", value: "BDT" },
+                { label: "USD", value: "USD" },
+                { label: "EUR", value: "EUR" },
               ]}
             />
           </AntdForm.Item>
@@ -82,7 +132,7 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
 
         {/* Full width row */}
         <Col span={24}>
-          <AntdForm.Item name="description" label="Description">
+          <AntdForm.Item name="address" label="Address">
             <Input.TextArea rows={3} />
           </AntdForm.Item>
         </Col>
