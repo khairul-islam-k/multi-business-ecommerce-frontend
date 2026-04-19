@@ -28,8 +28,8 @@ export default function LoginForm() {
 
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      const { email, password } = values;
-      await login(email, password);
+      const { username, password } = values;
+      await login(username, password);
       message.success("Successfully signed-in!");
       router.push("/super-admin/dashboard");
     } catch (e: any) {
@@ -62,14 +62,14 @@ export default function LoginForm() {
         initialValues={{ remember: true }}
       >
         <Form.Item<LoginFormValues>
-          label="Email"
-          name="email"
+          label="Username"
+          name="username"
           rules={[
-            { required: true, message: "Email is required" },
-            { type: "email", message: "Invalid email address" },
+            { required: true, message: "Username is required" },
+            { type: "email", message: "Invalid username address" },
           ]}
         >
-          <Input placeholder="example@email.com" />
+          <Input placeholder="example@username.com" />
         </Form.Item>
 
         <Form.Item<LoginFormValues>

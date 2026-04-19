@@ -16,6 +16,17 @@
   scrollbar-color: rgba(100, 100, 100, 0.35) transparent;
 }
 
+/* globals.css or component styles */
+.custom-ant-table .ant-table-thead > tr > th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.custom-ant-table .ant-table-row:hover {
+  background: #f8fafc;
+}
 
 /* animation product css */
 
@@ -41,7 +52,8 @@
 .banner .slider .item {
   position: absolute;
   inset: 0 0 0 0;
-  transform: rotateY(calc((var(--position) - 1) * (360deg / var(--quantity)))) translateZ(550px);
+  transform: rotateY(calc((var(--position) - 1) * (360deg / var(--quantity))))
+    translateZ(550px);
 }
 
 .banner .slider .item img {
@@ -60,7 +72,6 @@
     transform: rotateX(-10deg) rotateY(360deg);
   }
 }
-
 
 /* earth */
 .world {

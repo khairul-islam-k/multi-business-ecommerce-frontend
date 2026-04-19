@@ -19,12 +19,13 @@ import BillingTable from "./_components/billing-table";
 import LogsTable from "./_components/logs-table";
 
 export default function TenantDetailPage() {
-  const { id } = useParams();
+  const { id: uuid } = useParams();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tenant-details", id],
-    queryFn: async () => api.get(`/auth-tenant/${id}`).then((res) => res.data),
-    enabled: !!id,
+    queryKey: ["tenant-details", uuid],
+    queryFn: async () =>
+      api.get(`/auth-tenant/${uuid}`).then((res) => res.data),
+    enabled: !!uuid,
   });
 
   if (isLoading) return <Loader />;
@@ -56,7 +57,7 @@ export default function TenantDetailPage() {
               {
                 key: "companies",
                 label: "Companies",
-                children: <CompanyTable tenantId={String(id)} />,
+                children: <CompanyTable tenantId={String(uuid)} />,
               },
               {
                 key: "usage",
@@ -66,7 +67,7 @@ export default function TenantDetailPage() {
               {
                 key: "billing",
                 label: "Billing",
-                children: <BillingTable tenantId={String(id)} />,
+                children: <BillingTable tenantId={String(uuid)} />,
               },
               {
                 key: "modules",
@@ -81,7 +82,7 @@ export default function TenantDetailPage() {
               {
                 key: "logs",
                 label: "Logs",
-                children: <LogsTable tenantId={String(id)} />,
+                children: <LogsTable tenantId={String(uuid)} />,
               },
             ]}
           />

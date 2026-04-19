@@ -25,19 +25,19 @@ import { queryClient } from "@/providers/query-provider";
 const { Option } = Select;
 
 export default function EditAddon() {
-  const { id } = useParams();
+  const { id: uuid } = useParams();
   const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["addon", id],
-    queryFn: async () => api.get(`/addons/${id}`).then((res) => res.data),
+    queryKey: ["addon", uuid],
+    queryFn: async () => api.get(`/addons/${uuid}`).then((res) => res.data),
   });
 
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
-      await api.patch(`/addons/${id}`, values);
+      await api.patch(`/addons/${uuid}`, values);
 
       message.success("Addon updated successfully!");
 

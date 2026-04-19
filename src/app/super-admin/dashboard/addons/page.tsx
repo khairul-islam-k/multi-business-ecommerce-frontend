@@ -75,8 +75,8 @@ export default function AddonsPage() {
     },
   ];
 
-  const handleDelete = async (id: string) => {
-    await api.delete(`/addons/${id}`);
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/addons/${uuid}`);
     message.info("Addon deleted successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
   };
@@ -103,7 +103,7 @@ export default function AddonsPage() {
               type="text"
               icon={<EditOutlined />}
               onClick={() =>
-                router.push(`/super-admin/dashboard/addons/edit/${row.id}`)
+                router.push(`/super-admin/dashboard/addons/edit/${row.uuid}`)
               }
             />
 
@@ -112,7 +112,7 @@ export default function AddonsPage() {
               description="This action cannot be undone"
               okText="Yes"
               cancelText="No"
-              onConfirm={() => handleDelete(row.id)}
+              onConfirm={() => handleDelete(row.uuid)}
             >
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>

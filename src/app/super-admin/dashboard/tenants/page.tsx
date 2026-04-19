@@ -96,8 +96,8 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleDelete = async (id: string) => {
-    await api.delete(`/auth-tenant/${id}`);
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/auth-tenant/${uuid}`);
     message.info("Tenant delete successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-tenants"] });
   };
@@ -124,7 +124,7 @@ export default function TenantListPage() {
               type="text"
               icon={<EyeOutlined />}
               onClick={() =>
-                router.push(`/super-admin/dashboard/tenants/${row.id}`)
+                router.push(`/super-admin/dashboard/tenants/${row.uuid}`)
               }
             />
             <Popconfirm
@@ -132,7 +132,7 @@ export default function TenantListPage() {
               description="Are you sure you want to delete this record?"
               okText="Yes"
               cancelText="No"
-              onConfirm={() => handleDelete(row.id)}
+              onConfirm={() => handleDelete(row.uuid)}
             >
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
