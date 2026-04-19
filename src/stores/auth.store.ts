@@ -21,7 +21,7 @@ type AuthState = {
   setRefreshToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
 
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   fetchProfile: () => Promise<void>;
   refreshAuth: () => Promise<string | null>;
   logout: () => void;
@@ -81,14 +81,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   // =========================
   // LOGIN
   // =========================
-  login: async (email, password) => {
-    // console.log("🚀 [login] started", { email, password });
+  login: async (username, password) => {
+    // console.log("🚀 [login] started", { username, password });
 
     set({ loading: true });
 
     try {
       const res = await api.post("/auth-onecomm/login", {
-        email,
+        username,
         password,
       });
 

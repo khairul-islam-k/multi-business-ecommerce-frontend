@@ -19,14 +19,17 @@ import { mockExpenseCategories } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Search } = Input;
 
 export default function ExpenseCategoriesList() {
   const [showModal, setShowModal] = useState(false);
+  const swal = useSwal();
+
   const { handler, loading } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
-    message.success("Category created");
+    swal.success("Category created");
   });
 
   const columns = [

@@ -27,6 +27,7 @@ import {
 import cn from "@/lib/cn";
 import ThemeToggle from "@/components/shared/theme-toggle";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Search } = Input;
 const { useToken } = theme;
@@ -40,6 +41,7 @@ export default function Topbar({
   onMobileMenuToggle,
   onSidebarToggle,
 }: TopbarProps) {
+  const swal = useSwal();
   const router = useRouter();
   const { token } = useToken();
   const logout = useAuthStore((s) => s.logout);
@@ -50,7 +52,7 @@ export default function Topbar({
 
   const handleLogout = async () => {
     logout();
-    message.info("Logged out successfully");
+    swal.success("Logged out successfully");
     router.push("/super-admin/dashboard");
   };
 

@@ -17,6 +17,7 @@ import {
   MessageOutlined,
 } from "@ant-design/icons";
 import { mockNotes } from "../../data";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Text } = Typography;
 
@@ -30,10 +31,11 @@ export function OrderNotesPanel({ orderId }: { orderId: string }) {
   const notes = mockNotes.filter((note) => note.order_id === orderId);
   const [newNote, setNewNote] = useState("");
   const [noteType, setNoteType] = useState("internal");
+  const swal = useSwal();
 
   const handleAdd = () => {
     if (!newNote.trim()) return;
-    message.success("Note added");
+    swal.success("Note added");
     setNewNote("");
   };
 

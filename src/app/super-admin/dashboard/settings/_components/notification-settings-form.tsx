@@ -8,12 +8,14 @@ import {
   notificationSettingsSchema,
   NotificationSettingsValues,
 } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function NotificationSettingsForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<NotificationSettingsValues>();
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

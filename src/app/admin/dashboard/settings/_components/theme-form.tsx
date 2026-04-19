@@ -4,14 +4,16 @@ import { Form, Select, Input, Button, message } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { themeSchema, ThemeValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function ThemeForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<ThemeValues>();
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

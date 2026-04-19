@@ -24,10 +24,12 @@ import useSubmit from "@/hooks/use-submit";
 import api from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function CreateTenantForm() {
+  const swal = useSwal();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
   const router = useRouter();
@@ -38,7 +40,7 @@ export default function CreateTenantForm() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     if (values.password && values.password !== values.confirmPassword) {
-      message.error("Passwords do not match");
+      swal.error("Passwords do not match");
       return;
     }
 
@@ -75,7 +77,7 @@ export default function CreateTenantForm() {
         },
       });
 
-      message.success("Tenant created successfully!");
+      swal.success("Tenant created successfully!");
 
       form.resetFields();
       setFile(null);
@@ -84,7 +86,7 @@ export default function CreateTenantForm() {
       router.push("/super-admin/dashboard/tenants");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to create tenant");
+      swal.error(err?.response?.data?.message || "Failed to create tenant");
     }
   });
 
@@ -151,7 +153,7 @@ export default function CreateTenantForm() {
               <Upload
                 beforeUpload={(file) => {
                   if (file.size / 1024 / 1024 > 2) {
-                    message.error("File must be under 2MB");
+                    swal.error("File must be under 2MB");
                     return Upload.LIST_IGNORE;
                   }
                   setFile(file);

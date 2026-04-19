@@ -27,12 +27,14 @@ import { mockShowrooms } from "./data";
 import ViewModal from "./_components/view-modal";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
 
 export default function ShowroomsPage() {
   const router = useRouter();
+  const swal = useSwal();
 
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ export default function ShowroomsPage() {
 
   const handleDelete = async (id: string) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    message.success("Showroom deleted");
+    swal.success("Showroom deleted");
   };
 
   const columns = [

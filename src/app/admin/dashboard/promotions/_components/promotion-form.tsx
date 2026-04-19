@@ -16,6 +16,7 @@ import { useRouter, useParams } from "next/navigation";
 import { mockPromotions } from "../data";
 import dayjs from "dayjs";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
@@ -28,6 +29,7 @@ export default function PromotionForm({
   const params = useParams();
   const id = params?.id as string;
   const { token } = theme.useToken();
+  const swal = useSwal();
 
   const promo =
     mode === "edit" ? mockPromotions.find((p) => p.id === id) : null;
@@ -37,7 +39,7 @@ export default function PromotionForm({
   const onFinish = (values: any) => {
     console.log(values);
 
-    message.success(
+    swal.success(
       mode === "create" ? "Promotion created!" : "Promotion updated!",
     );
 

@@ -17,6 +17,7 @@ import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text, Link } = Typography;
 
@@ -25,15 +26,16 @@ export default function LoginForm() {
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const loading = useAuthStore((s) => s.loading);
+  const swal = useSwal();
 
   const handleLogin = async (values: LoginFormValues) => {
     try {
-      const { email, password } = values;
-      await login(email, password);
-      message.success("Successfully signed-in!");
+      const { username, password } = values;
+      await login(username, password);
+      swal.success("Successfully signed-in!");
       router.push("/super-admin/dashboard");
     } catch (e: any) {
-      message.error(
+      swal.error(
         e?.message && e.message.includes("400")
           ? "Invalid Credentials."
           : "Couldn't sign in. Try again later",
@@ -62,14 +64,14 @@ export default function LoginForm() {
         initialValues={{ remember: true }}
       >
         <Form.Item<LoginFormValues>
-          label="Email"
-          name="email"
+          label="Username"
+          name="username"
           rules={[
-            { required: true, message: "Email is required" },
-            { type: "email", message: "Invalid email address" },
+            { required: true, message: "Username is required" },
+            { type: "email", message: "Invalid username address" },
           ]}
         >
-          <Input placeholder="example@email.com" />
+          <Input placeholder="example@username.com" />
         </Form.Item>
 
         <Form.Item<LoginFormValues>

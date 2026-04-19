@@ -1,31 +1,117 @@
 "use client";
 
-import { Card, message, Typography } from "antd";
-import { useRouter } from "next/navigation";
+import {
+  Form,
+  Input,
+  Select,
+  Row,
+  Col,
+  Button,
+  Card,
+  theme,
+  message,
+} from "antd";
 
-import Form from "../_components/form";
+import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+import useSubmit from "@/hooks/use-submit";
+import { queryClient } from "@/providers/query-provider";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-const { Title } = Typography;
+import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateBrandPage() {
+  const [form] = Form.useForm();
+  const { token } = theme.useToken();
   const router = useRouter();
+  const swal = useSwal();
 
-  const handleSubmit = async (values: any) => {
-    await new Promise((r) => setTimeout(r, 1000));
-    message.success("Brand created!");
-    router.push("/admin/dashboard/masters/brands");
-  };
+  const { loading, handler } = useSubmit(async (values: any) => {
+    try {
+      await api.post("/brands", values);
+
+      swal.success("Brand created successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
+
+      form.resetFields();
+      router.push("/admin/dashboard/masters/brands");
+    } catch (err: any) {
+      swal.error(err?.response?.data?.message || "Failed to create brand");
+    }
+  });
 
   return (
     <div className="space-y-6">
       <PageHeader title="Create Brand" breadcrumb={adminBreadcrumb} />
 
-      <Card>
-        <Title level={5}>New Brand</Title>
-        <Form mode="add" onSubmit={handleSubmit} />
-      </Card>
+      <Form
+        layout="vertical"
+        form={form}
+        onFinish={handler}
+        className="space-y-6"
+        style={{ background: token.colorBgBase }}
+      >
+        {/* BASIC INFO */}
+        <Card title="Basic Information" className="rounded-xl">
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="name"
+                label="Brand Name"
+                rules={[{ required: true }]}
+              >
+                <Input placeholder="e.g. Floating Cookies" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+                <Input placeholder="e.g. flo-coo" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24}>
+              <Form.Item name="description" label="Description">
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Short brand description..."
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* STATUS */}
+        <Card title="Status" className="rounded-xl">
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="status"
+                label="Brand Status"
+                initialValue="Active"
+              >
+                <Select
+                  options={[
+                    { label: "Active", value: "Active" },
+                    { label: "Inactive", value: "Inactive" },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* ACTION */}
+        <Card className="rounded-xl bg-gray-50">
+          <div className="flex justify-end">
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Create Brand
+            </Button>
+          </div>
+        </Card>
+      </Form>
     </div>
   );
 }

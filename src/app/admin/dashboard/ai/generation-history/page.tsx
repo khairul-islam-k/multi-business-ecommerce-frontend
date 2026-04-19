@@ -6,6 +6,7 @@ import { mockAiGenerations, AiGeneration } from "../data";
 import { Tag, Button, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const moduleLabels: Record<string, string> = {
   product_description: "Description",
@@ -54,6 +55,8 @@ const columns: Column<AiGeneration>[] = [
 ];
 
 export default function AiGenerationHistory() {
+  const swal = useSwal();
+
   return (
     <div className="space-y-6">
       <PageHeader title="AI Generation History" breadcrumb={adminBreadcrumb} />
@@ -68,7 +71,7 @@ export default function AiGenerationHistory() {
             icon={<CopyOutlined />}
             onClick={() => {
               navigator.clipboard.writeText(row.generated_text);
-              message.success("Copied!");
+              swal.success("Copied!");
             }}
           />
         )}

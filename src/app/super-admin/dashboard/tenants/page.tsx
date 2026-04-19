@@ -12,8 +12,10 @@ import { Button, message, Popconfirm, Space } from "antd";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function TenantListPage() {
+  const swal = useSwal();
   const router = useRouter();
   const { data, isLoading } = useQuery({
     queryKey: ["fetch-tenants"],
@@ -96,9 +98,9 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleDelete = async (id: string) => {
-    await api.delete(`/auth-tenant/${id}`);
-    message.info("Tenant delete successfully.");
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/auth-tenant/${uuid}`);
+    swal.success("Tenant delete successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-tenants"] });
   };
 
@@ -124,7 +126,7 @@ export default function TenantListPage() {
               type="text"
               icon={<EyeOutlined />}
               onClick={() =>
-                router.push(`/super-admin/dashboard/tenants/${row.id}`)
+                router.push(`/super-admin/dashboard/tenants/${row.uuid}`)
               }
             />
             <Popconfirm
@@ -132,7 +134,7 @@ export default function TenantListPage() {
               description="Are you sure you want to delete this record?"
               okText="Yes"
               cancelText="No"
-              onConfirm={() => handleDelete(row.id)}
+              onConfirm={() => handleDelete(row.uuid)}
             >
               <Button type="text" danger icon={<DeleteOutlined />} />
             </Popconfirm>
