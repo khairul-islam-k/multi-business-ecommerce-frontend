@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, message, Typography } from "antd";
+import { Card, Typography } from "antd";
 import { useParams, useRouter } from "next/navigation";
 
 import Form from "../../_components/form";

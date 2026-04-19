@@ -32,7 +32,9 @@ const TrustOwner = () => {
             maxWidth: '1200px',
             marginLeft: 'auto',
             marginRight: 'auto',
-            textAlign: 'center'
+            textAlign: 'center',
+            paddingLeft: '16px',
+            paddingRight: '16px'
         }}
         >
             <h3 style={{

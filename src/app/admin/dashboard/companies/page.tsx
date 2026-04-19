@@ -24,6 +24,7 @@ import axios from "axios";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { DataTable } from "@/components/shared/data-table";
+import Pagination from "@/components/shared/Pagination";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -57,30 +58,64 @@ export interface TCompany {
 
 export default function CompaniesPage() {
   const router = useRouter();
-
   // ✅ LIST STATE
   const [companies, setCompanies] = useState<TCompany[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  console.log(companies);
+  // pagination
+  const [page, setPage] = useState<number>(1);
+  const [totalCompany, setTotalCompany] = useState<number>(0);
+  const limit = 5;
+  const totalPages = Math.ceil(totalCompany / limit);
 
-  // ✅ SINGLE COMPANY STATE
-  const [selectedCompany, setSelectedCompany] = useState<TCompany | null>(null);
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>();
 
   /* ================= FETCH ================= */
+// length
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const res = await axios.get(
+        `http://localhost:5002/onecomm/api/v1/companies?page=${page}&limit=${limit}&sortOrder=DESC`
+      );
+      setCompanies(res.data.data.data);
+    };
+
+    fetchCompanies();
+  }, [page, limit]);
+
 
   useEffect(() => {
     const fetchCompanies = async () => {
       const res = await axios.get(
-        "http://localhost:5002/onecomm/api/v1/companies"
+        `http://localhost:5002/onecomm/api/v1/companies?sortOrder=DESC`
       );
-      setCompanies(res.data.data);
+      setTotalCompany(res.data.data.data.length);
     };
 
     fetchCompanies();
-  }, []);
+  }, [statusFilter]);
+
+
+  useEffect(() => {
+    if (!Search || !statusFilter) {
+      setCompanies([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`http://localhost:5002/onecomm/api/v1/companies?search=${searchText}&status=${statusFilter}&sortOrder=DESC`);
+        setCompanies(res.data.data.data);
+      } finally {
+        setLoading(false);
+      }
+    }, 500); // ⏱ debounce delay
+
+    return () => clearTimeout(timer); // cancel previous
+  }, [searchText, statusFilter]);
 
   /* ================= DELETE ================= */
 
@@ -144,7 +179,7 @@ export default function CompaniesPage() {
             icon={<EyeOutlined />}
             onClick={() => {
               router.push(
-                `/admin/dashboard/companies/detail/${record.id}`
+                `/admin/dashboard/companies/detail/${record.uuid}`
               )
             }}
           />
@@ -154,7 +189,7 @@ export default function CompaniesPage() {
             icon={<EditOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/companies/edit/${record.id}`
+                `/admin/dashboard/companies/edit/${record.uuid}`
               )
             }
           />
@@ -220,6 +255,11 @@ export default function CompaniesPage() {
               columns={columns}
             />
           </Card>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />;
         </Col>
       </Row>
 
