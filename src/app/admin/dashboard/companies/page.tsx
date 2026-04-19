@@ -259,7 +259,7 @@ export default function CompaniesPage() {
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
-          />;
+          />
         </Col>
       </Row>
 
