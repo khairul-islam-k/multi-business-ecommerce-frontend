@@ -1,36 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  Typography,
-  Popconfirm,
-  message,
-  Avatar,
-} from "antd";
+import Link from "next/link";
+
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button, message, Popconfirm, Space, Avatar } from "antd";
 import {
   EditOutlined,
-  EyeOutlined,
   DeleteOutlined,
+  EyeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { mockBrands } from "./data";
-import ViewModal from "./_components/view-modal";
+import api from "@/lib/axios";
+import { queryClient } from "@/providers/query-provider";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import Loader from "@/components/shared/loader";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
+import { Column, DataTable } from "@/components/shared/data-table";
+
+import ViewModal from "./_components/view-modal";
 
 export default function BrandsPage() {
   const router = useRouter();
@@ -38,75 +30,69 @@ export default function BrandsPage() {
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
-
-  const filtered = mockBrands.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = status ? item.status === status : true;
-    return matchSearch && matchStatus;
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-brands"],
+    queryFn: async () => api.get("/brands").then((res) => res.data),
   });
 
-  const handleDelete = async (id: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    message.success("Brand deleted");
+  if (isLoading) return <Loader />;
+
+  const brands = data?.data ?? [];
+
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/brands/${uuid}`);
+    message.success("Brand deleted successfully.");
+    queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
   };
 
-  const columns = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Logo",
-      dataIndex: "logo",
-      render: (src: string) => <Avatar src={src} />,
+      key: "logo",
+      label: "Logo",
+      render: (r) => <Avatar src={r.logo} />,
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (v: string) => <Text strong>{v}</Text>,
+      key: "name",
+      label: "Name",
+      type: "primary",
+      sortable: true,
     },
     {
-      title: "Slug",
-      dataIndex: "slug",
+      key: "slug",
+      label: "Slug",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (s: string) =>
-        s === "Active" ? (
-          <Badge status="success" text="Active" />
-        ) : (
-          <Badge status="default" text="Inactive" />
-        ),
-    },
-    {
-      title: "Actions",
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => {
-              setSelected(record);
-              setOpen(true);
-            }}
-          />
-
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(`/admin/dashboard/masters/brands/edit/${record.id}`)
-            }
-          />
-
-          <Popconfirm
-            title="Delete brand?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+      key: "description",
+      label: "Description",
+      render: (r) => (
+        <span className="text-xs text-gray-500 line-clamp-1">
+          {r.description ?? "-"}
+        </span>
       ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive"],
+      render: (r) => (
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            r.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {r.status}
+        </span>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Created",
+      sortable: true,
+      render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
   ];
 
@@ -114,53 +100,49 @@ export default function BrandsPage() {
     <div className="space-y-6">
       <PageHeader title="Brands" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls */}
-      <div className="flex justify-between gap-3 flex-wrap">
-        <div className="flex gap-3">
-          <Search
-            placeholder="Search brands"
-            allowClear
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 220 }}
-          />
-
-          <Select
-            placeholder="Status"
-            allowClear
-            style={{ width: 160 }}
-            onChange={setStatus}
-            options={[
-              { label: "Active", value: "Active" },
-              { label: "Inactive", value: "Inactive" },
-            ]}
-          />
-        </div>
-
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => router.push("/admin/dashboard/masters/brands/create")}
-        >
-          Add Brand
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>List of Brands</Title>
-
-            <Table
-              columns={columns}
-              dataSource={filtered}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
+      <DataTable
+        data={brands}
+        columns={columns}
+        loading={isLoading}
+        searchKeys={["name", "slug", "status", "description"]}
+        toolbarEnd={
+          <Link href="/admin/dashboard/masters/brands/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add Brand
+            </Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelected(row);
+                setOpen(true);
+              }}
             />
-          </Card>
-        </Col>
-      </Row>
+
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(`/admin/dashboard/masters/brands/edit/${row.uuid}`)
+              }
+            />
+
+            <Popconfirm
+              title="Delete brand?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
 
       <ViewModal open={open} onClose={() => setOpen(false)} brand={selected} />
     </div>

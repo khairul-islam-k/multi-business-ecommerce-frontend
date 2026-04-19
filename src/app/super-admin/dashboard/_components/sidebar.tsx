@@ -37,8 +37,8 @@ const navItems: MenuProps["items"] = [
     label: "Management",
     children: [
       { key: "/tenants", icon: <BankOutlined />, label: "Tenants" },
-      { key: "/packages", icon: <AppstoreOutlined />, label: "Packages" },
       { key: "/addons", icon: <ClusterOutlined />, label: "Addons" },
+      { key: "/packages", icon: <AppstoreOutlined />, label: "Packages" },
     ],
   },
   {

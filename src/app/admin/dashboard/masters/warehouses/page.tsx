@@ -1,21 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  Typography,
-  Popconfirm,
-  message,
-} from "antd";
+import Link from "next/link";
+
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button, message, Popconfirm, Space, Badge } from "antd";
 import {
   EditOutlined,
   EyeOutlined,
@@ -23,13 +13,16 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { mockWarehouses } from "./data";
-import ViewModal from "./_components/view-modal";
+import api from "@/lib/axios";
+import { queryClient } from "@/providers/query-provider";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import Loader from "@/components/shared/loader";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
+import ViewModal from "./_components/view-modal";
+
+import { Column, DataTable } from "@/components/shared/data-table";
 
 export default function WarehousesPage() {
   const router = useRouter();
@@ -37,87 +30,62 @@ export default function WarehousesPage() {
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
-
-  const filtered = mockWarehouses.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = status ? item.status === status : true;
-    return matchSearch && matchStatus;
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-warehouses"],
+    queryFn: async () => api.get("/warehouse").then((res) => res.data),
   });
 
-  const handleDelete = async (id: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    message.success("Warehouse deleted");
+  if (isLoading) return <Loader />;
+
+  const warehouses = data?.data ?? [];
+
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/warehouse/${uuid}`);
+    message.success("Warehouse deleted successfully.");
+    queryClient.invalidateQueries({ queryKey: ["fetch-warehouses"] });
   };
 
-  const columns = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (v: string) => <Text strong>{v}</Text>,
+      key: "name",
+      label: "Name",
+      type: "primary",
+      sortable: true,
     },
     {
-      title: "Code",
-      dataIndex: "code",
+      key: "code",
+      label: "Code",
+      render: (r) => r.code ?? "-",
     },
     {
-      title: "Phone",
-      dataIndex: "phone",
+      key: "phone",
+      label: "Phone",
     },
     {
-      title: "City",
-      dataIndex: "city",
+      key: "city",
+      label: "City",
     },
     {
-      title: "District",
-      dataIndex: "district",
+      key: "district",
+      label: "District",
     },
     {
-      title: "Type",
-      dataIndex: "type",
+      key: "type",
+      label: "Type",
+      sortable: true,
+      filterOptions: ["Regional", "Temporary", "Central"],
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (s: string) =>
-        s === "Active" ? (
-          <Badge status="success" text="Active" />
-        ) : (
-          <Badge status="default" text="Inactive" />
-        ),
-    },
-    {
-      title: "Actions",
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => {
-              setSelected(record);
-              setOpen(true);
-            }}
-          />
-
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(
-                `/admin/dashboard/settings/warehouses/edit/${record.id}`,
-              )
-            }
-          />
-
-          <Popconfirm
-            title="Delete warehouse?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+      key: "status",
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive"],
+      render: (r) => (
+        <Badge
+          status={r.status === "Active" ? "success" : "default"}
+          text={r.status}
+        />
       ),
     },
   ];
@@ -126,55 +94,51 @@ export default function WarehousesPage() {
     <div className="space-y-6">
       <PageHeader title="Warehouses" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls */}
-      <div className="flex justify-between gap-3 flex-wrap">
-        <div className="flex gap-3">
-          <Search
-            placeholder="Search warehouses"
-            allowClear
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 220 }}
-          />
-
-          <Select
-            placeholder="Status"
-            allowClear
-            style={{ width: 160 }}
-            onChange={setStatus}
-            options={[
-              { label: "Active", value: "Active" },
-              { label: "Inactive", value: "Inactive" },
-            ]}
-          />
-        </div>
-
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() =>
-            router.push("/admin/dashboard/settings/warehouses/create")
-          }
-        >
-          Add Warehouse
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>List of Warehouses</Title>
-
-            <Table
-              columns={columns}
-              dataSource={filtered}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
+      <DataTable
+        data={warehouses}
+        columns={columns}
+        loading={isLoading}
+        searchKeys={["name", "city", "district", "phone", "type", "status"]}
+        toolbarEnd={
+          <Link href="/admin/dashboard/masters/warehouses/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add Warehouse
+            </Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelected(row);
+                setOpen(true);
+              }}
             />
-          </Card>
-        </Col>
-      </Row>
+
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(
+                  `/admin/dashboard/masters/warehouses/edit/${row.uuid}`,
+                )
+              }
+            />
+
+            <Popconfirm
+              title="Delete warehouse?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
 
       <ViewModal
         open={open}
