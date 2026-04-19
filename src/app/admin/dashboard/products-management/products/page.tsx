@@ -1,85 +1,121 @@
 "use client";
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
+import api from '@/lib/axios';
 import { EyeOutlined, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Card, Dropdown, Flex, Grid, Input, Space, Table, Tag } from 'antd';
+import { Button, Card, Dropdown, Flex, Grid, Input, Pagination, Space, Table, Tag } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const productData = [
-    {
-        id: 1,
-        tenant_id: 101,
-        company_id: 1001,
-        brand_id: 501,
-        category_id: 201,
-        name: "Wireless Mouse",
-        slug: "wireless-mouse",
-        sku: "WM-001",
-        barcode: "1234567890123",
-        short_description: "Ergonomic wireless mouse",
-        long_description: "High precision wireless mouse with ergonomic design and long battery life.",
-        cost_price: 15.0,
-        sale_price: 25.0,
-        compare_price: 30.0,
-        tax_type: "VAT",
-        tax_amount: 2.0,
-        weight: 0.2,
-        status: "Active",
-        is_featured: true,
-        published_at: "2025-03-20 10:00:00",
-    },
-    {
-        id: 2,
-        tenant_id: 101,
-        company_id: 1001,
-        brand_id: null,
-        category_id: 202,
-        name: "Bluetooth Headphones",
-        slug: "bluetooth-headphones",
-        sku: "BH-002",
-        barcode: null,
-        short_description: "Wireless bluetooth headphones",
-        long_description: "Over-ear bluetooth headphones with noise cancellation and high-quality sound.",
-        cost_price: 35.0,
-        sale_price: 50.0,
-        compare_price: null,
-        tax_type: "GST",
-        tax_amount: 5.0,
-        weight: 0.5,
-        status: "Active",
-        is_featured: false,
-        published_at: "2025-03-21 12:30:00",
-    },
-    {
-        id: 3,
-        tenant_id: 101,
-        company_id: 1001,
-        brand_id: 502,
-        category_id: 203,
-        name: "USB-C Charger",
-        slug: "usb-c-charger",
-        sku: "UC-003",
-        barcode: "9876543210987",
-        short_description: "Fast charging USB-C adapter",
-        long_description: "High-speed USB-C charger compatible with multiple devices.",
-        cost_price: 10.0,
-        sale_price: 18.0,
-        compare_price: 20.0,
-        tax_type: "VAT",
-        tax_amount: 1.5,
-        weight: 0.1,
-        status: "Inactive",
-        is_featured: false,
-        published_at: null,
-    },
-];
+export interface TProduct {
+  id: string;
+  uuid: string;
+
+  name: string;
+  slug: string;
+  sku: string;
+  barcode: string;
+
+  status: 'Active' | 'Inactive' | 'Deleted';
+
+  is_featured: boolean;
+
+  sale_price: number | null;
+  compare_price: number | null;
+  cost_price: number | null;
+
+  tax_type: string | null;
+  tax_amount: number | null;
+
+  short_description: string | null;
+  long_description: string | null;
+
+  brand_id: string | null;
+  category_id: string | null;
+  company_id: string | null;
+  tenant_id: string | null;
+
+  published_at: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  created_by: string;
+  updated_by: string | null;
+  deleted_by: string | null;
+}
 
 
 const ProductsList = () => {
     const screens = Grid.useBreakpoint();
     const router = useRouter();
+    const [allProduct, setAllProduct] = useState<TProduct[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+
+
+    const [searchText, setSearchText] = useState<string>("");
+
+
+    // pagination
+    const [page, setPage] = useState<number>(1);
+  const [totalProduct, setTotalProduct] = useState<number>(0);
+  const limit = 5;
+  const totalPages = Math.ceil(totalProduct / limit);
+
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      const res = await api.get(
+        `/companies?page=${page}&limit=${limit}&sortOrder=DESC`
+      );
+      setTotalProduct(res.data.data.data);
+    };
+
+    fetchCompanies();
+  }, [page, limit]);
+
+
+//   useEffect(() => {
+//     const fetchCompanies = async () => {
+//       const res = await api.get(
+//         `/products?sortOrder=DESC`
+//       );
+//       setTotalProduct(res.data.data.data.length);
+//     };
+
+//     fetchCompanies();
+//   }, []);
+
+
+//   useEffect(() => {
+//     if (!searchText) {
+//       setAllProduct([]);
+//       return;
+//     }
+
+//     const timer = setTimeout(async () => {
+//       try {
+//         setLoading(true);
+//         const res = await api.get(`/products?search=${searchText}&sortOrder=DESC`);
+//         setAllProduct(res.data.data.data);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }, 500); // ⏱ debounce delay
+
+//     return () => clearTimeout(timer); // cancel previous
+//   }, [searchText);
+
+    // use
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         const res = await api.get(`/products?sortOrder=DESC`);
+    //         setAllProduct(res.data.data.data);
+    //     }
+    //     fetchData();
+    // }, [])
 
     const productColumns = [
         { title: "Name", dataIndex: "name", key: "name" },
@@ -156,7 +192,7 @@ const ProductsList = () => {
                         }}
                         prefix={<SearchOutlined />}
                         placeholder="Search packages..."
-                        onChange={(e) => handleSearch(e.target.value)}
+                        onChange={(e) => setSearchText(e.target.value)}
                     />
                 </Space>
 
@@ -174,11 +210,16 @@ const ProductsList = () => {
                 <Table
                     rowKey="id"
                     columns={productColumns}
-                    dataSource={productData}
+                    dataSource={allProduct}
                     bordered
                     pagination={false}
                 />
             </Card>
+            {/* <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          /> */}
 
         </div>
     );

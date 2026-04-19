@@ -13,7 +13,9 @@ const BlazingFast = () => {
     return (
         <div style={{
             background: token.colorPrimary,
-            color: token.colorWhite
+            color: token.colorWhite,
+            paddingLeft: '16px',
+            paddingRight: '16px'
         }}>
             <div
                 style={{
