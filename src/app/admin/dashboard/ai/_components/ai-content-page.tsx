@@ -6,6 +6,7 @@ import { mockAiGenerations, AiGeneration } from "../data";
 import { Button, message } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const filtered = (type: string) =>
   mockAiGenerations.filter((g) => g.module_type === type);
@@ -45,6 +46,8 @@ export default function AiContentPage({
   description: string;
   moduleType: string;
 }) {
+  const swal = useSwal();
+
   return (
     <div className="space-y-6 ">
       <PageHeader title={title} breadcrumb={adminBreadcrumb} />
@@ -59,7 +62,7 @@ export default function AiContentPage({
             icon={<CopyOutlined />}
             onClick={() => {
               navigator.clipboard.writeText(row.generated_text);
-              message.success("Copied!");
+              swal.success("Copied");
             }}
           />
         )}

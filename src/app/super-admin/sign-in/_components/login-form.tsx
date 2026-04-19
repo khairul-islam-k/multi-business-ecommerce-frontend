@@ -17,6 +17,7 @@ import Logo from "@/components/shared/logo";
 import { LoginFormValues } from "../schemas";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text, Link } = Typography;
 
@@ -25,15 +26,16 @@ export default function LoginForm() {
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const loading = useAuthStore((s) => s.loading);
+  const swal = useSwal();
 
   const handleLogin = async (values: LoginFormValues) => {
     try {
       const { username, password } = values;
       await login(username, password);
-      message.success("Successfully signed-in!");
+      swal.success("Successfully signed-in!");
       router.push("/super-admin/dashboard");
     } catch (e: any) {
-      message.error(
+      swal.error(
         e?.message && e.message.includes("400")
           ? "Invalid Credentials."
           : "Couldn't sign in. Try again later",

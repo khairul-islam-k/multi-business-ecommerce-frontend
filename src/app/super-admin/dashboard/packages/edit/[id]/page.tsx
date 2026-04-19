@@ -17,18 +17,20 @@ import { mockPackages } from "../../data";
 import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 export default function EditPackage() {
+  const swal = useSwal();
   const { id } = useParams();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
 
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Addon updated!");
+    swal.success("Addon updated!");
   });
 
   const _package = mockPackages.find((_package) => id === _package.id);

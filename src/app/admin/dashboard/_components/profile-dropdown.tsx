@@ -1,3 +1,4 @@
+import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   LogoutOutlined,
@@ -13,10 +14,11 @@ const { Text } = Typography;
 const ProfileDropdown = () => {
   const logout = useAuthStore((s) => s.logout);
   const router = useRouter();
+  const swal = useSwal();
 
   const handleLogout = async () => {
     logout();
-    message.info("Logged out successfully.");
+    swal.success("Logged out successfully.");
     router.push("/dashboard/sign-in");
   };
 

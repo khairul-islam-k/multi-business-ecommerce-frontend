@@ -151,3 +151,43 @@
     height: 42px;
   }
 }
+
+.antd-swal-popup {
+  background: var(--swal-bg) !important;
+  color: var(--swal-text) !important;
+  border-radius: var(--swal-radius) !important;
+  box-shadow: var(--swal-shadow) !important;
+  border: 1px solid var(--swal-border);
+  padding: 24px;
+}
+
+.antd-swal-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.antd-swal-content {
+  font-size: 14px;
+  color: var(--swal-text);
+  opacity: 0.85;
+}
+
+.antd-swal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.antd-btn {
+  padding: 4px 15px;
+  border-radius: 6px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  cursor: pointer;
+}
+
+.antd-btn-primary {
+  background: #1677ff;
+  border-color: #1677ff;
+  color: #fff;
+}

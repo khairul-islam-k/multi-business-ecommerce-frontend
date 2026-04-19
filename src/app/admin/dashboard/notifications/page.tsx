@@ -24,6 +24,7 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { mockNotifications } from "./data";
 import { Notification } from "./type";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
@@ -33,6 +34,7 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<Notification | null>(null);
   const [open, setOpen] = useState(false);
+  const swal = useSwal();
 
   const [notifications, setNotifications] = useState(mockNotifications);
 
@@ -52,12 +54,12 @@ export default function NotificationsPage() {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
-    message.success("Notification marked as read");
+    swal.success("Notification marked as read");
   };
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    message.success("All notifications marked as read");
+    swal.success("All notifications marked as read");
   };
 
   const openView = (n: Notification) => {

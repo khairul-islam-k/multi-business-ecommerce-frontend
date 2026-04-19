@@ -5,12 +5,14 @@ import { SaveOutlined } from "@ant-design/icons";
 
 import useSubmit from "@/hooks/use-submit";
 import { emailSettingsSchema, EmailSettingsValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function EmailSettingsForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<EmailSettingsValues>();
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

@@ -10,26 +10,26 @@ import { queryClient } from "@/providers/query-provider";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateWarehousePage() {
   const [form] = Form.useForm();
   const { token } = theme.useToken();
   const router = useRouter();
+  const swal = useSwal();
 
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.post("/warehouse", values);
 
-      message.success("Warehouse created successfully!");
+      swal.success("Warehouse created successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-warehouses"] });
 
       form.resetFields();
       router.push("/admin/dashboard/masters/warehouses");
     } catch (err: any) {
-      message.error(
-        err?.response?.data?.message || "Failed to create warehouse",
-      );
+      swal.error(err?.response?.data?.message || "Failed to create warehouse");
     }
   });
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { useAuthStore } from "@/stores/auth.store";
 import { message } from "antd";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function AuthGuard({
   redirectUrl,
@@ -17,13 +18,14 @@ export default function AuthGuard({
 }) {
   const { accessToken, initialized, user, loading } = useAuthStore();
   const router = useRouter();
+  const swal = useSwal();
 
   useEffect(() => {
     if (!initialized) return;
 
     // 1. not logged in
     if (!accessToken) {
-      message.error("Please login first.");
+      swal.error("Please login first.");
       router.replace(redirectUrl);
       return;
     }
@@ -33,7 +35,7 @@ export default function AuthGuard({
 
     // 3. role mismatch
     if (user.user_type !== role) {
-      message.error(`You need ${role} access.`);
+      swal.error(`You need ${role} access.`);
       router.replace(redirectUrl);
       return;
     }

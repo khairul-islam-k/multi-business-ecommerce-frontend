@@ -18,15 +18,17 @@ import useSubmit from "@/hooks/use-submit";
 import { mockWarehouses, mockProducts } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
 export default function StockEntryPage() {
   const router = useRouter();
+  const swal = useSwal();
   const [form] = AntdForm.useForm();
   const { loading, handler } = useSubmit(async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Stock entry recorded successfully");
+    swal.success("Stock entry recorded successfully");
     router.push("/admin/dashboard/inventory/transactions");
   });
 

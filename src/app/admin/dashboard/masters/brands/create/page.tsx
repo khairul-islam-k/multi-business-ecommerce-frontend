@@ -19,24 +19,26 @@ import { queryClient } from "@/providers/query-provider";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateBrandPage() {
   const [form] = Form.useForm();
   const { token } = theme.useToken();
   const router = useRouter();
+  const swal = useSwal();
 
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.post("/brands", values);
 
-      message.success("Brand created successfully!");
+      swal.success("Brand created successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
 
       form.resetFields();
       router.push("/admin/dashboard/masters/brands");
     } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to create brand");
+      swal.error(err?.response?.data?.message || "Failed to create brand");
     }
   });
 

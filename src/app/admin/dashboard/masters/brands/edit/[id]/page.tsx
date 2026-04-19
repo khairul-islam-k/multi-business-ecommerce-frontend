@@ -22,9 +22,11 @@ import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function EditBrandPage() {
   const { id: uuid } = useParams();
+  const swal = useSwal();
   const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
@@ -38,13 +40,13 @@ export default function EditBrandPage() {
     try {
       await api.patch(`/brands/${uuid}`, values);
 
-      message.success("Brand updated successfully!");
+      swal.success("Brand updated successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
 
       router.push("/admin/dashboard/masters/brands");
     } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to update brand");
+      swal.error(err?.response?.data?.message || "Failed to update brand");
     }
   });
 

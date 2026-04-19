@@ -4,12 +4,14 @@ import { Form, Input, Button, message } from "antd";
 
 import { brandingSchema, BrandingValues } from "../schemas";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function BrandingForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<BrandingValues>();
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

@@ -16,6 +16,7 @@ import useSubmit from "@/hooks/use-submit";
 import { LoginFormValues } from "../schemas";
 import { useAuthStore } from "@/stores/auth.store";
 import { useRouter } from "next/navigation";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Link } = Typography;
 
@@ -23,11 +24,12 @@ export default function LoginForm() {
   const [form] = Form.useForm<LoginFormValues>();
   const { login, loading } = useAuthStore();
   const router = useRouter();
+  const swal = useSwal();
 
   const { handler } = useSubmit<LoginFormValues>(async (values) => {
     const { username, password } = values;
     await login(username, password);
-    message.success("Logged in successfully");
+    swal.success("Logged in successfully");
     router.push("/admin/dashboard");
   });
 

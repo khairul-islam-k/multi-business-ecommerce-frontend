@@ -23,9 +23,11 @@ import Loader from "@/components/shared/loader";
 import ViewModal from "./_components/view-modal";
 
 import { Column, DataTable } from "@/components/shared/data-table";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function WarehousesPage() {
   const router = useRouter();
+  const swal = useSwal();
 
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
@@ -41,7 +43,7 @@ export default function WarehousesPage() {
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/warehouse/${uuid}`);
-    message.success("Warehouse deleted successfully.");
+    swal.success("Warehouse deleted successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-warehouses"] });
   };
 

@@ -15,9 +15,11 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function AddonsPage() {
   const router = useRouter();
+  const swal = useSwal();
 
   const { data, isLoading } = useQuery({
     queryKey: ["fetch-addons"],
@@ -77,7 +79,7 @@ export default function AddonsPage() {
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/addons/${uuid}`);
-    message.info("Addon deleted successfully.");
+    swal.success("Addon deleted successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
   };
 

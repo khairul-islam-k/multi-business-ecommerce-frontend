@@ -1,23 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  Typography,
-  Popconfirm,
-  Image,
-  message,
-  Avatar,
-} from "antd";
+import Link from "next/link";
+
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Button, message, Popconfirm, Space, Avatar, Badge } from "antd";
 import {
   EditOutlined,
   EyeOutlined,
@@ -25,97 +13,71 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { mockCategories } from "./data";
-import ViewModal from "./_components/view-modal";
+import api from "@/lib/axios";
+import { queryClient } from "@/providers/query-provider";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import Loader from "@/components/shared/loader";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
+import ViewModal from "./_components/view-modal";
+import { Column, DataTable } from "@/components/shared/data-table";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function CategoriesPage() {
   const router = useRouter();
+  const swal = useSwal();
 
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
-
-  const filtered = mockCategories.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
-
-    const matchStatus = status ? item.status === status : true;
-
-    return matchSearch && matchStatus;
+  const { data, isLoading } = useQuery({
+    queryKey: ["fetch-categories"],
+    queryFn: async () => api.get("/categories").then((res) => res.data),
   });
 
-  const handleDelete = async (id: string) => {
-    await Promise.resolve(() => setTimeout(() => {}, 1000));
-    message.success("Category deleted");
+  if (isLoading) return <Loader />;
+
+  const categories = data?.data ?? [];
+
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/categories/${uuid}`);
+    swal.success("Category deleted successfully.");
+    queryClient.invalidateQueries({ queryKey: ["fetch-categories"] });
   };
 
-  const columns = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Image",
-      dataIndex: "image",
-      render: (src: string) => <Avatar src={src} />,
+      key: "image_url",
+      label: "Image",
+      render: (r) => <Avatar src={r.image_url} />,
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (v: string) => <Text strong>{v}</Text>,
+      key: "name",
+      label: "Name",
+      type: "primary",
+      sortable: true,
     },
     {
-      title: "Slug",
-      dataIndex: "slug",
+      key: "slug",
+      label: "Slug",
     },
     {
-      title: "Parent",
-      dataIndex: "parent_id",
-      render: (v: string) => v || "—",
+      key: "parent_id",
+      label: "Parent",
+      render: (r) => r.parent_id ?? "—",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (s: string) =>
-        s === "Active" ? (
-          <Badge status="success" text="Active" />
-        ) : (
-          <Badge status="default" text="Inactive" />
-        ),
-    },
-    {
-      title: "Actions",
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => {
-              setSelected(record);
-              setOpen(true);
-            }}
-          />
-
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(
-                `/admin/dashboard/masters/categories/edit/${record.id}`,
-              )
-            }
-          />
-
-          <Popconfirm
-            title="Delete category?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+      key: "status",
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive"],
+      render: (r) => (
+        <Badge
+          status={r.status === "Active" ? "success" : "default"}
+          text={r.status}
+        />
       ),
     },
   ];
@@ -124,55 +86,51 @@ export default function CategoriesPage() {
     <div className="space-y-6">
       <PageHeader title="Categories" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls */}
-      <div className="flex justify-between gap-3 flex-wrap">
-        <div className="flex gap-3">
-          <Search
-            placeholder="Search categories"
-            allowClear
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 220 }}
-          />
-
-          <Select
-            placeholder="Status"
-            allowClear
-            style={{ width: 160 }}
-            onChange={setStatus}
-            options={[
-              { label: "Active", value: "Active" },
-              { label: "Inactive", value: "Inactive" },
-            ]}
-          />
-        </div>
-
-        <Button
-          type="primary"
-          onClick={() =>
-            router.push("/admin/dashboard/masters/categories/create")
-          }
-          icon={<PlusOutlined />}
-        >
-          Add Category
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>List of Categories</Title>
-
-            <Table
-              columns={columns}
-              dataSource={filtered}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
+      <DataTable
+        data={categories}
+        columns={columns}
+        loading={isLoading}
+        searchKeys={["name", "slug", "status"]}
+        toolbarEnd={
+          <Link href="/admin/dashboard/masters/categories/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add Category
+            </Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelected(row);
+                setOpen(true);
+              }}
             />
-          </Card>
-        </Col>
-      </Row>
+
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(
+                  `/admin/dashboard/masters/categories/edit/${row.uuid}`,
+                )
+              }
+            />
+
+            <Popconfirm
+              title="Delete category?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
 
       <ViewModal
         open={open}

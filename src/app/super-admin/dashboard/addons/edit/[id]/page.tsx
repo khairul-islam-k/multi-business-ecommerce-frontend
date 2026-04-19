@@ -21,10 +21,12 @@ import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function EditAddon() {
+  const swal = useSwal();
   const { id: uuid } = useParams();
   const router = useRouter();
   const [form] = Form.useForm();
@@ -39,13 +41,13 @@ export default function EditAddon() {
     try {
       await api.patch(`/addons/${uuid}`, values);
 
-      message.success("Addon updated successfully!");
+      swal.success("Addon updated successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
 
       router.push("/super-admin/dashboard/addons");
     } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to update addon");
+      swal.error(err?.response?.data?.message || "Failed to update addon");
     }
   });
 

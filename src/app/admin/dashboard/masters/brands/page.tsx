@@ -23,9 +23,11 @@ import Loader from "@/components/shared/loader";
 import { Column, DataTable } from "@/components/shared/data-table";
 
 import ViewModal from "./_components/view-modal";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function BrandsPage() {
   const router = useRouter();
+  const swal = useSwal();
 
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
@@ -41,7 +43,7 @@ export default function BrandsPage() {
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/brands/${uuid}`);
-    message.success("Brand deleted successfully.");
+    swal.success("Brand deleted successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
   };
 

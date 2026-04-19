@@ -18,12 +18,14 @@ import { mockOrders, mockReturns } from "../../data";
 import { ReturnStatusBadge } from "../../_components/badge";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
 export default function OrderReturnForm() {
   const { id } = useParams();
+  const swal = useSwal();
 
   const [reason, setReason] = useState("");
   const [condition, setCondition] = useState("Unopened");
@@ -36,7 +38,7 @@ export default function OrderReturnForm() {
 
   const { handler, loading } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
-    message.success("Return request submitted");
+    swal.success("Return request submitted");
     setReason("");
     setCondition("Unopened");
     setRefundAmount("");

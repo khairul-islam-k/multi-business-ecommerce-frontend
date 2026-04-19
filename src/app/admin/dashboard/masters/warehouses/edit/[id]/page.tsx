@@ -12,12 +12,14 @@ import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function EditWarehousePage() {
   const { id: uuid } = useParams();
   const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
+  const swal = useSwal();
 
   const { data, isLoading } = useQuery({
     queryKey: ["warehouse", uuid],
@@ -28,15 +30,13 @@ export default function EditWarehousePage() {
     try {
       await api.patch(`/warehouse/${uuid}`, values);
 
-      message.success("Warehouse updated successfully!");
+      swal.success("Warehouse updated successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-warehouses"] });
 
       router.push("/admin/dashboard/masters/warehouses");
     } catch (err: any) {
-      message.error(
-        err?.response?.data?.message || "Failed to update warehouse",
-      );
+      swal.error(err?.response?.data?.message || "Failed to update warehouse");
     }
   });
 

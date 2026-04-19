@@ -4,14 +4,16 @@ import { Form, Select, Button, message } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { languageSchema, LanguageValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function LanguageForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<LanguageValues>();
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

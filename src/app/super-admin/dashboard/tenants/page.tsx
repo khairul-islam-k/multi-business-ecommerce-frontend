@@ -12,8 +12,10 @@ import { Button, message, Popconfirm, Space } from "antd";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function TenantListPage() {
+  const swal = useSwal();
   const router = useRouter();
   const { data, isLoading } = useQuery({
     queryKey: ["fetch-tenants"],
@@ -98,7 +100,7 @@ export default function TenantListPage() {
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/auth-tenant/${uuid}`);
-    message.info("Tenant delete successfully.");
+    swal.success("Tenant delete successfully.");
     queryClient.invalidateQueries({ queryKey: ["fetch-tenants"] });
   };
 

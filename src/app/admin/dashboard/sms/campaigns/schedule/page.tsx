@@ -8,13 +8,15 @@ import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { mockCampaigns } from "../data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function ScheduleCampaign() {
+  const swal = useSwal();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
 
   const { handler, loading } = useSubmit(async () => {
-    message.success("Campaign scheduled!");
+    swal.success("Campaign scheduled!");
   });
 
   return (

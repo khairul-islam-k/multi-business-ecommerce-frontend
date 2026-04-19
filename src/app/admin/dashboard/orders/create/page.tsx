@@ -22,12 +22,14 @@ import { mockProducts } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 export default function CreateOrder() {
   const router = useRouter();
+  const swal = useSwal();
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -86,7 +88,7 @@ export default function CreateOrder() {
 
   const { handler: handleSubmit, loading } = useSubmit(async () => {
     await Promise.resolve(() => setTimeout(() => {}, 1000));
-    message.success("Created order.");
+    swal.success("Created order.");
     router.push("/admin/dashboard/orders");
   });
 

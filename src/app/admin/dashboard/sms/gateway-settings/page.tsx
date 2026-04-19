@@ -8,6 +8,7 @@ import { SettingOutlined, PlusOutlined } from "@ant-design/icons";
 import { mockGateways, SmsGateway } from "./data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 const statusColor: Record<string, string> = {
   active: "green",
@@ -32,6 +33,7 @@ export default function SmsGatewaySettings() {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<SmsGateway | null>(null);
   const [form] = Form.useForm();
+  const swal = useSwal();
 
   const openModal = (gateway?: SmsGateway) => {
     setSelected(gateway || null);
@@ -40,7 +42,7 @@ export default function SmsGatewaySettings() {
   };
 
   const { handler, loading } = useSubmit(async () => {
-    message.success("Gateway configuration saved!");
+    swal.success("Gateway configuration saved!");
     setOpen(false);
   });
 

@@ -5,15 +5,17 @@ import { SaveOutlined } from "@ant-design/icons";
 
 import useSubmit from "@/hooks/use-submit";
 import { generalSettingsSchema, GeneralSettingsValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function GeneralSettingsForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<GeneralSettingsValues>();
 
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (
