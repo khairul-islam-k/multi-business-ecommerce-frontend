@@ -3,7 +3,7 @@ import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
 import api from '@/lib/axios';
 import { EyeOutlined, MoreOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Card, Dropdown, Flex, Grid, Input, Pagination, Space, Table, Tag } from 'antd';
+import { Button, Card, Dropdown, Flex, Grid, Input, Space, Table, Tag } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -54,68 +54,16 @@ const ProductsList = () => {
     const [allProduct, setAllProduct] = useState<TProduct[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-
     const [searchText, setSearchText] = useState<string>("");
 
-
-    // pagination
-    const [page, setPage] = useState<number>(1);
-  const [totalProduct, setTotalProduct] = useState<number>(0);
-  const limit = 5;
-  const totalPages = Math.ceil(totalProduct / limit);
+    useEffect(() => {
+        api.get('/products?search=i&sortOrder=DESC')
+        .then(res => setAllProduct(res.data.data.data))
+    }, [])
 
 
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      const res = await api.get(
-        `/companies?page=${page}&limit=${limit}&sortOrder=DESC`
-      );
-      setTotalProduct(res.data.data.data);
-    };
-
-    fetchCompanies();
-  }, [page, limit]);
 
 
-//   useEffect(() => {
-//     const fetchCompanies = async () => {
-//       const res = await api.get(
-//         `/products?sortOrder=DESC`
-//       );
-//       setTotalProduct(res.data.data.data.length);
-//     };
-
-//     fetchCompanies();
-//   }, []);
-
-
-//   useEffect(() => {
-//     if (!searchText) {
-//       setAllProduct([]);
-//       return;
-//     }
-
-//     const timer = setTimeout(async () => {
-//       try {
-//         setLoading(true);
-//         const res = await api.get(`/products?search=${searchText}&sortOrder=DESC`);
-//         setAllProduct(res.data.data.data);
-//       } finally {
-//         setLoading(false);
-//       }
-//     }, 500); // ⏱ debounce delay
-
-//     return () => clearTimeout(timer); // cancel previous
-//   }, [searchText);
-
-    // use
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         const res = await api.get(`/products?sortOrder=DESC`);
-    //         setAllProduct(res.data.data.data);
-    //     }
-    //     fetchData();
-    // }, [])
 
     const productColumns = [
         { title: "Name", dataIndex: "name", key: "name" },
@@ -141,7 +89,7 @@ const ProductsList = () => {
             title: "",
             render: (_: any, record: any) => (
                 <Flex>
-                    <Link href={`/admin/dashboard/products-management/products/detail/${record.id}`}>
+                    <Link href={`/admin/dashboard/products-management/products/detail/${record.uuid}`}>
                         <Button type="text" icon={<EyeOutlined />} />
                     </Link>
 
@@ -215,11 +163,6 @@ const ProductsList = () => {
                     pagination={false}
                 />
             </Card>
-            {/* <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          /> */}
 
         </div>
     );

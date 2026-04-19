@@ -2,6 +2,8 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import api from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
 import { Form, Input, InputNumber, Select, DatePicker, Switch, Button, message, Card } from "antd";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +12,7 @@ const { Option } = Select;
 
 export default function ProductCreatePage() {
     const [form] = Form.useForm();
+    const user = useAuthStore((state) => state.user);
 
     const onFinish = (values: any) => {
         // Format date
@@ -18,7 +21,11 @@ export default function ProductCreatePage() {
         }
 
         console.log("Product data:", values);
-        message.success("Product created successfully!");
+
+        api.post('/products', values)
+        .then(res => {
+            console.log(res.data.data)
+        })
     };
 
     const router = useRouter();

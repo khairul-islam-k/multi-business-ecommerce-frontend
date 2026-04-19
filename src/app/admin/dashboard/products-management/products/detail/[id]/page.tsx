@@ -2,36 +2,26 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import api from "@/lib/axios";
 import { Card, Row, Col, Tag, Typography, Divider, Image } from "antd";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { TProduct } from "../../page";
 
 const { Title, Text, Paragraph } = Typography;
 
-// Example product data
-const productData = {
-  id: 3,
-  tenant_id: 101,
-  company_id: 1001,
-  brand_id: 502,
-  category_id: 203,
-  name: "USB-C Charger",
-  slug: "usb-c-charger",
-  sku: "UC-003",
-  barcode: "9876543210987",
-  short_description: "Fast charging USB-C adapter",
-  long_description: "High-speed USB-C charger compatible with multiple devices.",
-  cost_price: 10.0,
-  sale_price: 18.0,
-  compare_price: 20.0,
-  tax_type: "VAT",
-  tax_amount: 1.5,
-  weight: 0.1,
-  status: "Inactive",
-  is_featured: false,
-  published_at: null,
-  image_url: "https://via.placeholder.com/300x300.png?text=USB-C+Charger", // placeholder image
-};
-
 export default function ProductDetailPage() {
+  const {id} = useParams();
+  const [productData, setProductData] = useState<TProduct>()
+  
+  useEffect(() => {
+    api.get(`/products/${id}`)
+    .then(res => setProductData(res.data))
+  }, [id])
+
+  if (!productData) {
+    return <div>loading...</div>
+  }
   return (
     <div style={{ padding: 24 }}>
       <div style={{ marginBottom: 24 }}>
