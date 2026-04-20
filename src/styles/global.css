@@ -157,7 +157,7 @@
   color: var(--swal-text) !important;
   border-radius: var(--swal-radius) !important;
   box-shadow: var(--swal-shadow) !important;
-  border: 1px solid var(--swal-border);
+  /* border: 1px solid var(--swal-border); */
   padding: 24px;
 }
 
