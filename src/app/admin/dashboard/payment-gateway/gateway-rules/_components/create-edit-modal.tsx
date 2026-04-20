@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Modal, Form, Input, Select, message } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 
 interface Props {
   open: boolean;
@@ -21,13 +22,14 @@ export default function CreateEditRuleModal({
   mode = "create",
 }: Props) {
   const [form] = Form.useForm();
+  const swal = useSwal();
 
   const { handler, loading } = useSubmit(async () => {
     const values = await form.validateFields();
     onSubmit(values);
     form.resetFields();
     onClose();
-    message.success(`Rule ${mode === "create" ? "Created" : "Edited"}`);
+    swal.success(`Rule ${mode === "create" ? "Created" : "Edited"}`);
   });
 
   useEffect(() => {

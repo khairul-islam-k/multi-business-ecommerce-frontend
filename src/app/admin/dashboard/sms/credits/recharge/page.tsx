@@ -4,6 +4,7 @@ import PageHeader from "@/components/shared/page-header";
 import { Card, Button, InputNumber, Form, message, Tag } from "antd";
 import { CreditCardOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const plans = [
   { credits: 1000, price: 25, popular: false },
@@ -12,10 +13,11 @@ const plans = [
 ];
 
 export default function RechargeSmsCredits() {
+  const swal = useSwal();
   const [form] = Form.useForm();
 
   const purchase = (credits: number) => {
-    message.success(`${credits} credits purchased!`);
+    swal.success(`${credits} credits purchased!`);
   };
 
   return (
@@ -63,10 +65,7 @@ export default function RechargeSmsCredits() {
           marginInline: "auto",
         }}
       >
-        <Form
-          form={form}
-          onFinish={() => message.success("Credits purchased!")}
-        >
+        <Form form={form} onFinish={() => swal.success("Credits purchased!")}>
           <Form.Item label="Number of Credits" name="credits">
             <InputNumber className="w-full" min={1} />
           </Form.Item>

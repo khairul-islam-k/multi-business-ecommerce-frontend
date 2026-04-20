@@ -22,6 +22,7 @@ import {
 
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
@@ -37,6 +38,7 @@ type Notification = {
 };
 
 export default function NotificationsPage() {
+  const swal = useSwal();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState<Notification | null>(null);
@@ -111,12 +113,12 @@ export default function NotificationsPage() {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
-    message.success("Notification marked as read");
+    swal.success("Notification marked as read");
   };
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-    message.success("All notifications marked as read");
+    swal.success("All notifications marked as read");
   };
 
   const openView = (n: Notification) => {

@@ -6,14 +6,16 @@ import { useRouter } from "next/navigation";
 import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateSmsTemplate() {
   const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
+  const swal = useSwal();
 
   const { handler, loading } = useSubmit(async () => {
-    message.success("Template created successfully");
+    swal.success("Template created successfully");
     router.push("/admin/dashboard/sms/templates");
   });
 

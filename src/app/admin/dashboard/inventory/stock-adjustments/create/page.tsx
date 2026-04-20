@@ -21,16 +21,18 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 import { mockWarehouses, mockProducts } from "../data";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
 export default function CreateStockAdjustmentPage() {
   const router = useRouter();
   const [form] = AntdForm.useForm();
+  const swal = useSwal();
 
   const { loading, handler } = useSubmit(async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Stock adjustment created");
+    swal.success("Stock adjustment created");
     router.push("/admin/dashboard/inventory/stock-adjustments");
   });
 

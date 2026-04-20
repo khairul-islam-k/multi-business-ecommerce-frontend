@@ -6,19 +6,21 @@ import Form from "../../_components/form";
 import { mockSuppliers } from "../../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
 export default function EditSupplierPage() {
   const { id } = useParams();
   const router = useRouter();
+  const swal = useSwal();
 
   const supplier = mockSuppliers.find((s) => s.id === id);
   if (!supplier) throw notFound();
 
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Supplier updated!");
+    swal.success("Supplier updated!");
     router.push("/admin/dashboard/masters/suppliers");
   };
 

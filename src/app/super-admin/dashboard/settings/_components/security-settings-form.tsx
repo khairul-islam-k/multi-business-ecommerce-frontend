@@ -5,14 +5,16 @@ import { SaveOutlined } from "@ant-design/icons";
 
 import useSubmit from "@/hooks/use-submit";
 import { securitySettingsSchema, SecuritySettingsValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function SecuritySettingsForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<SecuritySettingsValues>();
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

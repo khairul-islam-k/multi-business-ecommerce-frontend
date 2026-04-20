@@ -4,14 +4,16 @@ import { Form, Input, Select, Button, message } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { webhookSchema, WebhookValues } from "../schemas";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function WebhooksForm() {
+  const swal = useSwal();
   const [form] = Form.useForm<WebhookValues>();
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Saved!");
+    swal.success("Saved!");
   });
 
   return (

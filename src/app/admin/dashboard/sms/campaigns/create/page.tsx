@@ -3,6 +3,7 @@
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 import {
   Card,
   Form,
@@ -16,12 +17,13 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function CreateCampaign() {
+  const swal = useSwal();
   const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
 
   const { handler, loading } = useSubmit(async () => {
-    message.success("Campaign created successfully");
+    swal.success("Campaign created successfully");
     router.push("/admin/dashboard/sms/campaigns");
   });
 

@@ -7,11 +7,13 @@ import Form from "../../_components/form";
 import { mockShowrooms } from "../../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
 export default function EditShowroomPage() {
   const { id } = useParams();
+  const swal = useSwal();
   const router = useRouter();
 
   const showroom = mockShowrooms.find((s) => s.id === id);
@@ -19,7 +21,7 @@ export default function EditShowroomPage() {
 
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Showroom updated!");
+    swal.success("Showroom updated!");
     router.push("/admin/dashboard/masters/showrooms");
   };
 

@@ -3,6 +3,7 @@
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 import {
   Button,
   Card,
@@ -20,9 +21,11 @@ import Link from "next/link";
 const { Option } = Select;
 
 export default function CreateAccountPage() {
+  const swal = useSwal();
+
   const { loading, handler } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
-    message.success("Account created");
+    swal.success("Copied");
   });
 
   return (

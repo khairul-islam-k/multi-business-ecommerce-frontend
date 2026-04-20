@@ -18,10 +18,12 @@ import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
 import api from "@/lib/axios";
 import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
 
 export default function CreateAddon() {
+  const swal = useSwal();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
   const router = useRouter();
@@ -31,14 +33,14 @@ export default function CreateAddon() {
     try {
       await api.post("/addons", values);
 
-      message.success("Addon created successfully!");
+      swal.success("Addon created successfully!");
 
       queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
 
       form.resetFields();
       router.push("/super-admin/dashboard/addons");
     } catch (err: any) {
-      message.error(err?.response?.data?.message || "Failed to create addon");
+      swal.error(err?.response?.data?.message || "Failed to create addon");
     }
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 import { Modal, Form, Input, Select, message } from "antd";
 import { useEffect } from "react";
 
@@ -11,10 +12,11 @@ interface Props {
 
 export default function CreateGatewayModal({ open, onClose }: Props) {
   const [form] = Form.useForm();
+  const swal = useSwal();
 
   const { handler, loading } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
-    message.success("Created gateway.");
+    swal.success("Created gateway.");
     onClose();
   });
 

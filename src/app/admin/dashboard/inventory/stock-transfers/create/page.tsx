@@ -21,18 +21,20 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 import { mockWarehouses, mockProducts } from "../data";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
 export default function CreateStockTransferPage() {
   const router = useRouter();
+  const swal = useSwal();
   const [form] = AntdForm.useForm();
 
   const { loading, handler } = useSubmit(async (values: any) => {
     console.log("TRANSFER:", values);
 
     await new Promise((r) => setTimeout(r, 1000));
-    message.success("Stock transfer created");
+    swal.success("Stock transfer created");
 
     router.push("/admin/dashboard/inventory/stock-transfers");
   });

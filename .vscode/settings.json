@@ -4,6 +4,7 @@
         "cssinjs",
         "Ladgers",
         "Popconfirm",
+        "swal",
         "Topbar"
     ]
 }
