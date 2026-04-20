@@ -34,10 +34,7 @@ const Pagination: React.FC<PaginationProps> = ({
       start = Math.max(1, end - visible + 1);
     }
 
-    return Array.from(
-      { length: end - start + 1 },
-      (_, i) => start + i
-    );
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   const pages = getPages();
@@ -64,10 +61,7 @@ const Pagination: React.FC<PaginationProps> = ({
       }}
     >
       {/* First */}
-      <Button
-        disabled={currentPage === 1}
-        onClick={() => goToPage(1)}
-      >
+      <Button disabled={currentPage === 1} onClick={() => goToPage(1)}>
         First
       </Button>
 
@@ -76,8 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
         disabled={currentPage === 1}
         onClick={() => goToPage(currentPage - 1)}
         icon={<LeftOutlined />}
-      >
-      </Button>
+      ></Button>
 
       {/* Page Numbers */}
       <>
@@ -88,16 +81,9 @@ const Pagination: React.FC<PaginationProps> = ({
               onClick={() => goToPage(page)}
               style={{
                 padding: "6px 10px",
-                fontWeight:
-                  page === currentPage ? "bold" : "normal",
-                background:
-                  page === currentPage
-                    ? token.colorPrimary
-                    : "#fff",
-                color:
-                  page === currentPage
-                    ? token.colorWhite
-                    : "#000",
+                fontWeight: page === currentPage ? "bold" : "normal",
+                background: page === currentPage ? token.colorPrimary : "#fff",
+                color: page === currentPage ? token.colorWhite : "#000",
                 borderRadius: "8px",
               }}
             >
@@ -112,8 +98,7 @@ const Pagination: React.FC<PaginationProps> = ({
         icon={<RightOutlined />}
         disabled={currentPage === totalPages}
         onClick={() => goToPage(currentPage + 1)}
-      >
-      </Button>
+      ></Button>
 
       {/* Last */}
       <Button

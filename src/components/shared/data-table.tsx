@@ -47,7 +47,6 @@ export function DataTable<T extends Record<string, any>>({
   searchKeys,
   actions,
   loading = false,
-  pageSize = 10,
   rowSelection,
   extra,
 }: DataTableProps<T>) {
@@ -87,11 +86,6 @@ export function DataTable<T extends Record<string, any>>({
     setPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, filters]);
-
-  const paginatedData = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, page, pageSize]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getSorter = (key: string) => (a: any, b: any) => {
@@ -257,20 +251,12 @@ export function DataTable<T extends Record<string, any>>({
       {isMobile ? (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {paginatedData.length ? (
-              paginatedData.map((row) => renderCard(row))
+            {filteredData.length ? (
+              filteredData.map((row) => renderCard(row))
             ) : (
               <Empty description="No data found" />
             )}
           </div>
-
-          <Pagination
-            current={page}
-            pageSize={pageSize}
-            total={filteredData.length}
-            onChange={setPage}
-            showSizeChanger
-          />
         </div>
       ) : (
         /* 💻 Desktop */
@@ -280,16 +266,10 @@ export function DataTable<T extends Record<string, any>>({
           dataSource={filteredData}
           loading={loading}
           rowSelection={rowSelection}
-          pagination={{
-            current: page,
-            pageSize,
-            total: filteredData.length,
-            onChange: setPage,
-            showSizeChanger: true,
-          }}
           locale={{
             emptyText: <Empty description="No data found" />,
           }}
+          pagination={false}
           scroll={{ x: "max-content" }}
           sticky
         />

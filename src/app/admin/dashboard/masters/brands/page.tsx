@@ -24,6 +24,7 @@ import { Column, DataTable } from "@/components/shared/data-table";
 
 import ViewModal from "./_components/view-modal";
 import { useSwal } from "@/hooks/use-swal";
+import Pagination from "@/components/shared/Pagination";
 
 export default function BrandsPage() {
   const router = useRouter();
@@ -31,15 +32,23 @@ export default function BrandsPage() {
 
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(2);
+  const pageSize = 3;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["fetch-brands"],
-    queryFn: async () => api.get("/brands").then((res) => res.data),
+    queryKey: ["fetch-brands", currentPage, pageSize],
+    queryFn: async () =>
+      api
+        .get(
+          `/brands?page=${currentPage}&limit=${pageSize}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
   });
 
   if (isLoading) return <Loader />;
 
-  const brands = data?.data ?? [];
+  const brands = data?.data?.data ?? [];
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/brands/${uuid}`);
@@ -144,6 +153,12 @@ export default function BrandsPage() {
             </Popconfirm>
           </Space>
         )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
 
       <ViewModal open={open} onClose={() => setOpen(false)} brand={selected} />
