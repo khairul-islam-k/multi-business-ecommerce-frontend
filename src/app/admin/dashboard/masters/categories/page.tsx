@@ -1,11 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Button, message, Popconfirm, Space, Avatar, Badge } from "antd";
+import { useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space, Avatar, Badge } from "antd";
 import {
   EditOutlined,
   EyeOutlined,
@@ -14,36 +13,49 @@ import {
 } from "@ant-design/icons";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
+import { Column, DataTable } from "@/components/shared/data-table";
 
 import ViewModal from "./_components/view-modal";
-import { Column, DataTable } from "@/components/shared/data-table";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function CategoriesPage() {
   const router = useRouter();
   const swal = useSwal();
 
+  const pageSize = 10;
+
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["fetch-categories"],
-    queryFn: async () => api.get("/categories").then((res) => res.data),
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-categories", currentPage, search],
+    queryFn: async () =>
+      api
+        .get(
+          `/categories?page=${currentPage}&limit=${pageSize}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
 
-  const categories = data?.data ?? [];
-
   const handleDelete = async (uuid: string) => {
     await api.delete(`/categories/${uuid}`);
     swal.success("Category deleted successfully.");
-    queryClient.invalidateQueries({ queryKey: ["fetch-categories"] });
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-categories",
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,6 +94,11 @@ export default function CategoriesPage() {
     },
   ];
 
+  const categories = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
+
+  console.log(data, categories);
+
   return (
     <div className="space-y-6">
       <PageHeader title="Categories" breadcrumb={adminBreadcrumb} />
@@ -89,8 +106,11 @@ export default function CategoriesPage() {
       <DataTable
         data={categories}
         columns={columns}
-        loading={isLoading}
-        searchKeys={["name", "slug", "status"]}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
         toolbarEnd={
           <Link href="/admin/dashboard/masters/categories/create">
             <Button type="primary" icon={<PlusOutlined />}>
@@ -130,6 +150,12 @@ export default function CategoriesPage() {
             </Popconfirm>
           </Space>
         )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
 
       <ViewModal

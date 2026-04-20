@@ -1,39 +1,40 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
-
-import { Column, DataTable } from "@/components/shared/data-table";
-import { Button, message, Popconfirm, Space } from "antd";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-import Loader from "@/components/shared/loader";
-import { queryClient } from "@/providers/query-provider";
+import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
 import Pagination from "@/components/shared/Pagination";
-import { useState } from "react";
+import { queryClient } from "@/providers/query-provider";
+import PageHeader from "@/components/shared/page-header";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { Column, DataTable } from "@/components/shared/data-table";
 
 export default function AddonsPage() {
   const router = useRouter();
   const swal = useSwal();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(2);
-  const pageSize = 3;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["fetch-addons", currentPage],
+  const pageSize = 10;
+
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-addons", currentPage, search],
     queryFn: async () =>
       api
         .get(
-          `/addons?page=${currentPage}&limit=${pageSize}&sortBy=createdAt&sortOrder=DESC`,
+          `/addons?page=${currentPage}&limit=${pageSize}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -90,12 +91,14 @@ export default function AddonsPage() {
   const handleDelete = async (uuid: string) => {
     await api.delete(`/addons/${uuid}`);
     swal.success("Addon deleted successfully.");
-    queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-addons",
+    });
   };
 
-  const addons = data.data.data;
-
-  // setTotalPages(addons.length / pageSize);
+  const addons = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
 
   return (
     <div className="space-y-6">
@@ -104,8 +107,11 @@ export default function AddonsPage() {
       <DataTable
         data={addons}
         columns={columns}
-        loading={isLoading}
-        searchKeys={["name", "limit_key", "status"]}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
         toolbarEnd={
           <Link href="/super-admin/dashboard/addons/create">
             <Button type="primary">Create Addon</Button>

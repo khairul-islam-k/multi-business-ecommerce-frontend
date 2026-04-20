@@ -1,17 +1,8 @@
 "use client";
 
-import {
-  Table,
-  Input,
-  Select,
-  TableProps,
-  Empty,
-  Card,
-  Pagination,
-  Grid,
-} from "antd";
+import { Table, Input, Select, TableProps, Empty, Card, Grid } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 
 const { useBreakpoint } = Grid;
@@ -37,6 +28,9 @@ interface DataTableProps<T> {
   pageSize?: number;
   rowSelection?: TableProps<T>["rowSelection"];
   extra?: React.ReactNode;
+
+  onSearch?: (value: string) => void;
+  onFilterChange?: (filters: Record<string, string>) => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,11 +38,13 @@ export function DataTable<T extends Record<string, any>>({
   data,
   columns,
   toolbarEnd,
-  searchKeys,
   actions,
   loading = false,
   rowSelection,
   extra,
+
+  onSearch,
+  onFilterChange,
 }: DataTableProps<T>) {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -56,65 +52,18 @@ export function DataTable<T extends Record<string, any>>({
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
   const [filters, setFilters] = useState<Record<string, string>>({});
-  const [page, setPage] = useState(1);
 
-  const filteredData = useMemo(() => {
-    let result = [...data];
+  // 🔥 Always emit search (debounced)
+  useEffect(() => {
+    onSearch?.(debouncedSearch);
+  }, [debouncedSearch, onSearch]);
 
-    if (debouncedSearch && searchKeys?.length) {
-      const q = debouncedSearch.toLowerCase();
-      result = result.filter((row) =>
-        searchKeys.some((k) =>
-          String(row[k] ?? "")
-            .toLowerCase()
-            .includes(q),
-        ),
-      );
-    }
-
-    Object.entries(filters).forEach(([key, val]) => {
-      if (val) {
-        result = result.filter((row) => String(row[key]) === val);
-      }
-    });
-
-    return result;
-  }, [data, debouncedSearch, searchKeys, filters]);
-
-  useMemo(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-render
-    setPage(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, filters]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getSorter = (key: string) => (a: any, b: any) => {
-    const av = a[key];
-    const bv = b[key];
-
-    if (typeof av === "number" && typeof bv === "number") {
-      return av - bv;
-    }
-
-    return String(av).localeCompare(String(bv));
-  };
-
-  // 📊 Table Columns
+  // 📊 Table Columns (NO internal filtering)
   const antdColumns: TableProps<T>["columns"] = [
     ...columns.map((col) => ({
       title: col.label,
       dataIndex: col.key,
       key: col.key,
-      sorter: col.sortable ? getSorter(col.key) : undefined,
-      filters: col.filterOptions?.map((opt) => ({
-        text: opt,
-        value: opt,
-      })),
-      onFilter: col.filterOptions
-        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (value: any, record: T) => record[col.key] === value
-        : undefined,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, row: T) => (col.render ? col.render(row) : row[col.key]),
     })),
     ...(actions
@@ -123,7 +72,6 @@ export function DataTable<T extends Record<string, any>>({
             title: "Actions",
             key: "actions",
             fixed: "right" as const,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render: (_: any, row: T) => actions(row),
           },
         ]
@@ -145,14 +93,12 @@ export function DataTable<T extends Record<string, any>>({
         bodyStyle={{ padding: 14 }}
       >
         <div className="space-y-3">
-          {/* 🔥 HEADER */}
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="text-[15px] font-semibold text-gray-900 truncate">
                 {primary.render ? primary.render(row) : row[primary.key]}
               </div>
 
-              {/* Optional secondary line */}
               {secondary.length > 0 && (
                 <div className="text-xs text-gray-500 mt-0.5">
                   {secondary[0].render
@@ -162,7 +108,6 @@ export function DataTable<T extends Record<string, any>>({
               )}
             </div>
 
-            {/* ⚡ Actions (compact) */}
             {actions && (
               <div className="flex items-center gap-1 shrink-0">
                 {actions(row)}
@@ -170,7 +115,6 @@ export function DataTable<T extends Record<string, any>>({
             )}
           </div>
 
-          {/* 📊 BODY */}
           {rest.length > 0 && (
             <div className="grid grid-cols-2 gap-x-3 gap-y-2 pt-2 border-t border-gray-100">
               {rest.map((col) => (
@@ -186,7 +130,6 @@ export function DataTable<T extends Record<string, any>>({
             </div>
           )}
 
-          {/* 🧷 META ROW (badges/info) */}
           {meta.length > 0 && (
             <div className="flex flex-wrap gap-2 pt-2">
               {meta.map((col) => (
@@ -209,16 +152,14 @@ export function DataTable<T extends Record<string, any>>({
       {/* 🔧 Toolbar */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
-          {searchKeys?.length && (
-            <Input
-              placeholder="Search..."
-              prefix={<SearchOutlined />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              allowClear
-              className="w-64"
-            />
-          )}
+          <Input
+            placeholder="Search..."
+            prefix={<SearchOutlined />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            allowClear
+            className="w-64"
+          />
 
           {columns
             .filter((c) => c.filterOptions)
@@ -228,12 +169,15 @@ export function DataTable<T extends Record<string, any>>({
                 placeholder={col.label}
                 allowClear
                 className="w-40"
-                onChange={(val) =>
-                  setFilters((prev) => ({
-                    ...prev,
+                onChange={(val) => {
+                  const next = {
+                    ...filters,
                     [col.key]: val,
-                  }))
-                }
+                  };
+
+                  setFilters(next);
+                  onFilterChange?.(next); // 🔥 always emit
+                }}
                 options={col.filterOptions?.map((o) => ({
                   label: o,
                   value: o,
@@ -251,19 +195,18 @@ export function DataTable<T extends Record<string, any>>({
       {isMobile ? (
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {filteredData.length ? (
-              filteredData.map((row) => renderCard(row))
+            {data.length ? (
+              data.map((row) => renderCard(row))
             ) : (
               <Empty description="No data found" />
             )}
           </div>
         </div>
       ) : (
-        /* 💻 Desktop */
         <Table
           rowKey="id"
           columns={antdColumns}
-          dataSource={filteredData}
+          dataSource={data}
           loading={loading}
           rowSelection={rowSelection}
           locale={{
