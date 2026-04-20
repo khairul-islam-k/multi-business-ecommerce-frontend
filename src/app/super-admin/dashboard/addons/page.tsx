@@ -16,14 +16,24 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
 import { useSwal } from "@/hooks/use-swal";
+import Pagination from "@/components/shared/Pagination";
+import { useState } from "react";
 
 export default function AddonsPage() {
   const router = useRouter();
   const swal = useSwal();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(2);
+  const pageSize = 3;
 
   const { data, isLoading } = useQuery({
-    queryKey: ["fetch-addons"],
-    queryFn: async () => api.get("/addons").then((res) => res.data),
+    queryKey: ["fetch-addons", currentPage],
+    queryFn: async () =>
+      api
+        .get(
+          `/addons?page=${currentPage}&limit=${pageSize}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
   });
 
   if (isLoading) return <Loader />;
@@ -83,7 +93,9 @@ export default function AddonsPage() {
     queryClient.invalidateQueries({ queryKey: ["fetch-addons"] });
   };
 
-  const addons = data.data;
+  const addons = data.data.data;
+
+  // setTotalPages(addons.length / pageSize);
 
   return (
     <div className="space-y-6">
@@ -120,6 +132,12 @@ export default function AddonsPage() {
             </Popconfirm>
           </Space>
         )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );
