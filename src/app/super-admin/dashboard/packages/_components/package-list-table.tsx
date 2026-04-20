@@ -1,75 +1,133 @@
-import { Table, Tag, Button, Space, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space, Tag } from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
-export default function PackageListTable({
-  data,
-  onDelete,
-}: {
-  data: any[];
-  onDelete: (record: any) => void;
-}) {
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
+import { queryClient } from "@/providers/query-provider";
+import { Column, DataTable } from "@/components/shared/data-table";
+
+export default function PackagesPage() {
   const router = useRouter();
+  const swal = useSwal();
 
-  const columns = [
+  const pageSize = 10;
+
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-packages", currentPage, search],
+    queryFn: async () =>
+      api
+        .get(
+          `/packages?page=${currentPage}&limit=${pageSize}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+  });
+
+  if (isLoading) return <Loader />;
+
+  const handleDelete = async (id: string) => {
+    await api.delete(`/packages/${id}`);
+    swal.success("Package deleted successfully.");
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-packages",
+    });
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Package",
-      dataIndex: "name",
-      render: (t: string) => <strong>{t}</strong>,
+      key: "name",
+      label: "Package",
+      type: "primary",
+      sortable: true,
     },
     {
-      title: "Monthly",
-      dataIndex: "monthlyPrice",
-      render: (v: number) => `$${v}`,
+      key: "monthly_price",
+      label: "Monthly",
+      render: (r) => `$${r.monthly_price}`,
     },
     {
-      title: "Yearly",
-      dataIndex: "yearlyPrice",
-      render: (v: number) => `$${v}`,
+      key: "yearly_price",
+      label: "Yearly",
+      render: (r) => `$${r.yearly_price}`,
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      render: (s: string) => (
-        <Tag color={s === "Active" ? "green" : "red"}>{s}</Tag>
+      key: "status",
+      label: "Status",
+      sortable: true,
+      filterOptions: ["Active", "Inactive"],
+      render: (r) => (
+        <Tag color={r.status === "Active" ? "green" : "red"}>{r.status}</Tag>
       ),
     },
     {
-      title: "Subscribers",
-      dataIndex: "subscribers",
-    },
-    {
-      title: "Actions",
-      width: 80,
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(`/super-admin/dashboard/packages/edit/${record.id}`)
-            }
-          />
-
-          <Popconfirm
-            title="Delete package?"
-            description="This action cannot be undone"
-            onConfirm={() => onDelete(record)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
+      key: "subscribers",
+      label: "Subscribers",
+      render: (r) => r.subscribers ?? 0,
     },
   ];
 
+  const packages = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
+
   return (
-    <Table
-      rowKey="id"
-      columns={columns}
-      dataSource={data}
-      pagination={false}
-      scroll={{ x: "max-content" }}
-    />
+    <div className="space-y-6">
+      <DataTable
+        data={packages}
+        columns={columns}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
+        toolbarEnd={
+          <Link href="/super-admin/dashboard/packages/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Create Package
+            </Button>
+          </Link>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(`/super-admin/dashboard/packages/edit/${row.uuid}`)
+              }
+            />
+
+            <Popconfirm
+              title="Delete package?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button size="small" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+    </div>
   );
 }

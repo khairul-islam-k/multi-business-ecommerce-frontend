@@ -1,11 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Button, message, Popconfirm, Space, Avatar } from "antd";
+import { useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space, Avatar, Select } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -14,46 +13,52 @@ import {
 } from "@ant-design/icons";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-
 import { Column, DataTable } from "@/components/shared/data-table";
 
 import ViewModal from "./_components/view-modal";
-import { useSwal } from "@/hooks/use-swal";
-import Pagination from "@/components/shared/Pagination";
+
+const { Option } = Select;
 
 export default function BrandsPage() {
   const router = useRouter();
   const swal = useSwal();
 
+  const pageSize = 10;
+
+  const [status, setStatus] = useState("Active");
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(2);
-  const pageSize = 3;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["fetch-brands", currentPage, pageSize],
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-brands", currentPage, search, status],
     queryFn: async () =>
       api
         .get(
-          `/brands?page=${currentPage}&limit=${pageSize}&sortBy=createdAt&sortOrder=DESC`,
+          `/brands?page=${currentPage}&limit=${pageSize}&status=${status}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
 
-  const brands = data?.data?.data ?? [];
-
   const handleDelete = async (uuid: string) => {
     await api.delete(`/brands/${uuid}`);
     swal.success("Brand deleted successfully.");
-    queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-brands",
+    });
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,6 +112,9 @@ export default function BrandsPage() {
     },
   ];
 
+  const brands = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
+
   return (
     <div className="space-y-6">
       <PageHeader title="Brands" breadcrumb={adminBreadcrumb} />
@@ -114,14 +122,30 @@ export default function BrandsPage() {
       <DataTable
         data={brands}
         columns={columns}
-        loading={isLoading}
-        searchKeys={["name", "slug", "status", "description"]}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
         toolbarEnd={
-          <Link href="/admin/dashboard/masters/brands/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Add Brand
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Select
+              className="border rounded px-2"
+              value={status}
+              onChange={(e) => {
+                setStatus(e);
+                setCurrentPage(1);
+              }}
+            >
+              <Option value="Active">Active</Option>
+              <Option value="Inactive">Inactive</Option>
+            </Select>
+            <Link href="/admin/dashboard/masters/brands/create">
+              <Button type="primary" icon={<PlusOutlined />}>
+                Add Brand
+              </Button>
+            </Link>
+          </div>
         }
         actions={(row) => (
           <Space>

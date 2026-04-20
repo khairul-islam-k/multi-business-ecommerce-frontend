@@ -1,25 +1,40 @@
 "use client";
 
+import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space } from "antd";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
+import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
 import { Column, DataTable } from "@/components/shared/data-table";
-import Link from "next/link";
-import { Button, message, Popconfirm, Space } from "antd";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
-import Loader from "@/components/shared/loader";
-import { queryClient } from "@/providers/query-provider";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function TenantListPage() {
   const swal = useSwal();
   const router = useRouter();
-  const { data, isLoading } = useQuery({
-    queryKey: ["fetch-tenants"],
-    queryFn: async () => api.get("/auth-tenant").then((res) => res.data),
+
+  const pageSize = 10;
+
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-tenants", currentPage, search],
+    queryFn: async () =>
+      api
+        .get(
+          `/auth-tenant?page=${currentPage}&limit=${pageSize}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -32,13 +47,11 @@ export default function TenantListPage() {
       type: "primary",
       sortable: true,
     },
-
     {
       key: "status",
       label: "Status",
       sortable: true,
       filterOptions: ["Active", "Inactive", "Suspended"],
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (r: any) => (
         <span
           className={`px-2 py-1 rounded text-xs ${
@@ -53,43 +66,36 @@ export default function TenantListPage() {
         </span>
       ),
     },
-
     {
       key: "phone",
       label: "Phone",
     },
-
     {
       key: "email",
       label: "Email",
       render: (r) => r.email ?? "—",
     },
-
     {
       key: "owner_name",
       label: "Owner",
       render: (r) => r.owner?.name ?? "—",
     },
-
     {
       key: "currency",
       label: "Currency",
       render: (r) => r.currency ?? "—",
     },
-
     {
       key: "timezone",
       label: "Timezone",
       render: (r) => r.timezone ?? "—",
     },
-
     {
       key: "trial_ends_at",
       label: "Trial Ends",
       render: (r) =>
         r.trial_ends_at ? new Date(r.trial_ends_at).toLocaleDateString() : "—",
     },
-
     {
       key: "createdAt",
       label: "Created",
@@ -100,21 +106,27 @@ export default function TenantListPage() {
 
   const handleDelete = async (uuid: string) => {
     await api.delete(`/auth-tenant/${uuid}`);
-    swal.success("Tenant delete successfully.");
-    queryClient.invalidateQueries({ queryKey: ["fetch-tenants"] });
+    swal.success("Tenant deleted successfully.");
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-tenants",
+    });
   };
 
-  const tenants = data.data;
+  const tenants = data.data.data;
+  const totalPages = data.data.meta.totalPages || 0;
 
   return (
     <div className="space-y-6">
       <PageHeader title="Tenants" breadcrumb={superAdminBreadcrumb} />
 
       <DataTable
-        data={tenants}
+        data={tenants || []}
         columns={columns}
-        loading={isLoading}
-        searchKeys={["business_name", "email", "phone", "status", "owner_name"]}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
         toolbarEnd={
           <Link href="/super-admin/dashboard/tenants/create">
             <Button type="primary">Create Tenant</Button>
@@ -130,8 +142,8 @@ export default function TenantListPage() {
               }
             />
             <Popconfirm
-              title="Delete this item?"
-              description="Are you sure you want to delete this record?"
+              title="Delete tenant?"
+              description="This action cannot be undone"
               okText="Yes"
               cancelText="No"
               onConfirm={() => handleDelete(row.uuid)}
@@ -140,6 +152,12 @@ export default function TenantListPage() {
             </Popconfirm>
           </Space>
         )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

@@ -1,8 +1,9 @@
 "use client";
 
-import { Card, message, Typography } from "antd";
+import { Card, Typography } from "antd";
 import { useRouter } from "next/navigation";
 
+import api from "@/lib/axios";
 import Form from "../_components/form";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -15,7 +16,12 @@ export default function CreateShowroomPage() {
   const swal = useSwal();
 
   const handleSubmit = async (values: any) => {
-    await new Promise((r) => setTimeout(r, 1000));
+    await api.post("/business-showrooms", {
+      tenant_id: 1,
+      company_id: 10,
+      ...values,
+    });
+
     swal.success("Showroom created!");
     router.push("/admin/dashboard/masters/showrooms");
   };

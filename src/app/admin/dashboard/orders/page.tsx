@@ -1,129 +1,111 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import {
-  Card,
-  Row,
-  Col,
-  Input,
-  Select,
-  Button,
-  Table,
-  Typography,
-  Badge,
-} from "antd";
+import { useState } from "react";
+import { useSwal } from "@/hooks/use-swal";
+import { useRouter } from "next/navigation";
+import { Button, Badge, Space, Popconfirm, Select, theme } from "antd";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { mockOrders } from "./data";
+import api from "@/lib/axios";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
 import PageHeader from "@/components/shared/page-header";
+import { queryClient } from "@/providers/query-provider";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-const { Title, Text } = Typography;
-const { Option } = Select;
+import { Column, DataTable } from "@/components/shared/data-table";
 
 const statusColors: Record<string, any> = {
-  pending: "#722ed1",
-  processing: "processing",
-  shipped: "default",
-  delivered: "success",
-  cancelled: "warning",
-  returned: "error",
+  Pending: "processing",
+  Processing: "processing",
+  Delivered: "success",
+  Cancelled: "error",
+  Returned: "warning",
 };
 
+const { Option } = Select;
+
 export default function OrdersList() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const swal = useSwal();
+  const router = useRouter();
 
-  const filtered = useMemo(() => {
-    return mockOrders.filter((o) => {
-      const matchSearch =
-        o.order_no.toLowerCase().includes(search.toLowerCase()) ||
-        o.customer_name.toLowerCase().includes(search.toLowerCase());
+  const pageSize = 10;
 
-      const matchStatus = statusFilter === "all" || o.status === statusFilter;
+  const [status, setStatus] = useState("Pending");
+  const [currentPage, setCurrentPage] = useState(1);
 
-      return matchSearch && matchStatus;
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-orders", currentPage, status],
+    queryFn: async () =>
+      api
+        .get(
+          `/orders?page=${currentPage}&limit=${pageSize}&order_status=${status}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
+  });
+
+  if (isLoading) return <Loader />;
+
+  const orders = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
+
+  console.log(orders);
+
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/orders/${uuid}`);
+    swal.success("Addon deleted successfully.");
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-orders",
     });
-  }, [search, statusFilter]);
+  };
 
-  const totalRevenue = useMemo(
-    () => mockOrders.reduce((s, o) => s + o.total, 0),
-    [],
-  );
-
-  const deliveredCount = mockOrders.filter(
-    (o) => o.status === "delivered",
-  ).length;
-  const pendingCount = mockOrders.filter((o) => o.status === "pending").length;
-
-  const columns = [
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns: Column<any>[] = [
     {
-      title: "Order",
-      dataIndex: "order_no",
       key: "order_no",
-      render: (_: any, record: any) => (
+      label: "Order",
+      type: "primary",
+      render: (r) => (
         <Link
-          href={`/admin/dashboard/orders/${record.id}`}
-          className="font-mono text-sm"
+          href={`/admin/dashboard/orders/${r.uuid}`}
+          className={`font-semibold`}
         >
-          {record.order_no}
+          {r.order_no}
         </Link>
       ),
     },
     {
-      title: "Customer",
-      dataIndex: "customer_name",
-      key: "customer_name",
+      key: "customer",
+      label: "Customer",
+      render: (r) => r.customer?.name ?? "-",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        const color = statusColors[status];
-        const isPreset = [
-          "success",
-          "processing",
-          "default",
-          "error",
-          "warning",
-        ].includes(color);
-        return (
-          <Badge
-            {...(isPreset ? { status: color } : { color })}
-            text={status.charAt(0).toUpperCase() + status.slice(1)}
-          />
-        );
-      },
-    },
-    {
-      title: "Channel",
-      dataIndex: "channel",
-      key: "channel",
-      render: (val: any) => <Text type="secondary">{val}</Text>,
-    },
-    {
-      title: "Region",
-      dataIndex: "region",
-      key: "region",
-      render: (val: any) => <Text type="secondary">{val}</Text>,
-    },
-    {
-      title: "Total",
-      dataIndex: "total",
-      key: "total",
-      render: (val: any) => (
-        <span className="font-mono">${val.toFixed(2)}</span>
+      key: "order_status",
+      label: "Status",
+      render: (r) => (
+        <Badge status={statusColors[r.order_status]} text={r.order_status} />
       ),
     },
     {
-      title: "Date",
-      dataIndex: "created_at",
-      key: "created_at",
-      render: (val: any) => (
-        <Text type="secondary">{new Date(val).toLocaleDateString()}</Text>
+      key: "source_channel",
+      label: "Channel",
+      render: (v) => v.source_channel ?? "-",
+    },
+    {
+      key: "total_amount",
+      label: "Total",
+      render: (v) => (
+        <span className="font-mono">${Number(v.total_amount).toFixed(2)}</span>
       ),
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (v) => new Date(v.createdAt).toLocaleDateString(),
     },
   ];
 
@@ -131,85 +113,59 @@ export default function OrdersList() {
     <div className="space-y-6">
       <PageHeader title="Orders" breadcrumb={adminBreadcrumb} />
 
-      {/* Stats */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col xs={12} md={6}>
-          <Card>
-            <Text type="secondary">Total Orders</Text>
-            <Title level={4}>{mockOrders.length}</Title>
-          </Card>
-        </Col>
-        <Col xs={12} md={6}>
-          <Card>
-            <Text type="secondary">Revenue</Text>
-            <Title level={4}>
-              $
-              {totalRevenue.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
-            </Title>
-          </Card>
-        </Col>
-        <Col xs={12} md={6}>
-          <Card>
-            <Text type="secondary">Delivered</Text>
-            <Title level={4}>{deliveredCount}</Title>
-          </Card>
-        </Col>
-        <Col xs={12} md={6}>
-          <Card>
-            <Text type="secondary">Pending</Text>
-            <Title level={4}>{pendingCount}</Title>
-          </Card>
-        </Col>
-      </Row>
+      <DataTable
+        data={orders}
+        columns={columns}
+        loading={isFetching}
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => router.push(`/admin/dashboard/orders/${row.uuid}`)}
+            />
 
-      {/* Toolbar */}
-      <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
-        <Col flex="auto">
-          <Input
-            placeholder="Search orders..."
-            prefix={<SearchOutlined />}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Col>
+            <Popconfirm
+              title="Delete addon?"
+              description="This action cannot be undone"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+        toolbarEnd={
+          <div className="flex gap-2">
+            <Select
+              className="border rounded px-2"
+              value={status}
+              onChange={(e) => {
+                setStatus(e);
+                setCurrentPage(1);
+              }}
+            >
+              <Option value="Pending">Pending</Option>
+              <Option value="Processing">Processing</Option>
+              <Option value="Delivered">Delivered</Option>
+              <Option value="Cancelled">Cancelled</Option>
+            </Select>
 
-        <Col>
-          <Select
-            value={statusFilter}
-            onChange={setStatusFilter}
-            style={{ width: 180 }}
-          >
-            <Option value="all">All Statuses</Option>
-            <Option value="pending">Pending</Option>
-            <Option value="processing">Processing</Option>
-            <Option value="shipped">Shipped</Option>
-            <Option value="delivered">Delivered</Option>
-            <Option value="cancelled">Cancelled</Option>
-            <Option value="returned">Returned</Option>
-          </Select>
-        </Col>
+            <Link href="/admin/dashboard/orders/create">
+              <Button type="primary" icon={<PlusOutlined />}>
+                New Order
+              </Button>
+            </Link>
+          </div>
+        }
+      />
 
-        <Col>
-          <Link href="/admin/dashboard/orders/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              New Order
-            </Button>
-          </Link>
-        </Col>
-      </Row>
-
-      {/* Table */}
-      <Card style={{ padding: 0 }}>
-        <Table
-          columns={columns}
-          dataSource={filtered}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-          locale={{ emptyText: "No orders found." }}
-        />
-      </Card>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

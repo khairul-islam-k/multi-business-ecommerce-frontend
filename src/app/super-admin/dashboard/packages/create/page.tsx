@@ -9,116 +9,118 @@ import {
   Col,
   Button,
   theme,
-  message,
 } from "antd";
 
+import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
 import useSubmit from "@/hooks/use-submit";
+import { queryClient } from "@/providers/query-provider";
+
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 
-const { Option } = Select;
-const { TextArea } = Input;
-
 export default function CreatePackage() {
-  const swal = useSwal();
   const [form] = Form.useForm();
+  const { token } = theme.useToken();
+  const router = useRouter();
+  const swal = useSwal();
 
-  const { loading, handler } = useSubmit(async () => {
-    await new Promise((r) => setTimeout(r, 1000));
-    swal.success("Addon updated!");
+  const { loading, handler } = useSubmit(async (values: any) => {
+    try {
+      await api.post("/packages", {
+        name: values.name,
+        slug: values.slug,
+        description: values.description,
+        type: values.type,
+        status: values.status,
+        monthly_price: values.monthly_price,
+        yearly_price: values.yearly_price,
+      });
+
+      swal.success("Package created successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["fetch-packages"] });
+
+      form.resetFields();
+      router.push("/super-admin/dashboard/packages");
+    } catch (err: any) {
+      swal.error(err?.response?.data?.message || "Failed to create package");
+    }
   });
 
-  const { token } = theme.useToken();
-
   return (
-    <div>
-      <div style={{ marginBottom: "24px" }}>
-        <PageHeader
-          title="Create Package"
-          breadcrumb={superAdminBreadcrumb}
-        ></PageHeader>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Create Package" breadcrumb={superAdminBreadcrumb} />
 
       <Form
         layout="vertical"
         form={form}
-        onFinish={(values) => handler(values)}
+        onFinish={handler}
         style={{
-          maxWidth: "100%",
           background: token.colorBgBase,
-          padding: "15px",
-          borderRadius: "8px",
-          marginLeft: "auto",
-          marginRight: "auto",
+          padding: 16,
+          borderRadius: 8,
         }}
       >
         <Row gutter={16}>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Package name"
-              name="packageName"
-              rules={[{ required: true, message: "Package name is required" }]}
+              name="name"
+              label="Package Name"
+              rules={[{ required: true }]}
             >
-              <Input placeholder="Package name" />
+              <Input />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+              <Input />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
             <Form.Item
-              label="Slug"
-              name="slug"
-              rules={[{ required: true, message: "Slug is required" }]}
+              name="monthly_price"
+              label="Monthly Price"
+              rules={[{ required: true }]}
             >
-              <Input placeholder="Slug" />
+              <InputNumber style={{ width: "100%" }} />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item
-              label="Monthly price ($)"
-              name="monthlyPrice"
-              rules={[
-                { required: true, message: "Price is required" },
-                { type: "number", message: "Invalid price" },
-              ]}
-            >
-              <InputNumber style={{ width: "100%" }} placeholder="20" />
+            <Form.Item name="yearly_price" label="Yearly Price">
+              <InputNumber style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24}>
+            <Form.Item name="description" label="Description">
+              <Input.TextArea rows={3} maxLength={200} />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Yearly price ($)" name="yearlyPrice">
-              <InputNumber style={{ width: "100%" }} placeholder="415" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={24}>
-            <Form.Item label="Description" name="description">
-              <TextArea
-                rows={4}
-                placeholder="maxLength is 200"
-                maxLength={200}
+            <Form.Item name="status" label="Status" initialValue="Active">
+              <Select
+                options={[
+                  { label: "Active", value: "Active" },
+                  { label: "Inactive", value: "Inactive" },
+                ]}
               />
             </Form.Item>
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item label="Status" name="status" initialValue="Active">
-              <Select>
-                <Option value="Active">Active</Option>
-                <Option value="InActive">INActive</Option>
-              </Select>
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={12}>
-            <Form.Item label="Type" name="type" initialValue="Usage">
-              <Select>
-                <Option value="Usage">Usage</Option>
-                <Option value="Per Unit">Per Unit</Option>
-                <Option value="Flat">Flat</Option>
-              </Select>
+            <Form.Item name="type" label="Type" initialValue="Monthly">
+              <Select
+                options={[
+                  { label: "Monthly", value: "Monthly" },
+                  { label: "Yearly", value: "Yearly" },
+                ]}
+              />
             </Form.Item>
           </Col>
         </Row>
