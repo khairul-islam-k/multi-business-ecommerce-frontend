@@ -264,7 +264,10 @@ export default function CreateOrder() {
   }, [items]);
 
   const { handler, loading } = useSubmit(async () => {
-    if (!items.length) return swal.error("Add at least one item");
+    if (!items.length) {
+      swal.error("Add at least one item");
+      return;
+    }
 
     const orderRes = await api.post("/orders", form);
     console.log(orderRes);
@@ -284,8 +287,8 @@ export default function CreateOrder() {
     await Promise.all(payload.map((item) => api.post("/order-items", item)));
     swal.success("Order created");
     queryClient.invalidateQueries({
-        predicate: (q) => q.queryKey[0] === "fetch-orders",
-      });
+      predicate: (q) => q.queryKey[0] === "fetch-orders",
+    });
     router.push("/admin/dashboard/orders");
   });
 

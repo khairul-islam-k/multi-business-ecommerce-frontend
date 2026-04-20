@@ -1,9 +1,8 @@
-// lib/axios.ts
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 
 const api = axios.create({
-  baseURL: "http://localhost:5002/onecomm/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL!,
 });
 
 api.interceptors.request.use((config) => {
@@ -65,6 +64,8 @@ api.interceptors.response.use(
       processQueue(null, newToken);
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
+      console.log(api.getUri());
 
       return api(originalRequest);
     } catch (err) {
