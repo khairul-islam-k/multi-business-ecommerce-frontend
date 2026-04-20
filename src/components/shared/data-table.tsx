@@ -1,6 +1,6 @@
 "use client";
 
-import { Table, Input, Select, TableProps, Empty, Card, Grid } from "antd";
+import { Table, Input, TableProps, Empty, Card, Grid } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
@@ -51,7 +51,6 @@ export function DataTable<T extends Record<string, any>>({
 
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
-  const [filters, setFilters] = useState<Record<string, string>>({});
 
   // 🔥 Always emit search (debounced)
   useEffect(() => {
@@ -160,30 +159,6 @@ export function DataTable<T extends Record<string, any>>({
             allowClear
             className="w-64"
           />
-
-          {columns
-            .filter((c) => c.filterOptions)
-            .map((col) => (
-              <Select
-                key={col.key}
-                placeholder={col.label}
-                allowClear
-                className="w-40"
-                onChange={(val) => {
-                  const next = {
-                    ...filters,
-                    [col.key]: val,
-                  };
-
-                  setFilters(next);
-                  onFilterChange?.(next); // 🔥 always emit
-                }}
-                options={col.filterOptions?.map((o) => ({
-                  label: o,
-                  value: o,
-                }))}
-              />
-            ))}
 
           {extra}
         </div>

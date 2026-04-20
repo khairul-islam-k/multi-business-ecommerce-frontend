@@ -2,20 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Badge,
-  Button,
-  Card,
-  Col,
-  Input,
-  Row,
-  Select,
-  Space,
-  Table,
-  Typography,
-  Popconfirm,
-  message,
-} from "antd";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { Button, Popconfirm, Space, Select } from "antd";
 import {
   EditOutlined,
   EyeOutlined,
@@ -23,156 +11,164 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 
-import { mockShowrooms } from "./data";
-import ViewModal from "./_components/view-modal";
+import api from "@/lib/axios";
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/Pagination";
+import { useSwal } from "@/hooks/use-swal";
+import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
+import { Column, DataTable } from "@/components/shared/data-table";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
+import ViewModal from "./_components/view-modal";
+
+const { Option } = Select;
 
 export default function ShowroomsPage() {
   const router = useRouter();
   const swal = useSwal();
 
+  const pageSize = 10;
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("Active");
+
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<string | undefined>();
-
-  const filtered = mockShowrooms.filter((item) => {
-    const matchSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = status ? item.status === status : true;
-    return matchSearch && matchStatus;
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["fetch-showrooms", currentPage, search, status],
+    queryFn: async () =>
+      api
+        .get(
+          `/business-showrooms?page=${currentPage}&limit=${pageSize}&search=${search}&status=${status}&sortBy=createdAt&sortOrder=DESC`,
+        )
+        .then((res) => res.data),
+    placeholderData: keepPreviousData,
+    staleTime: 0,
   });
 
-  const handleDelete = async (id: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  if (isLoading) return <Loader />;
+
+  const handleDelete = async (uuid: string) => {
+    await api.delete(`/business-showrooms/${uuid}`);
+
     swal.success("Showroom deleted");
+
+    queryClient.invalidateQueries({
+      predicate: (q) => q.queryKey[0] === "fetch-showrooms",
+    });
   };
 
-  const columns = [
+  const columns: Column<any>[] = [
     {
-      title: "Name",
-      dataIndex: "name",
-      render: (v: string) => <Text strong>{v}</Text>,
+      key: "name",
+      label: "Name",
+      type: "primary",
     },
+    { key: "code", label: "Code" },
+    { key: "phone", label: "Phone" },
+    { key: "city", label: "City" },
+    { key: "district", label: "District" },
     {
-      title: "Code",
-      dataIndex: "code",
-    },
-    {
-      title: "Phone",
-      dataIndex: "phone",
-    },
-    {
-      title: "City",
-      dataIndex: "city",
-    },
-    {
-      title: "District",
-      dataIndex: "district",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (s: string) =>
-        s === "Active" ? (
-          <Badge status="success" text="Active" />
-        ) : (
-          <Badge status="default" text="Inactive" />
-        ),
-    },
-    {
-      title: "Actions",
-      render: (_: any, record: any) => (
-        <Space>
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => {
-              setSelected(record);
-              setOpen(true);
-            }}
-          />
-
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(
-                `/admin/dashboard/masters/showrooms/edit/${record.id}`,
-              )
-            }
-          />
-
-          <Popconfirm
-            title="Delete showroom?"
-            description="This action cannot be undone"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button size="small" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
+      key: "status",
+      label: "Status",
+      render: (r) => (
+        <span
+          className={`px-2 py-1 rounded text-xs ${
+            r.status === "Active"
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {r.status}
+        </span>
       ),
     },
+    {
+      key: "createdAt",
+      label: "Created",
+      render: (r) => new Date(r.createdAt).toLocaleDateString(),
+    },
   ];
+
+  const showrooms = data?.data?.data || [];
+  const totalPages = data?.data?.meta?.totalPages || 0;
 
   return (
     <div className="space-y-6">
       <PageHeader title="Showrooms" breadcrumb={adminBreadcrumb} />
 
-      {/* Controls */}
-      <div className="flex justify-between gap-3 flex-wrap">
-        <div className="flex gap-3">
-          <Search
-            placeholder="Search showrooms"
-            allowClear
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ width: 220 }}
-          />
+      <DataTable
+        data={showrooms}
+        columns={columns}
+        loading={isFetching}
+        onSearch={(q) => {
+          setSearch(q);
+          setCurrentPage(1);
+        }}
+        toolbarEnd={
+          <div className="flex gap-2">
+            <Select
+              value={status}
+              onChange={(v) => {
+                setStatus(v);
+                setCurrentPage(1);
+              }}
+              className="w-32"
+            >
+              <Option value="Active">Active</Option>
+              <Option value="Inactive">Inactive</Option>
+            </Select>
 
-          <Select
-            placeholder="Status"
-            allowClear
-            style={{ width: 160 }}
-            onChange={setStatus}
-            options={[
-              { label: "Active", value: "Active" },
-              { label: "Inactive", value: "Inactive" },
-            ]}
-          />
-        </div>
-
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() =>
-            router.push("/admin/dashboard/masters/showrooms/create")
-          }
-        >
-          Add Showroom
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>List of Showrooms</Title>
-
-            <Table
-              columns={columns}
-              dataSource={filtered}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() =>
+                router.push("/admin/dashboard/masters/showrooms/create")
+              }
+            >
+              Add Showroom
+            </Button>
+          </div>
+        }
+        actions={(row) => (
+          <Space>
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setSelected(row);
+                setOpen(true);
+              }}
             />
-          </Card>
-        </Col>
-      </Row>
+
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(
+                  `/admin/dashboard/masters/showrooms/edit/${row.uuid}`,
+                )
+              }
+            />
+
+            <Popconfirm
+              title="Delete showroom?"
+              onConfirm={() => handleDelete(row.uuid)}
+            >
+              <Button type="text" danger icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        )}
+      />
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       <ViewModal
         open={open}

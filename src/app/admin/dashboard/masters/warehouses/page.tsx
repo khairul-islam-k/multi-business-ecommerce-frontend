@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { Button, Popconfirm, Space, Badge } from "antd";
+import { Button, Popconfirm, Space, Badge, Select } from "antd";
 import {
   EditOutlined,
   EyeOutlined,
@@ -23,12 +23,15 @@ import { Column, DataTable } from "@/components/shared/data-table";
 
 import ViewModal from "./_components/view-modal";
 
+const { Option } = Select;
+
 export default function WarehousesPage() {
   const router = useRouter();
   const swal = useSwal();
 
   const pageSize = 10;
 
+  const [status, setStatus] = useState("Active");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -36,11 +39,11 @@ export default function WarehousesPage() {
   const [open, setOpen] = useState(false);
 
   const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["fetch-warehouses", currentPage, search],
+    queryKey: ["fetch-warehouses", currentPage, search, status],
     queryFn: async () =>
       api
         .get(
-          `/warehouse?page=${currentPage}&limit=${pageSize}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
+          `/warehouse?page=${currentPage}&limit=${pageSize}&status=${status}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
     placeholderData: keepPreviousData,
@@ -119,11 +122,24 @@ export default function WarehousesPage() {
           setCurrentPage(1);
         }}
         toolbarEnd={
-          <Link href="/admin/dashboard/masters/warehouses/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Add Warehouse
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            <Select
+              className="border rounded px-2"
+              value={status}
+              onChange={(e) => {
+                setStatus(e);
+                setCurrentPage(1);
+              }}
+            >
+              <Option value="Active">Active</Option>
+              <Option value="Inactive">Inactive</Option>
+            </Select>
+            <Link href="/admin/dashboard/masters/warehouses/create">
+              <Button type="primary" icon={<PlusOutlined />}>
+                Add Warehouse
+              </Button>
+            </Link>
+          </div>
         }
         actions={(row) => (
           <Space>
