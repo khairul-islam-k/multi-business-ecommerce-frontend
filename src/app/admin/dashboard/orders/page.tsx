@@ -43,6 +43,7 @@ export default function OrdersList() {
           `/orders?page=${currentPage}&limit=${pageSize}&order_status=${status}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
+    refetchOnMount: true,
     placeholderData: keepPreviousData,
     staleTime: 0,
   });
