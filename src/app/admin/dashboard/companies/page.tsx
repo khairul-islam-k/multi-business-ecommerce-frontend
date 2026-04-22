@@ -254,6 +254,7 @@ export default function CompaniesPage() {
               data={companies}
               columns={columns}
             />
+            
           </Card>
           <Pagination
             currentPage={page}

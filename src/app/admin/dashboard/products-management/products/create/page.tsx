@@ -2,35 +2,63 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  DatePicker,
-  Switch,
-  Button,
-  message,
-  Card,
-} from "antd";
+import api from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { useQuery } from "@tanstack/react-query";
+import { Form, Input, InputNumber, Select, DatePicker, Switch, Button, message, Card } from "antd";
 import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 const { TextArea } = Input;
 const { Option } = Select;
 
 export default function ProductCreatePage() {
   const [form] = Form.useForm();
-  const swal = useSwal();
+  const user = useAuthStore((state) => state.user);
+
+  // then fix
+  const tenant_id = 1;
+
+  // company
+  const { data: companies } = useQuery({
+    queryKey: ["companies"],
+    queryFn: async () => api.get("/companies?sortOrder=DESC"),
+  });
+
+  // brands
+  const { data: brands } = useQuery({
+    queryKey: ["brands"],
+    queryFn: async () => api.get("/brands?sortOrder=DESC"),
+  });
+
+  // category
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => api.get("/categories"),
+  });
+
+  console.log(categories?.data?.data);
 
   const onFinish = (values: any) => {
     // Format date
-    if (values.published_at) {
-      values.published_at = values.published_at.format("YYYY-MM-DD HH:mm:ss");
+    const newData = {
+      ...values,
+      tenant_id
     }
 
-    console.log("Product data:", values);
-    swal.success("Product created successfully!");
+    // post data
+    api.post('/products', newData)
+      .then(res => {
+        form.resetFields();
+        Swal.fire({
+          position: "top-end",
+          icon: "success",
+          title: "Your work has been saved",
+          showConfirmButton: false,
+          timer: 1500
+        });
+      })
+
   };
 
   const router = useRouter();
@@ -51,29 +79,33 @@ export default function ProductCreatePage() {
           onFinish={onFinish}
           initialValues={{
             tenant_id: 101,
-            company_id: 1001,
             status: "Active",
             is_featured: false,
           }}
         >
-          <Form.Item
-            label="Tenant ID"
-            name="tenant_id"
-            rules={[{ required: true }]}
-          >
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
 
           <Form.Item
             label="Company ID"
             name="company_id"
             rules={[{ required: true }]}
           >
-            <InputNumber style={{ width: "100%" }} />
+            <Select
+              placeholder="Select a company"
+              options={companies?.data?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
           <Form.Item label="Brand ID" name="brand_id">
-            <InputNumber style={{ width: "100%" }} />
+            <Select
+              placeholder="Select a brands"
+              options={brands?.data?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
           <Form.Item
@@ -81,7 +113,13 @@ export default function ProductCreatePage() {
             name="category_id"
             rules={[{ required: true }]}
           >
-            <InputNumber style={{ width: "100%" }} />
+            <Select
+              placeholder="Select a categories"
+              options={categories?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
           <Form.Item label="Name" name="name" rules={[{ required: true }]}>
@@ -169,14 +207,6 @@ export default function ProductCreatePage() {
             valuePropName="checked"
           >
             <Switch />
-          </Form.Item>
-
-          <Form.Item label="Published At" name="published_at">
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              style={{ width: "100%" }}
-            />
           </Form.Item>
 
           <Form.Item>
