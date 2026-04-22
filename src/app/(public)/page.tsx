@@ -22,7 +22,7 @@ export default function Homepage() {
   const [appointmentOpen, setAppointmentOpen] = useState(false);
 
   return (
-    <div>
+    <div className="bg-white!">
       <HeroSection onBookAppointment={() => setAppointmentOpen(true)} />
       <FeaturesSection />
 

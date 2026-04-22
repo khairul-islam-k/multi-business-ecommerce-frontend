@@ -55,8 +55,8 @@ export default function ThemeProvider({
   useEffect(() => {
     const stored = localStorage.getItem("theme") as Theme | null;
     if (stored) setTheme(stored);
-    else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-      setTheme("dark");
+    // else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+    //   setTheme("dark");
 
     setMounted(true);
   }, []);
