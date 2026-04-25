@@ -1,167 +1,136 @@
 "use client";
-import PageHeader from '@/components/shared/page-header';
-import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { GlobalOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Space, Table, Tag, theme } from 'antd';
-import { ColumnsType } from 'antd/es/table';
-import Link from 'next/link';
-import React from 'react';
 
-type WebsiteRow = {
-    id: number;
-    Website: string;
-    Domain: string;
-    Template: string;
-    Status: string;
-    Published: string;
+import Link from "next/link";
+import api from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { Button, Card, Space, Tag, Flex, theme, Spin, Empty } from "antd";
+import {
+  GlobalOutlined,
+  PlusOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Column, DataTable } from "@/components/shared/data-table";
+
+type Website = {
+  uuid: string;
+  name: string;
+  slug: string;
+  domain: string;
+  subdomain: string;
+  status: "Active" | "Inactive" | "Draft";
+  published_at: string | null;
+  template_id: number;
 };
 
-const websitesData = [
-    {
-        id: 1,
-        Website: "Main Store",
-        Domain: "mainstore.com",
-        Template: "Template #1",
-        Status: "Published",
-        Published: "30/1/26",
-    },
-    {
-        id: 2,
-        Website: "Fashion Hub",
-        Domain: "fashionhub.pk",
-        Template: "Template #2",
-        Status: "Draft",
-        Published: "—",
-    },
-    {
-        id: 3,
-        Website: "Tech World",
-        Domain: "techworld.io",
-        Template: "Template #3",
-        Status: "Published",
-        Published: "15/2/26",
-    },
-    {
-        id: 4,
-        Website: "Home Essentials",
-        Domain: "homeessentials.store",
-        Template: "Template #1",
-        Status: "Unpublished",
-        Published: "—",
-    },
-];
-
-const WebSiteList = () => {
-    const { token } = theme.useToken();
-    const columns: ColumnsType<WebsiteRow> = [
-        {
-            title: "Website",
-            dataIndex: "Website",
-            key: "Website",
-            render: (Website: string, record: WebsiteRow) => {
-                return <Flex style={{
-                    alignItems: 'center',
-                    gap: '10px'
-                }}>
-                    <div style={{
-                        background: token.colorBgContainerDisabled,
-                        height: '30px',
-                        width: '30px',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        borderRadius: '8px',
-                        color: token.colorPrimary
-                    }}>
-                        <GlobalOutlined />
-                    </div>
-
-                    <div>
-                        <h3 style={{ marginBottom: 0! }}>{Website}</h3>
-                        <p>{record.Domain}</p>
-                    </div>
-                </Flex>
-            }
-        },
-        {
-            title: "Domain",
-            dataIndex: "Domain",
-            key: "Domain",
-        },
-        {
-            title: "Template",
-            dataIndex: "Template",
-            key: "Template",
-        },
-        {
-            title: "Status",
-            dataIndex: "Status",
-            key: "Status",
-            render: (status: string) => {
-                const color =
-                    status === "Published"
-                        ? "green"
-                        : status === "Draft"
-                            ? "orange"
-                            : "red";
-
-                return <Tag color={color}>{status}</Tag>;
-            },
-        },
-        {
-            title: "Published",
-            dataIndex: "Published",
-            key: "Published",
-        },
-        {
-            title: "Action",
-            key: "action",
-            align: "center",
-            render: (_: string, record: WebsiteRow) => (
-                <Space>
-                    <Link href={`/admin/dashboard/website-builder/websites/details/${record.id}`}>
-                    <Button
-                        type="text"
-                        icon={<SettingOutlined />}
-                        onClick={() => console.log("Settings:", record)}
-                    />
-                    </Link>
-                </Space>
-            ),
-        },
-    ];
-
-    return (
-        <div>
-            <div style={{ marginBottom: '24px' }}>
-                <PageHeader title='Websites' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
-
-            <Card>
-                <div style={{
-                    textAlign: 'right',
-                    marginBottom: '24px'
-                }}>
-                    <Link href='/admin/dashboard/website-builder/websites/create-website'>
-                        <Button
-                            icon={<PlusOutlined />}
-                            type="primary">Create website</Button>
-                    </Link>
-                </div>
-
-                <div style={{
-                    overflowX: 'auto',
-                    overflowY: 'hidden'
-                }}>
-                    <Table
-                        rowKey="id"
-                        columns={columns}
-                        dataSource={websitesData}
-                        pagination={false}
-                    />
-                </div>
-            </Card>
-        </div>
-    );
+const statusColor: Record<string, string> = {
+  Active: "green",
+  Draft: "orange",
+  Inactive: "red",
 };
 
-export default WebSiteList;
+const WebsiteList = () => {
+  const { token } = theme.useToken();
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["websites"],
+    queryFn: async () => {
+      const res = await api.get("/websites");
+      return res.data?.data?.data ?? [];
+    },
+  });
+
+  const columns: Column<Website>[] = [
+    {
+      key: "name",
+      label: "Website",
+      type: "primary",
+      render: (row) => (
+        <Flex style={{ alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              background: token.colorBgContainerDisabled,
+              height: 32,
+              width: 32,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: 8,
+              color: token.colorPrimary,
+            }}
+          >
+            <GlobalOutlined />
+          </div>
+
+          <div>
+            <h3 style={{ marginBottom: 0 }}>{row.name}</h3>
+            <p style={{ margin: 0, fontSize: 12 }}>{row.slug}</p>
+          </div>
+        </Flex>
+      ),
+    },
+    {
+      key: "domain",
+      label: "Domain",
+      render: (r) => r.domain,
+    },
+    {
+      key: "subdomain",
+      label: "Subdomain",
+      render: (r) => r.subdomain,
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (r) => (
+        <Tag color={statusColor[r.status] || "default"}>{r.status}</Tag>
+      ),
+    },
+    {
+      key: "published_at",
+      label: "Published",
+      render: (r) =>
+        r.published_at ? new Date(r.published_at).toLocaleDateString() : "—",
+    },
+  ];
+
+  const actions = (row: Website) => (
+    <Space>
+      <Link href={`/admin/dashboard/website-builder/websites/edit/${row.uuid}`}>
+        <Button type="text" icon={<SettingOutlined />} />
+      </Link>
+    </Space>
+  );
+
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Websites" breadcrumb={adminBreadcrumb} />
+
+      <Card style={{ marginTop: 20 }}>
+        <Flex justify="end" style={{ marginBottom: 16 }}>
+          <Link href="/admin/dashboard/website-builder/websites/create-website">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Create Website
+            </Button>
+          </Link>
+        </Flex>
+
+        {isLoading ? (
+          <Spin />
+        ) : isError ? (
+          <Empty description="Failed to load websites" />
+        ) : (
+          <DataTable
+            data={data}
+            columns={columns}
+            loading={isLoading}
+            actions={actions}
+          />
+        )}
+      </Card>
+    </div>
+  );
+};
+
+export default WebsiteList;

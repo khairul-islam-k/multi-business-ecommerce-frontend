@@ -1,98 +1,61 @@
 "use client";
-import { Card, Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
-import React from 'react';
 
-interface TPage {
-    id: number;
-    Title: string;
-    Type: string;
-    Slug: string;
-    SEOTitle: string;
-    Status: string;
+import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import { Card, Spin, Empty, Tag } from "antd";
+import { Column, DataTable } from "@/components/shared/data-table";
+
+export default function WebsitePage({ websiteId }: { websiteId: string }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["website-pages", websiteId],
+    queryFn: async () => {
+      const res = await api.get(`/pages`, {
+        params: { website_id: websiteId },
+      });
+      return res.data?.data?.data ?? [];
+    },
+    enabled: !!websiteId,
+  });
+
+  if (isLoading) return <Spin />;
+  if (isError) return <Empty description="Failed to load pages" />;
+
+  const columns: Column<any>[] = [
+    {
+      key: "title",
+      label: "Title",
+      type: "primary",
+      render: (r) => r.title,
+    },
+    {
+      key: "type",
+      label: "Type",
+      render: (r) => r.type,
+    },
+    {
+      key: "slug",
+      label: "Slug",
+      render: (r) => r.slug,
+    },
+    {
+      key: "seo_title",
+      label: "SEO Title",
+      render: (r) => r.seo_title,
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (r) => (
+        <Tag color={r.status === "published" ? "green" : "orange"}>
+          {r.status}
+        </Tag>
+      ),
+    },
+  ];
+
+  return (
+    <Card>
+      <DataTable data={data} columns={columns} />
+    </Card>
+  );
 }
-
-const data: TPage[] = [
-    {
-        id: 1,
-        Title: "Home",
-        Type: "home",
-        Slug: "/",
-        SEOTitle: "Main Store - Home",
-        Status: "published",
-    },
-    {
-        id: 2,
-        Title: "About Us",
-        Type: "page",
-        Slug: "/about-us",
-        SEOTitle: "Learn More About Us",
-        Status: "published",
-    },
-    {
-        id: 3,
-        Title: "Contact",
-        Type: "page",
-        Slug: "/contact",
-        SEOTitle: "Get in Touch With Us",
-        Status: "published",
-    },
-    {
-        id: 4,
-        Title: "Products",
-        Type: "page",
-        Slug: "/products",
-        SEOTitle: "Our Products Catalog",
-        Status: "published",
-    },
-];
-
-const WebsitePage = () => {
-    const columns: ColumnsType<TPage> = [
-        {
-            title: "Title",
-            dataIndex: "Title",
-            key: "Title",
-            sorter: (a: TPage, b: TPage) => a.Title.localeCompare(b.Title),
-        },
-        {
-            title: "Type",
-            dataIndex: "Type",
-            key: "Type",
-        },
-        {
-            title: "Slug",
-            dataIndex: "Slug",
-            key: "Slug",
-        },
-        {
-            title: "SEO Title",
-            dataIndex: "SEOTitle",
-            key: "SEOTitle",
-        },
-        {
-            title: "Status",
-            dataIndex: "Status",
-            key: "Status",
-        },
-    ];
-
-
-    return (
-        <div>
-            <Card>
-                <div style={{
-                    overflowX: 'auto',
-                    overflowY: 'hidden'
-                }}>
-                    <Table dataSource={data}
-                     columns={columns}
-                     pagination={false}
-                     rowKey="id" />
-                </div>
-            </Card>
-        </div>
-    );
-};
-
-export default WebsitePage;

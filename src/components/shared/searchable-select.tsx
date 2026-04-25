@@ -27,7 +27,6 @@ export default function SearchableSelect({
 }: Props) {
   const [search, setSearch] = useState("");
 
-  // ✅ debounce the search value (400ms)
   const [debouncedSearch] = useDebounce(search, 400);
 
   const { data = [], isFetching } = useQuery({

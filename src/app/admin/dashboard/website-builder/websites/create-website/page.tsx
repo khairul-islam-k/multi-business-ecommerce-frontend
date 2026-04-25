@@ -1,125 +1,100 @@
 "use client";
-import PageHeader from '@/components/shared/page-header';
-import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { GlobalOutlined, StarOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, Select, Space, theme } from 'antd';
-import React from 'react';
 
-const { Option } = Select;
-const CreateWebsite = () => {
-    const [form] = Form.useForm();
-    const { token } = theme.useToken();
+import api from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { Button, Card, Form, Input, Space } from "antd";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSwal } from "@/hooks/use-swal";
+import SearchableSelect from "@/components/shared/searchable-select";
 
-    const onFinish = (values: any) => {
-        console.log("Create Website Data:", values);
-    };
+export default function CreateWebsite() {
+  const [form] = Form.useForm();
+  const router = useRouter();
+  const swal = useSwal();
+  const [loading, setLoading] = useState(false);
 
-    return (
-        <div>
-            <div style={{
-                marginBottom: '24px'
-            }}>
-                <PageHeader title='Create Website' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
+  const onFinish = async (values: any) => {
+    try {
+      setLoading(true);
 
+      await api.post("/websites", {
+        tenant_id: values.tenant_id,
+        company_id: values.company_id,
+        name: values.name,
+        slug: values.slug,
+        domain: values.domain,
+        subdomain: values.subdomain,
+        template_id: values.template_id,
+        status: "Active",
+      });
 
-            <Flex
-                style={{
-                    maxWidth: 600,
-                    gap: '10px',
-                    marginBottom: '24px'
-                }}
-            >
-                <Button
-                    style={{
-                        background: token.colorBgBlur,
-                    }}
-                    icon={<GlobalOutlined />}
-                    block>Manual Set up</Button>
+      swal.success("Website created");
+      router.push("/admin/dashboard/website-builder/websites");
+    } catch (e) {
+      swal.error("Failed to create website");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <Button
-                    style={{
-                        background: token.colorBgContainer
-                    }}
-                    icon={<StarOutlined />}
-                    block>AI Generate</Button>
-            </Flex>
+  return (
+    <div>
+      <PageHeader title="Create Website" breadcrumb={adminBreadcrumb} />
 
-            <Card
-                title={
-                    <Space>
-                        <GlobalOutlined />
-                        Create Website
-                    </Space>
-                }
-                style={{ maxWidth: 600 }}
-            >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                >
-                    {/* Website Name */}
-                    <Form.Item
-                        label="Website Name"
-                        name="websiteName"
-                        rules={[{ required: true, message: "Please enter website name" }]}
-                    >
-                        <Input placeholder="e.g. Main Store" />
-                    </Form.Item>
+      <Card style={{ maxWidth: 700 }}>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            name="name"
+            label="Website Name"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
 
-                    {/* Slug */}
-                    <Form.Item
-                        label="Slug"
-                        name="slug"
-                        rules={[{ required: true, message: "Please enter slug" }]}
-                    >
-                        <Input placeholder="e.g. main-store" />
-                    </Form.Item>
+          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-                    {/* Subdomain */}
-                    <Form.Item
-                        label="Subdomain"
-                        name="subdomain"
-                        rules={[{ required: true, message: "Please enter subdomain" }]}
-                    >
-                        <Input addonAfter=".yourdomain.com" placeholder="e.g. shop" />
-                    </Form.Item>
+          <Form.Item name="domain" label="Domain">
+            <Input />
+          </Form.Item>
 
-                    {/* Template */}
-                    <Form.Item
-                        label="Template"
-                        name="template"
-                        rules={[{ required: true, message: "Please select a template" }]}
-                    >
-                        <Select placeholder="Select a template">
-                            <Option value="modern-minimal-fashion">
-                                Modern Minimal Fashion
-                            </Option>
-                            <Option value="electronics-store">
-                                Electronics Store
-                            </Option>
-                            <Option value="grocery-basic">
-                                Grocery Basic
-                            </Option>
-                        </Select>
-                    </Form.Item>
+          <Form.Item name="subdomain" label="Subdomain">
+            <Input addonAfter=".yourdomain.com" />
+          </Form.Item>
 
-                    {/* Buttons */}
-                    <Form.Item>
-                        <Space>
-                            <Button onClick={() => form.resetFields()}>
-                                Cancel
-                            </Button>
-                            <Button type="primary" htmlType="submit">
-                                Create Website
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Card>
-        </div>
-    );
-};
+          {/* COMPANY */}
+          <Form.Item
+            name="company_id"
+            label="Company"
+            rules={[{ required: true }]}
+          >
+            <SearchableSelect
+              endpoint="/companies"
+              value={form.getFieldValue("company_id")}
+              onChange={(v) => form.setFieldsValue({ company_id: v })}
+            />
+          </Form.Item>
 
-export default CreateWebsite;
+          {/* TEMPLATE */}
+          <Form.Item name="template_id" label="Template">
+            <SearchableSelect
+              endpoint="/website-templates"
+              value={form.getFieldValue("template_id")}
+              onChange={(v) => form.setFieldsValue({ template_id: v })}
+            />
+          </Form.Item>
+
+          <Space>
+            <Button onClick={() => form.resetFields()}>Reset</Button>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Create Website
+            </Button>
+          </Space>
+        </Form>
+      </Card>
+    </div>
+  );
+}

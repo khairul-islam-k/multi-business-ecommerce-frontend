@@ -189,36 +189,6 @@ export default function CreateOrder() {
   const router = useRouter();
   const swal = useSwal();
 
-  const results = useQueries({
-    queries: [
-      {
-        queryKey: ["customers"],
-        queryFn: async () => (await api.get("/customers")).data?.data ?? [],
-      },
-      {
-        queryKey: ["companies"],
-        queryFn: async () => (await api.get("/companies")).data?.data ?? [],
-      },
-      {
-        queryKey: ["couriers"],
-        queryFn: async () => (await api.get("/couriers")).data?.data ?? [],
-      },
-      {
-        queryKey: ["suppliers"],
-        queryFn: async () =>
-          (await api.get("/business-suppliers")).data?.data ?? [],
-      },
-    ],
-  });
-
-  const isLoading = results.some((r) => r.isLoading);
-
-  const [customers, companies, couriers, suppliers] = results.map(
-    (r) => r.data?.data ?? [],
-  );
-
-  console.log(customers, companies, couriers, suppliers);
-
   const [items, setItems] = useState<any[]>([]);
 
   const [form, setForm] = useState({
@@ -289,7 +259,7 @@ export default function CreateOrder() {
         {/* LEFT */}
         <Col xs={24} lg={16}>
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Card loading={isLoading} title="Order Info">
+            <Card title="Order Info">
               <Row gutter={12}>
                 <Col span={12}>
                   <label className="text-sm font-semibold">Order No</label>
@@ -345,7 +315,7 @@ export default function CreateOrder() {
 
         {/* RIGHT */}
         <Col xs={24} lg={8}>
-          <Card loading={isLoading}>
+          <Card>
             <Space direction="vertical" style={{ width: "100%" }}>
               <div>
                 <label className="text-sm font-semibold">Courier</label>
