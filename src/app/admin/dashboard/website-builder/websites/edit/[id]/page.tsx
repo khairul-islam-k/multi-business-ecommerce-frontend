@@ -58,10 +58,10 @@ export default function EditWebsite() {
   if (isLoading) return <Spin />;
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader title="Edit Website" breadcrumb={adminBreadcrumb} />
 
-      <Card style={{ maxWidth: 700 }}>
+      <Card className="w-full">
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="name" label="Website Name">
             <Input />
@@ -91,7 +91,7 @@ export default function EditWebsite() {
           {/* TEMPLATE */}
           <Form.Item name="template_id" label="Template">
             <SearchableSelect
-              endpoint="/templates"
+              endpoint="/website-templates"
               value={form.getFieldValue("template_id")}
               onChange={(v) => form.setFieldsValue({ template_id: v })}
             />

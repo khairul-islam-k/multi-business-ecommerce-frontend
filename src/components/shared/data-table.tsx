@@ -52,12 +52,10 @@ export function DataTable<T extends Record<string, any>>({
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
-  // 🔥 Always emit search (debounced)
   useEffect(() => {
     onSearch?.(debouncedSearch);
   }, [debouncedSearch, onSearch]);
 
-  // 📊 Table Columns (NO internal filtering)
   const antdColumns: TableProps<T>["columns"] = [
     ...columns.map((col) => ({
       title: col.label,

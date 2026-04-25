@@ -12,6 +12,7 @@ import {
 } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Column, DataTable } from "@/components/shared/data-table";
+import { useState } from "react";
 
 type Website = {
   uuid: string;
@@ -32,11 +33,11 @@ const statusColor: Record<string, string> = {
 
 const WebsiteList = () => {
   const { token } = theme.useToken();
-
+  const [search, setSearch] = useState("");
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["websites"],
+    queryKey: ["websites", search],
     queryFn: async () => {
-      const res = await api.get("/websites");
+      const res = await api.get(`/websites?search=${search}`);
       return res.data?.data?.data ?? [];
     },
   });
@@ -108,14 +109,6 @@ const WebsiteList = () => {
       <PageHeader title="Websites" breadcrumb={adminBreadcrumb} />
 
       <Card style={{ marginTop: 20 }}>
-        <Flex justify="end" style={{ marginBottom: 16 }}>
-          <Link href="/admin/dashboard/website-builder/websites/create-website">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Create Website
-            </Button>
-          </Link>
-        </Flex>
-
         {isLoading ? (
           <Spin />
         ) : isError ? (
@@ -123,8 +116,16 @@ const WebsiteList = () => {
         ) : (
           <DataTable
             data={data}
+            onSearch={(q) => setSearch(q)}
             columns={columns}
             loading={isLoading}
+            toolbarEnd={
+              <Link href="/admin/dashboard/website-builder/websites/create-website">
+                <Button type="primary" icon={<PlusOutlined />}>
+                  Create Website
+                </Button>
+              </Link>
+            }
             actions={actions}
           />
         )}
