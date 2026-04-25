@@ -37,7 +37,7 @@ export default function ProductCreatePage() {
     queryFn: async () => api.get("/categories"),
   });
 
-  console.log(categories?.data?.data);
+  console.log('category', categories?.data?.data?.data);
 
   const onFinish = (values: any) => {
     // Format date
@@ -85,7 +85,7 @@ export default function ProductCreatePage() {
         >
 
           <Form.Item
-            label="Company ID"
+            label="Company"
             name="company_id"
             rules={[{ required: true }]}
           >
@@ -98,7 +98,7 @@ export default function ProductCreatePage() {
             />
           </Form.Item>
 
-          <Form.Item label="Brand ID" name="brand_id">
+          <Form.Item label="Brands" name="brand_id">
             <Select
               placeholder="Select a brands"
               options={brands?.data?.data?.data?.map((c: any) => ({
@@ -109,13 +109,13 @@ export default function ProductCreatePage() {
           </Form.Item>
 
           <Form.Item
-            label="Category ID"
+            label="Category"
             name="category_id"
             rules={[{ required: true }]}
           >
             <Select
               placeholder="Select a categories"
-              options={categories?.data?.data?.map((c: any) => ({
+              options={categories?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
               }))}

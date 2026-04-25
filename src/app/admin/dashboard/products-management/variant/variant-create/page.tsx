@@ -1,6 +1,7 @@
 "use client";
 
 import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
 import { Card, Form, Input, InputNumber, Button, Select, Row, Col, message } from "antd";
 import Swal from "sweetalert2";
 
@@ -8,6 +9,18 @@ const { Option } = Select;
 
 export default function VariantCreateForm() {
     const [form] = Form.useForm();
+
+    const {
+        data: products,
+    } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () =>
+            api.get(
+                `/products?sortBy=createdAt&sortOrder=DESC`
+            ),
+    });
+
+    console.log('products', products?.data?.data?.data);
 
     const onFinish = async (values: any) => {
 
@@ -50,19 +63,24 @@ export default function VariantCreateForm() {
                 onFinish={onFinish}
                 initialValues={{
                     status: "Active",
-                    product_id: 6
                 }}
             >
                 <Row gutter={24}>
                     {/* Product ID */}
                     <Col xs={24} md={12}>
+
                         <Form.Item
-                            label="Product ID"
+                            label="Product"
                             name="product_id"
-                            rules={[{ required: true, message: "Product is required" }]}
+                            rules={[{ required: true }]}
                         >
-                            <InputNumber
-                            style={{ width: "100%" }} placeholder="Enter product id" />
+                            <Select
+                                placeholder="Select product"
+                                options={products?.data?.data?.data?.map((c: any) => ({
+                                    label: c.name,
+                                    value: Number(c.id),
+                                }))}
+                            />
                         </Form.Item>
                     </Col>
 
@@ -70,7 +88,7 @@ export default function VariantCreateForm() {
                     <Col xs={24} md={12}>
                         <Form.Item
                             label="Variant Name"
-                            name="variant_name"
+                            name="name"
                             rules={[{ required: true, message: "Variant name is required" }]}
                         >
                             <Input placeholder="e.g. Red - XL" />

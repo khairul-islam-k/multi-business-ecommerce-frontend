@@ -256,6 +256,7 @@ export default function CompaniesPage() {
             />
             
           </Card>
+          
           <Pagination
             currentPage={page}
             totalPages={totalPages}
