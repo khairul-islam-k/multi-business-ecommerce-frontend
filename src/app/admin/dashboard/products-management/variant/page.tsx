@@ -1,7 +1,7 @@
 "use client";
 
 import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Grid, Input, Select, Space } from "antd";
+import { Button, Card, Grid, Input, Select } from "antd";
 import { useState } from "react";
 import VariantHeader from "./components/VariantHeader";
 import VariantTable from "./components/VariantTable";
@@ -11,52 +11,68 @@ import api from "@/lib/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
+import { useDebounce } from "use-debounce";
+import Pagination from "@/components/shared/Pagination";
 
 export type TVariant = {
-    id: number;
-    uuid: string;
-    name: string;
-    slug: string;
-    sku: string;
-    barcode: string;
+  id: string;
+  uuid: string;
 
-    cost_price: number;
-    sale_price: number;
-    margin: number;
+  product_id: string;
 
-    stock: number;
-    stock_alert: "Normal" | "Low Stock" | "Out of Stock";
+  sku: string;
+  barcode: string | null;
+  name: string;
 
-    color?: string;
+  cost_price: string;   // DECIMAL comes as string
+  sale_price: string;
 
-    power?: string;
-    capacity?: string;
-    plug_type?: string;
-    connectivity?: string;
-    dpi?: string;
-    length?: string;
-    material?: string;
-    layout?: string;
-    fast_charge?: boolean;
+  stock_alert_qty: number;
+
+  status: 'Active' | 'Inactive' | 'Deleted' | 'Pending' | 'Postponed';
+
+  created_by: string | null;
+  updated_by: string | null;
+  deleted_by: string | null;
+
+  createdAt: string; // ISO date string
+  updatedAt: string;
+  deletedAt: string | null;
 };
-
-const { Option } = Select;
 
 const VariantManagement = () => {
     const screens = Grid.useBreakpoint();
     const router = useRouter();
     const [search, setSearch] = useState("");
+    const [searchValue] = useDebounce(search, 1000);
+    const [statusFilter, setStatusFilter] = useState(null);
     const queryClient = useQueryClient();
+
+
+    // search
+    const [page, setPage] = useState(1);
+    const limit = 5;
 
     const {
         data: variants,
     } = useQuery({
-        queryKey: ["products"],
-        queryFn: async () =>
-            api.get<{ data: TVariant[] }>(
-                `/variant`
-            ),
+        queryKey: ["products", statusFilter, searchValue, page],
+        queryFn: async () => {
+            if (statusFilter) {
+                return api.get(
+                    `/variant?search=${searchValue}&status=${statusFilter}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`
+                );
+            } else {
+                return api.get(
+                    `/variant?search=${searchValue}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`
+                );
+            }
+        }
     });
+
+    // pagination
+    const total = variants?.data?.data?.meta?.total;
+    const totalPages = Math.ceil(total / limit);
 
     // deleted
     const deleteVariant = useMutation({
@@ -107,8 +123,9 @@ const VariantManagement = () => {
             {/* <VariantHeader /> */}
 
             <Card title='All Variants'>
-                <Flex justify="space-between" wrap="wrap" style={{ marginBottom: 16 }}>
-                    <Space>
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <div className="flex gap-3">
                         <Input
                             allowClear
                             prefix={<SearchOutlined />}
@@ -117,7 +134,21 @@ const VariantManagement = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                    </Space>
+
+                        <Select
+                            placeholder="Filter by status"
+                            allowClear
+                            style={{ width: 180 }}
+                            onChange={(v) => setStatusFilter(v)}
+                            options={[
+                                { label: "Active", value: "Active" },
+                                { label: "Inactive", value: "Inactive" },
+                                { label: "Pending", value: "Pending" },
+                                { label: "Deleted", value: "Deleted" },
+                                { label: "Postponed", value: "Postponed" },
+                            ]}
+                        />
+                    </div>
 
                     <Button
                         type="primary"
@@ -130,14 +161,20 @@ const VariantManagement = () => {
                     >
                         create variant
                     </Button>
-                </Flex>
+                </div>
 
                 {/* Table */}
-                <VariantTable 
-                handleDelete={handleDelete}
-                tableData={variants?.data?.data ?? []} />
+                <VariantTable
+                    handleDelete={handleDelete}
+                    tableData={variants?.data?.data?.data ?? []} />
 
             </Card>
+
+            <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+            />
         </div>
     );
 };

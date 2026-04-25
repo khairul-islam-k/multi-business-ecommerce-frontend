@@ -16,11 +16,13 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import api from "@/lib/axios";
+import { CodeSandboxCircleFilled } from "@ant-design/icons";
+import Swal from "sweetalert2";
 
 const { Option } = Select;
 
 export default function VariantUpdateForm() {
-    const {id} =useParams();
+    const { id } = useParams();
     const router = useRouter();
     const [form] = Form.useForm();
 
@@ -31,19 +33,39 @@ export default function VariantUpdateForm() {
         queryFn: async () => api.get(`/variant/${id}`),
     });
 
+    const {
+        data: products,
+    } = useQuery({
+        queryKey: ["products"],
+        queryFn: async () =>
+            api.get(
+                `/products?sortBy=createdAt&sortOrder=DESC`
+            ),
+    });
+
     const variant = data?.data?.data;
-    console.log(variant);
 
     /* 🔹 Update mutation */
     const updateVariant = useMutation({
         mutationFn: (payload: any) =>
-            api.put(`/variant/${id}`, payload),
+            api.patch(`/variant/${id}`, payload),
         onSuccess: () => {
-            message.success("Variant updated successfully");
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "variant has been updated",
+                showConfirmButton: false,
+                timer: 1500
+            });
             router.back();
         },
         onError: () => {
-            message.error("Failed to update variant");
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+                footer: "<a href=\"#\">Why do I have this issue?</a>"
+            });
         },
     });
 
@@ -52,7 +74,7 @@ export default function VariantUpdateForm() {
         if (variant) {
             form.setFieldsValue({
                 product_id: Number(variant.product_id),
-                variant_name: variant.variant_name,
+                name: variant.name,
                 sku: variant.sku,
                 barcode: variant.barcode,
                 cost_price: Number(variant.cost_price),
@@ -83,18 +105,24 @@ export default function VariantUpdateForm() {
                 <Row gutter={24}>
                     <Col xs={24} md={12}>
                         <Form.Item
-                            label="Product ID"
+                            label="Product"
                             name="product_id"
                             rules={[{ required: true }]}
                         >
-                            <InputNumber style={{ width: "100%" }} />
+                            <Select
+                                placeholder="Select product"
+                                options={products?.data?.data?.data?.map((c: any) => ({
+                                    label: c.name,
+                                    value: Number(c.id),
+                                }))}
+                            />
                         </Form.Item>
                     </Col>
 
                     <Col xs={24} md={12}>
                         <Form.Item
                             label="Variant Name"
-                            name="variant_name"
+                            name="name"
                             rules={[{ required: true }]}
                         >
                             <Input />

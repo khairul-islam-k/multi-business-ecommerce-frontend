@@ -19,7 +19,7 @@ import {
     Flex,
     Grid,
     Input,
-    Space,
+    Select,
     Tag,
 } from "antd";
 import Link from "next/link";
@@ -52,6 +52,7 @@ const ProductsList = () => {
 
     const [searchText, setSearchText] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
     /* ===== DEBOUNCE SEARCH ===== */
     useEffect(() => {
@@ -67,11 +68,18 @@ const ProductsList = () => {
     const {
         data: Products,
     } = useQuery({
-        queryKey: ["products", page, limit, debouncedSearch],
-        queryFn: async () =>
-            api.get(
-                `/products?search=${debouncedSearch}&page=${page}&limit=${limit}&sortOrder=DESC`
-            ),
+        queryKey: ["products", page, limit, debouncedSearch, statusFilter],
+        queryFn: async () => {
+            if (statusFilter) {
+                return api.get(
+                    `/products?search=${debouncedSearch}&status=${statusFilter}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`
+                );
+            } else {
+                 return api.get(
+                    `/products?search=${debouncedSearch}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`
+                );
+            }
+        }
     });
 
     // delete 
@@ -177,8 +185,9 @@ const ProductsList = () => {
             <PageHeader title="Products List" breadcrumb={adminBreadcrumb} />
 
             {/* 🔍 Search + Add Button */}
-            <Flex justify="space-between" wrap="wrap" style={{ marginBottom: 16 }}>
-                <Space>
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div className="flex gap-3">
                     <Input
                         allowClear
                         prefix={<SearchOutlined />}
@@ -187,7 +196,18 @@ const ProductsList = () => {
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                     />
-                </Space>
+
+                    <Select
+                        placeholder="Filter by status"
+                        allowClear
+                        style={{ width: 180 }}
+                        onChange={(v) => setStatusFilter(v)}
+                        options={[
+                            { label: "Active", value: "Active" },
+                            { label: "Inactive", value: "Inactive" },
+                        ]}
+                    />
+                </div>
 
                 <Button
                     type="primary"
@@ -200,7 +220,7 @@ const ProductsList = () => {
                 >
                     New Product
                 </Button>
-            </Flex>
+            </div>
 
             {/* 🔄 Search / Pagination Loader */}
             <Card>

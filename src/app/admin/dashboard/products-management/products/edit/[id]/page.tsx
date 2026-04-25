@@ -34,6 +34,25 @@ export default function ProductEditPage() {
     queryFn: async () => api.get(`/products/${id}`),
   });
 
+  // companies
+  const { data: companies } = useQuery({
+    queryKey: ["companies"],
+    queryFn: async () => api.get("/companies?sortOrder=DESC"),
+  });
+
+  // brands
+  const { data: brands } = useQuery({
+    queryKey: ["brands"],
+    queryFn: async () => api.get("/brands?sortOrder=DESC"),
+  });
+
+  // category
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => api.get("/categories"),
+  });
+
+
   /* ---------------- Set Form Values (IMPORTANT) ---------------- */
   useEffect(() => {
     if (product?.data?.data) {
@@ -44,7 +63,7 @@ export default function ProductEditPage() {
   /* ---------------- Submit ---------------- */
   const onFinish = (values: any) => {
     try {
-      api.patch(`/products/${id}`, values)
+      api.patch(`/products/${id}`, {...values, tenant_id: 1})
         .then(res => {
           Swal.fire({
             position: "top-end",
@@ -75,20 +94,43 @@ export default function ProductEditPage() {
           layout="vertical"
           onFinish={onFinish}
         >
-          <Form.Item label="Tenant ID" name="tenant_id" rules={[{ required: true }]}>
-            <InputNumber readOnly style={{ width: "100%" }} />
+
+          <Form.Item
+            label="Company"
+            name="company_id"
+            rules={[{ required: true }]}
+          >
+            <Select
+              placeholder="Select a company"
+              options={companies?.data?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
-          <Form.Item label="Company ID" name="company_id" rules={[{ required: true }]}>
-            <InputNumber style={{ width: "100%" }} />
+          <Form.Item label="Brands" name="brand_id">
+            <Select
+              placeholder="Select a brands"
+              options={brands?.data?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
-          <Form.Item label="Brand ID" name="brand_id">
-            <InputNumber style={{ width: "100%" }} />
-          </Form.Item>
-
-          <Form.Item label="Category ID" name="category_id" rules={[{ required: true }]}>
-            <InputNumber style={{ width: "100%" }} />
+          <Form.Item
+            label="Category"
+            name="category_id"
+            rules={[{ required: true }]}
+          >
+            <Select
+              placeholder="Select a categories"
+              options={categories?.data?.data?.data?.map((c: any) => ({
+                label: c.name,
+                value: Number(c.id),
+              }))}
+            />
           </Form.Item>
 
           <Form.Item label="Name" name="name" rules={[{ required: true }]}>

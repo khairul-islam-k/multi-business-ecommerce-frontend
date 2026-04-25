@@ -1,54 +1,73 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Space, Table, Tag } from "antd";
 import { TVariant } from "../page";
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import { DataTable } from "@/components/shared/data-table";
 
 interface VariantTableProps {
-    tableData: TVariant[];
+    tableData?: TVariant[]; // 🔹 optional (important)
     handleDelete: (id: string) => void;
 }
 
-
-
-export default function VariantTable({ tableData, handleDelete }: VariantTableProps) {
+const VariantTable: React.FC<VariantTableProps> = ({
+    tableData,
+    handleDelete,
+}) => {
     const router = useRouter();
 
-
+    // ✅ ALWAYS ensure array
+    const safeData = useMemo<TVariant[]>(() => {
+        return Array.isArray(tableData) ? tableData : [];
+    }, [tableData]);
 
     const columns = [
-        { title: "Name", dataIndex: "name", key: "name" },
-        { title: "SKU", dataIndex: "sku", key: "sku" },
-        { title: "Barcode", dataIndex: "barcode", key: "barcode" },
-        { title: "Cost Price ($)", dataIndex: "cost_price", key: "cost_price" },
-        { title: "Sale Price ($)", dataIndex: "sale_price", key: "sale_price" },
-        { title: "Margin ($)", dataIndex: "margin", key: "margin" },
-        { title: "Stock", dataIndex: "stock", key: "stock" },
         {
-            title: "Stock Status",
-            dataIndex: "stock_alert",
-            key: "stock_alert",
-            render: (status: string) => {
+            label: "Name",
+            key: "name",
+        },
+        {
+            label: "SKU",
+            key: "sku",
+        },
+        {
+            label: "Barcode",
+            key: "barcode",
+        },
+        {
+            label: "Cost Price ($)",
+            key: "cost_price",
+        },
+        {
+            label: "Sale Price ($)",
+            key: "sale_price",
+        },
+        {
+            label: "Status",
+            key: "status",
+            render: (record: TVariant) => {
                 const color =
-                    status === "Normal" ? "green" : status === "Low Stock" ? "orange" : "red";
-                return <Tag color={color}>{status}</Tag>;
+                    record.status === "Active"
+                        ? "green"
+                        : record.status === "Inactive"
+                            ? "orange"
+                            : "red";
+                return <Tag color={color}>{record.status}</Tag>;
             },
         },
-        // Optional: include main attributes
-        { title: "Color", dataIndex: "color", key: "color" },
         {
-            label: "Actions",
+            label: "Actions", // ✅ FIXED
             key: "actions",
             render: (record: TVariant) => (
                 <Space>
                     <Button
                         size="small"
                         icon={<EyeOutlined />}
-                        onClick={() => {
+                        onClick={() =>
                             router.push(
                                 `/admin/dashboard/products-management/variant/details/${record.uuid}`
                             )
-                        }}
+                        }
                     />
 
                     <Button
@@ -71,15 +90,16 @@ export default function VariantTable({ tableData, handleDelete }: VariantTablePr
             ),
         },
     ];
+
     return (
-        <div style={{ marginTop: '8px', overflow: 'auto' }}>
-            <Table
-                rowKey="id"
-                dataSource={tableData}
+        <div style={{ marginTop: 8, overflowX: "auto" }}>
+
+            <DataTable
+                data={safeData}
                 columns={columns}
-                pagination={{ pageSize: 5 }}
-                bordered
             />
         </div>
     );
-}
+};
+
+export default VariantTable;
