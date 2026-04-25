@@ -1,66 +1,47 @@
 "use client";
-import { Card } from 'antd';
-import Table, { ColumnsType } from 'antd/es/table';
-import React from 'react';
 
-type TMenu = {
-    id: number;
-    Name: string;
-    Location: string;
-    Status: string;
-};
+import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import { Card, Spin, Empty } from "antd";
+import { Column, DataTable } from "@/components/shared/data-table";
 
-const data: TMenu[] = [
+export default function WebsiteMenu({ websiteId }: { websiteId: string }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["website-menus", websiteId],
+    queryFn: async () => {
+      const res = await api.get(`/menus`, {
+        params: { website_id: websiteId },
+      });
+      return res.data?.data?.data ?? [];
+    },
+    enabled: !!websiteId,
+  });
+
+  if (isLoading) return <Spin />;
+  if (isError) return <Empty description="Failed to load menus" />;
+
+  const columns: Column<any>[] = [
     {
-        id: 1,
-        Name: "Main Navigation",
-        Location: "header",
-        Status: "Active",
+      key: "name",
+      label: "Name",
+      type: "primary",
+      render: (r) => <strong>{r.name}</strong>,
     },
     {
-        id: 2,
-        Name: "Footer Links",
-        Location: "footer",
-        Status: "Active",
-    }
-];
+      key: "location",
+      label: "Location",
+      render: (r) => r.location,
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (r) => r.status,
+    },
+  ];
 
-const WebsiteMenu = () => {
-    const columns: ColumnsType<TMenu> = [
-        {
-            title: "Name",
-            dataIndex: "Name",
-            key: "Name",
-            render: (Name: string) => <strong>{Name}</strong>
-        },
-        {
-            title: "Location",
-            dataIndex: "Location",
-            key: "Location",
-        },
-        {
-            title: "Status",
-            dataIndex: "Status",
-            key: "Status",
-        },
-    ];
-
-
-    return (
-        <div>
-            <Card>
-                <div style={{
-                    overflowX: 'auto',
-                    overflowY: 'hidden'
-                }}>
-                    <Table dataSource={data}
-                        columns={columns}
-                        pagination={false}
-                        rowKey="id" />
-                </div>
-            </Card>
-        </div>
-    );
-};
-
-export default WebsiteMenu;
+  return (
+    <Card>
+      <DataTable data={data} columns={columns} />
+    </Card>
+  );
+}

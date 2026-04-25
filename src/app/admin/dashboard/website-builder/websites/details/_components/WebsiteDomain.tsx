@@ -1,76 +1,52 @@
 "use client";
-import React from 'react';
-import { Card, Tag, theme } from 'antd';
-import Table, { ColumnsType } from 'antd/es/table';
 
-type TDomain = {
-        id: number;
-        Domain: string;
-        DNS: string;
-        Status: string;
-        Primary: string;
-    };
+import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import { Card, Tag, Spin, Empty } from "antd";
+import { Column, DataTable } from "@/components/shared/data-table";
 
-const data: TDomain[] = [
+export default function WebsiteDomain({ websiteId }: { websiteId: string }) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["website-domains", websiteId],
+    queryFn: async () => {
+      const res = await api.get(`/domains`, {
+        params: { website_id: websiteId },
+      });
+      return res.data?.data?.data ?? [];
+    },
+    enabled: !!websiteId,
+  });
+
+  if (isLoading) return <Spin />;
+  if (isError) return <Empty description="Failed to load domains" />;
+
+  const columns: Column<any>[] = [
     {
-        id: 1,
-        Domain: "mainstore.com",
-        DNS: "verified",
-        Status: "Active",
-        Primary: "Primary"
+      key: "domain",
+      label: "Domain",
+      type: "primary",
+      render: (r) => r.domain,
     },
     {
-        id: 2,
-        Domain: "www.mainstore.com",
-        DNS: "verified",
-        Status: "Active",
-        Primary: "-"
+      key: "dns_status",
+      label: "DNS",
+      render: (r) => <Tag>{r.dns_status}</Tag>,
     },
-];
+    {
+      key: "status",
+      label: "Status",
+      render: (r) => <Tag>{r.status}</Tag>,
+    },
+    {
+      key: "is_primary",
+      label: "Primary",
+      render: (r) => (r.is_primary ? <Tag color="blue">Primary</Tag> : "—"),
+    },
+  ];
 
-const WebsiteDomain = () => {
-    const {token} = theme.useToken();
-    const columns: ColumnsType<TDomain> = [
-            {
-                title: "Domain",
-                dataIndex: "Domain",
-                key: "Domain",
-            },
-            {
-                title: "DNS",
-                dataIndex: "DNS",
-                key: "DNS",
-                render: (DNS: string) => <Tag>{DNS}</Tag>
-            },
-            {
-                title: "Status",
-                dataIndex: "Status",
-                key: "Status",
-                render: (Status: string) => <Tag>{Status}</Tag>
-            },
-            {
-                title: "Primary",
-                dataIndex: "Primary",
-                key: "Primary",
-                render: (Status: string) => <Tag style={{
-                    background: Status === 'Primary'? token.colorPrimary : '',
-                    color: Status === 'Primary'? token.colorPrimary : '',
-                }}>{Status}</Tag>
-            },
-        ];
-
-    return (
-        <div>
-            <Card>
-                <div>
-                    <Table dataSource={data}
-                        columns={columns}
-                        pagination={false}
-                        rowKey="id" />
-                </div>
-            </Card>
-        </div>
-    );
-};
-
-export default WebsiteDomain;
+  return (
+    <Card>
+      <DataTable data={data} columns={columns} />
+    </Card>
+  );
+}

@@ -1,27 +1,14 @@
 "use client";
-import PageHeader from '@/components/shared/page-header';
-import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import React from 'react';
-import GalleryCard from './_components/GalleryCard';
 
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import GalleryCard from "./_components/GalleryCard";
 
-const Template = () => {
-    return (
-        <div>
-            <div  style={{
-                marginBottom: '24px'
-            }}>
-                <PageHeader title='Template Gallery' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
-
-            <p>Choose a template to get started quickly</p>
-
-            
-
-            {/* Gallery */}
-            <GalleryCard />
-        </div>
-    );
-};
-
-export default Template;
+export default function Template() {
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Template Gallery" breadcrumb={adminBreadcrumb} />
+      <GalleryCard />
+    </div>
+  );
+}

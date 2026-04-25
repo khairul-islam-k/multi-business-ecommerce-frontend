@@ -6,7 +6,6 @@ import {
   Card,
   Row,
   Col,
-  Select,
   Button,
   Input,
   InputNumber,
@@ -23,9 +22,9 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
+import SearchableSelect from "@/components/shared/searchable-select";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 /* =====================================================
    ORDER ITEMS COMPONENT
@@ -106,10 +105,11 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
             return (
               <Row gutter={12} key={index} align="middle">
                 <Col span={6}>
-                  <label className="text-sm font-semibold">Product</label>
-                  <Select
-                    placeholder="Select product"
+                  <label className="font-semibold">Product</label>
+                  <SearchableSelect
                     value={item.product_id}
+                    placeholder="Search product"
+                    endpoint="/products"
                     onChange={(v) => {
                       const p = products.find((x: any) => x.id === v);
 
@@ -120,21 +120,15 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
                       updateItem(index, "sku_snapshot", "");
                       updateItem(index, "unit_price", 0);
                     }}
-                    style={{ width: "100%" }}
-                  >
-                    {products.map((p: any) => (
-                      <Option key={p.id} value={p.id}>
-                        {p.name}
-                      </Option>
-                    ))}
-                  </Select>
+                  />
                 </Col>
 
                 <Col span={6}>
                   <label className="text-sm font-semibold">Variant</label>
-                  <Select
-                    placeholder="Select variant"
+                  <SearchableSelect
                     value={item.variant_id}
+                    placeholder="Search variant"
+                    endpoint="/variant"
                     onChange={(v) => {
                       const variant = variants.find((x: any) => x.id === v);
 
@@ -142,15 +136,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
                       updateItem(index, "sku_snapshot", variant?.sku || "");
                       updateItem(index, "unit_price", variant?.price || 0);
                     }}
-                    disabled={!item.product_id}
-                    style={{ width: "100%" }}
-                  >
-                    {variants.map((v: any) => (
-                      <Option key={v.id} value={v.id}>
-                        {v.sku}
-                      </Option>
-                    ))}
-                  </Select>
+                  />
                 </Col>
 
                 <Col span={3}>
@@ -202,33 +188,6 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
 export default function CreateOrder() {
   const router = useRouter();
   const swal = useSwal();
-
-  const results = useQueries({
-    queries: [
-      {
-        queryKey: ["customers"],
-        queryFn: async () => (await api.get("/customers")).data?.data ?? [],
-      },
-      {
-        queryKey: ["companies"],
-        queryFn: async () => (await api.get("/companies")).data?.data ?? [],
-      },
-      {
-        queryKey: ["couriers"],
-        queryFn: async () => (await api.get("/couriers")).data?.data ?? [],
-      },
-      {
-        queryKey: ["suppliers"],
-        queryFn: async () => (await api.get("/suppliers")).data?.data ?? [],
-      },
-    ],
-  });
-
-  const isLoading = results.some((r) => r.isLoading);
-
-  const [customers, companies, couriers, suppliers] = results.map(
-    (r) => r.data?.data ?? [],
-  );
 
   const [items, setItems] = useState<any[]>([]);
 
@@ -300,7 +259,7 @@ export default function CreateOrder() {
         {/* LEFT */}
         <Col xs={24} lg={16}>
           <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Card loading={isLoading} title="Order Info">
+            <Card title="Order Info">
               <Row gutter={12}>
                 <Col span={12}>
                   <label className="text-sm font-semibold">Order No</label>
@@ -322,32 +281,21 @@ export default function CreateOrder() {
 
                 <Col span={12} style={{ marginTop: 12 }}>
                   <label className="text-sm font-semibold">Customer</label>
-                  <Select
+
+                  <SearchableSelect
+                    endpoint="/customers"
                     value={form.customer_id}
                     onChange={(v) => set("customer_id", v)}
-                    style={{ width: "100%" }}
-                  >
-                    {customers.map((c: any) => (
-                      <Option key={c.id} value={c.id}>
-                        {c.name}
-                      </Option>
-                    ))}
-                  </Select>
+                  />
                 </Col>
 
                 <Col span={12} style={{ marginTop: 12 }}>
                   <label className="text-sm font-semibold">Company</label>
-                  <Select
+                  <SearchableSelect
+                    endpoint="/companies"
                     value={form.company_id}
                     onChange={(v) => set("company_id", v)}
-                    style={{ width: "100%" }}
-                  >
-                    {companies.map((c: any) => (
-                      <Option key={c.id} value={c.id}>
-                        {c.name}
-                      </Option>
-                    ))}
-                  </Select>
+                  />
                 </Col>
 
                 <Col span={24} style={{ marginTop: 12 }}>
@@ -367,36 +315,24 @@ export default function CreateOrder() {
 
         {/* RIGHT */}
         <Col xs={24} lg={8}>
-          <Card loading={isLoading}>
+          <Card>
             <Space direction="vertical" style={{ width: "100%" }}>
               <div>
                 <label className="text-sm font-semibold">Courier</label>
-                <Select
+                <SearchableSelect
                   value={form.courier_id}
+                  endpoint="/couriers"
                   onChange={(v) => set("courier_id", v)}
-                  style={{ width: "100%" }}
-                >
-                  {couriers.map((c: any) => (
-                    <Option key={c.id} value={c.id}>
-                      {c.name}
-                    </Option>
-                  ))}
-                </Select>
+                />
               </div>
 
               <div>
                 <label className="text-sm font-semibold">Supplier</label>
-                <Select
+                <SearchableSelect
                   value={form.supplier_id}
                   onChange={(v) => set("supplier_id", v)}
-                  style={{ width: "100%" }}
-                >
-                  {suppliers.map((s: any) => (
-                    <Option key={s.id} value={s.id}>
-                      {s.name}
-                    </Option>
-                  ))}
-                </Select>
+                  endpoint="/business-suppliers"
+                />
               </div>
 
               <Divider />
