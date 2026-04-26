@@ -1,226 +1,197 @@
 "use client";
+
+import { useState } from "react";
+import { Card, Button, Modal, Form, Input, Select, Spin, Empty } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  Grid,
-  Select,
-  Card,
-  Table,
-  Form,
-  Input,
-  Button,
-  Row,
-  Col,
-  Flex,
-} from "antd";
-import React, { useState } from "react";
-import { ColumnsType } from "antd/es/table";
+import { Column, DataTable } from "@/components/shared/data-table";
+import SearchableSelect from "@/components/shared/searchable-select";
 import { useSwal } from "@/hooks/use-swal";
-
-interface TPage {
-  id: number;
-  Title: string;
-  Type: string;
-  Slug: string;
-  SEOTitle: string;
-  Status: string;
-}
-
-const data: TPage[] = [
-  {
-    id: 1,
-    Title: "Home",
-    Type: "home",
-    Slug: "/",
-    SEOTitle: "Main Store - Home",
-    Status: "published",
-  },
-  {
-    id: 2,
-    Title: "About Us",
-    Type: "page",
-    Slug: "/about-us",
-    SEOTitle: "Learn More About Us",
-    Status: "published",
-  },
-  {
-    id: 3,
-    Title: "Contact",
-    Type: "page",
-    Slug: "/contact",
-    SEOTitle: "Get in Touch With Us",
-    Status: "published",
-  },
-  {
-    id: 4,
-    Title: "Products",
-    Type: "page",
-    Slug: "/products",
-    SEOTitle: "Our Products Catalog",
-    Status: "published",
-  },
-];
+import { queryClient } from "@/providers/query-provider";
+import Pagination from "@/components/shared/Pagination";
+import Loader from "@/components/shared/loader";
 
 const { Option } = Select;
 
-const PageBuilder = () => {
-  const [filterProduct, setFilterProduct] = useState<string>("Main Store-Home");
-  const screens = Grid.useBreakpoint();
+export default function PageBuilder() {
   const swal = useSwal();
 
-  const columns: ColumnsType<TPage> = [
+  const [websiteId, setWebsiteId] = useState<number | null>(null);
+  const [open, setOpen] = useState(false);
+  const [form] = Form.useForm();
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  /* =========================
+     FETCH PAGES
+  ========================= */
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["website-pages", websiteId, search, currentPage],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+
+      if (search) params.append("search", search);
+      if (websiteId) params.append("website_id", String(websiteId));
+      if (currentPage) params.append("page", String(currentPage));
+
+      const res = await api.get(`/pages?${params.toString()}`);
+      return res.data?.data ?? [];
+    },
+    enabled: true,
+  });
+
+  /* =========================
+     CREATE PAGE
+  ========================= */
+  const handleCreate = async (values: any) => {
+    try {
+      await api.post("/pages", {
+        ...values,
+        website_id: websiteId,
+      });
+
+      swal.success("Page created");
+      setOpen(false);
+      form.resetFields();
+
+      queryClient.invalidateQueries({
+        queryKey: ["website-pages"],
+      });
+    } catch {
+      swal.error("Failed to create page");
+    }
+  };
+
+  /* =========================
+     TABLE COLUMNS
+  ========================= */
+  const columns: Column<any>[] = [
     {
-      title: "Title",
-      dataIndex: "Title",
-      key: "Title",
-      sorter: (a: TPage, b: TPage) => a.Title.localeCompare(b.Title),
+      key: "title",
+      label: "Title",
+      type: "primary",
+      render: (r) => r.title,
     },
     {
-      title: "Type",
-      dataIndex: "Type",
-      key: "Type",
+      key: "type",
+      label: "Type",
+      render: (r) => r.type,
     },
     {
-      title: "Slug",
-      dataIndex: "Slug",
-      key: "Slug",
+      key: "slug",
+      label: "Slug",
+      render: (r) => r.slug,
     },
     {
-      title: "SEO Title",
-      dataIndex: "SEOTitle",
-      key: "SEOTitle",
+      key: "seo_title",
+      label: "SEO Title",
+      render: (r) => r.seo_title || "—",
     },
     {
-      title: "Status",
-      dataIndex: "Status",
-      key: "Status",
+      key: "status",
+      label: "Status",
+      render: (r) => r.status,
     },
   ];
 
-  const [form] = Form.useForm();
-
-  const onFinish = (values: any) => {
-    console.log("Form values:", values);
-    swal.success(`Page "${values.Title}" added successfully!`);
-    form.resetFields();
-  };
-
   return (
-    <div>
-      <div
-        style={{
-          marginBottom: "24px",
-        }}
-      >
-        <PageHeader
-          title="Page Builder"
-          breadcrumb={adminBreadcrumb}
-        ></PageHeader>
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Page Builder" breadcrumb={adminBreadcrumb} />
 
-      <p>Manage website pages and their settings</p>
+      {/* WEBSITE SELECT */}
+      <Card>
+        <div className="max-w-sm">
+          <label className="font-semibold">Select Website</label>
 
-      <h3>Website</h3>
-      <Select
-        value={filterProduct}
-        style={{
-          width: screens.lg ? "200px" : "",
-        }}
-        onChange={setFilterProduct}
-      >
-        <Option value="Main Store-Home">Main Store-Home</Option>
-        <Option value="Main Store-About Us">Main Store-About Us</Option>
-        <Option value="Main Store-contact">Main Store-contact</Option>
-        <Option value="Main Store Product">Main Store Product</Option>
-        <Option value="Fashion Hub-Home">Fashion Hub-Home</Option>
-        <Option value="Tech Outlet-Home">Tech Outlet-Home</Option>
-      </Select>
-
-      {/* Table */}
-      <Card
-        style={{
-          marginTop: "24px",
-        }}
-        title="Pages (4)"
-      >
-        <div
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-          }}
-        >
-          <Table
-            dataSource={data}
-            columns={columns}
-            pagination={false}
-            rowKey="id"
+          <SearchableSelect
+            endpoint="/websites"
+            value={websiteId}
+            onChange={(v) => setWebsiteId(v)}
+            placeholder="Search website"
           />
         </div>
       </Card>
 
-      {/* From */}
-
-      <Card style={{ marginTop: "24px" }} title="Add New Page">
-        <Form form={form} onFinish={onFinish} style={{ width: "100%" }}>
-          <Row gutter={[15, 15]} align="middle">
-            <Col xs={24} md={14}>
-              <h3>Page Title</h3>
-              <Form.Item
-                name="Title"
-                rules={[{ required: true, message: "Please enter page title" }]}
-              >
-                <Input placeholder="Page Title" />
-              </Form.Item>
-            </Col>
-
-            <Col xs={24} md={10}>
-              <Flex
-                style={{
-                  gap: "6px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <h3>Type</h3>
-                  <Form.Item
-                    name="Type"
-                    rules={[
-                      { required: true, message: "Please select page type" },
-                    ]}
-                  >
-                    <Select placeholder="Select Type" style={{ width: "100%" }}>
-                      <Option value="home">Home</Option>
-                      <Option value="page">Page</Option>
-                      <Option value="product">Product</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-
-                <div
-                  style={{
-                    width: "100%",
-                  }}
-                >
-                  <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      style={{ width: "100%" }}
-                    >
-                      Add Page
-                    </Button>
-                  </Form.Item>
-                </div>
-              </Flex>
-            </Col>
-          </Row>
-        </Form>
+      {/* TABLE */}
+      <Card
+        title={`Pages (${data?.length || 0})`}
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            disabled={!websiteId}
+            onClick={() => setOpen(true)}
+          >
+            Add Page
+          </Button>
+        }
+      >
+        {isError ? (
+          <Empty description="Failed to load pages" />
+        ) : (
+          <DataTable
+            data={data?.data || []}
+            columns={columns}
+            onSearch={(q) => {
+              setSearch(q);
+              setCurrentPage(1);
+            }}
+            loading={isFetching || isLoading}
+          />
+        )}
       </Card>
+
+      <Pagination
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        totalPages={data?.meta?.totalPages || 0}
+      />
+
+      {/* CREATE MODAL */}
+      <Modal
+        title="Create Page"
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={() => form.submit()}
+        okText="Create"
+      >
+        <Form form={form} layout="vertical" onFinish={handleCreate}>
+          <Form.Item
+            name="title"
+            label="Page Title"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="page_type" label="Type" rules={[{ required: true }]}>
+            <Select>
+              <Option value="home">Home</Option>
+              <Option value="page">Page</Option>
+              <Option value="product">Product</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item name="slug" label="Slug">
+            <Input placeholder="/about-us" />
+          </Form.Item>
+
+          <Form.Item name="seo_title" label="SEO Title">
+            <Input />
+          </Form.Item>
+
+          <Form.Item name="status" label="Status" initialValue="Active">
+            <Select>
+              <Option value="Active">Published</Option>
+              <Option value="Inactive">Draft</Option>
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
-};
-
-export default PageBuilder;
+}
