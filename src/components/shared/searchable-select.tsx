@@ -8,13 +8,20 @@ import api from "@/lib/axios";
 
 const { Option } = Select;
 
+type ValueType = string | number;
+
 interface Props {
-  value?: number | null;
-  onChange: (value: number) => void;
+  value?: ValueType | ValueType[];
+  onChange: (value: any) => void;
+
   placeholder?: string;
   endpoint: string;
+
   labelKey?: string;
   valueKey?: string;
+
+  /** ✅ NEW: supports single or multiple */
+  mode?: "multiple" | undefined;
 }
 
 export default function SearchableSelect({
@@ -24,9 +31,9 @@ export default function SearchableSelect({
   endpoint,
   labelKey = "name",
   valueKey = "id",
+  mode,
 }: Props) {
   const [search, setSearch] = useState("");
-
   const [debouncedSearch] = useDebounce(search, 400);
 
   const { data = [], isFetching } = useQuery({
@@ -43,6 +50,7 @@ export default function SearchableSelect({
   return (
     <Select
       showSearch
+      mode={mode} // ✅ key change
       value={value}
       placeholder={placeholder}
       style={{ width: "100%" }}
