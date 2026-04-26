@@ -44,7 +44,6 @@ export function DataTable<T extends Record<string, any>>({
   extra,
 
   onSearch,
-  onFilterChange,
 }: DataTableProps<T>) {
   const screens = useBreakpoint();
   const isMobile = !screens.md;

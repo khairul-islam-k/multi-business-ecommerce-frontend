@@ -40,10 +40,10 @@ export default function CreateWebsite() {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader title="Create Website" breadcrumb={adminBreadcrumb} />
 
-      <Card style={{ maxWidth: 700 }}>
+      <Card>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="name"

@@ -39,7 +39,7 @@ export default function PageBuilder() {
       if (currentPage) params.append("page", String(currentPage));
 
       const res = await api.get(`/pages?${params.toString()}`);
-      return res.data?.data ?? [];
+      return res.data?.data || [];
     },
     enabled: true,
   });
@@ -109,7 +109,7 @@ export default function PageBuilder() {
 
           <SearchableSelect
             endpoint="/websites"
-            value={websiteId}
+            value={websiteId as any}
             onChange={(v) => setWebsiteId(v)}
             placeholder="Search website"
           />
