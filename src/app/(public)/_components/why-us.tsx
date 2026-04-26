@@ -83,15 +83,19 @@ export default function WhyUs() {
                       <div className="absolute top-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-white rounded-2xl shadow flex items-center justify-center border border-zinc-200 hover:scale-110 transition-transform">
                         <Home className="w-6 h-6 text-zinc-700" />
                       </div>
+
                       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-12 h-12 bg-white rounded-2xl shadow flex items-center justify-center border border-zinc-200 hover:scale-110 transition-transform">
                         <Package className="w-6 h-6 text-zinc-700" />
                       </div>
+
                       <div className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-2xl shadow flex items-center justify-center border border-zinc-200 hover:scale-110 transition-transform">
                         <ClipboardList className="w-6 h-6 text-zinc-700" />
                       </div>
+
                       <div className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-2xl shadow flex items-center justify-center border border-zinc-200 hover:scale-110 transition-transform">
                         <Smartphone className="w-6 h-6 text-zinc-700" />
                       </div>
+
                     </div>
                   </div>
                 </div>
@@ -99,7 +103,7 @@ export default function WhyUs() {
             </div>
 
             {/* Floating Green Card */}
-            <div className="absolute -bottom-12 -right-4 bg-blue-700 text-white rounded-3xl p-8 shadow-2xl w-72">
+            <div className="absolute md:-bottom-12 md:-right-4 -bottom-1 right-0 bg-blue-700 text-white rounded-3xl p-8 shadow-2xl w-72">
               <div className="flex items-center gap-4 mb-6">
                 <div className="bg-white/20 p-3 rounded-2xl">
                   <ShoppingCart className="w-8 h-8" />
