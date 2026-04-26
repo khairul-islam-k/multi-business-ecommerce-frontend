@@ -4,8 +4,10 @@
         "cssinjs",
         "curtomerscustomers",
         "Ladgers",
+        "picsum",
         "Popconfirm",
         "swal",
+        "sweetalert",
         "Topbar"
     ]
 }

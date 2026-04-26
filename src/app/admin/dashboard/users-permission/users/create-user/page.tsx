@@ -2,181 +2,197 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-    Form,
-    Input,
-    Select,
-    DatePicker,
-    Card,
-    Row,
-    Col,
-    Button,
-    InputNumber,
-} from "antd";
+import { Card, Form, Input, Select, Row, Col, Button } from "antd";
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import SearchableSelect from "@/components/shared/searchable-select";
+import { useRouter } from "next/navigation";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
-const CreateUser = () => {
-    const [form] = Form.useForm();
+export default function CreateUserPage() {
+  const [form] = Form.useForm();
+  const swal = useSwal();
+  const router = useRouter();
 
-    const onFinish = (values: any) => {
-        console.log("Create User Payload:", values);
-    };
+  /* =========================
+     SUBMIT
+  ========================= */
+  const onFinish = async (values: any) => {
+    try {
+      const payload = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        status: values.status,
+        user_type: values.user_type,
+        role_ids: values.role_ids || [],
 
-    return (
-        <div>
+        profile: {
+          gender: values.gender,
+          date_of_birth: values.date_of_birth,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+          postal_code: values.postal_code,
+          country: values.country,
+          emergency_contact: values.emergency_contact,
+          notes: values.notes,
+        },
+      };
 
-            <div style={{marginBottom: '24px'}}>
-                <PageHeader title='Create User' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
+      await api.post("/users", payload);
 
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-            >
-                <Row gutter={16}>
-                    {/* ================= Card 1 ================= */}
-                    <Col xs={24} md={12}>
-                        <Card title="User Account Information">
-                            <Form.Item label="Tenant ID" name="tenant_id">
-                                <Input placeholder="Tenant ID (optional)" />
-                            </Form.Item>
+      swal.success("Created successfully");
+      form.resetFields();
+      router.push("/admin/dashboard/users-permission/users");
+    } catch {
+      swal.error("Create failed");
+    }
+  };
 
-                            <Form.Item label="Company ID" name="company_id">
-                                <Input placeholder="Company ID (optional)" />
-                            </Form.Item>
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader title="Create User" breadcrumb={adminBreadcrumb} />
+      </div>
 
-                            <Form.Item
-                                label="Name"
-                                name="name"
-                                rules={[{ required: true, message: "Enter name" }]}
-                            >
-                                <Input />
-                            </Form.Item>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Row gutter={16}>
+          {/* ================= ACCOUNT ================= */}
+          <Col xs={24} md={12}>
+            <Card title="Account">
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                <Input placeholder="Name" />
+              </Form.Item>
 
-                            <Form.Item
-                                label="Email"
-                                name="email"
-                                rules={[
-                                    { required: true, message: "Enter email" },
-                                    { type: "email", message: "Invalid email" },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ required: true, type: "email" }]}
+              >
+                <Input placeholder="Email" />
+              </Form.Item>
 
-                            <Form.Item
-                                label="Phone"
-                                name="phone"
-                                rules={[
-                                    { required: true, message: "Enter phone" },
-                                    { type: "number", message: "Invalid number" },
-                                ]}
-                            >
-                                <InputNumber style={{ width: '100%' }} />
-                            </Form.Item>
+              <Form.Item name="phone" label="Phone">
+                <Input placeholder="Phone" />
+              </Form.Item>
 
-                            <Form.Item
-                                label="Password"
-                                name="password"
-                                rules={[{ required: true, message: "Enter password" }]}
-                            >
-                                <Input.Password />
-                            </Form.Item>
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[{ required: true, min: 6 }]}
+              >
+                <Input.Password placeholder="Password" />
+              </Form.Item>
 
-                            <Form.Item label="Avatar URL" name="avatar">
-                                <Input placeholder="https://example.com/avatar.png" />
-                            </Form.Item>
+              <Form.Item
+                name="password_confirmation"
+                label="Confirm Password"
+                dependencies={["password"]}
+                rules={[
+                  { required: true },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Passwords do not match"),
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password placeholder="Confirm Password" />
+              </Form.Item>
 
-                            <Form.Item
-                                label="Status"
-                                name="status"
-                                initialValue="active"
-                                rules={[{ required: true }]}
-                            >
-                                <Select>
-                                    <Option value="active">Active</Option>
-                                    <Option value="inactive">Inactive</Option>
-                                    <Option value="suspended">Suspended</Option>
-                                </Select>
-                            </Form.Item>
-                        </Card>
-                    </Col>
+              <Form.Item
+                name="status"
+                label="Status"
+                rules={[{ required: true }]}
+              >
+                <Select>
+                  <Option value="Active">Active</Option>
+                  <Option value="Inactive">Inactive</Option>
+                </Select>
+              </Form.Item>
 
-                    {/* ================= Card 2 ================= */}
-                    <Col xs={24} md={12}>
-                        <Card title="User Profile Details">
-                            <Form.Item label="Gender" name="gender">
-                                <Select placeholder="Select gender">
-                                    <Option value="male">Male</Option>
-                                    <Option value="female">Female</Option>
-                                    <Option value="other">Other</Option>
-                                </Select>
-                            </Form.Item>
+              <Form.Item
+                name="user_type"
+                label="User Type"
+                rules={[{ required: true }]}
+              >
+                <Select>
+                  <Option value="Admin">Admin</Option>
+                  <Option value="Employee">Employee</Option>
+                </Select>
+              </Form.Item>
 
-                            <Form.Item label="Date of Birth" name="date_of_birth">
-                                <DatePicker style={{ width: "100%" }} />
-                            </Form.Item>
+              <Form.Item name="role_ids" label="Roles">
+                <SearchableSelect
+                  onChange={(roles) => {
+                    form.setFieldsValue({ role_ids: roles });
+                  }}
+                  endpoint="/roles"
+                  mode="multiple"
+                  placeholder="Select roles"
+                />
+              </Form.Item>
+            </Card>
+          </Col>
 
-                            <Form.Item label="Address" name="address">
-                                <TextArea rows={2} />
-                            </Form.Item>
+          {/* ================= PROFILE ================= */}
+          <Col xs={24} md={12}>
+            <Card title="Profile">
+              <Form.Item name="gender" label="Gender">
+                <Select allowClear>
+                  <Option value="Male">Male</Option>
+                  <Option value="Female">Female</Option>
+                </Select>
+              </Form.Item>
 
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item label="City" name="city">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
+              <Form.Item name="date_of_birth" label="Date of Birth">
+                <Input type="date" />
+              </Form.Item>
 
-                                <Col span={12}>
-                                    <Form.Item label="State" name="state">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+              <Form.Item name="address" label="Address">
+                <Input />
+              </Form.Item>
 
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item label="Postal Code" name="postal_code">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
+              <Form.Item name="city" label="City">
+                <Input />
+              </Form.Item>
 
-                                <Col span={12}>
-                                    <Form.Item label="Country" name="country">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+              <Form.Item name="state" label="State">
+                <Input />
+              </Form.Item>
 
-                            <Form.Item label="Emergency Contact"
-                                rules={[
-                                    { required: true, message: "Enter email" },
-                                    { type: "number", message: "Invalid number" },
-                                ]}
-                                name="emergency_contact">
-                                <InputNumber style={{ width: '100%' }} placeholder="Name & phone" />
-                            </Form.Item>
+              <Form.Item name="postal_code" label="Postal Code">
+                <Input />
+              </Form.Item>
 
-                            <Form.Item label="Notes" name="notes">
-                                <TextArea rows={3} />
-                            </Form.Item>
-                        </Card>
-                    </Col>
-                </Row>
+              <Form.Item name="country" label="Country">
+                <Input />
+              </Form.Item>
 
-                {/* ================= Actions ================= */}
-                <div style={{ marginTop: 16 }}>
-                    <Button type="primary" htmlType="submit">
-                        Create User
-                    </Button>
-                </div>
-            </Form>
-        </div>
-    );
-};
+              <Form.Item name="emergency_contact" label="Emergency Contact">
+                <Input />
+              </Form.Item>
 
-export default CreateUser;
+              <Form.Item name="notes" label="Notes">
+                <TextArea rows={3} />
+              </Form.Item>
+            </Card>
+          </Col>
+        </Row>
+
+        <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
+          Create
+        </Button>
+      </Form>
+    </div>
+  );
+}

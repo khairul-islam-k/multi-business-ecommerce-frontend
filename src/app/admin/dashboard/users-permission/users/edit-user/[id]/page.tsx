@@ -2,184 +2,196 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-    Form,
-    Input,
-    Select,
-    Card,
-    Row,
-    Col,
-    Button,
-} from "antd";
+import { Card, Form, Input, Select, Row, Col, Button } from "antd";
 import { useEffect } from "react";
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import { useParams, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import SearchableSelect from "@/components/shared/searchable-select";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 export default function EditUserPage() {
-    const [form] = Form.useForm();
+  const [form] = Form.useForm();
+  const swal = useSwal();
+  const router = useRouter();
+  const { id } = useParams();
 
-    // 👉 Mock API data
-    const user = {
-        tenant_id: 'sjdflk',
-        company_id: 2,
-        name: "Rahim Uddin",
-        email: "rahim.uddin@example.com",
-        phone: "+8801712345678",
-        avatar: "https://example.com/avatar.png",
-        status: "active",
+  /* =========================
+     FETCH USER
+  ========================= */
+  const { data: user } = useQuery({
+    queryKey: ["user", id],
+    queryFn: async () => {
+      const res = await api.get(`/users/${id}`);
+      return res.data?.data;
+    },
+    enabled: !!id,
+  });
 
-        gender: "male",
-        date_of_birth: "1995-06-12", // ISO format
-        address: "Dhanmondi",
-        city: "Dhaka",
-        state: "Dhaka",
-        postal_code: "1209",
-        country: "Bangladesh",
-        emergency_contact: "+8801912345678",
-        notes: "Key account user",
-    };
+  /* =========================
+     HYDRATE FORM
+  ========================= */
+  useEffect(() => {
+    if (!user) return;
 
-    useEffect(() => {
-        form.setFieldsValue(user);
-    }, [form]);
+    form.setFieldsValue({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      status: user.status,
+      user_type: user.user_type,
 
-    const onFinish = (values: any) => {
-        console.log("Update Payload:", values);
-        // values.date_of_birth is already "YYYY-MM-DD"
-    };
+      gender: user.profile?.gender,
+      date_of_birth: user.profile?.date_of_birth,
+      address: user.profile?.address,
+      city: user.profile?.city,
+      state: user.profile?.state,
+      postal_code: user.profile?.postal_code,
+      country: user.profile?.country,
+      emergency_contact: user.profile?.emergency_contact,
+      notes: user.profile?.notes,
 
-    return (
-        <div>
+      role_ids: user.roles?.map((r: any) => r.id) || [],
+    });
+  }, [user, form]);
 
-            <div style={{marginBottom: "24px"}}>
-                <PageHeader title='Edit user' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
+  /* =========================
+     SUBMIT
+  ========================= */
+  const onFinish = async (values: any) => {
+    try {
+      const payload = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        status: values.status,
+        user_type: values.user_type,
+        role_ids: values.role_ids,
 
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={onFinish}
-            >
-                <Row gutter={16}>
-                    {/* ================= Card 1 ================= */}
-                    <Col xs={24} md={12}>
-                        <Card title="User Account Information">
-                            <Form.Item label="Tenant ID" name="tenant_id">
-                                <Input />
-                            </Form.Item>
+        profile: {
+          gender: values.gender,
+          date_of_birth: values.date_of_birth,
+          address: values.address,
+          city: values.city,
+          state: values.state,
+          postal_code: values.postal_code,
+          country: values.country,
+          emergency_contact: values.emergency_contact,
+          notes: values.notes,
+        },
+      };
 
-                            <Form.Item label="Company ID" name="company_id">
-                                <Input />
-                            </Form.Item>
+      await api.patch(`/users/${id}`, payload);
 
-                            <Form.Item
-                                label="Name"
-                                name="name"
-                                rules={[{ required: true }]}
-                            >
-                                <Input />
-                            </Form.Item>
+      swal.success("Updated successfully");
+      router.push("/admin/dashboard/users-permission/users");
+    } catch {
+      swal.error("Update failed");
+    }
+  };
 
-                            <Form.Item
-                                label="Email"
-                                name="email"
-                                rules={[{ required: true, type: "email" }]}
-                            >
-                                <Input />
-                            </Form.Item>
+  return (
+    <div>
+      <div style={{ marginBottom: 24 }}>
+        <PageHeader title="Edit User" breadcrumb={adminBreadcrumb} />
+      </div>
 
-                            <Form.Item
-                                label="Phone"
-                                name="phone"
-                                rules={[{ required: true }]}
-                            >
-                                <Input />
-                            </Form.Item>
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Row gutter={16}>
+          {/* ================= ACCOUNT ================= */}
+          <Col xs={24} md={12}>
+            <Card title="Account">
+              <Form.Item name="name" label="Name">
+                <Input placeholder="Name" />
+              </Form.Item>
 
-                            <Form.Item label="Avatar URL" name="avatar">
-                                <Input />
-                            </Form.Item>
+              <Form.Item name="email" label="Email">
+                <Input placeholder="Email" />
+              </Form.Item>
 
-                            <Form.Item
-                                label="Status"
-                                name="status"
-                                rules={[{ required: true }]}
-                            >
-                                <Select>
-                                    <Option value="active">Active</Option>
-                                    <Option value="inactive">Inactive</Option>
-                                    <Option value="suspended">Suspended</Option>
-                                </Select>
-                            </Form.Item>
-                        </Card>
-                    </Col>
+              <Form.Item name="phone" label="Phone">
+                <Input placeholder="Phone" />
+              </Form.Item>
 
-                    {/* ================= Card 2 ================= */}
-                    <Col xs={24} md={12}>
-                        <Card title="User Profile Details">
-                            <Form.Item label="Gender" name="gender">
-                                <Select allowClear>
-                                    <Option value="male">Male</Option>
-                                    <Option value="female">Female</Option>
-                                    <Option value="other">Other</Option>
-                                </Select>
-                            </Form.Item>
+              <Form.Item name="status" label="Status">
+                <Select>
+                  <Option value="Active">Active</Option>
+                  <Option value="Inactive">Inactive</Option>
+                </Select>
+              </Form.Item>
 
-                            {/* ✅ Native date input */}
-                            <Form.Item label="Date of Birth" name="date_of_birth">
-                                <Input type="date" />
-                            </Form.Item>
+              <Form.Item name="user_type" label="User Type">
+                <Select>
+                  <Option value="Admin">Admin</Option>
+                  <Option value="Employee">Employee</Option>
+                </Select>
+              </Form.Item>
 
-                            <Form.Item label="Address" name="address">
-                                <TextArea rows={2} />
-                            </Form.Item>
+              <Form.Item name="role_ids" label="Roles">
+                <SearchableSelect
+                  onChange={(roles) => {
+                    form.setFieldsValue({ role_ids: roles });
+                  }}
+                  endpoint="/roles"
+                  mode="multiple"
+                  placeholder="Select roles"
+                />
+              </Form.Item>
+            </Card>
+          </Col>
 
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item label="City" name="city">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
+          {/* ================= PROFILE ================= */}
+          <Col xs={24} md={12}>
+            <Card title="Profile">
+              <Form.Item name="gender" label="Gender">
+                <Select allowClear>
+                  <Option value="Male">Male</Option>
+                  <Option value="Female">Female</Option>
+                </Select>
+              </Form.Item>
 
-                                <Col span={12}>
-                                    <Form.Item label="State" name="state">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+              <Form.Item name="date_of_birth" label="Date of Birth">
+                <Input type="date" />
+              </Form.Item>
 
-                            <Row gutter={16}>
-                                <Col span={12}>
-                                    <Form.Item label="Postal Code" name="postal_code">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
+              <Form.Item name="address" label="Address">
+                <Input />
+              </Form.Item>
 
-                                <Col span={12}>
-                                    <Form.Item label="Country" name="country">
-                                        <Input />
-                                    </Form.Item>
-                                </Col>
-                            </Row>
+              <Form.Item name="city" label="City">
+                <Input />
+              </Form.Item>
 
-                            <Form.Item label="Emergency Contact" name="emergency_contact">
-                                <Input />
-                            </Form.Item>
+              <Form.Item name="state" label="State">
+                <Input />
+              </Form.Item>
 
-                            <Form.Item label="Notes" name="notes">
-                                <TextArea rows={3} />
-                            </Form.Item>
-                        </Card>
-                    </Col>
-                </Row>
+              <Form.Item name="postal_code" label="Postal Code">
+                <Input />
+              </Form.Item>
 
-                <div style={{ marginTop: 16 }}>
-                    <Button type="primary" htmlType="submit">
-                        Update User
-                    </Button>
-                </div>
-            </Form>
-        </div>
-    );
+              <Form.Item name="country" label="Country">
+                <Input />
+              </Form.Item>
+
+              <Form.Item name="emergency_contact" label="Emergency Contact">
+                <Input />
+              </Form.Item>
+
+              <Form.Item name="notes" label="Notes">
+                <TextArea rows={3} />
+              </Form.Item>
+            </Card>
+          </Col>
+        </Row>
+
+        <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
+          Update
+        </Button>
+      </Form>
+    </div>
+  );
 }

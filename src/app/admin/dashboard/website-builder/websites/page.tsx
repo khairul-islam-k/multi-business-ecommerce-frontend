@@ -13,6 +13,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useState } from "react";
+import Pagination from "@/components/shared/Pagination";
 
 type Website = {
   uuid: string;
@@ -34,11 +35,20 @@ const statusColor: Record<string, string> = {
 const WebsiteList = () => {
   const { token } = theme.useToken();
   const [search, setSearch] = useState("");
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["websites", search],
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["websites", search, currentPage],
+
     queryFn: async () => {
-      const res = await api.get(`/websites?search=${search}`);
-      return res.data?.data?.data ?? [];
+      const params = new URLSearchParams();
+
+      if (search) params.append("search", search);
+      if (currentPage) params.append("page", String(currentPage));
+
+      const res = await api.get(`/websites?${params.toString()}&limit=2`, {});
+
+      return res.data?.data;
     },
   });
 
@@ -115,10 +125,13 @@ const WebsiteList = () => {
           <Empty description="Failed to load websites" />
         ) : (
           <DataTable
-            data={data}
-            onSearch={(q) => setSearch(q)}
+            data={data?.data || []}
+            onSearch={(q) => {
+              setSearch(q);
+              setCurrentPage(1);
+            }}
             columns={columns}
-            loading={isLoading}
+            loading={isLoading || isFetching}
             toolbarEnd={
               <Link href="/admin/dashboard/website-builder/websites/create-website">
                 <Button type="primary" icon={<PlusOutlined />}>
@@ -130,6 +143,12 @@ const WebsiteList = () => {
           />
         )}
       </Card>
+
+      <Pagination
+        currentPage={currentPage}
+        onPageChange={setCurrentPage}
+        totalPages={data?.meta?.totalPages || 1}
+      />
     </div>
   );
 };

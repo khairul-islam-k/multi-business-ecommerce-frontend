@@ -1,114 +1,85 @@
 "use client";
 
-import React from "react";
-import { Form, Input, Switch, Button, Card, Row, Col, Typography } from "antd";
+import { useState } from "react";
+import { Card, Form, Input, Button } from "antd";
 import { useRouter } from "next/navigation";
+import { useSwal } from "@/hooks/use-swal";
+import api from "@/lib/axios";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { queryClient } from "@/providers/query-provider";
+import SearchableSelect from "@/components/shared/searchable-select";
 
-const { Text } = Typography;
+export default function CreateRole() {
+  const [form] = Form.useForm();
+  const router = useRouter();
+  const swal = useSwal();
 
-const CreateRoleForm: React.FC = () => {
-    const [form] = Form.useForm();
-    const router = useRouter();
+  const [permissionIds, setPermissionIds] = useState<number[]>([]);
 
-    // Auto-generate slug from role name
-    // const handleRoleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const value = e.target.value;
-    //     const slug = value
-    //         .toLowerCase()
-    //         .trim()
-    //         .replace(/\s+/g, "-")
-    //         .replace(/[^a-z0-9-]/g, "");
+  const onFinish = async (values: any) => {
+    try {
+      await api.post("/roles", {
+        ...values,
+        permission_ids: permissionIds,
+      });
 
-    //     form.setFieldsValue({ slug });
-    // };
+      swal.success("Role created");
 
-    const onFinish = (values: any) => {
-        console.log("Role Data:", values);
-    };
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+      router.push("/admin/dashboard/users-permission/roles");
+    } catch {
+      swal.error("Failed to create role");
+    }
+  };
 
-    return (
-        <div>
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Create Role" breadcrumb={adminBreadcrumb} />
 
-            <div style={{marginBottom: '24px'}}>
-                <PageHeader title='Create New Role' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
-            <p>Define a new role and its basic properties.</p>
+      <Card className="w-full">
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item name="name" label="Role Name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-            <Card title="Create Role" style={{ maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                    initialValues={{
-                        is_system_role: false,
-                    }}
-                >
-                    {/* Role Name */}
-                    <Form.Item
-                        label="Role Name"
-                        name="name"
-                        rules={[{ required: true, message: "Role name is required" }]}
-                    >
-                        <Input
-                            placeholder="e.g. Admin"
-                        // onChange={handleRoleNameChange}
-                        />
-                    </Form.Item>
+          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-                    {/* Slug */}
-                    <Form.Item
-                        label="Slug"
-                        name="slug"
-                        rules={[{ required: true, message: "Slug is required" }]}
-                    >
-                        <Input placeholder="e.g. admin" />
-                    </Form.Item>
+          <Form.Item name="description" label="Description">
+            <Input.TextArea rows={3} />
+          </Form.Item>
 
-                    {/* Description */}
-                    <Form.Item label="Description" name="description">
-                        <Input.TextArea
-                            rows={3}
-                            placeholder="Short description about this role"
-                        />
-                    </Form.Item>
+          <Form.Item label="Permissions">
+            <SearchableSelect
+              endpoint="/permissions"
+              placeholder="Search permissions"
+              mode="multiple"
+              value={permissionIds}
+              onChange={(v) => setPermissionIds(v as number[])}
+              labelKey="label"
+              valueKey="id"
+            />
+          </Form.Item>
 
-                    {/* System Role Switch */}
-                    <Card style={{ marginBottom: '8px' }}>
-                        <Row align="middle" justify="space-between">
-                            <Col>
-                                <Text strong>System Role</Text>
-                                <br />
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                    System roles cannot be deleted or modified
-                                </Text>
-                            </Col>
-
-                            <Col>
-                                <Form.Item
-                                    name="is_system_role"
-                                    valuePropName="checked"
-                                >
-                                    <Switch />
-                                </Form.Item>
-                            </Col>
-                        </Row>
-                    </Card>
-
-                    {/* Actions */}
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
-                            Create Role
-                        </Button>
-                        <Button htmlType="button" onClick={() => router.push("/admin/dashboard/users-permission/roles")}>
-                            Cancel
-                        </Button>
-                    </Form.Item>
-                </Form>
-            </Card>
-        </div>
-    );
-};
-
-export default CreateRoleForm;
+          <div className="flex gap-2 items-center">
+            <Button type="primary" htmlType="submit">
+              Create Role
+            </Button>
+            <Button
+              type="default"
+              htmlType="button"
+              onClick={() =>
+                router.push("/admin/dashboard/users-permission/roles")
+              }
+            >
+              Cancel
+            </Button>
+          </div>
+        </Form>
+      </Card>
+    </div>
+  );
+}

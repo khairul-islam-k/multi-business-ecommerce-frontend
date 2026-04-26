@@ -1,130 +1,109 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Form, Input, Switch, Button, Card, Row, Col, Typography, Space } from "antd";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Card, Form, Input, Button } from "antd";
+import { useRouter, useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import SearchableSelect from "@/components/shared/searchable-select";
 
-const { Text } = Typography;
+export default function EditRole() {
+  const [form] = Form.useForm();
+  const { id } = useParams();
+  const router = useRouter();
+  const swal = useSwal();
 
-type Role = {
-    name: string;
-    slug: string;
-    description: string;
-    is_system_role: boolean;
-};
+  const [permissionIds, setPermissionIds] = useState<number[]>([]);
 
-const roleData = {
-    name: "Admin",
-    slug: "admin",
-    description: "Full system access",
-    is_system_role: true,
-};
+  /* ================= FETCH ROLE ================= */
+  const { data: role } = useQuery({
+    queryKey: ["role", id],
+    queryFn: async () => {
+      const res = await api.get(`/roles/${id}`);
+      return res.data?.data;
+    },
+    enabled: !!id,
+  });
 
+  /* ================= HYDRATE ================= */
+  useEffect(() => {
+    if (!role) return;
 
-const EditRole = () => {
+    form.setFieldsValue({
+      name: role.name,
+      slug: role.slug,
+      description: role.description,
+    });
 
+    const ids = role.permissions?.map((p: any) => p.id) || [];
+    setPermissionIds(ids);
+  }, [role, form]);
 
-    const [form] = Form.useForm();
-    const router = useRouter();
+  /* ================= UPDATE ================= */
+  const onFinish = async (values: any) => {
+    try {
+      await api.patch(`/roles/${id}`, {
+        ...values,
+        permission_ids: permissionIds,
+      });
 
-    // Auto-fill form with existing role values
-    useEffect(() => {
-        form.setFieldsValue(roleData);
-    }, [form]);
+      swal.success("Role updated");
+      router.push("/admin/dashboard/users-permission/roles");
+    } catch {
+      swal.error("Update failed");
+    }
+  };
 
-    // Auto-generate slug when name changes
-    const handleRoleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const slug = value
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, "-")
-            .replace(/[^a-z0-9-]/g, "");
-        form.setFieldsValue({ slug });
-    };
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Edit Role" breadcrumb={adminBreadcrumb} />
 
-    const onFinish = (values: Role) => {
-        console.log("Updated Role:", values);
-        // Here you can call your API to update the role
-    };
+      <Card className="w-full">
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item name="name" label="Role Name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-    return (
-        <div>
+          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
 
-            <div style={{ marginBottom: '24px' }}>
-                <PageHeader title='Edit Role' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
-            <p>Update the details for </p>
+          <Form.Item name="description" label="Description">
+            <Input.TextArea rows={3} />
+          </Form.Item>
 
-            <Card title="Edit Role" style={{ maxWidth: 600, marginLeft: 'auto', marginRight: 'auto' }}>
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                    initialValues={{ ...roleData }}
-                >
-                    {/* Role Name */}
-                    <Form.Item
-                        label="Role Name"
-                        name="name"
-                        rules={[{ required: true, message: "Role name is required" }]}
-                    >
-                        <Input placeholder="Enter role name" onChange={handleRoleNameChange} />
-                    </Form.Item>
+          <Form.Item label="Permissions">
+            <SearchableSelect
+              endpoint="/permissions"
+              placeholder="Search permissions"
+              mode="multiple"
+              value={permissionIds}
+              onChange={(v) => setPermissionIds(v as number[])}
+              labelKey="label"
+              valueKey="id"
+            />
+          </Form.Item>
 
-                    {/* Slug */}
-                    <Form.Item
-                        label="Slug"
-                        name="slug"
-                        rules={[{ required: true, message: "Slug is required" }]}
-                    >
-                        <Input placeholder="Enter slug" />
-                    </Form.Item>
-
-                    {/* Description */}
-                    <Form.Item label="Description" name="description">
-                        <Input.TextArea
-                            rows={3}
-                            placeholder="Enter description"
-                        />
-                    </Form.Item>
-
-                    {/* System Role Switch */}
-                    <Form.Item
-                        name="is_system_role"
-                        valuePropName="checked"
-                    >
-                        <Row align="middle" justify="space-between">
-                            <Col>
-                                <Text strong>System Role</Text>
-                                <br />
-                                <Text type="secondary" style={{ fontSize: 12 }}>
-                                    System roles cannot be deleted or modified
-                                </Text>
-                            </Col>
-                            <Col>
-                                <Switch />
-                            </Col>
-                        </Row>
-                    </Form.Item>
-
-                    {/* Actions */}
-                    <Form.Item>
-                        <Space>
-                            <Button type="primary" htmlType="submit">
-                                Update Role
-                            </Button>
-                            <Button htmlType="button" onClick={() => router.push("/admin/dashboard/users-permission/roles")}>
-                                Cancel
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
-            </Card>
-        </div>
-    );
-};
-
-export default EditRole;
+          <div className="flex gap-2 items-center">
+            <Button type="primary" htmlType="submit">
+              Update Role
+            </Button>
+            <Button
+              type="default"
+              htmlType="button"
+              onClick={() =>
+                router.push("/admin/dashboard/users-permission/roles")
+              }
+            >
+              Cancel
+            </Button>
+          </div>
+        </Form>
+      </Card>
+    </div>
+  );
+}
