@@ -148,7 +148,7 @@ export default function PageBuilder() {
       <Pagination
         currentPage={currentPage}
         onPageChange={setCurrentPage}
-        totalPages={data?.meta?.totalPages || 0}
+        totalPages={data?.meta?.totalPages || 1}
       />
 
       {/* CREATE MODAL */}
