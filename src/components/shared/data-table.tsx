@@ -1,9 +1,10 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { Table, Input, TableProps, Empty, Card, Grid } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
+import Pagination from "./Pagination";
 
 const { useBreakpoint } = Grid;
 
@@ -31,6 +32,13 @@ interface DataTableProps<T> {
 
   onSearch?: (value: string) => void;
   onFilterChange?: (filters: Record<string, string>) => void;
+
+  // ✅ NEW (optional, backward compatible)
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,8 +50,8 @@ export function DataTable<T extends Record<string, any>>({
   loading = false,
   rowSelection,
   extra,
-
   onSearch,
+  pagination, // ✅ new
 }: DataTableProps<T>) {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -51,10 +59,12 @@ export function DataTable<T extends Record<string, any>>({
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search, 300);
 
+  // 🔍 Search handler
   useEffect(() => {
     onSearch?.(debouncedSearch);
   }, [debouncedSearch, onSearch]);
 
+  // 📊 Table columns
   const antdColumns: TableProps<T>["columns"] = [
     ...columns.map((col) => ({
       title: col.label,
@@ -74,6 +84,7 @@ export function DataTable<T extends Record<string, any>>({
       : []),
   ];
 
+  // 📱 Mobile card renderer
   const renderCard = (row: T) => {
     const primary = columns.find((c) => c.type === "primary") || columns[0];
     const secondary = columns.filter((c) => c.type === "secondary");
@@ -184,9 +195,18 @@ export function DataTable<T extends Record<string, any>>({
           locale={{
             emptyText: <Empty description="No data found" />,
           }}
-          pagination={false}
+          pagination={false} // ❗ we control it externally
           scroll={{ x: "max-content" }}
           sticky
+        />
+      )}
+
+      {/* ✅ Pagination (optional, fully controlled) */}
+      {pagination && pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={pagination.onPageChange}
         />
       )}
     </div>

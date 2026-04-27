@@ -147,7 +147,7 @@ export const items: MenuProps["items"] = [
   {
     key: "User-Permission",
     icon: <SafetyOutlined />, // Permissions / access control
-    label: "Users / Permission",
+    label: "Users / Permissions",
     children: [
       {
         key: "users",
@@ -169,15 +169,6 @@ export const items: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/users-permission/permission">
             Permission
-          </Link>
-        ),
-      },
-      {
-        key: "assignment",
-        icon: <FileTextOutlined />,
-        label: (
-          <Link href="/admin/dashboard/users-permission/assignment">
-            Assignment
           </Link>
         ),
       },

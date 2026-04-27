@@ -1,66 +1,133 @@
 "use client";
 
 import { useState } from "react";
-import "antd/dist/reset.css";
-import UsersPermission from "./_components/UsersPermission";
-import { Button } from "antd";
+import { Card, Button, Empty, Tag } from "antd";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
 
-// Define roles
-const roles = [
-  "Admin",
-  "Manager",
-  "Sales Associate",
-  "Inventory Clerk",
-  "Customer Support",
-  "Viewer",
-] as const;
-
-// Define permissions
-const permissions = [
-  "View Users",
-  "Create Users",
-  "Edit Users",
-  "Delete Users",
-  "View Orders",
-  "Edit Orders",
-  "Delete Orders",
-  "View Inventory",
-  "Edit Inventory",
-  "View Reports",
-  "Manage Settings",
-] as const;
-
-// Type for roles and permissions
-type Role = typeof roles[number];
-type Permission = typeof permissions[number];
-type RolePermissions = Record<Role, Permission[]>;
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { Column, DataTable } from "@/components/shared/data-table";
+import Link from "next/link";
+import { queryClient } from "@/providers/query-provider";
+import { useSwal } from "@/hooks/use-swal";
 
 export default function PermissionsPage() {
-  const [rolePermissions, setRolePermissions] = useState<RolePermissions>({
-    Admin: [...permissions],
-    Manager: ["View Users", "Edit Users", "View Orders", "Edit Orders", "View Reports"],
-    "Sales Associate": ["View Users", "View Orders"],
-    "Inventory Clerk": ["View Inventory", "Edit Inventory"],
-    "Customer Support": ["View Users", "View Orders"],
-    Viewer: ["View Users"],
+  const router = useRouter();
+  const swal = useSwal();
+
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data, isLoading, isError, isFetching } = useQuery({
+    queryKey: ["permissions", search, currentPage],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (search) params.append("search", search);
+      params.append("page", String(currentPage));
+
+      const res = await api.get(`/permissions?${params.toString()}`);
+      return res.data?.data;
+    },
   });
 
-  console.log(rolePermissions)
+  const columns: Column<any>[] = [
+    {
+      key: "module_key",
+      label: "Module",
+      render: (r) => <Tag>{r.module_key}</Tag>,
+    },
+    {
+      key: "feature_key",
+      label: "Feature",
+      render: (r) => <Tag color="blue">{r.feature_key}</Tag>,
+    },
+    {
+      key: "action_key",
+      label: "Action",
+      render: (r) => <Tag color="green">{r.action_key}</Tag>,
+    },
+    {
+      key: "label",
+      label: "Label",
+      type: "primary",
+      render: (r) => r.label,
+    },
+    {
+      key: "description",
+      label: "Description",
+      render: (r) => r.description || "—",
+    },
+    {
+      key: "actions",
+      label: "",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/admin/dashboard/users-permission/permission/edit/${row.uuid}`}
+          >
+            <Button type="text" icon={<EditOutlined />} />
+          </Link>
+
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            onClick={async () => {
+              const { isConfirmed } = await swal.confirm({
+                title: "Confirm Deletion",
+                text: "Delete this permission?",
+              });
+
+              if (isConfirmed) {
+                await api.delete(`/permissions/${row.uuid}`);
+                queryClient.invalidateQueries({ queryKey: ["permissions"] });
+                swal.success("Deleted successfully");
+              }
+            }}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div style={{ padding: 24 }}>
-      <UsersPermission
-        rolePermissions={rolePermissions}
-        setRolePermissions={setRolePermissions}
-      />
+    <div className="space-y-6">
+      <PageHeader title="Permissions" breadcrumb={adminBreadcrumb} />
 
-      <Button
-        type="primary"
-        style={{ marginTop: 16 }}
-        onClick={() => console.log("Saved Permissions:", rolePermissions)}
+      <Card
+        title={`Permissions (${data?.data?.length || 0})`}
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() =>
+              router.push("/admin/dashboard/users-permission/permission/create")
+            }
+          >
+            Create Permission
+          </Button>
+        }
       >
-        Save Permissions
-      </Button>
+        {isError ? (
+          <Empty description="Failed to load permissions" />
+        ) : (
+          <DataTable
+            data={data?.data || []}
+            columns={columns}
+            loading={isLoading || isFetching}
+            onSearch={(q) => {
+              setSearch(q);
+            }}
+            pagination={{
+              currentPage,
+              onPageChange: setCurrentPage,
+              totalPages: data?.meta?.totalPages || 1,
+            }}
+          />
+        )}
+      </Card>
     </div>
   );
 }

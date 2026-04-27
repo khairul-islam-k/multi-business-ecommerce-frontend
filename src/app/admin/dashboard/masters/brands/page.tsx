@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Avatar, Select } from "antd";
 import {
   EditOutlined,
@@ -15,7 +15,6 @@ import {
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -46,8 +45,6 @@ export default function BrandsPage() {
           `/brands?page=${currentPage}&limit=${pageSize}&status=${status}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
-    placeholderData: keepPreviousData,
-    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -113,7 +110,7 @@ export default function BrandsPage() {
   ];
 
   const brands = data?.data?.data || [];
-  const totalPages = data?.data?.meta?.totalPages || 0;
+  const totalPages = data?.data?.meta?.totalPages || 1;
 
   return (
     <div className="space-y-6">
@@ -125,7 +122,6 @@ export default function BrandsPage() {
         loading={isFetching}
         onSearch={(q) => {
           setSearch(q);
-          setCurrentPage(1);
         }}
         toolbarEnd={
           <div className="flex gap-2">
@@ -134,7 +130,6 @@ export default function BrandsPage() {
               value={status}
               onChange={(e) => {
                 setStatus(e);
-                setCurrentPage(1);
               }}
             >
               <Option value="Active">Active</Option>
@@ -177,12 +172,11 @@ export default function BrandsPage() {
             </Popconfirm>
           </Space>
         )}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages,
+        }}
       />
 
       <ViewModal open={open} onClose={() => setOpen(false)} brand={selected} />

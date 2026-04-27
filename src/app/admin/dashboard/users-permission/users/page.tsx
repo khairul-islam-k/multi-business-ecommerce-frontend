@@ -2,8 +2,13 @@
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Dropdown, Flex, Grid, Tag } from "antd";
+import {
+  EyeOutlined,
+  MoreOutlined,
+  PlusOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Dropdown, Flex, Modal, Tag } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,9 +16,9 @@ import { useQuery } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
 import { Column, DataTable } from "@/components/shared/data-table";
-import Pagination from "@/components/shared/Pagination";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
+import SearchableSelect from "@/components/shared/searchable-select";
 
 interface TUser {
   id: number;
@@ -23,6 +28,7 @@ interface TUser {
   phone: string;
   status: string;
   created_by: string;
+  [key: string]: any;
 }
 
 export default function Users() {
@@ -32,6 +38,11 @@ export default function Users() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Modal state
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
+  const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
+
   /* =========================
      FETCH USERS
   ========================= */
@@ -39,15 +50,48 @@ export default function Users() {
     queryKey: ["users", search, currentPage],
     queryFn: async () => {
       const params = new URLSearchParams();
-
       if (search) params.append("search", search);
       if (currentPage) params.append("page", String(currentPage));
 
-      const res = await api.get(`/users?${params.toString()}`, {});
-
+      const res = await api.get(`/users?${params.toString()}`);
       return res.data?.data || [];
     },
   });
+
+  const setRoles = async (uuid: string, roles: number[]) => {
+    try {
+      await api.patch(`/users/${uuid}`, { role_ids: roles });
+      swal.success("Roles applied successfully");
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    } catch (error) {
+      swal.error("Failed to apply roles");
+    }
+  };
+
+  /* =========================
+     OPEN MODAL
+  ========================= */
+  const openRoleModal = (user: TUser) => {
+    setSelectedUser(user);
+    console.log(user);
+    setSelectedRoles(user.roles?.map((role: any) => role?.name) || []);
+    setIsRoleModalOpen(true);
+  };
+
+  const handleRoleModalOk = async () => {
+    if (!selectedUser) return;
+
+    await setRoles(selectedUser.uuid, selectedRoles);
+    setIsRoleModalOpen(false);
+    setSelectedUser(null);
+    setSelectedRoles([]);
+  };
+
+  const handleRoleModalCancel = () => {
+    setIsRoleModalOpen(false);
+    setSelectedUser(null);
+    setSelectedRoles([]);
+  };
 
   /* =========================
      TABLE COLUMNS
@@ -79,13 +123,21 @@ export default function Users() {
       ),
     },
     {
-      key: "created_by",
-      label: "Created By",
-      render: (row) => row.created_by,
+      key: "assignRole",
+      label: "Assign Role",
+      render: (row) => (
+        <Button
+          type="default"
+          icon={<UserSwitchOutlined />}
+          onClick={() => openRoleModal(row)}
+        >
+          Assign Roles
+        </Button>
+      ),
     },
     {
       key: "actions",
-      label: "",
+      label: "Actions",
       render: (row) => (
         <Flex gap={8}>
           <Link
@@ -154,14 +206,32 @@ export default function Users() {
           columns={columns}
           loading={isLoading || isFetching}
           onSearch={(value) => setSearch(value)}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages: data?.meta?.totalPages || 1,
+          }}
         />
       </Card>
 
-      <Pagination
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        totalPages={data?.meta?.totalPages || 1}
-      />
+      {/* Role Assignment Modal */}
+      <Modal
+        title={`Assign Roles to ${selectedUser?.name || ""}`}
+        open={isRoleModalOpen}
+        onOk={handleRoleModalOk}
+        onCancel={handleRoleModalCancel}
+        okText="Apply Roles"
+        cancelText="Cancel"
+        destroyOnClose // Clears internal state when closed
+      >
+        <SearchableSelect
+          value={selectedRoles}
+          onChange={(roles) => setSelectedRoles(roles as number[])}
+          endpoint="/roles"
+          mode="multiple"
+          placeholder="Select roles"
+        />
+      </Modal>
     </div>
   );
 }

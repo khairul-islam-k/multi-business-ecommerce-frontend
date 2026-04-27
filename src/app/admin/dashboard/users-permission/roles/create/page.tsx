@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, Form, Input, Button } from "antd";
 import { useRouter } from "next/navigation";
 import { useSwal } from "@/hooks/use-swal";
@@ -10,19 +10,25 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { queryClient } from "@/providers/query-provider";
 import SearchableSelect from "@/components/shared/searchable-select";
+import PermissionTree from "../_components/permission-tree";
 
 export default function CreateRole() {
   const [form] = Form.useForm();
   const router = useRouter();
   const swal = useSwal();
 
-  const [permissionIds, setPermissionIds] = useState<number[]>([]);
+  const [permissions, setPermissions] = useState<number[]>([]);
+
+  const assignablePermissionIds = useMemo(() => {
+    const treePermissions = permissions.filter((p) => !Number.isNaN(Number(p)));
+    return [...new Set([...treePermissions])];
+  }, [permissions]);
 
   const onFinish = async (values: any) => {
     try {
       await api.post("/roles", {
         ...values,
-        permission_ids: permissionIds,
+        permission_ids: assignablePermissionIds,
       });
 
       swal.success("Role created");
@@ -53,12 +59,16 @@ export default function CreateRole() {
           </Form.Item>
 
           <Form.Item label="Permissions">
+            <PermissionTree value={permissions} onChange={setPermissions} />
+          </Form.Item>
+
+          <Form.Item label="Permissions">
             <SearchableSelect
               endpoint="/permissions"
               placeholder="Search permissions"
               mode="multiple"
-              value={permissionIds}
-              onChange={(v) => setPermissionIds(v as number[])}
+              value={permissions}
+              onChange={(v) => setPermissions(v as number[])}
               labelKey="label"
               valueKey="id"
             />

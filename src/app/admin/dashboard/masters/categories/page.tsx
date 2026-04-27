@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Avatar, Badge, Select } from "antd";
 import {
   EditOutlined,
@@ -15,7 +15,6 @@ import {
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -29,7 +28,7 @@ export default function CategoriesPage() {
   const router = useRouter();
   const swal = useSwal();
 
-  const pageSize = 10;
+  const pageSize = 3;
 
   const [status, setStatus] = useState("Active");
   const [search, setSearch] = useState("");
@@ -46,8 +45,6 @@ export default function CategoriesPage() {
           `/categories?page=${currentPage}&limit=${pageSize}&status=${status}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
-    placeholderData: keepPreviousData,
-    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -98,7 +95,7 @@ export default function CategoriesPage() {
   ];
 
   const categories = data?.data?.data || [];
-  const totalPages = data?.data?.meta?.totalPages || 0;
+  const totalPages = data?.data?.meta?.totalPages || 1;
 
   console.log(data, categories);
 
@@ -112,7 +109,6 @@ export default function CategoriesPage() {
         loading={isFetching}
         onSearch={(q) => {
           setSearch(q);
-          setCurrentPage(1);
         }}
         toolbarEnd={
           <div className="flex gap-2">
@@ -121,7 +117,6 @@ export default function CategoriesPage() {
               value={status}
               onChange={(e) => {
                 setStatus(e);
-                setCurrentPage(1);
               }}
             >
               <Option value="Active">Active</Option>
@@ -166,12 +161,11 @@ export default function CategoriesPage() {
             </Popconfirm>
           </Space>
         )}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages,
+        }}
       />
 
       <ViewModal

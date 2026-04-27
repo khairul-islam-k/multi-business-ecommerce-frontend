@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+
 import DomainTable from "./_components/DomainTable";
 import { Button, Card, Col, Flex, Form, Input, Row, Select, theme } from "antd";
 import PageHeader from "@/components/shared/page-header";

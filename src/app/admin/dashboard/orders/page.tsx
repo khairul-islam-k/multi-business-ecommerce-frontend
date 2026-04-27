@@ -4,13 +4,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSwal } from "@/hooks/use-swal";
 import { useRouter } from "next/navigation";
-import { Button, Badge, Space, Popconfirm, Select, theme } from "antd";
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { Button, Badge, Space, Popconfirm, Select } from "antd";
+import { useQuery } from "@tanstack/react-query";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
 import api from "@/lib/axios";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
 import PageHeader from "@/components/shared/page-header";
 import { queryClient } from "@/providers/query-provider";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -30,8 +29,6 @@ export default function OrdersList() {
   const swal = useSwal();
   const router = useRouter();
 
-  const pageSize = 10;
-
   const [status, setStatus] = useState("Pending");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -39,9 +36,7 @@ export default function OrdersList() {
     queryKey: ["fetch-orders", currentPage, status],
     queryFn: async () =>
       api
-        .get(
-          `/orders?page=${currentPage}&limit=${pageSize}&order_status=${status}&sortBy=createdAt&sortOrder=DESC`,
-        )
+        .get(`/orders?page=${currentPage}&order_status=${status}`)
         .then((res) => res.data),
   });
 
@@ -120,7 +115,6 @@ export default function OrdersList() {
               icon={<EditOutlined />}
               onClick={() => router.push(`/admin/dashboard/orders/${row.uuid}`)}
             />
-
             <Popconfirm
               title="Delete addon?"
               description="This action cannot be undone"
@@ -155,12 +149,11 @@ export default function OrdersList() {
             </Link>
           </div>
         }
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages,
+        }}
       />
     </div>
   );

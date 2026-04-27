@@ -108,7 +108,7 @@ export default function WebsiteMenuBuilder() {
 
           <SearchableSelect
             endpoint="/websites"
-            value={websiteId}
+            value={websiteId as any}
             onChange={(v) => setWebsiteId(v)}
             placeholder="Search website"
           />
