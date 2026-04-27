@@ -11,7 +11,6 @@ import { useQuery } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
 import { Column, DataTable } from "@/components/shared/data-table";
-import Pagination from "@/components/shared/Pagination";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
 
@@ -154,14 +153,13 @@ export default function Users() {
           columns={columns}
           loading={isLoading || isFetching}
           onSearch={(value) => setSearch(value)}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages: data?.meta?.totalPages || 1,
+          }}
         />
       </Card>
-
-      <Pagination
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        totalPages={data?.meta?.totalPages || 1}
-      />
     </div>
   );
 }

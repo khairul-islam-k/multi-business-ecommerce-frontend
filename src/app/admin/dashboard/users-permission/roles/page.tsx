@@ -10,7 +10,6 @@ import api from "@/lib/axios";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
-import Pagination from "@/components/shared/Pagination";
 import Link from "next/link";
 import { queryClient } from "@/providers/query-provider";
 import { useSwal } from "@/hooks/use-swal";
@@ -114,15 +113,14 @@ export default function RolesPage() {
               setCurrentPage(1);
             }}
             loading={isLoading || isFetching}
+            pagination={{
+              currentPage,
+              onPageChange: setCurrentPage,
+              totalPages: data?.meta?.totalPages || 1,
+            }}
           />
         )}
       </Card>
-
-      <Pagination
-        currentPage={currentPage}
-        onPageChange={setCurrentPage}
-        totalPages={data?.meta?.totalPages || 1}
-      />
     </div>
   );
 }

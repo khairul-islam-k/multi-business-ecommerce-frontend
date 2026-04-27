@@ -284,7 +284,7 @@ export default function CreateOrder() {
 
                   <SearchableSelect
                     endpoint="/customers"
-                    value={form.customer_id}
+                    value={form.customer_id as any}
                     onChange={(v) => set("customer_id", v)}
                   />
                 </Col>
@@ -293,7 +293,7 @@ export default function CreateOrder() {
                   <label className="text-sm font-semibold">Company</label>
                   <SearchableSelect
                     endpoint="/companies"
-                    value={form.company_id}
+                    value={form.company_id as any}
                     onChange={(v) => set("company_id", v)}
                   />
                 </Col>
@@ -320,7 +320,7 @@ export default function CreateOrder() {
               <div>
                 <label className="text-sm font-semibold">Courier</label>
                 <SearchableSelect
-                  value={form.courier_id}
+                  value={form.courier_id as any}
                   endpoint="/couriers"
                   onChange={(v) => set("courier_id", v)}
                 />
@@ -329,7 +329,7 @@ export default function CreateOrder() {
               <div>
                 <label className="text-sm font-semibold">Supplier</label>
                 <SearchableSelect
-                  value={form.supplier_id}
+                  value={form.supplier_id as any}
                   onChange={(v) => set("supplier_id", v)}
                   endpoint="/business-suppliers"
                 />
