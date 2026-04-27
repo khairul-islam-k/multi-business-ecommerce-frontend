@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Select } from "antd";
 import {
   EditOutlined,
@@ -13,7 +13,6 @@ import {
 
 import api from "@/lib/axios";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
@@ -45,8 +44,6 @@ export default function ShowroomsPage() {
           `/business-showrooms?page=${currentPage}&limit=${pageSize}&search=${search}&status=${status}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
-    placeholderData: keepPreviousData,
-    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -94,7 +91,7 @@ export default function ShowroomsPage() {
   ];
 
   const showrooms = data?.data?.data || [];
-  const totalPages = data?.data?.meta?.totalPages || 0;
+  const totalPages = data?.data?.meta?.totalPages || 1;
 
   return (
     <div className="space-y-6">
@@ -106,7 +103,6 @@ export default function ShowroomsPage() {
         loading={isFetching}
         onSearch={(q) => {
           setSearch(q);
-          setCurrentPage(1);
         }}
         toolbarEnd={
           <div className="flex gap-2">
@@ -114,7 +110,6 @@ export default function ShowroomsPage() {
               value={status}
               onChange={(v) => {
                 setStatus(v);
-                setCurrentPage(1);
               }}
               className="w-32"
             >
@@ -162,12 +157,11 @@ export default function ShowroomsPage() {
             </Popconfirm>
           </Space>
         )}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages,
+        }}
       />
 
       <ViewModal

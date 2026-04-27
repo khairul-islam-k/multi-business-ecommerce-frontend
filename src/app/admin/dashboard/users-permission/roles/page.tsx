@@ -110,7 +110,6 @@ export default function RolesPage() {
             columns={columns}
             onSearch={(q) => {
               setSearch(q);
-              setCurrentPage(1);
             }}
             loading={isLoading || isFetching}
             pagination={{

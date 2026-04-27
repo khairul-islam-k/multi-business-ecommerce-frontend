@@ -119,7 +119,6 @@ export default function PermissionsPage() {
             loading={isLoading || isFetching}
             onSearch={(q) => {
               setSearch(q);
-              setCurrentPage(1);
             }}
             pagination={{
               currentPage,

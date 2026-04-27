@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, Form, Input, Button } from "antd";
 import { useRouter, useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +10,7 @@ import { useSwal } from "@/hooks/use-swal";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import SearchableSelect from "@/components/shared/searchable-select";
+import PermissionTree from "../../_components/permission-tree";
 
 export default function EditRole() {
   const [form] = Form.useForm();
@@ -17,7 +18,12 @@ export default function EditRole() {
   const router = useRouter();
   const swal = useSwal();
 
-  const [permissionIds, setPermissionIds] = useState<number[]>([]);
+  const [permissions, setPermissions] = useState<number[]>([]);
+
+  const assignablePermissionIds = useMemo(() => {
+    const treePermissions = permissions.filter((p) => !Number.isNaN(Number(p)));
+    return [...new Set([...treePermissions])];
+  }, [permissions]);
 
   /* ================= FETCH ROLE ================= */
   const { data: role } = useQuery({
@@ -40,7 +46,7 @@ export default function EditRole() {
     });
 
     const ids = role.permissions?.map((p: any) => p.id) || [];
-    setPermissionIds(ids);
+    setPermissions(ids);
   }, [role, form]);
 
   /* ================= UPDATE ================= */
@@ -48,7 +54,7 @@ export default function EditRole() {
     try {
       await api.patch(`/roles/${id}`, {
         ...values,
-        permission_ids: permissionIds,
+        permission_ids: assignablePermissionIds,
       });
 
       swal.success("Role updated");
@@ -77,12 +83,16 @@ export default function EditRole() {
           </Form.Item>
 
           <Form.Item label="Permissions">
+            <PermissionTree value={permissions} onChange={setPermissions} />
+          </Form.Item>
+
+          <Form.Item label="Permissions">
             <SearchableSelect
               endpoint="/permissions"
               placeholder="Search permissions"
               mode="multiple"
-              value={permissionIds}
-              onChange={(v) => setPermissionIds(v as number[])}
+              value={permissions}
+              onChange={(v) => setPermissions(v as number[])}
               labelKey="label"
               valueKey="id"
             />

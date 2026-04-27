@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Select, Avatar } from "antd";
 import {
   EditOutlined,
@@ -14,7 +14,6 @@ import {
 
 import api from "@/lib/axios";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
@@ -29,7 +28,7 @@ export default function SuppliersPage() {
   const router = useRouter();
   const swal = useSwal();
 
-  const pageSize = 10;
+  const pageSize = 1;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -46,8 +45,6 @@ export default function SuppliersPage() {
           `/business-suppliers?page=${currentPage}&limit=${pageSize}&status=${status}&search=${search}&sortBy=createdAt&sortOrder=DESC`,
         )
         .then((res) => res.data),
-    placeholderData: keepPreviousData,
-    staleTime: 0,
   });
 
   if (isLoading) return <Loader />;
@@ -115,7 +112,7 @@ export default function SuppliersPage() {
   ];
 
   const suppliers = data?.data?.data || [];
-  const totalPages = data?.data?.meta?.totalPages || 0;
+  const totalPages = data?.data?.meta?.totalPages || 1;
 
   return (
     <div className="space-y-6">
@@ -127,7 +124,6 @@ export default function SuppliersPage() {
         loading={isFetching}
         onSearch={(q) => {
           setSearch(q);
-          setCurrentPage(1);
         }}
         toolbarEnd={
           <div className="flex gap-2">
@@ -135,7 +131,6 @@ export default function SuppliersPage() {
               value={status}
               onChange={(val) => {
                 setStatus(val);
-                setCurrentPage(1);
               }}
               className="w-32"
             >
@@ -180,12 +175,11 @@ export default function SuppliersPage() {
             </Popconfirm>
           </Space>
         )}
-      />
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages,
+        }}
       />
 
       <ViewModal
