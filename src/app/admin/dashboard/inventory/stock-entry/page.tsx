@@ -10,26 +10,73 @@ import {
   InputNumber,
   Select,
   Button,
-  message,
 } from "antd";
-import { useRouter } from "next/navigation";
 import useSubmit from "@/hooks/use-submit";
-
-import { mockWarehouses, mockProducts } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
+import api from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 const { Title } = Typography;
 
 export default function StockEntryPage() {
-  const router = useRouter();
-  const swal = useSwal();
   const [form] = AntdForm.useForm();
+
+  const {
+    data: Warehouse,
+  } = useQuery({
+    queryKey: ["warehouse"],
+    queryFn: async () => api.get('/warehouse?sortBy=createdAt&sortOrder=DESC')
+  });
+
+  const {
+    data: Products,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => api.get('/products?sortBy=createdAt&sortOrder=DESC')
+  });
+
+  const {
+    data: variant,
+  } = useQuery({
+    queryKey: ["variant"],
+    queryFn: async () => api.get('/variant?sortBy=createdAt&sortOrder=DESC')
+  });
+
+  const {
+    data: companies,
+  } = useQuery({
+    queryKey: ["companies"],
+    queryFn: async () => api.get('/companies?sortOrder=DESC')
+  });
+
+  // from login
+  const tenantId = 1;
+  const createdBy = 1;
+
   const { loading, handler } = useSubmit(async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    swal.success("Stock entry recorded successfully");
-    router.push("/admin/dashboard/inventory/transactions");
+    console.log('value', values);
+    api.post('/transactions', {
+      ...values, tenantId, createdBy
+    }).then(res => {
+      form.resetFields();
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Transaction has been succeed",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }).catch(error => {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong!",
+        footer: "<a href=\"#\">Why do I have this issue?</a>"
+      });
+    })
   });
 
   return (
@@ -48,15 +95,15 @@ export default function StockEntryPage() {
           <Row gutter={[16, 16]}>
             <Col xs={24} md={12}>
               <AntdForm.Item
-                name="warehouse_id"
+                name="warehouseId"
                 label="Warehouse"
                 rules={[{ required: true }]}
               >
                 <Select
-                  placeholder="Select warehouse"
-                  options={mockWarehouses.map((w) => ({
-                    label: w.name,
-                    value: w.id,
+                  placeholder="Select a brands"
+                  options={Warehouse?.data?.data?.data?.map((c: any) => ({
+                    label: c.name,
+                    value: Number(c.id),
                   }))}
                 />
               </AntdForm.Item>
@@ -64,16 +111,86 @@ export default function StockEntryPage() {
 
             <Col xs={24} md={12}>
               <AntdForm.Item
-                name="product_id"
+                name="companyId"
+                label="Company"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Select a brands"
+                  options={companies?.data?.data?.data?.map((c: any) => ({
+                    label: c.name,
+                    value: Number(c.id),
+                  }))}
+                />
+              </AntdForm.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <AntdForm.Item
+                name="productId"
                 label="Product"
                 rules={[{ required: true }]}
               >
                 <Select
-                  placeholder="Select product"
-                  options={mockProducts.map((p) => ({
-                    label: `${p.name} (${p.sku})`,
-                    value: p.id,
+                  placeholder="Select a brands"
+                  options={Products?.data?.data?.data?.map((c: any) => ({
+                    label: c.name,
+                    value: Number(c.id),
                   }))}
+                />
+              </AntdForm.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <AntdForm.Item
+                name="variantId"
+                label="Product Variant"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Select a brands"
+                  options={variant?.data?.data?.data?.map((c: any) => ({
+                    label: c.name,
+                    value: Number(c.id),
+                  }))}
+                />
+              </AntdForm.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <AntdForm.Item
+                name="transactionType"
+                label="transaction Type"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Select product"
+                  options={[
+                    { label: 'IN', value: 'IN' },
+                    { label: 'OUT', value: 'OUT' },
+                    { label: 'ADJUSTMENT', value: 'ADJUSTMENT' },
+                    { label: 'DAMAGE', value: 'DAMAGE' },
+                    { label: 'LOSS', value: 'LOSS' },
+                  ]}
+                />
+              </AntdForm.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <AntdForm.Item
+                name="referenceType"
+                label="reference Type"
+                rules={[{ required: true }]}
+              >
+                <Select
+                  placeholder="Select product"
+                  options={[
+                    { label: 'PURCHASE', value: 'PURCHASE' },
+                    { label: 'SALE', value: 'SALE' },
+                    { label: 'RETURN', value: 'RETURN' },
+                    { label: 'TRANSFER', value: 'TRANSFER' },
+                    { label: 'MANUAL', value: 'MANUAL' },
+                  ]}
                 />
               </AntdForm.Item>
             </Col>
@@ -89,7 +206,7 @@ export default function StockEntryPage() {
             </Col>
 
             <Col xs={24} md={12}>
-              <AntdForm.Item name="unit_cost" label="Unit Cost">
+              <AntdForm.Item name="unitCost" label="Unit Cost">
                 <InputNumber
                   style={{ width: "100%" }}
                   placeholder="0.00"
@@ -99,7 +216,7 @@ export default function StockEntryPage() {
             </Col>
 
             <Col xs={24}>
-              <AntdForm.Item name="reference_id" label="Reference ID">
+              <AntdForm.Item name="referenceId" label="Reference ID">
                 <Input placeholder="e.g. PO-001" />
               </AntdForm.Item>
             </Col>

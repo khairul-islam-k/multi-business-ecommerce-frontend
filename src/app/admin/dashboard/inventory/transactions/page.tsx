@@ -1,80 +1,141 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Col, Row, Table, Typography, Badge, Input, Select } from "antd";
-
-import { mockInventoryTransactions } from "./data";
+import { Card, Col, Row, Table, Typography, Input, Select, Tag } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { formatCurrency, formatDate } from "./utils";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/axios";
+import { ColumnsType } from "antd/es/table";
+import { useDebounce } from "use-debounce";
+import Pagination from "@/components/shared/Pagination";
+import { DataTable } from "@/components/shared/data-table";
 
 const { Search } = Input;
-const { Title, Text } = Typography;
+const { Title } = Typography;
+
+export type InventoryTransaction = {
+  id: string;
+  uuid: string;
+  createdAt: string;
+  transactionType: string;
+  referenceType: string;
+  referenceId: string;
+  qty: number;
+  unitCost: string;
+  note: string;
+
+  product?: {
+    id: string;
+    sku: string;
+    name: string;
+  };
+
+  warehouse?: {
+    id: string;
+    name: string;
+  };
+};
 
 export default function InventoryTransactionsPage() {
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string | undefined>();
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const [value] = useDebounce(search, 1000);
 
-  const filteredData = mockInventoryTransactions.filter((t) => {
-    const matchesSearch = t.product_name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesType = typeFilter ? t.transaction_type === typeFilter : true;
-    return matchesSearch && matchesType;
+  // pagination
+  const [page, setPage] = useState<number>(1);
+  const limit = 5;
+
+  const {
+    data: transaction,
+  } = useQuery({
+    queryKey: ["transaction", value, page, limit, typeFilter],
+    queryFn: async () => {
+      if (typeFilter) {
+        return api.get(
+          `/transactions?search=${value}&transactionType=${typeFilter}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`
+        );
+      } else {
+        return api.get(
+          `/transactions?search=${value}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`
+        );
+      }
+    }
   });
+
+  // pagination
+  const total = transaction?.data?.data?.meta?.total;
+  const totalPages = Math.ceil(total / limit);
 
   const columns = [
     {
-      title: "Date",
-      dataIndex: "created_at",
-      render: (v: string) => <Text type="secondary">{formatDate(v)}</Text>,
-      width: 140,
-    },
-    {
-      title: "Product",
-      render: (_: any, record: any) => (
-        <Text strong>{record.product_name}</Text>
+      label: 'Product',
+      key: 'product',
+      render: (record: InventoryTransaction) => (
+        <div>
+          <div>{record.product?.name}</div>
+          <small style={{ color: '#888' }}>
+            {record.product?.sku}
+          </small>
+        </div>
       ),
     },
     {
-      title: "Warehouse",
-      render: (_: any, record: any) => record.warehouse_name,
+      label: 'Warehouse',
+      key: 'warehouse',
+      render: (record: InventoryTransaction) => record.warehouse?.name
     },
     {
-      title: "Type",
-      dataIndex: "transaction_type",
-      render: (type: string) =>
-        type === "IN" ? (
-          <Badge status="success" text="IN" />
-        ) : (
-          <Badge status="default" text={type} />
-        ),
-      width: 100,
+      label: 'Type',
+      key: 'transactionType',
+      render: (record: InventoryTransaction) => {
+        const color =
+          record.transactionType === 'IN'
+            ? 'green'
+            : record.transactionType === 'OUT'
+              ? 'red'
+              : record.transactionType === 'DAMAGE'
+                ? 'orange'
+                : 'blue';
+
+        return <Tag color={color}>{record.transactionType}</Tag>;
+      },
     },
     {
-      title: "Reference",
-      dataIndex: "reference_id",
-      render: (v: string | null) => <Text code>{v || "—"}</Text>,
-    },
-    {
-      title: "Qty",
-      dataIndex: "qty",
-      align: "right" as const,
-      render: (v: number) => (
-        <Text type={v > 0 ? "success" : "danger"} strong>
-          {v > 0 ? `+${v}` : v}
-        </Text>
+      label: 'Reference',
+      key: 'Reference',
+      render: (record: InventoryTransaction) => (
+        <div>
+          <div>{record.referenceType}</div>
+          <small>#{record.referenceId}</small>
+        </div>
       ),
     },
     {
-      title: "Unit Cost",
-      dataIndex: "unit_cost",
-      align: "right" as const,
-      render: (v: number | null) => (v ? formatCurrency(v) : "—"),
+      label: 'Qty',
+      key: 'qty',
     },
     {
-      title: "By",
-      dataIndex: "created_by",
+      label: 'Unit Cost',
+      key: 'unitCost',
+      render: (record: InventoryTransaction) => `$${record.unitCost}`,
+    },
+    {
+      label: 'Total',
+      key: 'total',
+      render: (record: InventoryTransaction) =>
+        `$${(Number(record.qty) * Number(record.unitCost)).toFixed(2)}`,
+    },
+    {
+      label: 'Note',
+      key: 'note',
+      ellipsis: true,
+    },
+    {
+      label: 'Date',
+      key: 'createdAt',
+      render: (record: InventoryTransaction) =>
+        new Date(record.createdAt).toLocaleString(),
     },
   ];
 
@@ -100,8 +161,11 @@ export default function InventoryTransactionsPage() {
             value={typeFilter}
             onChange={setTypeFilter}
             options={[
-              { label: "IN", value: "IN" },
-              { label: "OUT", value: "OUT" },
+              { label: 'IN', value: 'IN' },
+              { label: 'OUT', value: 'OUT' },
+              { label: 'ADJUSTMENT', value: 'ADJUSTMENT' },
+              { label: 'DAMAGE', value: 'DAMAGE' },
+              { label: 'LOSS', value: 'LOSS' },
             ]}
           />
         </Col>
@@ -112,14 +176,19 @@ export default function InventoryTransactionsPage() {
         <Col span={24}>
           <Card>
             <Title level={5}>Transactions</Title>
-            <Table
+
+            <DataTable
+              data={transaction?.data?.data?.data ?? []}
               columns={columns}
-              dataSource={filteredData}
-              rowKey="id"
-              size="small"
-              scroll={{ x: "max-content" }}
             />
+
           </Card>
+
+          <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
         </Col>
       </Row>
     </div>

@@ -10,8 +10,6 @@ import {
   Select,
   Button,
   InputNumber,
-  Space,
-  message,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -33,7 +31,8 @@ export default function CreateStockAdjustmentPage() {
   const { loading, handler } = useSubmit(async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
     swal.success("Stock adjustment created");
-    router.push("/admin/dashboard/inventory/stock-adjustments");
+    console.log('value',values);
+
   });
 
   return (
@@ -99,6 +98,22 @@ export default function CreateStockAdjustmentPage() {
                           >
                             <Select
                               placeholder="Product"
+                              options={mockProducts.map((p) => ({
+                                label: `${p.name} (${p.sku})`,
+                                value: p.id,
+                              }))}
+                            />
+                          </AntdForm.Item>
+                        </Col>
+
+                        <Col xs={24} md={6}>
+                          <AntdForm.Item
+                            {...restField}
+                            name={[name, "variant_id"]}
+                            rules={[{ required: true }]}
+                          >
+                            <Select
+                              placeholder="variant"
                               options={mockProducts.map((p) => ({
                                 label: `${p.name} (${p.sku})`,
                                 value: p.id,
