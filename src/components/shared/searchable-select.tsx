@@ -1,70 +1,136 @@
 "use client";
 
-import { Select, Spin } from "antd";
-import { useState } from "react";
+import { Select, Spin, type SelectProps } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
+
 import api from "@/lib/axios";
 
-const { Option } = Select;
-
 type ValueType = string | number;
+type ApiItem = Record<string, unknown>;
 
-interface Props {
-  value?: ValueType | ValueType[];
-  onChange: (value: any) => void;
-
-  placeholder?: string;
+interface SearchableSelectProps extends Omit<
+  SelectProps<ValueType | ValueType[]>,
+  "options" | "onSearch" | "filterOption" | "showSearch"
+> {
   endpoint: string;
+  value?: ValueType | ValueType[];
+  onChange?: (value: ValueType | ValueType[] | undefined) => void;
 
   labelKey?: string;
   valueKey?: string;
 
-  /** ✅ NEW: supports single or multiple */
-  mode?: "multiple" | undefined;
+  params?: Record<string, unknown>;
+  minSearchLength?: number;
+}
+
+function getNestedValue(item: ApiItem, key: string): unknown {
+  return key.split(".").reduce<unknown>((acc, part) => {
+    if (acc && typeof acc === "object") {
+      return (acc as ApiItem)[part];
+    }
+
+    return undefined;
+  }, item);
+}
+
+function normalizeResponse(response: unknown): ApiItem[] {
+  if (!response || typeof response !== "object") return [];
+
+  const axiosResponse = response as { data?: unknown };
+  const body = axiosResponse.data;
+
+  if (Array.isArray(body)) return body;
+
+  if (!body || typeof body !== "object") return [];
+
+  const firstData = (body as { data?: unknown }).data;
+
+  if (Array.isArray(firstData)) return firstData;
+
+  if (!firstData || typeof firstData !== "object") return [];
+
+  const secondData = (firstData as { data?: unknown }).data;
+
+  if (Array.isArray(secondData)) return secondData;
+
+  return [];
 }
 
 export default function SearchableSelect({
+  endpoint,
   value,
   onChange,
-  placeholder,
-  endpoint,
+  placeholder = "Search...",
   labelKey = "name",
   valueKey = "id",
+  params,
+  minSearchLength = 0,
   mode,
-}: Props) {
+  disabled,
+  ...selectProps
+}: SearchableSelectProps) {
   const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 400);
+  const [debouncedSearch] = useDebounce(search.trim(), 400);
+
+  const shouldFetch = !disabled && debouncedSearch.length >= minSearchLength;
 
   const { data = [], isFetching } = useQuery({
-    queryKey: [endpoint, debouncedSearch],
+    queryKey: ["searchable-select", endpoint, params, debouncedSearch],
+    enabled: shouldFetch,
+    placeholderData: (previousData) => previousData,
     queryFn: async () => {
       const res = await api.get(endpoint, {
-        params: { search: debouncedSearch },
+        params: {
+          ...params,
+          search: debouncedSearch,
+        },
       });
 
-      return res.data?.data?.data ?? res.data?.data ?? [];
+      return normalizeResponse(res);
     },
   });
 
+  const options = useMemo<DefaultOptionType[]>(() => {
+    return data.flatMap((item): DefaultOptionType[] => {
+      const label = getNestedValue(item, labelKey);
+      const optionValue = getNestedValue(item, valueKey);
+
+      if (
+        optionValue === undefined ||
+        optionValue === null ||
+        optionValue === ""
+      ) {
+        return [];
+      }
+
+      return [
+        {
+          label: String(label ?? optionValue),
+          value: optionValue as ValueType,
+        },
+      ];
+    });
+  }, [data, labelKey, valueKey]);
+
   return (
-    <Select
+    <Select<ValueType | ValueType[]>
       showSearch
-      mode={mode} // ✅ key change
+      allowClear
+      mode={mode}
       value={value}
+      disabled={disabled}
       placeholder={placeholder}
       style={{ width: "100%" }}
       filterOption={false}
-      onSearch={(val) => setSearch(val)}
+      onSearch={setSearch}
       onChange={onChange}
+      options={options}
+      loading={isFetching}
       notFoundContent={isFetching ? <Spin size="small" /> : null}
-      allowClear
-    >
-      {data.map((item: any) => (
-        <Option key={item[valueKey]} value={item[valueKey]}>
-          {item[labelKey]}
-        </Option>
-      ))}
-    </Select>
+      {...selectProps}
+    />
   );
 }

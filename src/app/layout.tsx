@@ -1,12 +1,8 @@
-import { Layout } from "antd";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 
 import "@/styles/global.css";
-import "antd/dist/reset.css";
 
-import AntdRegistry from "@/providers/antd-registry";
-import ThemeProvider from "@/providers/theme-provider";
 import AuthProvider from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
 
@@ -28,15 +24,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${openSans.variable}`}>
       <body>
-        <ThemeProvider>
-          <AntdRegistry>
-            <AuthProvider>
-              <QueryProvider>
-                <Layout>{children}</Layout>
-              </QueryProvider>
-            </AuthProvider>
-          </AntdRegistry>
-        </ThemeProvider>
+        <AuthProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
