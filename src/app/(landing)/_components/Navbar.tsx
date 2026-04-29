@@ -121,7 +121,7 @@ export const Navbar = () => {
           }`}
         >
           <div className="flex items-center justify-between px-6 h-20 border-b border-border">
-            <a
+            <Link
               href="/"
               className="flex items-center gap-2.5"
               onClick={() => setOpen(false)}
@@ -133,12 +133,12 @@ export const Navbar = () => {
                 One
                 <span className="text-muted-foreground font-medium">Comm</span>
               </span>
-            </a>
+            </Link>
           </div>
 
           <nav className="flex flex-col px-3 py-5">
             {links.map((l, i) => (
-              <a
+              <Link
                 key={l.label}
                 href={l.href}
                 onClick={() => setOpen(false)}
@@ -150,20 +150,23 @@ export const Navbar = () => {
                 }`}
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
           <div className="absolute bottom-0 left-0 right-0 p-5 border-t border-border bg-background grid gap-2.5">
-            <button className="h-11 rounded-full border border-foreground text-sm font-semibold hover:bg-foreground hover:text-background transition-colors">
+            <Link
+              href="/admin/sign-in"
+              className="flex-items-center h-11 rounded-full border border-foreground text-sm font-semibold hover:bg-foreground hover:text-background transition-colors"
+            >
               Log In
-            </button>
-            <Button
-              variant="hero"
+            </Link>
+            <Link
+              href="/admin/sign-in"
               className="h-11 rounded-full inline-flex items-center justify-center gap-1.5"
             >
               Create Your Store <ArrowRight className="h-4 w-4" />
-            </Button>
+            </Link>
           </div>
         </aside>
       </div>
