@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Input,
-  Button,
-  Dropdown,
-  Avatar,
-  Badge,
-  MenuProps,
-  theme,
-  message,
-} from "antd";
+import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
 import {
   BellOutlined,
   MenuOutlined,
@@ -24,7 +15,7 @@ import {
   MenuFoldOutlined,
 } from "@ant-design/icons";
 
-import cn from "@/lib/cn";
+import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/shared/theme-toggle";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSwal } from "@/hooks/use-swal";

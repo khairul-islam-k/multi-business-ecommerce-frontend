@@ -4,7 +4,7 @@ import { Typography, Flex } from "antd";
 import { useRouter } from "next/navigation";
 import { CloudOutlined } from "@ant-design/icons";
 
-import cn from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 const { Text } = Typography;
 
