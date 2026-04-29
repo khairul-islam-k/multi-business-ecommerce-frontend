@@ -10,11 +10,13 @@ export default function RequestDemoPage() {
   return (
     <>
       <RequestDemoHero />
-      {sections.map((Section, i) => (
-        <Reveal key={i}>
-          <Section />
-        </Reveal>
-      ))}
+      <div className="px-2 md:px-0">
+        {sections.map((Section, i) => (
+          <Reveal key={i}>
+            <Section />
+          </Reveal>
+        ))}
+      </div>
     </>
   );
 }

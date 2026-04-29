@@ -8,11 +8,13 @@ const sections = [Pricing, PricingCompare, FinalCTA];
 export default function PricingPage() {
   return (
     <>
-      {sections.map((Section, i) => (
-        <Reveal key={i}>
-          <Section />
-        </Reveal>
-      ))}
+      <div className="px-2 md:px-0">
+        {sections.map((Section, i) => (
+          <Reveal key={i}>
+            <Section />
+          </Reveal>
+        ))}
+      </div>
     </>
   );
 }

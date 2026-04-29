@@ -25,7 +25,7 @@ const cols = [
 
 export const Footer = () => {
   return (
-    <footer className="relative pt-10 pb-10 bg-gradient-to-b from-background via-accent/30 to-accent/60">
+    <footer className="mx-auto relative pt-10 pb-10 bg-gradient-to-b from-background via-accent/30 to-accent/60">
       {/* Final CTA headline */}
       <div className="container mx-auto text-center pb-12">
         <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight max-w-4xl mx-auto leading-tight">

@@ -4,9 +4,11 @@ import { ContactSection } from "../_components/ContactSection";
 export default function ContactPage() {
   return (
     <>
-      <Reveal>
-        <ContactSection />
-      </Reveal>
+      <div className="px-2 md:px-0">
+        <Reveal>
+          <ContactSection />
+        </Reveal>
+      </div>
     </>
   );
 }

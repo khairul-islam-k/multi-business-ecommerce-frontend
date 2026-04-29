@@ -27,7 +27,7 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-50">
       <div className="absolute inset-0 bg-accent/60 backdrop-blur-xl border-b border-border/60" />
-      <div className="container mx-auto relative flex h-20 items-center justify-between">
+      <div className="px-2 md:px-0 container mx-auto relative flex h-20 items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <div className="grid h-10 w-10 place-items-center rounded-xl gradient-primary text-primary-foreground font-display font-extrabold text-lg shadow-soft">
@@ -62,7 +62,7 @@ export const Navbar = () => {
           </Link>
           <Link
             href="/admin/sign-in"
-            className="flex items-center gap-2 h-10 px-5 rounded-full gradient-primary text-primary-foreground text-sm font-semibold shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all inline-flex items-center gap-1.5"
+            className="h-10 px-5 rounded-full gradient-primary text-primary-foreground text-sm font-semibold shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all inline-flex items-center gap-1.5"
           >
             Create Your Store
             <ArrowRight className="h-4 w-4" />

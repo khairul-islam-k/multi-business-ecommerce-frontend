@@ -10,7 +10,7 @@ import {
 
 export const Hero = () => {
   return (
-    <section className="relative overflow-hidden gradient-mesh pt-16 pb-24 sm:pt-24 sm:pb-32">
+    <section className="relative overflow-hidden gradient-mesh pt-16 pb-24 sm:pt-24 sm:pb-32 px-2 md:px-0">
       {/* Animated background blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-primary/30 blur-3xl animate-blob" />

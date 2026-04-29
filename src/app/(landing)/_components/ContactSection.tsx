@@ -184,7 +184,7 @@ export const ContactSection = () => {
         <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-glow/15 blur-3xl" />
       </div>
 
-      <div className="container relative">
+      <div className="container mx-auto relative">
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary">

@@ -16,7 +16,7 @@ export const FeaturesHero = () => {
         <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-glow/15 blur-3xl" />
       </div>
 
-      <div className="container mx-auto relative">
+      <div className="container mx-auto relative px-2 md:px-0">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary">
             Features

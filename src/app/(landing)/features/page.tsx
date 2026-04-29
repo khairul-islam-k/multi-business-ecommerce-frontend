@@ -10,11 +10,13 @@ export default function PricingPage() {
   return (
     <>
       <FeaturesHero />
-      {sections.map((Section, i) => (
-        <Reveal key={i}>
-          <Section />
-        </Reveal>
-      ))}
+      <div className="px-2 md:px-0">
+        {sections.map((Section, i) => (
+          <Reveal key={i}>
+            <Section />
+          </Reveal>
+        ))}
+      </div>
     </>
   );
 }

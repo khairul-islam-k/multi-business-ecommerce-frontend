@@ -103,12 +103,12 @@ const team = [
 ];
 
 export const AboutHero = () => (
-  <section className="relative overflow-hidden py-20 sm:py-28">
+  <section className="relative overflow-hidden py-20 sm:py-28 px-2 md:px-0">
     <div className="absolute inset-0 pointer-events-none">
       <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
       <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-primary-glow/15 blur-3xl" />
     </div>
-    <div className="container relative">
+    <div className="container mx-auto relative">
       <div className="mx-auto max-w-3xl text-center">
         <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary">
           About OneComm
@@ -145,7 +145,7 @@ export const AboutHero = () => (
 
 export const AboutStory = () => (
   <section className="py-20 sm:py-28">
-    <div className="container">
+    <div className="container mx-auto">
       <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 max-w-6xl mx-auto">
         <div className="lg:col-span-5">
           <span className="font-mono text-xs font-bold tracking-widest text-primary">
@@ -180,7 +180,7 @@ export const AboutStory = () => (
 
 export const AboutValues = () => (
   <section className="py-20 sm:py-28 bg-accent/30">
-    <div className="container">
+    <div className="container mx-auto px-2 md:px-0">
       <div className="mx-auto max-w-2xl text-center">
         <span className="font-mono text-xs font-bold tracking-widest text-primary">
           02 / WHAT WE BELIEVE
@@ -215,7 +215,7 @@ export const AboutValues = () => (
 
 export const AboutTimeline = () => (
   <section className="py-20 sm:py-28">
-    <div className="container">
+    <div className="container mx-auto">
       <div className="mx-auto max-w-2xl text-center">
         <span className="font-mono text-xs font-bold tracking-widest text-primary">
           03 / OUR JOURNEY
@@ -264,7 +264,7 @@ export const AboutTimeline = () => (
 
 export const AboutTeam = () => (
   <section className="py-20 sm:py-28 bg-accent/30">
-    <div className="container">
+    <div className="container mx-auto px-2 md:px-0">
       <div className="mx-auto max-w-2xl text-center">
         <span className="font-mono text-xs font-bold tracking-widest text-primary">
           04 / THE TEAM

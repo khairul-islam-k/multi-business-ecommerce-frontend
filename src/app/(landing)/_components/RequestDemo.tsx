@@ -364,7 +364,7 @@ export const RequestDemoForm = () => {
 
 export const RequestDemoSection = () => (
   <section className="pb-20 sm:pb-28">
-    <div className="container">
+    <div className="container mx-auto">
       <div className="grid lg:grid-cols-12 gap-8 max-w-6xl mx-auto">
         {/* Left: perks */}
         <aside className="lg:col-span-5 space-y-4">

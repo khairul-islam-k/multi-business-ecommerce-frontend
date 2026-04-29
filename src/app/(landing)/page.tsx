@@ -28,11 +28,13 @@ export default function LandingPage() {
   return (
     <>
       <Hero />
-      {sections.map((Section, i) => (
-        <Reveal key={i} variant="rise-bounce" duration={900}>
-          <Section />
-        </Reveal>
-      ))}
+      <div className="px-2 md:px-0">
+        {sections.map((Section, i) => (
+          <Reveal key={i} variant="rise-bounce" duration={900}>
+            <Section />
+          </Reveal>
+        ))}
+      </div>
     </>
   );
 }
