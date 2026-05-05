@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Card,
   Col,
@@ -9,19 +11,14 @@ import {
   Select,
   Button,
   InputNumber,
-  Space,
   Input,
-  message,
 } from "antd";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
-import useSubmit from "@/hooks/use-submit";
 
+import { useSwal } from "@/hooks/use-swal";
+import useSubmit from "@/hooks/use-submit";
+import { mockWarehouses, mockProducts } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-import { mockWarehouses, mockProducts } from "../data";
-import { useSwal } from "@/hooks/use-swal";
 
 const { Title } = Typography;
 
@@ -30,6 +27,7 @@ export default function CreateStockTransferPage() {
   const swal = useSwal();
   const [form] = AntdForm.useForm();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     console.log("TRANSFER:", values);
 

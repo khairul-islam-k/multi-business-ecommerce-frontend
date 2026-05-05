@@ -13,7 +13,8 @@ const columns = [
   {
     title: "Name",
     dataIndex: "name",
-    render: (_: any, r: any) => (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: (r: any) => (
       <Link href={`/admin/dashboard/finance/accounts/ledgers/${r.id}`}>
         {r.name}
       </Link>
@@ -23,7 +24,8 @@ const columns = [
   {
     title: "Status",
     dataIndex: "status",
-    render: (_: any, r: any) =>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: (r: any) =>
       r.status === "Active" ? (
         <Badge status="success" text={r.status} />
       ) : (

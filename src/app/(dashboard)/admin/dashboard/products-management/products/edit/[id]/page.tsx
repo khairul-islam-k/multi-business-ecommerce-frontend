@@ -1,28 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import {
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-  Button,
-  Card,
-} from "antd";
+import { useParams, useRouter } from "next/navigation";
+import { Form, Input, InputNumber, Select, Switch, Button, Card } from "antd";
 
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
-import Swal from "sweetalert2";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 export default function ProductEditPage() {
+  const swal = useSwal();
   const [form] = Form.useForm();
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -52,7 +44,6 @@ export default function ProductEditPage() {
     queryFn: async () => api.get("/categories"),
   });
 
-
   /* ---------------- Set Form Values (IMPORTANT) ---------------- */
   useEffect(() => {
     if (product?.data?.data) {
@@ -61,19 +52,13 @@ export default function ProductEditPage() {
   }, [product, form]);
 
   /* ---------------- Submit ---------------- */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onFinish = (values: any) => {
     try {
-      api.patch(`/products/${id}`, {...values, tenant_id: 1})
-        .then(res => {
-          Swal.fire({
-            position: "top-end",
-            icon: "success",
-            title: "Your work has been saved",
-            showConfirmButton: false,
-            timer: 1500
-          });
-          router.push("/admin/dashboard/products-management/products");
-        })
+      api.patch(`/products/${id}`, { ...values, tenant_id: 1 }).then((res) => {
+        swal.success("Your work has been saved");
+        router.push("/admin/dashboard/products-management/products");
+      });
     } catch (error) {
       console.error("Update failed:", error);
     }
@@ -89,12 +74,7 @@ export default function ProductEditPage() {
       <PageHeader title="Edit Product" breadcrumb={adminBreadcrumb} />
 
       <Card style={{ marginTop: 16 }}>
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-        >
-
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Company"
             name="company_id"
@@ -102,6 +82,7 @@ export default function ProductEditPage() {
           >
             <Select
               placeholder="Select a company"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={companies?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -112,6 +93,7 @@ export default function ProductEditPage() {
           <Form.Item label="Brands" name="brand_id">
             <Select
               placeholder="Select a brands"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={brands?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -126,6 +108,7 @@ export default function ProductEditPage() {
           >
             <Select
               placeholder="Select a categories"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={categories?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -149,19 +132,35 @@ export default function ProductEditPage() {
             <Input />
           </Form.Item>
 
-          <Form.Item label="Short Description" name="short_description" rules={[{ required: true }]}>
+          <Form.Item
+            label="Short Description"
+            name="short_description"
+            rules={[{ required: true }]}
+          >
             <TextArea rows={2} />
           </Form.Item>
 
-          <Form.Item label="Long Description" name="long_description" rules={[{ required: true }]}>
+          <Form.Item
+            label="Long Description"
+            name="long_description"
+            rules={[{ required: true }]}
+          >
             <TextArea rows={4} />
           </Form.Item>
 
-          <Form.Item label="Cost Price" name="cost_price" rules={[{ required: true }]}>
+          <Form.Item
+            label="Cost Price"
+            name="cost_price"
+            rules={[{ required: true }]}
+          >
             <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
-          <Form.Item label="Sale Price" name="sale_price" rules={[{ required: true }]}>
+          <Form.Item
+            label="Sale Price"
+            name="sale_price"
+            rules={[{ required: true }]}
+          >
             <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
@@ -169,11 +168,15 @@ export default function ProductEditPage() {
             <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
 
-          <Form.Item label="Tax Type" name="tax_type" rules={[{ required: true }]}>
+          <Form.Item
+            label="Tax Type"
+            name="tax_type"
+            rules={[{ required: true }]}
+          >
             <Select>
-              <Option value="VAT">VAT</Option>
-              <Option value="GST">GST</Option>
-              <Option value="None">None</Option>
+              <option value="VAT">VAT</option>
+              <option value="GST">GST</option>
+              <option value="None">None</option>
             </Select>
           </Form.Item>
 
@@ -187,12 +190,16 @@ export default function ProductEditPage() {
 
           <Form.Item label="Status" name="status" rules={[{ required: true }]}>
             <Select>
-              <Option value="Active">Active</Option>
-              <Option value="Inactive">Inactive</Option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
             </Select>
           </Form.Item>
 
-          <Form.Item name="is_featured" label="Featured" valuePropName="checked">
+          <Form.Item
+            name="is_featured"
+            label="Featured"
+            valuePropName="checked"
+          >
             <Switch />
           </Form.Item>
 
@@ -200,9 +207,7 @@ export default function ProductEditPage() {
             <Button type="primary" htmlType="submit" style={{ marginRight: 8 }}>
               Update Product
             </Button>
-            <Button onClick={() => router.back()}>
-              Cancel
-            </Button>
+            <Button onClick={() => router.back()}>Cancel</Button>
           </Form.Item>
         </Form>
       </Card>

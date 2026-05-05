@@ -2,7 +2,9 @@
 
 import { Table } from "antd";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function DataTable({ data, columns }: any) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const mappedColumns = columns.map((col: any) => ({
     title: col.header,
     dataIndex: col.dataIndex,
@@ -14,7 +16,8 @@ export default function DataTable({ data, columns }: any) {
         : "left",
     render:
       typeof col.accessor === "function"
-        ? (_: any, record: any) => col.accessor(record)
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (_: any, record: any) => col.accessor(record)
         : undefined,
   }));
 

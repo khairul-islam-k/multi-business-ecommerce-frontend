@@ -2,17 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  Table,
-  Typography,
-  Button,
-  Tag,
-  Row,
-  Col,
-  Input,
-  Select,
-} from "antd";
+import { Card, Table, Typography, Button, Tag, Col, Input, Select } from "antd";
 
 import { mockTransfers, mockWarehouses } from "./data";
 import PageHeader from "@/components/shared/page-header";

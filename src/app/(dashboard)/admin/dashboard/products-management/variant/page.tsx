@@ -1,18 +1,18 @@
 "use client";
 
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Card, Grid, Input, Select } from "antd";
 import { useState } from "react";
-import VariantHeader from "./components/VariantHeader";
+import { useDebounce } from "use-debounce";
+import { useRouter } from "next/navigation";
+import { Button, Card, Grid, Input, Select } from "antd";
+import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import VariantTable from "./components/VariantTable";
+import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
-import { useDebounce } from "use-debounce";
-import Pagination from "@/components/shared/pagination";
 
 export type TVariant = {
   id: string;
@@ -42,6 +42,7 @@ export type TVariant = {
 
 const VariantManagement = () => {
   const screens = Grid.useBreakpoint();
+  const swal = useSwal();
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [searchValue] = useDebounce(search, 1000);
@@ -79,11 +80,7 @@ const VariantManagement = () => {
 
     onSuccess: () => {
       // refresh product list after delete
-      Swal.fire({
-        title: "Deleted!",
-        text: "Your file has been deleted.",
-        icon: "success",
-      });
+      swal.success("Your file has been deleted.");
       queryClient.invalidateQueries({
         queryKey: ["products"],
       });
@@ -91,19 +88,19 @@ const VariantManagement = () => {
   });
 
   const handleDelete = (id: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteVariant.mutate(id);
-      }
-    });
+    swal
+      .confirm({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteVariant.mutate(id);
+        }
+      });
   };
 
   return (

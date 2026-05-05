@@ -1,22 +1,23 @@
 "use client";
 
-import { DataTable } from "@/components/shared/data-table";
-import PageHeader from "@/components/shared/page-header";
-import Pagination from "@/components/shared/pagination";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Card, Dropdown, Flex, Grid, Input, Select, Tag } from "antd";
 import {
   EyeOutlined,
   MoreOutlined,
   PlusOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Dropdown, Flex, Grid, Input, Select, Tag } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+
+import api from "@/lib/axios";
+import Pagination from "@/components/shared/pagination";
+import PageHeader from "@/components/shared/page-header";
+import { DataTable } from "@/components/shared/data-table";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 /* ================= TYPES ================= */
 export interface TProduct {
@@ -33,6 +34,7 @@ export interface TProduct {
 
 /* ================= COMPONENT ================= */
 const ProductsList = () => {
+  const swal = useSwal();
   const screens = Grid.useBreakpoint();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -79,11 +81,7 @@ const ProductsList = () => {
 
     onSuccess: () => {
       // refresh product list after delete
-      Swal.fire({
-        title: "Deleted!",
-        text: "Your file has been deleted.",
-        icon: "success",
-      });
+      swal.success("Your file has been deleted.");
       queryClient.invalidateQueries({
         queryKey: ["products"],
       });
@@ -95,19 +93,19 @@ const ProductsList = () => {
   const totalPages = Math.ceil(total / limit);
 
   const handleDelete = (deleteId: string) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteProduct.mutate(deleteId);
-      }
-    });
+    swal
+      .confirm({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          deleteProduct.mutate(deleteId);
+        }
+      });
   };
 
   /* ===== TABLE COLUMNS ===== */

@@ -1,14 +1,13 @@
 "use client";
 
-import { Button, Card, Col, Input, Row, Space, Typography } from "antd";
-import { SaveOutlined, EyeOutlined } from "@ant-design/icons";
 import { useParams } from "next/navigation";
+import { Button, Card, Col, Input, Row, Space } from "antd";
+import { SaveOutlined, EyeOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { TextArea } = Input;
-const { Title } = Typography;
 
 export default function EditInvoiceTemplate() {
   const { templateId } = useParams();

@@ -1,4 +1,12 @@
+"use client";
+
 import { useState } from "react";
+import {
+  SendOutlined,
+  UserOutlined,
+  SettingOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
 import {
   Card,
   Input,
@@ -8,19 +16,14 @@ import {
   Divider,
   List,
   Typography,
-  message,
 } from "antd";
-import {
-  SendOutlined,
-  UserOutlined,
-  SettingOutlined,
-  MessageOutlined,
-} from "@ant-design/icons";
+
 import { mockNotes } from "../../data";
 import { useSwal } from "@/hooks/use-swal";
 
 const { Text } = Typography;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const noteTypeConfig: Record<string, any> = {
   internal: { icon: <SettingOutlined />, label: "Internal", color: "blue" },
   customer: { icon: <UserOutlined />, label: "Customer", color: "green" },

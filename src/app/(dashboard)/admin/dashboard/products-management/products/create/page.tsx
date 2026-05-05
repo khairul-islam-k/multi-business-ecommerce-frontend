@@ -1,20 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { Form, Input, InputNumber, Select, Switch, Button, Card } from "antd";
+
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
-import { useQuery } from "@tanstack/react-query";
-import { Form, Input, InputNumber, Select, DatePicker, Switch, Button, message, Card } from "antd";
-import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 
 const { TextArea } = Input;
-const { Option } = Select;
 
 export default function ProductCreatePage() {
+  const swal = useSwal();
   const [form] = Form.useForm();
-  const user = useAuthStore((state) => state.user);
 
   // then fix
   const tenant_id = 1;
@@ -37,28 +36,21 @@ export default function ProductCreatePage() {
     queryFn: async () => api.get("/categories"),
   });
 
-  console.log('category', categories?.data?.data?.data);
+  console.log("category", categories?.data?.data?.data);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onFinish = (values: any) => {
     // Format date
     const newData = {
       ...values,
-      tenant_id
-    }
+      tenant_id,
+    };
 
     // post data
-    api.post('/products', newData)
-      .then(res => {
-        form.resetFields();
-        Swal.fire({
-          position: "top-end",
-          icon: "success",
-          title: "Your work has been saved",
-          showConfirmButton: false,
-          timer: 1500
-        });
-      })
-
+    api.post("/products", newData).then(() => {
+      form.resetFields();
+      swal.success("Your work has been saved");
+    });
   };
 
   const router = useRouter();
@@ -83,7 +75,6 @@ export default function ProductCreatePage() {
             is_featured: false,
           }}
         >
-
           <Form.Item
             label="Company"
             name="company_id"
@@ -91,6 +82,7 @@ export default function ProductCreatePage() {
           >
             <Select
               placeholder="Select a company"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={companies?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -101,6 +93,7 @@ export default function ProductCreatePage() {
           <Form.Item label="Brands" name="brand_id">
             <Select
               placeholder="Select a brands"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={brands?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -115,6 +108,7 @@ export default function ProductCreatePage() {
           >
             <Select
               placeholder="Select a categories"
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               options={categories?.data?.data?.data?.map((c: any) => ({
                 label: c.name,
                 value: Number(c.id),
@@ -180,9 +174,9 @@ export default function ProductCreatePage() {
             rules={[{ required: true }]}
           >
             <Select>
-              <Option value="VAT">VAT</Option>
-              <Option value="GST">GST</Option>
-              <Option value="None">None</Option>
+              <option value="VAT">VAT</option>
+              <option value="GST">GST</option>
+              <option value="None">None</option>
             </Select>
           </Form.Item>
 
@@ -196,8 +190,8 @@ export default function ProductCreatePage() {
 
           <Form.Item label="Status" name="status" rules={[{ required: true }]}>
             <Select>
-              <Option value="Active">Active</Option>
-              <Option value="Inactive">Inactive</Option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
             </Select>
           </Form.Item>
 

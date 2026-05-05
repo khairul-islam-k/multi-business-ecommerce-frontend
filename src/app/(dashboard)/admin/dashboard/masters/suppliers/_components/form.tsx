@@ -2,6 +2,7 @@
 
 import { Form as AntdForm, Input, Select, Button, Row, Col } from "antd";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Form({ initialValues, mode, onSubmit, loading }: any) {
   const [form] = AntdForm.useForm();
 

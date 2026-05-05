@@ -1,11 +1,6 @@
 "use client";
 
 import { Card, Col, Row, Typography } from "antd";
-
-import { mockMonthlyData, mockProfitData, mockStats } from "./data";
-import StatCard from "@/components/shared/stat-card";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import {
   Bar,
   BarChart,
@@ -18,6 +13,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+
+import StatCard from "@/components/shared/stat-card";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { mockMonthlyData, mockProfitData, mockStats } from "./data";
 
 const { Title } = Typography;
 

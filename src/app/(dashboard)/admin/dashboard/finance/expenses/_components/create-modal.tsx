@@ -1,6 +1,7 @@
 "use client";
 
 import { Input, Select, InputNumber, DatePicker, Space } from "antd";
+
 import { mockExpenseCategories } from "../data";
 
 export default function CreateExpense() {
@@ -10,18 +11,18 @@ export default function CreateExpense() {
 
       <Select placeholder="Category">
         {mockExpenseCategories.map((c) => (
-          <Select.Option key={c.id} value={c.id}>
+          <option key={c.id} value={c.id}>
             {c.name}
-          </Select.Option>
+          </option>
         ))}
       </Select>
 
       <InputNumber placeholder="Amount" style={{ width: "100%" }} />
 
       <Select placeholder="Payment Method">
-        <Select.Option value="cash">Cash</Select.Option>
-        <Select.Option value="card">Card</Select.Option>
-        <Select.Option value="bank">Bank</Select.Option>
+        <option value="cash">Cash</option>
+        <option value="card">Card</option>
+        <option value="bank">Bank</option>
       </Select>
 
       <Input placeholder="Vendor Name" />

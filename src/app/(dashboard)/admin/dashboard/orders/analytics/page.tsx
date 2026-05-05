@@ -16,10 +16,10 @@ import {
   YAxis,
 } from "recharts";
 
+import { mockStats, mockOrders } from "./data";
+import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import StatCard from "@/components/shared/stat-card";
-import { mockStats, mockOrders } from "./data";
 
 const { Title } = Typography;
 
@@ -104,8 +104,8 @@ export default function OrderAnalytics() {
       <PageHeader title="Order Analytics" breadcrumb={adminBreadcrumb} />
 
       <Row gutter={[16, 16]}>
-        {mockStats.map((stat) => (
-          <Col xs={24} md={12} lg={6}>
+        {mockStats.map((stat, i) => (
+          <Col key={i} xs={24} md={12} lg={6}>
             <StatCard stat={stat} />
           </Col>
         ))}

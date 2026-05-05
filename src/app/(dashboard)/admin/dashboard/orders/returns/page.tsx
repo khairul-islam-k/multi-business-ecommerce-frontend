@@ -52,6 +52,7 @@ export default function OrderReturnsPage() {
       title: "Status",
       dataIndex: "status",
       render: (v: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const map: Record<string, any> = {
           pending: "warning",
           approved: "success",
