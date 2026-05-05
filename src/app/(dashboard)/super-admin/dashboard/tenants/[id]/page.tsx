@@ -4,19 +4,18 @@ import { Row, Col, Tabs } from "antd";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
 import api from "@/lib/axios";
-
-import TenantInfoCard from "./_components/tenant-info-card";
-import OverviewTab from "./_components/overview-tab";
 import UsageTab from "./_components/usage-tab";
-import ModulesTab from "./_components/modules-tab";
-import FeaturesTab from "./_components/features-tab";
-import CompanyTable from "./_components/company-table";
-import BillingTable from "./_components/billing-table";
+import Loader from "@/components/shared/loader";
 import LogsTable from "./_components/logs-table";
+import ModulesTab from "./_components/modules-tab";
+import OverviewTab from "./_components/overview-tab";
+import FeaturesTab from "./_components/features-tab";
+import BillingTable from "./_components/billing-table";
+import CompanyTable from "./_components/company-table";
+import PageHeader from "@/components/shared/page-header";
+import TenantInfoCard from "./_components/tenant-info-card";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function TenantDetailPage() {
   const { id: uuid } = useParams();

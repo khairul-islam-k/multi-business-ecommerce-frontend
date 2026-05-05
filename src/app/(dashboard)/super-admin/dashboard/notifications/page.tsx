@@ -14,17 +14,15 @@ import {
   Tooltip,
   Button,
   Card,
-  message,
   Modal,
   Space,
   Typography,
 } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
 
-const { Option } = Select;
 const { Text, Paragraph } = Typography;
 
 type Notification = {
@@ -213,10 +211,10 @@ export default function NotificationsPage() {
               onChange={setFilter}
               className="w-full sm:w-40"
             >
-              <Option value="all">All</Option>
-              <Option value="unread">Unread</Option>
-              <Option value="email">Email</Option>
-              <Option value="system">System</Option>
+              <option value="all">All</option>
+              <option value="unread">Unread</option>
+              <option value="email">Email</option>
+              <option value="system">System</option>
             </Select>
           </div>
 

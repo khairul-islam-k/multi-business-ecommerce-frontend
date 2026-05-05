@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Avatar, Button, Dropdown, Space } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import { Avatar, Button, Dropdown, Space } from "antd";
 
 const companies = ["Google", "Microsoft", "Apple", "Amazon", "Meta"];
 

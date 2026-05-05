@@ -4,7 +4,9 @@ import { useTheme } from "@/providers/shadcn-theme-provider";
 
 export const ThemeToggle = ({ className = "" }: { className?: string }) => {
   const { theme, toggle } = useTheme();
+
   const isDark = theme === "dark";
+
   return (
     <button
       onClick={toggle}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   Form,
   Input,
@@ -11,20 +12,18 @@ import {
   theme,
 } from "antd";
 
-import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import useSubmit from "@/hooks/use-submit";
-import { queryClient } from "@/providers/query-provider";
-
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
+import PageHeader from "@/components/shared/page-header";
+import { queryClient } from "@/providers/query-provider";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function CreatePackage() {
+  const swal = useSwal();
+  const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
-  const router = useRouter();
-  const swal = useSwal();
 
   const { loading, handler } = useSubmit(async (values: any) => {
     try {

@@ -1,13 +1,14 @@
-import { useSwal } from "@/hooks/use-swal";
-import { useAuthStore } from "@/stores/auth.store";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LogoutOutlined,
   ProfileOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Flex, message, Typography } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Avatar, Button, Dropdown, Flex, Typography } from "antd";
+
+import { useSwal } from "@/hooks/use-swal";
+import { useAuthStore } from "@/stores/auth.store";
 
 const { Text } = Typography;
 

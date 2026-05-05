@@ -15,7 +15,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: "OneComm",
-  description: "All in one ECommerce ERP Solution",
+  description: "All in one ECommerce Solution",
 };
 
 export default function RootLayout({

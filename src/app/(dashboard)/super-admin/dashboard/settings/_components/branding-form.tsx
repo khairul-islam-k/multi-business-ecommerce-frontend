@@ -1,14 +1,15 @@
 "use client";
 
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 
-import { brandingSchema, BrandingValues } from "../schemas";
 import useSubmit from "@/hooks/use-submit";
 import { useSwal } from "@/hooks/use-swal";
+import { brandingSchema, BrandingValues } from "../schemas";
 
 export default function BrandingForm() {
   const swal = useSwal();
   const [form] = Form.useForm<BrandingValues>();
+
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
     swal.success("Saved!");

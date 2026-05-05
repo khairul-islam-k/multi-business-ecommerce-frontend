@@ -14,13 +14,13 @@ import { SearchOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { ColumnsType } from "antd/es/table";
 import { useDebounce } from "use-debounce";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 
 const { Title, Text } = Typography;
 
 export default function StockOverviewPage() {
   const screens = Grid.useBreakpoint();
-  const [searchText, setSearchText] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>("");
   const [value] = useDebounce(searchText, 1000);
 
   const tenantId = 1;
@@ -29,14 +29,15 @@ export default function StockOverviewPage() {
   const [page, setPage] = useState(1);
   const limit = 5;
 
-  const {
-    data: inventories,
-  } = useQuery({
+  const { data: inventories } = useQuery({
     queryKey: ["inventory", value, tenantId, limit, page],
-    queryFn: async () => await api.get(`/overview?search=${value}&tenantId=${tenantId}&page=${page}&limit=${limit}&sortBy=created_at&sortOrder=DESC`)
+    queryFn: async () =>
+      await api.get(
+        `/overview?search=${value}&tenantId=${tenantId}&page=${page}&limit=${limit}&sortBy=created_at&sortOrder=DESC`,
+      ),
   });
 
-  console.log('inventories', inventories?.data?.data?.data);
+  console.log("inventories", inventories?.data?.data?.data);
 
   // pagination
   const total = inventories?.data?.data?.meta?.total;
@@ -46,9 +47,7 @@ export default function StockOverviewPage() {
     {
       title: "Product",
       key: "product",
-      render: (_, record) => (
-        <Text strong>{record.product?.name ?? "-"}</Text>
-      ),
+      render: (_, record) => <Text strong>{record.product?.name ?? "-"}</Text>,
     },
     {
       title: "SKU",
@@ -119,7 +118,6 @@ export default function StockOverviewPage() {
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
-
       </div>
 
       <Row gutter={[24, 24]}>
@@ -135,7 +133,6 @@ export default function StockOverviewPage() {
               pagination={false}
               scroll={{ x: "max-content" }}
             />
-
           </Card>
 
           <Pagination

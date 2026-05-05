@@ -2,8 +2,8 @@
 
 import { Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
 
+import api from "@/lib/axios";
 import TableWrapper from "./table-wrapper";
 
 export default function LogsTable({ tenantId }: { tenantId: string }) {

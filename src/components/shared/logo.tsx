@@ -1,12 +1,8 @@
 "use client";
 
-import { Typography, Flex } from "antd";
-import { useRouter } from "next/navigation";
-import { CloudOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
-
-const { Text } = Typography;
 
 interface LogoProps {
   collapsed?: boolean;
@@ -14,55 +10,20 @@ interface LogoProps {
   white?: boolean;
 }
 
-export default function Logo({
-  collapsed = false,
-  className = "",
-  white = false,
-}: LogoProps) {
-  const router = useRouter();
-
+export default function Logo({ collapsed = false, className = "" }: LogoProps) {
   return (
-    <Flex
-      align="center"
-      gap={collapsed ? 0 : 10}
-      className={cn(
-        "overflow-hidden transition-all duration-300 cursor-pointer",
-        className,
-      )}
-      style={{ transition: "all 0.3s ease" }}
-      onClick={() => router.push("/")}
+    <Link
+      href="/"
+      className={cn("flex items-center gap-2.5 shrink-0", className)}
     >
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 8,
-          background: "#2563EB",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "#fff",
-          fontSize: 18,
-          fontWeight: 600,
-          transition: "all 0.3s ease",
-        }}
-      >
-        <CloudOutlined />
+      <div className="grid h-10 w-10 place-items-center rounded-xl gradient-primary text-primary-foreground font-display font-extrabold text-lg shadow-soft">
+        O
       </div>
-
-      <Text
-        style={{
-          fontSize: collapsed ? 0 : 24,
-          fontWeight: 700,
-          letterSpacing: "-0.02em",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          transition: "all 0.3s ease",
-          color: white ? "white" : "inherit",
-        }}
-      >
-        {!collapsed && "OneComm"}
-      </Text>
-    </Flex>
+      {!collapsed && (
+        <span className="font-display text-2xl font-bold tracking-tight">
+          One<span className="text-muted-foreground font-medium">Comm</span>
+        </span>
+      )}
+    </Link>
   );
 }

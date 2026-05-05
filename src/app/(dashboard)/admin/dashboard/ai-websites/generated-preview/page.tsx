@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button, Segmented } from "antd";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeftOutlined,
   DesktopOutlined,
@@ -11,13 +11,12 @@ import {
   CheckOutlined,
 } from "@ant-design/icons";
 
-import { DeviceFrame } from "../_components/device-frame";
-import { PageTabs } from "../_components/page-tabs";
-import { SectionPreview } from "../_components/section-preview";
-
 import { mockGeneratedResult } from "../data";
+import { PageTabs } from "../_components/page-tabs";
 import PageHeader from "@/components/shared/page-header";
+import { DeviceFrame } from "../_components/device-frame";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { SectionPreview } from "../_components/section-preview";
 
 export default function GeneratedLayoutPreview() {
   const router = useRouter();

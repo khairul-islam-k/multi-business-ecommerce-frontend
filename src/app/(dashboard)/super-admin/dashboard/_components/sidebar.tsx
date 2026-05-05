@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Layout, Menu, Drawer, Button, theme, MenuProps } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-
+import { theme, Layout, Menu, Drawer, MenuProps } from "antd";
 import {
   DashboardOutlined,
   BankOutlined,
@@ -14,13 +12,12 @@ import {
   BellOutlined,
   RadarChartOutlined,
   SettingOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
 } from "@ant-design/icons";
 
 import Logo from "@/components/shared/logo";
 
 const { Sider } = Layout;
+
 const BASE_PATH = "/super-admin/dashboard";
 
 const navItems: MenuProps["items"] = [

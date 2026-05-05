@@ -1,9 +1,11 @@
 "use client";
+
 import React from "react";
 import { Grid, Menu, theme } from "antd";
+
+import { items } from "./side-navigation";
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./business-owner";
-import { items } from "./side-navigation";
 
 type SidebarProps = {
   close?: () => void;

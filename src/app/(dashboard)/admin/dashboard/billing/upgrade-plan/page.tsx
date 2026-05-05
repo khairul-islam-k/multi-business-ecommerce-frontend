@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Typography, Row, Col, Button, Switch, Tag } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { Card, Typography, Row, Col, Button, Switch, Tag } from "antd";
 
 import { mockPlans } from "./data";
 import PageHeader from "@/components/shared/page-header";

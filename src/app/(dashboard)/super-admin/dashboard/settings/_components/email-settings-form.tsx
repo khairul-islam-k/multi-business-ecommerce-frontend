@@ -1,15 +1,16 @@
 "use client";
 
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { emailSettingsSchema, EmailSettingsValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function EmailSettingsForm() {
   const swal = useSwal();
   const [form] = Form.useForm<EmailSettingsValues>();
+
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
     swal.success("Saved!");

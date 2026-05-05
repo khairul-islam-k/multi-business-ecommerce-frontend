@@ -1,7 +1,7 @@
 "use client";
 
-import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
+import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 type Review = {
   quote: string;

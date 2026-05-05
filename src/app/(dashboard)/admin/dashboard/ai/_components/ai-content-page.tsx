@@ -1,12 +1,13 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { DataTable, Column } from "@/components/shared/data-table";
-import { mockAiGenerations, AiGeneration } from "../data";
-import { Button, message } from "antd";
+import { Button } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+
 import { useSwal } from "@/hooks/use-swal";
+import { mockAiGenerations } from "../data";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { DataTable, Column } from "@/components/shared/data-table";
 
 const filtered = (type: string) =>
   mockAiGenerations.filter((g) => g.module_type === type);
@@ -15,7 +16,6 @@ const columns: Column<any>[] = [
   {
     key: "prompt",
     label: "Prompt",
-    sortable: true,
     render: (r) => (
       <span className="max-w-62.5 truncate block">{r.prompt}</span>
     ),
@@ -32,7 +32,6 @@ const columns: Column<any>[] = [
   {
     key: "created_at",
     label: "Created",
-    sortable: true,
     render: (r) => new Date(r.created_at).toLocaleDateString(),
   },
 ];
@@ -55,7 +54,6 @@ export default function AiContentPage({
       <DataTable
         data={filtered(moduleType)}
         columns={columns}
-        searchKeys={["prompt", "generated_text"]}
         actions={(row) => (
           <Button
             type="text"

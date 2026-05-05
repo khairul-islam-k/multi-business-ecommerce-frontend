@@ -21,7 +21,6 @@ import {
   ClockCircleOutlined,
 } from "@ant-design/icons";
 
-const { Option } = Select;
 const { Text, Paragraph } = Typography;
 
 export type Log = {
@@ -150,10 +149,10 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
         />
 
         <Select value={filter} onChange={setFilter} className="w-40">
-          <Option value="all">All</Option>
-          <Option value="error">Error</Option>
-          <Option value="warning">Warning</Option>
-          <Option value="info">Info</Option>
+          <option value="all">All</option>
+          <option value="error">Error</option>
+          <option value="warning">Warning</option>
+          <option value="info">Info</option>
         </Select>
       </div>
 

@@ -4,8 +4,8 @@ import { Card, Tabs } from "antd";
 
 import { mockErrors, mockLogs } from "./data";
 import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import SystemLogsTable from "./_components/system-logs-table";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import SystemErrorsTable from "./_components/system-errors-table";
 
 export default function MonitoringPage() {

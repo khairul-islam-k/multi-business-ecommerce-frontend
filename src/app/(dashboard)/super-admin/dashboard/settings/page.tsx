@@ -13,18 +13,17 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-
-import GeneralSettingsForm from "./_components/general-settings-form";
-import SecuritySettingsForm from "./_components/security-settings-form";
-import NotificationSettingsForm from "./_components/notification-settings-form";
+import ThemeForm from "./_components/theme-form";
 import ApiKeysForm from "./_components/api-keys-form";
 import WebhooksForm from "./_components/webhooks-form";
 import BrandingForm from "./_components/branding-form";
 import LanguageForm from "./_components/language-form";
-import ThemeForm from "./_components/theme-form";
+import PageHeader from "@/components/shared/page-header";
 import EmailSettingsForm from "./_components/email-settings-form";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import GeneralSettingsForm from "./_components/general-settings-form";
+import SecuritySettingsForm from "./_components/security-settings-form";
+import NotificationSettingsForm from "./_components/notification-settings-form";
 
 export default function SettingsPage() {
   return (

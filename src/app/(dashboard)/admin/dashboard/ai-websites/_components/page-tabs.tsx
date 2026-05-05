@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs } from "antd";
+
 import type { GeneratedPage } from "../types";
 
 interface Props {

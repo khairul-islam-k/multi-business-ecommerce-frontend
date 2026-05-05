@@ -1,14 +1,14 @@
 "use client";
 
 import { Card, Typography } from "antd";
-import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
+import api from "@/lib/axios";
 import Form from "../../_components/form";
+import { useSwal } from "@/hooks/use-swal";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Swal from "sweetalert2";
 
 interface TCompany {
   id: string;
@@ -37,34 +37,28 @@ interface TCompany {
 const { Title } = Typography;
 
 export default function EditCompanyPage() {
-  const router = useRouter();
+  const swal = useSwal();
   const { id } = useParams();
   const [company, setCompany] = useState<TCompany>();
 
   const handleSubmit = async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    axios.patch(`http://localhost:5002/onecomm/api/v1/companies/${id}`,
-      values
-    ).then(res => {
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Your is updated",
-        showConfirmButton: false,
-        timer: 1500
+    api
+      .patch(`http://localhost:5002/onecomm/api/v1/companies/${id}`, values)
+      .then((res) => {
+        swal.success("Your is updated");
       });
-    })
   };
 
   useEffect(() => {
-    axios.get(`http://localhost:5002/onecomm/api/v1/companies/${id}`)
-      .then(res => setCompany(res.data.data))
-  }, [id])
+    api
+      .get(`http://localhost:5002/onecomm/api/v1/companies/${id}`)
+      .then((res) => setCompany(res.data.data));
+  }, [id]);
 
   if (!company) {
     return <Card loading />;
   }
-
 
   return (
     <div className="space-y-6">

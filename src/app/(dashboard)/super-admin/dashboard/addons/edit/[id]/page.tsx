@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { notFound, useParams, useRouter } from "next/navigation";
 import {
   Form,
@@ -10,26 +11,21 @@ import {
   Col,
   Button,
   theme,
-  message,
 } from "antd";
 
-import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
-
 import useSubmit from "@/hooks/use-submit";
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-import { queryClient } from "@/providers/query-provider";
 import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { queryClient } from "@/providers/query-provider";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function EditAddon() {
   const swal = useSwal();
-  const { id: uuid } = useParams();
   const router = useRouter();
   const [form] = Form.useForm();
+  const { id: uuid } = useParams();
   const { token } = theme.useToken();
 
   const { data, isLoading } = useQuery({
@@ -94,8 +90,8 @@ export default function EditAddon() {
           <Col xs={24} md={12}>
             <Form.Item name="type" label="Type">
               <Select>
-                <Option value="Usage">Usage</Option>
-                <Option value="Flat">Flat</Option>
+                <option value="Usage">Usage</option>
+                <option value="Flat">Flat</option>
               </Select>
             </Form.Item>
           </Col>
@@ -123,8 +119,8 @@ export default function EditAddon() {
           <Col xs={24} md={12}>
             <Form.Item name="status" label="Status">
               <Select>
-                <Option value="Active">Active</Option>
-                <Option value="Inactive">Inactive</Option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </Select>
             </Form.Item>
           </Col>

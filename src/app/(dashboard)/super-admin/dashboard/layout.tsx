@@ -1,7 +1,8 @@
 "use client";
 
-import { ReactNode, useState } from "react";
 import { theme, Layout } from "antd";
+import { ReactNode, useState } from "react";
+
 import Topbar from "./_components/topbar";
 import Sidebar from "./_components/sidebar";
 import AuthGuard from "@/components/auth/auth-guard";
@@ -13,9 +14,9 @@ export default function SuperAdminDashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
   const { token } = theme.useToken();
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <AuthGuard redirectUrl="/super-admin/sign-in" role="Admin">

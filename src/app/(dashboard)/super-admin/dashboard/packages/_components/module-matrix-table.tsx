@@ -1,8 +1,9 @@
 "use client";
 import { EyeOutlined } from "@ant-design/icons";
-import LineItemAddFrom from "./LineItemAddFrom";
-import { Table, Tag, Space, Button, Card } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { Table, Tag, Space, Button, Card } from "antd";
+
+import LineItemAddFrom from "./line-item-add-form";
 
 export type ModuleStatus = "Active" | "Inactive";
 
@@ -40,7 +41,6 @@ export const moduleData: ModuleItem[] = [
 ];
 
 export default function ModuleMatrixTable() {
-
   const columns: ColumnsType<ModuleItem> = [
     {
       title: "Module Name",
@@ -79,9 +79,7 @@ export default function ModuleMatrixTable() {
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <Tag color={status === "Active" ? "green" : "red"}>
-          {status}
-        </Tag>
+        <Tag color={status === "Active" ? "green" : "red"}>{status}</Tag>
       ),
     },
     {
@@ -89,31 +87,30 @@ export default function ModuleMatrixTable() {
       key: "action",
       render: () => (
         <Space>
-          <Button
-          type="text"
-          icon={<EyeOutlined />}
-          ></Button>
+          <Button type="text" icon={<EyeOutlined />}></Button>
         </Space>
       ),
     },
   ];
 
-  return <div>
-    {/* table */}
-    <Table
-      rowKey="slug"
-      columns={columns}
-      dataSource={moduleData}
-      pagination={false}
-      bordered
-    />
-    {/* ItemAddForm */}
-    <Card
-      style={{
-        marginTop: '10px'
-      }}
-    >
-      <LineItemAddFrom />
-    </Card>
-  </div>;
+  return (
+    <div>
+      {/* table */}
+      <Table
+        rowKey="slug"
+        columns={columns}
+        dataSource={moduleData}
+        pagination={false}
+        bordered
+      />
+      {/* ItemAddForm */}
+      <Card
+        style={{
+          marginTop: "10px",
+        }}
+      >
+        <LineItemAddFrom />
+      </Card>
+    </div>
+  );
 }
