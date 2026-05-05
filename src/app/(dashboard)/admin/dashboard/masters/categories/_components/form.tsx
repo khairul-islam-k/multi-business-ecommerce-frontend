@@ -1,11 +1,12 @@
 "use client";
 
-import { Form as AntdForm, Input, Select, Button, Row, Col } from "antd";
 import { useQuery } from "@tanstack/react-query";
+import { Form as AntdForm, Input, Select, Button, Row, Col } from "antd";
 
-import useSubmit from "@/hooks/use-submit";
 import api from "@/lib/axios";
+import useSubmit from "@/hooks/use-submit";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Form({ initialValues, mode, onSubmit }: any) {
   const [form] = AntdForm.useForm();
 
@@ -51,7 +52,9 @@ export default function Form({ initialValues, mode, onSubmit }: any) {
               loading={isLoading}
               placeholder="Select parent category"
               options={categories
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .filter((c: any) => c.id !== initialValues?.id) // prevent self-parent (edit)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .map((c: any) => ({
                   label: c.name,
                   value: c.id,

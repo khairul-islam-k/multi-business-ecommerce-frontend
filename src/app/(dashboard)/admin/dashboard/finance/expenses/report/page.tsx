@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Card, Row, Col, Select, Typography, DatePicker, Space } from "antd";
+import { Card, Row, Col, Select, DatePicker, Space } from "antd";
 import { BarChartOutlined, PieChartOutlined } from "@ant-design/icons";
 import {
   ResponsiveContainer,
@@ -15,11 +15,10 @@ import {
   Cell,
 } from "recharts";
 
+import { mockExpenses } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockExpenses } from "../data";
 
-const { Title } = Typography;
 const { RangePicker } = DatePicker;
 
 export default function ExpenseReportsPage() {

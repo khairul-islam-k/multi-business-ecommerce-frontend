@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { Table, Button, Tag, Space, Card, Input } from "antd";
 import { PlusOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
-import Link from "next/link";
+
 import { mockData } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -33,11 +34,13 @@ export default function InvoiceTemplates() {
     },
     {
       title: "Used",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (r: any) => `${r.usage} invoices`,
     },
     { title: "Last Modified", dataIndex: "lastModified" },
     {
       title: "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (r: any) => (
         <Space>
           <Button icon={<EyeOutlined />} />

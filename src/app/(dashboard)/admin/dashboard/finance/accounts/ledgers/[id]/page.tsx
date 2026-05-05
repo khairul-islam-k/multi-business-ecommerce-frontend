@@ -1,14 +1,13 @@
 "use client";
 
-import { notFound, useParams, useRouter } from "next/navigation";
+import { mockLedgers } from "../data";
+import { notFound, useParams } from "next/navigation";
 import { Card, Tag, Button, Descriptions } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockLedgers } from "../data";
 
 export default function LedgerDetailsPage() {
   const params = useParams();
-  const router = useRouter();
 
   const ledger = mockLedgers.find((l) => l.id === params.id);
 

@@ -13,13 +13,15 @@ const { Link } = Typography;
 export default function ExpensesList() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentExpense, setCurrentExpense] = useState<any>(null);
 
   const columns = [
     {
       title: "Title",
       dataIndex: "title",
-      render: (_: any, r: any) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (r: any) => (
         <Link
           onClick={() => {
             setCurrentExpense(mockExpenses.find((e) => e.id === r.id));

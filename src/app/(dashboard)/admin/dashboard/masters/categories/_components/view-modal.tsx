@@ -1,7 +1,9 @@
 "use client";
 
-import { Modal, Descriptions, Image } from "antd";
+import Image from "next/image";
+import { Modal, Descriptions } from "antd";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ViewModal({ open, onClose, category }: any) {
   return (
     <Modal
@@ -13,7 +15,7 @@ export default function ViewModal({ open, onClose, category }: any) {
       {category && (
         <Descriptions column={1} bordered size="small">
           <Descriptions.Item label="Image">
-            <Image src={category.image} width={60} />
+            <Image src={category.image} width={60} height={60} alt="" />
           </Descriptions.Item>
 
           <Descriptions.Item label="Name">{category.name}</Descriptions.Item>

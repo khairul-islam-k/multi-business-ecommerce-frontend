@@ -2,30 +2,21 @@
 
 import { useState } from "react";
 import { notFound, useParams } from "next/navigation";
-import {
-  Card,
-  Table,
-  Input,
-  Button,
-  Form,
-  Select,
-  Typography,
-  message,
-} from "antd";
+import { Card, Table, Input, Button, Form, Select, Typography } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { mockOrders, mockReturns } from "../../data";
 import { ReturnStatusBadge } from "../../_components/badge";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
 
 const { TextArea } = Input;
 const { Text } = Typography;
 
 export default function OrderReturnForm() {
-  const { id } = useParams();
   const swal = useSwal();
+  const { id } = useParams();
 
   const [reason, setReason] = useState("");
   const [condition, setCondition] = useState("Unopened");
@@ -34,8 +25,6 @@ export default function OrderReturnForm() {
   const order = mockOrders.find((order) => order.id === id);
   const returns = mockReturns.filter((_return) => _return.order_id === id);
 
-  if (!order) return notFound();
-
   const { handler, loading } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
     swal.success("Return request submitted");
@@ -43,6 +32,8 @@ export default function OrderReturnForm() {
     setCondition("Unopened");
     setRefundAmount("");
   });
+
+  if (!order) return notFound();
 
   return (
     <div className="space-y-6">

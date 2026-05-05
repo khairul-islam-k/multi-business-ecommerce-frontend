@@ -24,6 +24,7 @@ export default function WarehouseStock() {
               title: "Product",
               dataIndex: "product",
               key: "product",
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               render: (_: any, record: any) => <Text>{record.name}</Text>,
             },
             {

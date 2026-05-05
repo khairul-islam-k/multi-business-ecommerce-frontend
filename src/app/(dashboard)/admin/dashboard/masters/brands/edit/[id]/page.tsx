@@ -1,28 +1,16 @@
 "use client";
 
-import {
-  Form,
-  Input,
-  Select,
-  Row,
-  Col,
-  Button,
-  Card,
-  theme,
-  message,
-} from "antd";
-
-import { notFound, useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { notFound, useParams, useRouter } from "next/navigation";
+import { Form, Input, Select, Row, Col, Button, Card, theme } from "antd";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
+import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function EditBrandPage() {
   const { id: uuid } = useParams();
@@ -36,6 +24,7 @@ export default function EditBrandPage() {
     queryFn: async () => api.get(`/brands/${uuid}`).then((res) => res.data),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.patch(`/brands/${uuid}`, values);
@@ -45,6 +34,7 @@ export default function EditBrandPage() {
       queryClient.invalidateQueries({ queryKey: ["fetch-brands"] });
 
       router.push("/admin/dashboard/masters/brands");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       swal.error(err?.response?.data?.message || "Failed to update brand");
     }

@@ -27,13 +27,13 @@ export default function DamagedProductsPage() {
   const columns = [
     {
       title: "Product",
-      render: (_: any, record: any) => (
-        <Text strong>{record.product_name}</Text>
-      ),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (record: any) => <Text strong>{record.product_name}</Text>,
     },
     {
       title: "Warehouse",
-      render: (_: any, record: any) => record.warehouse_name,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (record: any) => record.warehouse_name,
     },
     {
       title: "Quantity",

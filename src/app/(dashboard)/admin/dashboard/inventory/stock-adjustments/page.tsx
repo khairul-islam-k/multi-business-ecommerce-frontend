@@ -14,10 +14,9 @@ import {
   Select,
 } from "antd";
 
+import { mockAdjustments, mockWarehouses } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-import { mockAdjustments, mockWarehouses } from "./data";
 
 const { Title, Text } = Typography;
 const { Search } = Input;

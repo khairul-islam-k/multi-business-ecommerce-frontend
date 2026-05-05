@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import {
+  TruckOutlined,
+  BlockOutlined,
+  ReloadOutlined,
+  CreditCardOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
@@ -20,25 +27,17 @@ import {
   Descriptions,
   Input,
 } from "antd";
-import {
-  TruckOutlined,
-  BlockOutlined,
-  ReloadOutlined,
-  CreditCardOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import PageHeader from "@/components/shared/page-header";
-import SearchableSelect from "@/components/shared/searchable-select";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { OrderNotesPanel } from "./_components/notes-panel";
 import { OrderTimeline } from "./_components/timeline-panel";
-import { useSwal } from "@/hooks/use-swal";
+import SearchableSelect from "@/components/shared/searchable-select";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
-const { Option } = Select;
 
 type ValueType = string | number;
 
@@ -121,6 +120,7 @@ export default function OrderDetails() {
   useEffect(() => {
     if (!order) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedSupplier(order.supplier_id ?? undefined);
     setSelectedCourier(order.courier_id ?? "");
     setNote(order.note ?? "");
@@ -452,9 +452,9 @@ export default function OrderDetails() {
         >
           {["FedEx", "DHL", "UPS", "USPS", "Royal Mail", "Aramex"].map(
             (courier) => (
-              <Option key={courier} value={courier}>
+              <option key={courier} value={courier}>
                 {courier}
-              </Option>
+              </option>
             ),
           )}
         </Select>
@@ -470,6 +470,7 @@ export default function OrderDetails() {
       >
         <SearchableSelect
           value={selectedSupplier}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           onChange={setSelectedSupplier as any}
           endpoint="/business-suppliers"
           placeholder="Search and select supplier"

@@ -9,6 +9,7 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const statusColors: Record<string, any> = {
   Completed: "success",
   Pending: "warning",

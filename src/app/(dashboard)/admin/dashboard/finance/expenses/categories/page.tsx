@@ -12,20 +12,19 @@ import {
   Modal,
   Space,
   Select,
-  message,
 } from "antd";
 
+import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 import { mockExpenseCategories } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import useSubmit from "@/hooks/use-submit";
-import { useSwal } from "@/hooks/use-swal";
 
 const { Search } = Input;
 
 export default function ExpenseCategoriesList() {
-  const [showModal, setShowModal] = useState(false);
   const swal = useSwal();
+  const [showModal, setShowModal] = useState(false);
 
   const { handler, loading } = useSubmit(async () => {
     await Promise.resolve(setTimeout(() => {}, 1000));
@@ -38,7 +37,8 @@ export default function ExpenseCategoriesList() {
     {
       title: "Status",
       dataIndex: "status",
-      render: (_: any, record: any) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (record: any) =>
         record.status === "Active" ? (
           <Badge status="success" text={record.status} />
         ) : (

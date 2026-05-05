@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { Button } from "antd";
+import { useState } from "react";
 import { PlusOutlined, SettingOutlined } from "@ant-design/icons";
 
+import { mockGateways } from "./data";
+import StatusBadge from "../_components/badge";
+import DataTable from "../_components/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import DataTable from "../_components/data-table";
-import StatusBadge from "../_components/badge";
-import { mockGateways } from "./data";
-import { useState } from "react";
 import CreateGatewayModal from "../_components/create-modal";
 
 export default function PaymentGatewayList() {
@@ -36,10 +36,12 @@ export default function PaymentGatewayList() {
       <DataTable
         data={mockGateways}
         columns={[
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           { header: "Gateway", accessor: (r: any) => <b>{r.name}</b> },
           { header: "Slug", dataIndex: "slug" },
           {
             header: "Status",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             accessor: (r: any) => (
               <StatusBadge status={r.status} text={r.status.toUpperCase()} />
             ),

@@ -36,6 +36,7 @@ export default function InventoryValueReportPage() {
   const columns = [
     {
       title: "Product",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, record: any) => {
         const product = getProduct(record.product_id);
         return <Text strong>{product?.name}</Text>;
@@ -43,6 +44,7 @@ export default function InventoryValueReportPage() {
     },
     {
       title: "Warehouse",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, record: any) => {
         const warehouse = getWarehouse(record.warehouse_id);
         return warehouse?.name;
@@ -62,6 +64,7 @@ export default function InventoryValueReportPage() {
     {
       title: "Total Value",
       align: "right" as const,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, record: any) => (
         <Text strong>
           {formatCurrency(record.available_qty * record.avg_cost)}

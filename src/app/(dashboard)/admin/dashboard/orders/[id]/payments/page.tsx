@@ -1,7 +1,7 @@
 "use client";
 
+import { Card, Table } from "antd";
 import { notFound, useParams } from "next/navigation";
-import { Card, Table, Typography } from "antd";
 import { CreditCardOutlined } from "@ant-design/icons";
 
 import { mockOrders, mockPayments } from "../../data";
@@ -9,13 +9,7 @@ import { PaymentStatusBadge } from "../../_components/badge";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
-const { Title } = Typography;
-
-export default function OrderPaymentHistory({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function OrderPaymentHistory({}: { params: { id: string } }) {
   const { id } = useParams();
   const order = mockOrders.find((order) => order.id === id);
   const payments = mockPayments.filter((payment) => payment.order_id === id);

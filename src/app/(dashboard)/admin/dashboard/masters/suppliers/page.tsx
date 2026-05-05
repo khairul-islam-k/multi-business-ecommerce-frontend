@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Popconfirm, Space, Select, Avatar } from "antd";
+import { Button, Popconfirm, Space, Select } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -13,14 +13,13 @@ import {
 } from "@ant-design/icons";
 
 import api from "@/lib/axios";
-import Loader from "@/components/shared/loader";
 import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
+import ViewModal from "./_components/view-modal";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
-
-import ViewModal from "./_components/view-modal";
 
 const { Option } = Select;
 
@@ -34,6 +33,7 @@ export default function SuppliersPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Active");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
@@ -68,12 +68,12 @@ export default function SuppliersPage() {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns: Column<any>[] = [
     {
       key: "name",
       label: "Name",
       type: "primary",
-      sortable: true,
     },
     {
       key: "code",
@@ -98,8 +98,6 @@ export default function SuppliersPage() {
     {
       key: "status",
       label: "Status",
-      sortable: true,
-      filterOptions: ["Active", "Inactive"],
       render: (r) => (
         <span
           className={`px-2 py-1 rounded text-xs ${
@@ -115,7 +113,6 @@ export default function SuppliersPage() {
     {
       key: "createdAt",
       label: "Created",
-      sortable: true,
       render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
   ];

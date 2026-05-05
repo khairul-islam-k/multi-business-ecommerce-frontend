@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Button } from "antd";
 import { PlusOutlined, DownloadOutlined } from "@ant-design/icons";
 
+import { mockStats } from "./data";
 import { mockInvoices } from "./data";
+import StatusBadge from "./_components/badge";
+import DataTable from "./_components/data-model";
+import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import DataTable from "./_components/data-model";
-import StatusBadge from "./_components/badge";
-import StatCard from "@/components/shared/stat-card";
-import { mockStats } from "./data";
 
 export default function InvoiceList() {
   return (
@@ -39,6 +39,7 @@ export default function InvoiceList() {
         columns={[
           {
             header: "Invoice #",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             accessor: (r: any) => (
               <Link href={`/admin/dashboard/invoices/${r.id}`}>
                 <span className="cursor-pointer">{r.invoiceNo}</span>
@@ -51,12 +52,14 @@ export default function InvoiceList() {
           { header: "Due Date", dataIndex: "dueDate" },
           {
             header: "Status",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             accessor: (r: any) => (
               <StatusBadge status={r.status} text={r.status.toUpperCase()} />
             ),
           },
           {
             header: "",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             accessor: (r: any) => (
               <div className="flex gap-2">
                 <Link href={`/admin/dashboard/invoices/preview/${r.id}`}>

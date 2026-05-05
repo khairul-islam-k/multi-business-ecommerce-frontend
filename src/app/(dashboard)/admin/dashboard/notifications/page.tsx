@@ -14,17 +14,16 @@ import {
   Tooltip,
   Button,
   Card,
-  message,
   Modal,
   Space,
   Typography,
 } from "antd";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockNotifications } from "./data";
 import { Notification } from "./type";
 import { useSwal } from "@/hooks/use-swal";
+import { mockNotifications } from "./data";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;
@@ -89,7 +88,7 @@ export default function NotificationsPage() {
     {
       title: "Status",
       key: "status",
-      render: (_: any, n: Notification) =>
+      render: (n: Notification) =>
         n.isRead ? (
           <Badge status="default" text="Read" />
         ) : (
@@ -107,7 +106,7 @@ export default function NotificationsPage() {
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, n: Notification) => (
+      render: (n: Notification) => (
         <Space>
           <Tooltip title="View">
             <Button

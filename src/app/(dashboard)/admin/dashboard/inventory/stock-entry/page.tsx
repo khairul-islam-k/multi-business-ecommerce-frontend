@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   Col,
@@ -11,72 +12,60 @@ import {
   Select,
   Button,
 } from "antd";
+
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import Swal from "sweetalert2";
 
 const { Title } = Typography;
 
 export default function StockEntryPage() {
+  const swal = useSwal();
   const [form] = AntdForm.useForm();
 
-  const {
-    data: Warehouse,
-  } = useQuery({
+  const { data: Warehouse } = useQuery({
     queryKey: ["warehouse"],
-    queryFn: async () => api.get('/warehouse?sortBy=createdAt&sortOrder=DESC')
+    queryFn: async () => api.get("/warehouse?sortBy=createdAt&sortOrder=DESC"),
   });
 
-  const {
-    data: Products,
-  } = useQuery({
+  const { data: Products } = useQuery({
     queryKey: ["products"],
-    queryFn: async () => api.get('/products?sortBy=createdAt&sortOrder=DESC')
+    queryFn: async () => api.get("/products?sortBy=createdAt&sortOrder=DESC"),
   });
 
-  const {
-    data: variant,
-  } = useQuery({
+  const { data: variant } = useQuery({
     queryKey: ["variant"],
-    queryFn: async () => api.get('/variant?sortBy=createdAt&sortOrder=DESC')
+    queryFn: async () => api.get("/variant?sortBy=createdAt&sortOrder=DESC"),
   });
 
-  const {
-    data: companies,
-  } = useQuery({
+  const { data: companies } = useQuery({
     queryKey: ["companies"],
-    queryFn: async () => api.get('/companies?sortOrder=DESC')
+    queryFn: async () => api.get("/companies?sortOrder=DESC"),
   });
 
   // from login
   const tenantId = 1;
   const createdBy = 1;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     await new Promise((r) => setTimeout(r, 1000));
-    console.log('value', values);
-    api.post('/transactions', {
-      ...values, tenantId, createdBy
-    }).then(res => {
-      form.resetFields();
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Transaction has been succeed",
-        showConfirmButton: false,
-        timer: 1500
+    console.log("value", values);
+    api
+      .post("/transactions", {
+        ...values,
+        tenantId,
+        createdBy,
+      })
+      .then(() => {
+        form.resetFields();
+        swal.success("Transaction has been succeed");
+      })
+      .catch(() => {
+        swal.error("Something went wrong!");
       });
-    }).catch(error => {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-        footer: "<a href=\"#\">Why do I have this issue?</a>"
-      });
-    })
   });
 
   return (
@@ -101,6 +90,7 @@ export default function StockEntryPage() {
               >
                 <Select
                   placeholder="Select a brands"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   options={Warehouse?.data?.data?.data?.map((c: any) => ({
                     label: c.name,
                     value: Number(c.id),
@@ -117,6 +107,7 @@ export default function StockEntryPage() {
               >
                 <Select
                   placeholder="Select a brands"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   options={companies?.data?.data?.data?.map((c: any) => ({
                     label: c.name,
                     value: Number(c.id),
@@ -133,6 +124,7 @@ export default function StockEntryPage() {
               >
                 <Select
                   placeholder="Select a brands"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   options={Products?.data?.data?.data?.map((c: any) => ({
                     label: c.name,
                     value: Number(c.id),
@@ -149,6 +141,7 @@ export default function StockEntryPage() {
               >
                 <Select
                   placeholder="Select a brands"
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   options={variant?.data?.data?.data?.map((c: any) => ({
                     label: c.name,
                     value: Number(c.id),
@@ -166,11 +159,11 @@ export default function StockEntryPage() {
                 <Select
                   placeholder="Select product"
                   options={[
-                    { label: 'IN', value: 'IN' },
-                    { label: 'OUT', value: 'OUT' },
-                    { label: 'ADJUSTMENT', value: 'ADJUSTMENT' },
-                    { label: 'DAMAGE', value: 'DAMAGE' },
-                    { label: 'LOSS', value: 'LOSS' },
+                    { label: "IN", value: "IN" },
+                    { label: "OUT", value: "OUT" },
+                    { label: "ADJUSTMENT", value: "ADJUSTMENT" },
+                    { label: "DAMAGE", value: "DAMAGE" },
+                    { label: "LOSS", value: "LOSS" },
                   ]}
                 />
               </AntdForm.Item>
@@ -185,11 +178,11 @@ export default function StockEntryPage() {
                 <Select
                   placeholder="Select product"
                   options={[
-                    { label: 'PURCHASE', value: 'PURCHASE' },
-                    { label: 'SALE', value: 'SALE' },
-                    { label: 'RETURN', value: 'RETURN' },
-                    { label: 'TRANSFER', value: 'TRANSFER' },
-                    { label: 'MANUAL', value: 'MANUAL' },
+                    { label: "PURCHASE", value: "PURCHASE" },
+                    { label: "SALE", value: "SALE" },
+                    { label: "RETURN", value: "RETURN" },
+                    { label: "TRANSFER", value: "TRANSFER" },
+                    { label: "MANUAL", value: "MANUAL" },
                   ]}
                 />
               </AntdForm.Item>
