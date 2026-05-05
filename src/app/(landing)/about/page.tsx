@@ -1,3 +1,5 @@
+import { Reveal } from "@/components/ui/reveal";
+import { FinalCTA } from "../_components/FinalCTA";
 import {
   AboutHero,
   AboutStory,
@@ -6,8 +8,6 @@ import {
   AboutTrust,
   AboutTimeline,
 } from "../_components/About";
-import { Reveal } from "@/components/ui/reveal";
-import { FinalCTA } from "../_components/FinalCTA";
 
 const sections = [
   AboutStory,

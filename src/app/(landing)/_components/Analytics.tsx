@@ -11,7 +11,6 @@ import {
   Star,
 } from "lucide-react";
 
-// Tiny inline sparkline
 const Sparkline = ({
   points,
   stroke = "currentColor",

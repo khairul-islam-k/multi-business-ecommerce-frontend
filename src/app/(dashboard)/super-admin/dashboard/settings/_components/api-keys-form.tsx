@@ -1,16 +1,15 @@
 "use client";
 
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { apiKeySchema, ApiKeyValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function ApiKeysForm() {
   const swal = useSwal();
   const [form] = Form.useForm<ApiKeyValues>();
+
   const { handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
     swal.success("Saved!");
@@ -29,9 +28,9 @@ export default function ApiKeysForm() {
 
       <Form.Item label="Permissions" name="permissions">
         <Select mode="multiple">
-          <Option value="orders">Orders</Option>
-          <Option value="products">Products</Option>
-          <Option value="customers">Customers</Option>
+          <option value="orders">Orders</option>
+          <option value="products">Products</option>
+          <option value="customers">Customers</option>
         </Select>
       </Form.Item>
 

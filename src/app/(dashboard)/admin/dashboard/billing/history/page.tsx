@@ -12,11 +12,10 @@ import {
   Typography,
   Tag,
 } from "antd";
-import { useRouter } from "next/navigation";
 
+import { mockHistory } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockHistory } from "./data";
 
 const { Search } = Input;
 const { Title } = Typography;

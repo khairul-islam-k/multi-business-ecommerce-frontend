@@ -2,13 +2,6 @@
 
 import { Card, Typography } from "antd";
 import {
-  DollarOutlined,
-  RiseOutlined,
-  FileTextOutlined,
-  WarningOutlined,
-  RedoOutlined,
-} from "@ant-design/icons";
-import {
   LineChart,
   Line,
   PieChart,
@@ -21,9 +14,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { mockStats } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockStats } from "../data";
 import { mockRevenueByPackage, mockRevenueOverTime } from "./data";
 
 const { Text, Title } = Typography;

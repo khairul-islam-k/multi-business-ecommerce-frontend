@@ -27,7 +27,6 @@ import {
 } from "./data";
 
 const { Title } = Typography;
-const { Option } = Select;
 
 const COLORS = ["#1677ff", "#52c41a", "#faad14"];
 
@@ -47,10 +46,10 @@ export default function ReportsPage() {
           onChange={setDateRange}
           style={{ width: 180 }}
         >
-          <Option value="1m">Last 30 days</Option>
-          <Option value="3m">Last 3 months</Option>
-          <Option value="6m">Last 6 months</Option>
-          <Option value="1y">Last year</Option>
+          <option value="1m">Last 30 days</option>
+          <option value="3m">Last 3 months</option>
+          <option value="6m">Last 6 months</option>
+          <option value="1y">Last year</option>
         </Select>
 
         <Select
@@ -58,10 +57,10 @@ export default function ReportsPage() {
           onChange={setPkgFilter}
           style={{ width: 160 }}
         >
-          <Option value="all">All Packages</Option>
-          <Option value="starter">Starter</Option>
-          <Option value="growth">Growth</Option>
-          <Option value="enterprise">Enterprise</Option>
+          <option value="all">All Packages</option>
+          <option value="starter">Starter</option>
+          <option value="growth">Growth</option>
+          <option value="enterprise">Enterprise</option>
         </Select>
       </Space>
 

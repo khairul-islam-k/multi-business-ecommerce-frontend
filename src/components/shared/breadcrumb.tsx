@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { Breadcrumb, Dropdown } from "antd";
-import type { BreadcrumbProps as AntdBreadcrumbProps } from "antd";
 import { usePathname } from "next/navigation";
 import { HomeOutlined, RightOutlined } from "@ant-design/icons";
+import type { BreadcrumbProps as AntdBreadcrumbProps } from "antd";
 
 type BreadcrumbProps = {
   basePath: string;
@@ -20,7 +20,7 @@ function isUUID(str: string) {
 }
 
 function shortenUUID(uuid: string) {
-  return `${uuid.slice(0, 8)}…${uuid.slice(-4)}`;
+  return `${uuid.slice(0, 8)}...${uuid.slice(-4)}`;
 }
 
 function formatLabel(seg: string, labels: Record<string, string>, key: string) {

@@ -19,12 +19,13 @@ import {
   EyeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import Swal from "sweetalert2";
-import axios from "axios";
+
+import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
-import Pagination from "@/components/shared/Pagination";
+import { useSwal } from "@/hooks/use-swal";
+import api from "@/lib/axios";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -57,7 +58,9 @@ export interface TCompany {
 /* ================= COMPONENT ================= */
 
 export default function CompaniesPage() {
+  const swal = useSwal();
   const router = useRouter();
+
   // ✅ LIST STATE
   const [companies, setCompanies] = useState<TCompany[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -75,7 +78,7 @@ export default function CompaniesPage() {
   // length
   useEffect(() => {
     const fetchCompanies = async () => {
-      const res = await axios.get(
+      const res = await api.get(
         `http://localhost:5002/onecomm/api/v1/companies?page=${page}&limit=${limit}&sortOrder=DESC`,
       );
       setCompanies(res.data.data.data);
@@ -86,7 +89,7 @@ export default function CompaniesPage() {
 
   useEffect(() => {
     const fetchCompanies = async () => {
-      const res = await axios.get(
+      const res = await api.get(
         `http://localhost:5002/onecomm/api/v1/companies?sortOrder=DESC`,
       );
       setTotalCompany(res.data.data.data.length);
@@ -104,7 +107,7 @@ export default function CompaniesPage() {
     const timer = setTimeout(async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
+        const res = await api.get(
           `http://localhost:5002/onecomm/api/v1/companies?search=${searchText}&status=${statusFilter}&sortOrder=DESC`,
         );
         setCompanies(res.data.data.data);
@@ -119,24 +122,26 @@ export default function CompaniesPage() {
   /* ================= DELETE ================= */
 
   const handleDelete = async (id: number) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await axios.delete(
-          `http://localhost:5002/onecomm/api/v1/companies/${id}`,
-        );
+    swal
+      .confirm({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          await api.delete(
+            `http://localhost:5002/onecomm/api/v1/companies/${id}`,
+          );
 
-        // ✅ Remove from UI instantly
-        setCompanies((prev) => prev.filter((c) => c.id !== id));
+          // ✅ Remove from UI instantly
+          setCompanies((prev) => prev.filter((c) => c.id !== id));
 
-        Swal.fire("Deleted!", "Company has been deleted.", "success");
-      }
-    });
+          swal.success("Company has been deleted.");
+        }
+      });
   };
 
   const columns: Column<TCompany>[] = [

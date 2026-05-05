@@ -1,13 +1,11 @@
 "use client";
 
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { generalSettingsSchema, GeneralSettingsValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function GeneralSettingsForm() {
   const swal = useSwal();
@@ -36,18 +34,18 @@ export default function GeneralSettingsForm() {
 
       <Form.Item label="Timezone" name="timezone">
         <Select>
-          <Option value="UTC">UTC</Option>
-          <Option value="EST">EST</Option>
-          <Option value="PST">PST</Option>
-          <Option value="CET">CET</Option>
+          <option value="UTC">UTC</option>
+          <option value="EST">EST</option>
+          <option value="PST">PST</option>
+          <option value="CET">CET</option>
         </Select>
       </Form.Item>
 
       <Form.Item label="Currency" name="currency">
         <Select>
-          <Option value="BDT">BDT</Option>
-          <Option value="USD">USD</Option>
-          <Option value="EUR">EUR</Option>
+          <option value="BDT">BDT</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
         </Select>
       </Form.Item>
 

@@ -13,7 +13,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useState } from "react";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 
 type Website = {
   uuid: string;

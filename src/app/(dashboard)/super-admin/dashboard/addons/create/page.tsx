@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   Form,
   Input,
@@ -9,24 +10,20 @@ import {
   Col,
   Button,
   theme,
-  message,
 } from "antd";
 
-import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
+import useSubmit from "@/hooks/use-submit";
+import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import useSubmit from "@/hooks/use-submit";
-import api from "@/lib/axios";
-import { queryClient } from "@/providers/query-provider";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function CreateAddon() {
   const swal = useSwal();
+  const router = useRouter();
   const [form] = Form.useForm();
   const { token } = theme.useToken();
-  const router = useRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
@@ -78,8 +75,8 @@ export default function CreateAddon() {
           <Col xs={24} md={12}>
             <Form.Item name="type" label="Type" initialValue="Usage">
               <Select>
-                <Option value="Usage">Usage</Option>
-                <Option value="Flat">Flat</Option>
+                <option value="Usage">Usage</option>
+                <option value="Flat">Flat</option>
               </Select>
             </Form.Item>
           </Col>
@@ -107,8 +104,8 @@ export default function CreateAddon() {
           <Col xs={24} md={12}>
             <Form.Item name="status" label="Status" initialValue="Active">
               <Select>
-                <Option value="Active">Active</Option>
-                <Option value="Inactive">Inactive</Option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </Select>
             </Form.Item>
           </Col>

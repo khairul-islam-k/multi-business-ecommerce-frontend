@@ -1,12 +1,10 @@
 "use client";
 
-import { Form, Select, Input, Button, message } from "antd";
+import { Form, Select, Input, Button } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { themeSchema, ThemeValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function ThemeForm() {
   const swal = useSwal();
@@ -25,9 +23,9 @@ export default function ThemeForm() {
     >
       <Form.Item label="Theme Mode" name="theme">
         <Select>
-          <Option value="light">Light</Option>
-          <Option value="dark">Dark</Option>
-          <Option value="system">System</Option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">System</option>
         </Select>
       </Form.Item>
 

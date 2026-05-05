@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button";
 import { ArrowRight, Check, MessageSquare } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 export const AIInbox = () => {
   return (

@@ -1,7 +1,7 @@
 "use client";
 
-import Swal from "sweetalert2";
 import { theme } from "antd";
+import Swal from "sweetalert2";
 
 type SwalIcon = "success" | "error" | "warning" | "info" | "question";
 

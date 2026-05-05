@@ -1,17 +1,16 @@
 "use client";
 
-import { Form, Input, Select, Button, message } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
+import { Form, Input, Select, Button } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { securitySettingsSchema, SecuritySettingsValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function SecuritySettingsForm() {
   const swal = useSwal();
   const [form] = Form.useForm<SecuritySettingsValues>();
+
   const { loading, handler } = useSubmit(async () => {
     await new Promise((r) => setTimeout(r, 1000));
     swal.success("Saved!");
@@ -39,9 +38,9 @@ export default function SecuritySettingsForm() {
 
       <Form.Item label="Password Strength" name="passwordStrength">
         <Select>
-          <Option value="basic">Basic</Option>
-          <Option value="medium">Medium</Option>
-          <Option value="strong">Strong</Option>
+          <option value="basic">Basic</option>
+          <option value="medium">Medium</option>
+          <option value="strong">Strong</option>
         </Select>
       </Form.Item>
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Spin, Typography } from "antd";
 import { motion } from "framer-motion";
+import { Spin, Typography } from "antd";
 
 const { Text } = Typography;
 

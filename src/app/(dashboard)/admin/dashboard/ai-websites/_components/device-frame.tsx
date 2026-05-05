@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "antd";
+
 import type { PreviewDevice } from "../types";
 
 const widths: Record<PreviewDevice, number> = {

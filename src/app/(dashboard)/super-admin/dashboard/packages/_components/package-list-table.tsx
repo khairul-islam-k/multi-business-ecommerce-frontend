@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space, Tag } from "antd";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 import { queryClient } from "@/providers/query-provider";
 import { Column, DataTable } from "@/components/shared/data-table";
 
@@ -52,7 +52,6 @@ export default function PackagesPage() {
       key: "name",
       label: "Package",
       type: "primary",
-      sortable: true,
     },
     {
       key: "monthly_price",
@@ -67,8 +66,6 @@ export default function PackagesPage() {
     {
       key: "status",
       label: "Status",
-      sortable: true,
-      filterOptions: ["Active", "Inactive"],
       render: (r) => (
         <Tag color={r.status === "Active" ? "green" : "red"}>{r.status}</Tag>
       ),

@@ -1,6 +1,7 @@
 "use client";
 
 import { Form as AntdForm, Input, Select, Button, Row, Col } from "antd";
+
 import useSubmit from "@/hooks/use-submit";
 
 interface Props {
@@ -57,7 +58,9 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="phone" label="Phone number"
+          <AntdForm.Item
+            name="phone"
+            label="Phone number"
             rules={[{ required: true }]}
           >
             <Input />
@@ -65,25 +68,27 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="district"
+          <AntdForm.Item
+            name="district"
             rules={[{ required: true }]}
-            label="District">
+            label="District"
+          >
             <Input />
           </AntdForm.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="city"
-            rules={[{ required: true }]}
-            label="City">
+          <AntdForm.Item name="city" rules={[{ required: true }]} label="City">
             <Input />
           </AntdForm.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="country"
+          <AntdForm.Item
+            name="country"
             rules={[{ required: true }]}
-            label="Country">
+            label="Country"
+          >
             <Input />
           </AntdForm.Item>
         </Col>
@@ -91,18 +96,22 @@ export default function Form({ initialValues, mode, onSubmit }: Props) {
         <Col xs={24} md={12}>
           <AntdForm.Item
             rules={[{ required: true }]}
-            name="subdomain" label="subdomain">
+            name="subdomain"
+            label="subdomain"
+          >
             <Input />
           </AntdForm.Item>
         </Col>
 
         <Col xs={24} md={12}>
-          <AntdForm.Item name="email"
+          <AntdForm.Item
+            name="email"
             rules={[
-              { required: true, message: 'Email is required' },
-              { type: 'email', message: 'Please enter a valid email address' },
+              { required: true, message: "Email is required" },
+              { type: "email", message: "Please enter a valid email address" },
             ]}
-            label="Email">
+            label="Email"
+          >
             <Input />
           </AntdForm.Item>
         </Col>

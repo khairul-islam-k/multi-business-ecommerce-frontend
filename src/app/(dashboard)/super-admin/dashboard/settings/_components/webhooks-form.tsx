@@ -1,12 +1,10 @@
 "use client";
 
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { webhookSchema, WebhookValues } from "../schemas";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function WebhooksForm() {
   const swal = useSwal();
@@ -25,9 +23,9 @@ export default function WebhooksForm() {
     >
       <Form.Item label="Event" name="eventName">
         <Select>
-          <Option value="order.created">Order Created</Option>
-          <Option value="order.updated">Order Updated</Option>
-          <Option value="order.delivered">Order Delivered</Option>
+          <option value="order.created">Order Created</option>
+          <option value="order.updated">Order Updated</option>
+          <option value="order.delivered">Order Delivered</option>
         </Select>
       </Form.Item>
 
