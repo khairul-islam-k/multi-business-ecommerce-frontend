@@ -2,25 +2,16 @@
 
 import { useState } from "react";
 import { Card, Tabs } from "antd";
-import { useRouter } from "next/navigation";
-
-import PageHeader from "@/components/shared/page-header";
-import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 import { mockPackages } from "./data";
+import PageHeader from "@/components/shared/page-header";
 import PackageListTable from "./_components/package-list-table";
 import ModuleMatrixTable from "./_components/module-matrix-table";
+import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import LimitSettingsTable from "./_components/limit-settings-table";
 
 export default function PackagesPage() {
-  const router = useRouter();
-
-  const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("list");
-
-  const filtered = mockPackages.filter((p) =>
-    p.name.toLowerCase().includes(search.toLowerCase()),
-  );
 
   const tabs = [
     {

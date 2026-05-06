@@ -20,8 +20,8 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const statusColors: Record<string, any> = {
   Active: "success",
   Inactive: "default",
@@ -38,7 +38,8 @@ export default function AccountsList() {
       title: "Account",
       dataIndex: "name",
       key: "name",
-      render: (_: any, record: any) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (record: any) => (
         <Link
           href={`/admin/dashboard/accounts/${record.id}`}
           className="font-medium"
@@ -138,10 +139,10 @@ export default function AccountsList() {
           />
 
           <Select style={{ width: 150 }} defaultValue="all">
-            <Option value="all">All Types</Option>
-            <Option value="bank">Bank</Option>
-            <Option value="revenue">Revenue</Option>
-            <Option value="cash">Cash</Option>
+            <option value="all">All Types</option>
+            <option value="bank">Bank</option>
+            <option value="revenue">Revenue</option>
+            <option value="cash">Cash</option>
           </Select>
         </div>
 

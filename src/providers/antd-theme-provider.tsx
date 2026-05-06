@@ -1,8 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ConfigProvider, theme as antdTheme } from "antd";
 import type { ThemeConfig } from "antd";
+import { ConfigProvider, theme as antdTheme } from "antd";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const { defaultAlgorithm, darkAlgorithm } = antdTheme;
 
@@ -44,16 +44,18 @@ const darkTheme: ThemeConfig = {
   },
 };
 
+const STORAGE_KEY = "antd-theme";
+
 export default function AntdThemeProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false); // wait until theme is loaded
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
+    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
     if (stored) setTheme(stored);
     // else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
     //   setTheme("dark");
@@ -62,7 +64,7 @@ export default function AntdThemeProvider({
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("theme", theme);
+    localStorage.setItem(STORAGE_KEY, theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme]);
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import { notFound, useParams, useRouter } from "next/navigation";
 import {
   Form,
   Input,
@@ -11,17 +13,13 @@ import {
   theme,
 } from "antd";
 
-import { notFound, useParams, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
+import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function EditPackage() {
   const { id: uuid } = useParams();

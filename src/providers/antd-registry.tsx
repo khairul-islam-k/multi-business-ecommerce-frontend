@@ -1,8 +1,8 @@
 "use client";
 
+import React, { useState } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 import { StyleProvider, createCache, extractStyle } from "@ant-design/cssinjs";
-import React, { useState } from "react";
 
 export default function AntdRegistry({
   children,

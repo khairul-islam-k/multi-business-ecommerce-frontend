@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   Row,
@@ -14,14 +15,13 @@ import {
   Spin,
   Empty,
 } from "antd";
-import { useQuery } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import SearchableSelect from "@/components/shared/searchable-select";
 
 const { TextArea } = Input;
@@ -29,6 +29,7 @@ const { TextArea } = Input;
 /* =====================================================
    ORDER ITEMS COMPONENT
 ===================================================== */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -38,6 +39,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any[]>([]);
 
   const addItem = () => {
@@ -60,6 +62,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
     setItems((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateItem = (index: number, key: string, value: any) => {
     setItems((prev) => {
       const updated = [...prev];
@@ -99,6 +102,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
           {items.length === 0 && <Empty description="No items added" />}
 
           {items.map((item, index) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const product = products.find((p: any) => p.id === item.product_id);
             const variants = product?.variants || [];
 
@@ -111,6 +115,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
                     placeholder="Search product"
                     endpoint="/products"
                     onChange={(v) => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       const p = products.find((x: any) => x.id === v);
 
                       updateItem(index, "product_id", v);
@@ -130,6 +135,7 @@ function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
                     placeholder="Search variant"
                     endpoint={`/variant?product_id=${item.product_id}`}
                     onChange={(v) => {
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       const variant = variants.find((x: any) => x.id === v);
 
                       updateItem(index, "variant_id", v);
@@ -190,6 +196,7 @@ export default function CreateOrder() {
   const router = useRouter();
   const swal = useSwal();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [items, setItems] = useState<any[]>([]);
 
   const [form, setForm] = useState({
@@ -209,12 +216,14 @@ export default function CreateOrder() {
     note: "",
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const set = (key: string, value: any) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => {
     const subtotal = items.reduce((sum, i) => sum + (i.total_price || 0), 0);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm((prev) => ({
       ...prev,
       subtotal,
@@ -284,6 +293,7 @@ export default function CreateOrder() {
 
                   <SearchableSelect
                     endpoint="/customers"
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     value={form.customer_id as any}
                     onChange={(v) => set("customer_id", v)}
                   />
@@ -293,6 +303,7 @@ export default function CreateOrder() {
                   <label className="text-sm font-semibold">Company</label>
                   <SearchableSelect
                     endpoint="/companies"
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     value={form.company_id as any}
                     onChange={(v) => set("company_id", v)}
                   />
@@ -320,6 +331,7 @@ export default function CreateOrder() {
               <div>
                 <label className="text-sm font-semibold">Courier</label>
                 <SearchableSelect
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   value={form.courier_id as any}
                   endpoint="/couriers"
                   onChange={(v) => set("courier_id", v)}
@@ -329,6 +341,7 @@ export default function CreateOrder() {
               <div>
                 <label className="text-sm font-semibold">Supplier</label>
                 <SearchableSelect
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   value={form.supplier_id as any}
                   onChange={(v) => set("supplier_id", v)}
                   endpoint="/business-suppliers"

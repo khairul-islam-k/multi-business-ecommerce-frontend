@@ -10,7 +10,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";

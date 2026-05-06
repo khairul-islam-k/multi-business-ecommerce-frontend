@@ -16,6 +16,7 @@ export function OrderTimeline({ orderId }: { orderId: string }) {
         </div>
       ) : (
         <Timeline>
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {logs.map((log: any) => (
             <Timeline.Item key={log.id}>
               <div className="flex items-center justify-between mb-1">

@@ -1,5 +1,7 @@
 "use client";
 
+import { useDebounce } from "use-debounce";
+import { SearchOutlined } from "@ant-design/icons";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Card,
@@ -10,20 +12,14 @@ import {
   Table,
   type TableProps,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import { useDebounce } from "use-debounce";
 
-import Pagination from "./Pagination";
+import Pagination from "./pagination";
 
 const { useBreakpoint } = Grid;
 
 export interface Column<T> {
   key: string;
   label: string;
-
-  // Kept for old static pages/backward compatibility.
-  sortable?: boolean;
-  filterOptions?: string[];
 
   render?: (row: T) => React.ReactNode;
   type?: "primary" | "secondary" | "meta";
@@ -39,9 +35,6 @@ interface DataTableProps<T> {
 
   loading?: boolean;
   pageSize?: number;
-  searchKeys?: string[];
-
-  rowSelection?: TableProps<T>["rowSelection"];
 
   onSearch?: (value: string) => void;
   onFilterChange?: (filters: Record<string, string>) => void;
@@ -77,7 +70,6 @@ export function DataTable<T extends Record<string, any>>({
   toolbarEnd,
   actions,
   loading = false,
-  rowSelection,
   extra,
   onSearch,
   pagination,
@@ -256,7 +248,6 @@ export function DataTable<T extends Record<string, any>>({
           columns={antdColumns}
           dataSource={data}
           loading={loading}
-          rowSelection={rowSelection}
           locale={{
             emptyText: <Empty description="No data found" />,
           }}

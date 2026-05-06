@@ -15,12 +15,11 @@ import {
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
+import ViewModal from "./_components/view-modal";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
-
-import ViewModal from "./_components/view-modal";
 
 const { Option } = Select;
 
@@ -34,6 +33,7 @@ export default function WarehousesPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
@@ -73,7 +73,6 @@ export default function WarehousesPage() {
       key: "name",
       label: "Name",
       type: "primary",
-      sortable: true,
     },
     {
       key: "code",

@@ -7,6 +7,7 @@ import {
   GlobalOutlined,
   MessageOutlined,
 } from "@ant-design/icons";
+
 import type { GeneratedSection } from "../types";
 
 const { Title, Text, Paragraph } = Typography;

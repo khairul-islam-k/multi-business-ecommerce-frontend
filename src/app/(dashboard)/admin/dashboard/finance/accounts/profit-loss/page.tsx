@@ -1,17 +1,18 @@
 "use client";
 
-import { Col, DatePicker, Row, Table, Typography, Card } from "antd";
-import { useMemo, useState } from "react";
 import dayjs from "dayjs";
+import { useMemo, useState } from "react";
+import { Col, DatePicker, Row, Table, Typography, Card } from "antd";
 
+import { mockProfitLoss } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockProfitLoss } from "./data";
 
 const { RangePicker } = DatePicker;
 const { Text } = Typography;
 
 export default function ProfitLossPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dates, setDates] = useState<any>(null);
 
   const { tableData, revenue, expenses, profit } = useMemo(() => {

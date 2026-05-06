@@ -10,8 +10,9 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import { useSwal } from "@/hooks/use-swal";
+import { Button } from "@/components/ui/button";
 
 const teamSizeOptions = ["1-10", "11-50", "51-200", "200+"] as const;
 
@@ -56,8 +57,6 @@ const demoSchema = z.object({
     message: "Please accept to continue",
   }),
 });
-
-type DemoFormValues = z.infer<typeof demoSchema>;
 
 type FormState = {
   name: string;

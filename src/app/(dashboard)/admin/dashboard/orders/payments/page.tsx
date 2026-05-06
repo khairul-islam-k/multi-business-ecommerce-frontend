@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Card, Col, Row, Table, Typography, Input, Select, Badge } from "antd";
 
+import { mockPayments } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockPayments } from "./data";
 
 const { Search } = Input;
 const { Title, Text } = Typography;
@@ -50,6 +50,7 @@ export default function OrderPaymentsPage() {
       title: "Status",
       dataIndex: "payment_status",
       render: (v: string) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const map: Record<string, any> = {
           paid: "success",
           pending: "warning",

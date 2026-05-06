@@ -1,26 +1,24 @@
 "use client";
 
+import { useState } from "react";
+import { useDebounce } from "use-debounce";
+import { ColumnsType } from "antd/es/table";
+import { useQuery } from "@tanstack/react-query";
+import { SearchOutlined } from "@ant-design/icons";
 import { Card, Col, Grid, Input, Row, Table, Typography } from "antd";
 
+import api from "@/lib/axios";
+import { mockStats } from "./data";
 import StatCard from "@/components/shared/stat-card";
+import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-import { mockInventories, mockStats } from "./data";
-import { formatCurrency } from "./utils";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
-import { SearchOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import { ColumnsType } from "antd/es/table";
-import { useDebounce } from "use-debounce";
-import Pagination from "@/components/shared/Pagination";
 
 const { Title, Text } = Typography;
 
 export default function StockOverviewPage() {
   const screens = Grid.useBreakpoint();
-  const [searchText, setSearchText] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>("");
   const [value] = useDebounce(searchText, 1000);
 
   const tenantId = 1;
@@ -29,30 +27,31 @@ export default function StockOverviewPage() {
   const [page, setPage] = useState(1);
   const limit = 5;
 
-  const {
-    data: inventories,
-  } = useQuery({
+  const { data: inventories } = useQuery({
     queryKey: ["inventory", value, tenantId, limit, page],
-    queryFn: async () => await api.get(`/overview?search=${value}&tenantId=${tenantId}&page=${page}&limit=${limit}&sortBy=created_at&sortOrder=DESC`)
+    queryFn: async () =>
+      await api.get(
+        `/overview?search=${value}&tenantId=${tenantId}&page=${page}&limit=${limit}&sortBy=created_at&sortOrder=DESC`,
+      ),
   });
 
-  console.log('inventories', inventories?.data?.data?.data);
+  console.log("inventories", inventories?.data?.data?.data);
 
   // pagination
   const total = inventories?.data?.data?.meta?.total;
   const totalPages = Math.ceil(total / limit);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const inventoryColumns: ColumnsType<any> = [
     {
       title: "Product",
       key: "product",
-      render: (_, record) => (
-        <Text strong>{record.product?.name ?? "-"}</Text>
-      ),
+      render: (_, record) => <Text strong>{record.product?.name ?? "-"}</Text>,
     },
     {
       title: "SKU",
       key: "sku",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: string, record: any) => (
         <Text type="secondary">{record.product?.sku ?? "-"}</Text>
       ),
@@ -60,6 +59,7 @@ export default function StockOverviewPage() {
     {
       title: "Warehouse",
       key: "warehouse",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: string, record: any) => record.warehouse?.name ?? "-",
     },
     {
@@ -119,7 +119,6 @@ export default function StockOverviewPage() {
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
         />
-
       </div>
 
       <Row gutter={[24, 24]}>
@@ -135,7 +134,6 @@ export default function StockOverviewPage() {
               pagination={false}
               scroll={{ x: "max-content" }}
             />
-
           </Card>
 
           <Pagination

@@ -1,10 +1,11 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/shared/shadcn-theme-toggle";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import Link from "next/link";
+
+import { ThemeToggle } from "@/components/shared/shadcn-theme-toggle";
+import Logo from "@/components/shared/logo";
 
 const links = [
   { href: "/", label: "Home" },
@@ -29,14 +30,7 @@ export const Navbar = () => {
       <div className="absolute inset-0 bg-accent/60 backdrop-blur-xl border-b border-border/60" />
       <div className="px-2 md:px-0 container mx-auto relative flex h-20 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <div className="grid h-10 w-10 place-items-center rounded-xl gradient-primary text-primary-foreground font-display font-extrabold text-lg shadow-soft">
-            O
-          </div>
-          <span className="font-display text-2xl font-bold tracking-tight">
-            One<span className="text-muted-foreground font-medium">Comm</span>
-          </span>
-        </Link>
+        <Logo />
 
         {/* Nav */}
         <nav className="hidden lg:flex items-center gap-9">

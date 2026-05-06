@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Phone,
   Mail,
@@ -9,6 +8,8 @@ import {
   Linkedin,
   ArrowRight,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 const cols = [
   { title: "General", links: ["Home", "Pricing", "Features", "About Us"] },

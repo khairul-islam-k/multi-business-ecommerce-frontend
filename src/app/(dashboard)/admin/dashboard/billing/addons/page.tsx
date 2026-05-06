@@ -6,7 +6,7 @@ import { mockAddons } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export default function AddOnsPage() {
   return (

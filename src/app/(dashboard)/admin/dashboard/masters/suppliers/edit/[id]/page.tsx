@@ -1,24 +1,24 @@
 "use client";
 
 import { Card, Typography } from "antd";
-import { notFound, useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { notFound, useParams, useRouter } from "next/navigation";
 
+import api from "@/lib/axios";
 import Form from "../../_components/form";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
-import api from "@/lib/axios";
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
 import { queryClient } from "@/providers/query-provider";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title } = Typography;
 
 export default function EditSupplierPage() {
+  const swal = useSwal();
   const { id } = useParams();
   const router = useRouter();
-  const swal = useSwal();
 
   // -----------------------------
   // fetch supplier
@@ -34,6 +34,7 @@ export default function EditSupplierPage() {
   // -----------------------------
   // submit
   // -----------------------------
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { handler, loading } = useSubmit(async (values: any) => {
     await api.patch(`/business-suppliers/${id}`, values);
 

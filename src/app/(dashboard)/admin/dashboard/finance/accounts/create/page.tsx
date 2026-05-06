@@ -1,9 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import useSubmit from "@/hooks/use-submit";
-import { useSwal } from "@/hooks/use-swal";
+import Link from "next/link";
 import {
   Button,
   Card,
@@ -11,14 +8,15 @@ import {
   Divider,
   Input,
   InputNumber,
-  message,
   Row,
   Select,
   Space,
 } from "antd";
-import Link from "next/link";
 
-const { Option } = Select;
+import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function CreateAccountPage() {
   const swal = useSwal();
@@ -43,9 +41,9 @@ export default function CreateAccountPage() {
                 <Col span={12}>
                   <Select defaultValue="Account Type" style={{ width: "100%" }}>
                     {["Bank", "Cash", "Revenue", "Expense"].map((c) => (
-                      <Option key={c} value={c}>
+                      <option key={c} value={c}>
                         {c}
-                      </Option>
+                      </option>
                     ))}
                   </Select>
                 </Col>
@@ -70,9 +68,9 @@ export default function CreateAccountPage() {
                 <Col span={12}>
                   <Select defaultValue="Status" style={{ width: "100%" }}>
                     {["Active", "Inactive"].map((c) => (
-                      <Option key={c} value={c}>
+                      <option key={c} value={c}>
                         {c}
-                      </Option>
+                      </option>
                     ))}
                   </Select>
                 </Col>

@@ -1,12 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { Button, Card, Input, Switch } from "antd";
 import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
 
+import { mockConfig } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { mockConfig } from "./data";
-import Link from "next/link";
 
 export default function PaymentGatewayConfigurations() {
   return (

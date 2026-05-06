@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CreditCard, Truck, ArrowDown } from "lucide-react";
 
 import bkash from "@/assets/partners/bkash.svg";
@@ -10,7 +11,6 @@ import steadfast from "@/assets/partners/steadfast.svg";
 import redx from "@/assets/partners/redx.svg";
 import paperfly from "@/assets/partners/paperfly.svg";
 import rxCourier from "@/assets/partners/rx-courier.svg";
-import Image from "next/image";
 
 type FloatItem = {
   src: string;

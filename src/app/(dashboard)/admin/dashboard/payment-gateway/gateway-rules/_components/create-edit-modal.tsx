@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Modal, Form, Input, Select, message } from "antd";
+import { Modal, Form, Input, Select } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { useSwal } from "@/hooks/use-swal";
@@ -9,7 +9,9 @@ import { useSwal } from "@/hooks/use-swal";
 interface Props {
   open: boolean;
   onClose: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: (values: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialValues?: any;
   mode?: "create" | "edit";
 }

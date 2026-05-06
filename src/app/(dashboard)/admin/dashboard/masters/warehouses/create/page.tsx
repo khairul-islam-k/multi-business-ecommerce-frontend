@@ -1,16 +1,15 @@
 "use client";
 
-import { Form, Input, Select, Row, Col, Button, theme, message } from "antd";
+import { Form, Input, Select, Row, Col, Button, theme } from "antd";
 
 import { useRouter } from "next/navigation";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateWarehousePage() {
   const [form] = Form.useForm();
@@ -18,6 +17,7 @@ export default function CreateWarehousePage() {
   const router = useRouter();
   const swal = useSwal();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.post("/warehouse", values);
@@ -28,6 +28,7 @@ export default function CreateWarehousePage() {
 
       form.resetFields();
       router.push("/admin/dashboard/masters/warehouses");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       swal.error(err?.response?.data?.message || "Failed to create warehouse");
     }

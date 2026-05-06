@@ -12,7 +12,7 @@ import { Column, DataTable } from "@/components/shared/data-table";
 import SearchableSelect from "@/components/shared/searchable-select";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 
 const { Option } = Select;
 

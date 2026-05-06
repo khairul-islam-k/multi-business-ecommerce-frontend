@@ -10,8 +10,8 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Text } = Typography;
-const { Option } = Select;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const statusColors: Record<string, any> = {
   Completed: "success",
   Pending: "warning",
@@ -39,7 +39,8 @@ export default function TransactionsList() {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      render: (_: any, record: any) => (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      render: (record: any) => (
         <Link
           href={`/admin/dashboard/finance/accounts/transactions/${record.id}`}
           className="font-mono text-sm"
@@ -127,9 +128,9 @@ export default function TransactionsList() {
             onChange={setTypeFilter}
             style={{ width: 160 }}
           >
-            <Option value="all">All Types</Option>
-            <Option value="credit">Credit</Option>
-            <Option value="debit">Debit</Option>
+            <option value="all">All Types</option>
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
           </Select>
         </Col>
       </Row>

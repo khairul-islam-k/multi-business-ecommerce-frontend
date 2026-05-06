@@ -1,15 +1,15 @@
 "use client";
 
 import { Card, Typography } from "antd";
-import { notFound, useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { notFound, useParams, useRouter } from "next/navigation";
 
 import api from "@/lib/axios";
 import Form from "../../_components/form";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title } = Typography;
 
@@ -28,6 +28,7 @@ export default function EditShowroomPage() {
   if (isLoading) return <Loader />;
   if (!data) throw notFound();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (values: any) => {
     await api.patch(`/business-showrooms/${id}`, values);
 

@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Button, Popconfirm, Space } from "antd";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
@@ -45,13 +45,10 @@ export default function TenantListPage() {
       key: "business_name",
       label: "Business",
       type: "primary",
-      sortable: true,
     },
     {
       key: "status",
       label: "Status",
-      sortable: true,
-      filterOptions: ["Active", "Inactive", "Suspended"],
       render: (r: any) => (
         <span
           className={`px-2 py-1 rounded text-xs ${
@@ -99,7 +96,6 @@ export default function TenantListPage() {
     {
       key: "createdAt",
       label: "Created",
-      sortable: true,
       render: (r) => new Date(r.createdAt).toLocaleDateString(),
     },
   ];

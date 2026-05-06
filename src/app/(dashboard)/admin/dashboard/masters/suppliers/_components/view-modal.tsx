@@ -2,6 +2,7 @@
 
 import { Modal, Descriptions } from "antd";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ViewModal({ open, onClose, supplier }: any) {
   return (
     <Modal

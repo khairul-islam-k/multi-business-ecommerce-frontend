@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Col, Row, Table, Typography, Input, Select, Tag } from "antd";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useQuery } from "@tanstack/react-query";
+import { Card, Col, Row, Typography, Input, Select, Tag } from "antd";
+
 import api from "@/lib/axios";
-import { ColumnsType } from "antd/es/table";
 import { useDebounce } from "use-debounce";
-import Pagination from "@/components/shared/Pagination";
+import Pagination from "@/components/shared/pagination";
+import PageHeader from "@/components/shared/page-header";
 import { DataTable } from "@/components/shared/data-table";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Search } = Input;
 const { Title } = Typography;
@@ -46,21 +46,19 @@ export default function InventoryTransactionsPage() {
   const [page, setPage] = useState<number>(1);
   const limit = 5;
 
-  const {
-    data: transaction,
-  } = useQuery({
+  const { data: transaction } = useQuery({
     queryKey: ["transaction", value, page, limit, typeFilter],
     queryFn: async () => {
       if (typeFilter) {
         return api.get(
-          `/transactions?search=${value}&transactionType=${typeFilter}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`
+          `/transactions?search=${value}&transactionType=${typeFilter}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`,
         );
       } else {
         return api.get(
-          `/transactions?search=${value}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`
+          `/transactions?search=${value}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`,
         );
       }
-    }
+    },
   });
 
   // pagination
@@ -69,41 +67,39 @@ export default function InventoryTransactionsPage() {
 
   const columns = [
     {
-      label: 'Product',
-      key: 'product',
+      label: "Product",
+      key: "product",
       render: (record: InventoryTransaction) => (
         <div>
           <div>{record.product?.name}</div>
-          <small style={{ color: '#888' }}>
-            {record.product?.sku}
-          </small>
+          <small style={{ color: "#888" }}>{record.product?.sku}</small>
         </div>
       ),
     },
     {
-      label: 'Warehouse',
-      key: 'warehouse',
-      render: (record: InventoryTransaction) => record.warehouse?.name
+      label: "Warehouse",
+      key: "warehouse",
+      render: (record: InventoryTransaction) => record.warehouse?.name,
     },
     {
-      label: 'Type',
-      key: 'transactionType',
+      label: "Type",
+      key: "transactionType",
       render: (record: InventoryTransaction) => {
         const color =
-          record.transactionType === 'IN'
-            ? 'green'
-            : record.transactionType === 'OUT'
-              ? 'red'
-              : record.transactionType === 'DAMAGE'
-                ? 'orange'
-                : 'blue';
+          record.transactionType === "IN"
+            ? "green"
+            : record.transactionType === "OUT"
+              ? "red"
+              : record.transactionType === "DAMAGE"
+                ? "orange"
+                : "blue";
 
         return <Tag color={color}>{record.transactionType}</Tag>;
       },
     },
     {
-      label: 'Reference',
-      key: 'Reference',
+      label: "Reference",
+      key: "Reference",
       render: (record: InventoryTransaction) => (
         <div>
           <div>{record.referenceType}</div>
@@ -112,28 +108,28 @@ export default function InventoryTransactionsPage() {
       ),
     },
     {
-      label: 'Qty',
-      key: 'qty',
+      label: "Qty",
+      key: "qty",
     },
     {
-      label: 'Unit Cost',
-      key: 'unitCost',
+      label: "Unit Cost",
+      key: "unitCost",
       render: (record: InventoryTransaction) => `$${record.unitCost}`,
     },
     {
-      label: 'Total',
-      key: 'total',
+      label: "Total",
+      key: "total",
       render: (record: InventoryTransaction) =>
         `$${(Number(record.qty) * Number(record.unitCost)).toFixed(2)}`,
     },
     {
-      label: 'Note',
-      key: 'note',
+      label: "Note",
+      key: "note",
       ellipsis: true,
     },
     {
-      label: 'Date',
-      key: 'createdAt',
+      label: "Date",
+      key: "createdAt",
       render: (record: InventoryTransaction) =>
         new Date(record.createdAt).toLocaleString(),
     },
@@ -161,11 +157,11 @@ export default function InventoryTransactionsPage() {
             value={typeFilter}
             onChange={setTypeFilter}
             options={[
-              { label: 'IN', value: 'IN' },
-              { label: 'OUT', value: 'OUT' },
-              { label: 'ADJUSTMENT', value: 'ADJUSTMENT' },
-              { label: 'DAMAGE', value: 'DAMAGE' },
-              { label: 'LOSS', value: 'LOSS' },
+              { label: "IN", value: "IN" },
+              { label: "OUT", value: "OUT" },
+              { label: "ADJUSTMENT", value: "ADJUSTMENT" },
+              { label: "DAMAGE", value: "DAMAGE" },
+              { label: "LOSS", value: "LOSS" },
             ]}
           />
         </Col>
@@ -181,14 +177,13 @@ export default function InventoryTransactionsPage() {
               data={transaction?.data?.data?.data ?? []}
               columns={columns}
             />
-
           </Card>
 
           <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </Col>
       </Row>
     </div>

@@ -1,7 +1,5 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import {
   Card,
   Form,
@@ -15,7 +13,8 @@ import {
   Flex,
 } from "antd";
 
-const { Option } = Select;
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function SystemSettingsForm() {
   const [form] = Form.useForm();
@@ -44,11 +43,11 @@ export default function SystemSettingsForm() {
                 rules={[{ required: true, message: "Select currency" }]}
               >
                 <Select placeholder="Select currency">
-                  <Option value="BDT">BDT</Option>
-                  <Option value="USD">USD</Option>
-                  <Option value="EUR">EUR</Option>
-                  <Option value="GBP">GBP</Option>
-                  <Option value="BDT">BDT</Option>
+                  <option value="BDT">BDT</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="BDT">BDT</option>
                 </Select>
               </Form.Item>
 
@@ -58,9 +57,9 @@ export default function SystemSettingsForm() {
                 rules={[{ required: true, message: "Select date format" }]}
               >
                 <Select placeholder="Select date format">
-                  <Option value="DD-MM-YYYY">DD-MM-YYYY</Option>
-                  <Option value="MM-DD-YYYY">MM-DD-YYYY</Option>
-                  <Option value="YYYY-MM-DD">YYYY-MM-DD</Option>
+                  <option value="DD-MM-YYYY">DD-MM-YYYY</option>
+                  <option value="MM-DD-YYYY">MM-DD-YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                 </Select>
               </Form.Item>
 
@@ -70,10 +69,10 @@ export default function SystemSettingsForm() {
                 rules={[{ required: true, message: "Select time zone" }]}
               >
                 <Select placeholder="Select time zone">
-                  <Option value="Asia/Dhaka">Asia/Dhaka</Option>
-                  <Option value="UTC">UTC</Option>
-                  <Option value="Asia/Kolkata">Asia/Kolkata</Option>
-                  <Option value="Europe/London">Europe/London</Option>
+                  <option value="Asia/Dhaka">Asia/Dhaka</option>
+                  <option value="UTC">UTC</option>
+                  <option value="Asia/Kolkata">Asia/Kolkata</option>
+                  <option value="Europe/London">Europe/London</option>
                 </Select>
               </Form.Item>
 
@@ -83,9 +82,9 @@ export default function SystemSettingsForm() {
                 rules={[{ required: true, message: "Select language" }]}
               >
                 <Select placeholder="Select language">
-                  <Option value="en">English</Option>
-                  <Option value="bn">বাংলা</Option>
-                  <Option value="hi">Hindi</Option>
+                  <option value="en">English</option>
+                  <option value="bn">বাংলা</option>
+                  <option value="hi">Hindi</option>
                 </Select>
               </Form.Item>
             </Card>
@@ -124,8 +123,8 @@ export default function SystemSettingsForm() {
                 rules={[{ required: true, message: "Select warehouse" }]}
               >
                 <Select placeholder="Select warehouse">
-                  <Option value="main">Main Warehouse</Option>
-                  <Option value="secondary">Secondary Warehouse</Option>
+                  <option value="main">Main Warehouse</option>
+                  <option value="secondary">Secondary Warehouse</option>
                 </Select>
               </Form.Item>
 

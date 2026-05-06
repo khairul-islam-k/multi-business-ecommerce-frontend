@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Col, Row, Table, Typography, Input, Select, Badge } from "antd";
+import { Card, Col, Row, Table, Typography, Input, Select } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -27,12 +27,14 @@ export default function MissingProductsPage() {
   const columns = [
     {
       title: "Product",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, record: any) => (
         <Text strong>{record.product_name}</Text>
       ),
     },
     {
       title: "Warehouse",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (_: any, record: any) => record.warehouse_name,
     },
     {

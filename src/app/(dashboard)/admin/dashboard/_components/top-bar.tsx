@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { Layout, Space, Badge, Avatar, Button, theme, Grid, Flex } from "antd";
+import Link from "next/link";
+import { Layout, Space, Badge, Button, theme, Grid, Flex } from "antd";
 import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
+
 import GlobalSearch from "./global-search";
 import BusinessDropdown from "./business-owner";
-import ThemeToggle from "@/components/shared/theme-toggle";
-import Link from "next/link";
 import ProfileDropdown from "./profile-dropdown";
+import ThemeToggle from "@/components/shared/antd-theme-toggle";
 
 const { Header } = Layout;
 

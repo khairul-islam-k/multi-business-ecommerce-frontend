@@ -1,8 +1,10 @@
 "use client";
 
 import { Form as AntdForm, Input, Select, Button, Row, Col } from "antd";
+
 import useSubmit from "@/hooks/use-submit";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function Form({ initialValues, mode, onSubmit }: any) {
   const [form] = AntdForm.useForm();
   const { loading, handler } = useSubmit(onSubmit);

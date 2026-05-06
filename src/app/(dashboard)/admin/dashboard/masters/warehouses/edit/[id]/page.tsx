@@ -1,31 +1,30 @@
 "use client";
 
-import { Form, Input, Select, Row, Col, Button, theme, message } from "antd";
-
-import { notFound, useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { notFound, useParams, useRouter } from "next/navigation";
+import { Form, Input, Select, Row, Col, Button, theme } from "antd";
 
 import api from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
+import Loader from "@/components/shared/loader";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function EditWarehousePage() {
-  const { id: uuid } = useParams();
+  const swal = useSwal();
   const router = useRouter();
   const [form] = Form.useForm();
+  const { id: uuid } = useParams();
   const { token } = theme.useToken();
-  const swal = useSwal();
 
   const { data, isLoading } = useQuery({
     queryKey: ["warehouse", uuid],
     queryFn: async () => api.get(`/warehouse/${uuid}`).then((res) => res.data),
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.patch(`/warehouse/${uuid}`, values);
@@ -35,6 +34,7 @@ export default function EditWarehousePage() {
       queryClient.invalidateQueries({ queryKey: ["fetch-warehouses"] });
 
       router.push("/admin/dashboard/masters/warehouses");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       swal.error(err?.response?.data?.message || "Failed to update warehouse");
     }

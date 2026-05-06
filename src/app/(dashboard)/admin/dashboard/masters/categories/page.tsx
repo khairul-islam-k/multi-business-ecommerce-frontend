@@ -15,18 +15,15 @@ import {
 import api from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
 import Loader from "@/components/shared/loader";
+import ViewModal from "./_components/view-modal";
 import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 
-import ViewModal from "./_components/view-modal";
-
-const { Option } = Select;
-
 export default function CategoriesPage() {
-  const router = useRouter();
   const swal = useSwal();
+  const router = useRouter();
 
   const pageSize = 10;
 
@@ -34,6 +31,7 @@ export default function CategoriesPage() {
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selected, setSelected] = useState<any>(null);
   const [open, setOpen] = useState(false);
 
@@ -125,8 +123,8 @@ export default function CategoriesPage() {
                 setStatus(e);
               }}
             >
-              <Option value="Active">Active</Option>
-              <Option value="Inactive">Inactive</Option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
             </Select>
             <Link href="/admin/dashboard/masters/categories/create">
               <Button type="primary" icon={<PlusOutlined />}>

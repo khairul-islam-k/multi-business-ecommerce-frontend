@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSwal } from "@/hooks/use-swal";
 import { useRouter } from "next/navigation";
-import { Button, Badge, Space, Popconfirm, Select } from "antd";
 import { useQuery } from "@tanstack/react-query";
+import { Button, Badge, Space, Popconfirm, Select } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
 import api from "@/lib/axios";
@@ -15,6 +15,7 @@ import { queryClient } from "@/providers/query-provider";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const statusColors: Record<string, any> = {
   Pending: "processing",
   Processing: "processing",

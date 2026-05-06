@@ -2,6 +2,7 @@
 
 import { Avatar, Typography, Button } from "antd";
 import { UserOutlined, RobotOutlined } from "@ant-design/icons";
+
 import type { ChatMessage } from "../types";
 
 const { Paragraph } = Typography;

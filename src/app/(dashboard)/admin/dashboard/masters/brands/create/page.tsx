@@ -1,25 +1,14 @@
 "use client";
 
-import {
-  Form,
-  Input,
-  Select,
-  Row,
-  Col,
-  Button,
-  Card,
-  theme,
-  message,
-} from "antd";
-
 import { useRouter } from "next/navigation";
+import { Form, Input, Select, Row, Col, Button, Card, theme } from "antd";
+
 import api from "@/lib/axios";
 import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
-
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
 
 export default function CreateBrandPage() {
   const [form] = Form.useForm();
@@ -27,6 +16,7 @@ export default function CreateBrandPage() {
   const router = useRouter();
   const swal = useSwal();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { loading, handler } = useSubmit(async (values: any) => {
     try {
       await api.post("/brands", values);
@@ -37,6 +27,7 @@ export default function CreateBrandPage() {
 
       form.resetFields();
       router.push("/admin/dashboard/masters/brands");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       swal.error(err?.response?.data?.message || "Failed to create brand");
     }

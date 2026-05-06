@@ -1,19 +1,12 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import api from "@/lib/axios";
-import {
-  Card,
-  Row,
-  Col,
-  Tag,
-  Typography,
-  Divider,
-  Image,
-} from "antd";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Card, Row, Col, Tag, Typography, Divider, Image } from "antd";
+
+import api from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 export type TProduct = {
   id: number;
@@ -81,9 +74,7 @@ export default function ProductDetailPage() {
           <Col xs={24} md={16}>
             <Title level={3}>{productData.name}</Title>
 
-            <Paragraph>
-              {productData.short_description}
-            </Paragraph>
+            <Paragraph>{productData.short_description}</Paragraph>
 
             <Divider />
 
@@ -120,24 +111,17 @@ export default function ProductDetailPage() {
                 <Text strong>Tax:</Text>{" "}
                 <Text>
                   {productData.tax_type}{" "}
-                  {productData.tax_amount
-                    ? `(${productData.tax_amount})`
-                    : ""}
+                  {productData.tax_amount ? `(${productData.tax_amount})` : ""}
                 </Text>
               </Col>
 
               <Col span={12}>
-                <Text strong>Weight:</Text>{" "}
-                <Text>{productData.weight} kg</Text>
+                <Text strong>Weight:</Text> <Text>{productData.weight} kg</Text>
               </Col>
 
               <Col span={12}>
                 <Text strong>Status:</Text>{" "}
-                <Tag
-                  color={
-                    productData.status === "Active" ? "green" : "red"
-                  }
-                >
+                <Tag color={productData.status === "Active" ? "green" : "red"}>
                   {productData.status}
                 </Tag>
               </Col>
@@ -149,9 +133,7 @@ export default function ProductDetailPage() {
 
               <Col span={12}>
                 <Text strong>Published At:</Text>{" "}
-                <Text>
-                  {productData.published_at || "Not Published"}
-                </Text>
+                <Text>{productData.published_at || "Not Published"}</Text>
               </Col>
 
               <Col span={12}>
@@ -168,9 +150,7 @@ export default function ProductDetailPage() {
             <Divider />
 
             <Title level={5}>Long Description</Title>
-            <Paragraph>
-              {productData.long_description}
-            </Paragraph>
+            <Paragraph>{productData.long_description}</Paragraph>
           </Col>
         </Row>
       </Card>

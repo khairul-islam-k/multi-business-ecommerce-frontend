@@ -13,7 +13,7 @@ type Ctx = { theme: Theme; toggle: () => void; setTheme: (t: Theme) => void };
 
 const ShadcnThemeContext = createContext<Ctx | null>(null);
 
-const STORAGE_KEY = "marketing-site-theme";
+const STORAGE_KEY = "shadcn-theme";
 
 const getInitial = (): Theme => {
   if (typeof window === "undefined") return "light";

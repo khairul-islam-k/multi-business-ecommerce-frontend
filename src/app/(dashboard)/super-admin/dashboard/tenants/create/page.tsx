@@ -1,5 +1,12 @@
 "use client";
 
+import dayjs from "dayjs";
+import { useState } from "react";
+import {
+  EyeInvisibleOutlined,
+  EyeOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import {
   Form,
   Input,
@@ -8,25 +15,16 @@ import {
   Row,
   Col,
   Button,
-  message,
   theme,
   DatePicker,
 } from "antd";
-import {
-  EyeInvisibleOutlined,
-  EyeOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import { useState } from "react";
+
+import api from "@/lib/axios";
+import useSubmit from "@/hooks/use-submit";
+import { useSwal } from "@/hooks/use-swal";
+import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import useSubmit from "@/hooks/use-submit";
-import api from "@/lib/axios";
-import { useRouter } from "next/navigation";
-import dayjs from "dayjs";
-import { useSwal } from "@/hooks/use-swal";
-
-const { Option } = Select;
 
 export default function CreateTenantForm() {
   const swal = useSwal();
@@ -211,9 +209,9 @@ export default function CreateTenantForm() {
           <Col xs={24} md={12}>
             <Form.Item name="status" label="Status" initialValue="Active">
               <Select>
-                <Option value="Active">Active</Option>
-                <Option value="Trial">Trial</Option>
-                <Option value="Suspended">Suspended</Option>
+                <option value="Active">Active</option>
+                <option value="Trial">Trial</option>
+                <option value="Suspended">Suspended</option>
               </Select>
             </Form.Item>
           </Col>
@@ -229,9 +227,9 @@ export default function CreateTenantForm() {
           <Col xs={24} md={12}>
             <Form.Item name="currency" label="Currency" initialValue="USD">
               <Select>
-                <Option value="USD">USD</Option>
-                <Option value="BDT">BDT</Option>
-                <Option value="EUR">EUR</Option>
+                <option value="USD">USD</option>
+                <option value="BDT">BDT</option>
+                <option value="EUR">EUR</option>
               </Select>
             </Form.Item>
           </Col>
@@ -244,8 +242,8 @@ export default function CreateTenantForm() {
               initialValue="Asia/Dhaka"
             >
               <Select>
-                <Option value="Asia/Dhaka">Asia/Dhaka</Option>
-                <Option value="UTC">UTC</Option>
+                <option value="Asia/Dhaka">Asia/Dhaka</option>
+                <option value="UTC">UTC</option>
               </Select>
             </Form.Item>
           </Col>

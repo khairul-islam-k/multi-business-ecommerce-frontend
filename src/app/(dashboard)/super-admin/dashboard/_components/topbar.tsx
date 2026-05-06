@@ -16,7 +16,7 @@ import {
 } from "@ant-design/icons";
 
 import { cn } from "@/lib/utils";
-import ThemeToggle from "@/components/shared/theme-toggle";
+import ThemeToggle from "@/components/shared/antd-theme-toggle";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSwal } from "@/hooks/use-swal";
 
