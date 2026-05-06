@@ -19,26 +19,26 @@ export default function AuthGuard({
   const router = useRouter();
   const { accessToken, initialized, user, loading } = useAuthStore();
 
-  useEffect(() => {
-    if (!initialized) return;
+  // useEffect(() => {
+  //   if (!initialized) return;
 
-    if (!accessToken) {
-      swal.error("Please login first.");
-      router.replace(redirectUrl);
-      return;
-    }
+  //   if (!accessToken) {
+  //     swal.error("Please login first.");
+  //     router.replace(redirectUrl);
+  //     return;
+  //   }
 
-    if (loading || !user) return;
+  //   if (loading || !user) return;
 
-    if (user.user_type !== role) {
-      swal.error(`You need ${role} access.`);
-      router.replace(redirectUrl);
-      return;
-    }
-  }, [initialized, accessToken, user, loading]);
-  if (!initialized) return null;
+  //   if (user.user_type !== role) {
+  //     swal.error(`You need ${role} access.`);
+  //     router.replace(redirectUrl);
+  //     return;
+  //   }
+  // }, [initialized, accessToken, user, loading]);
+  // if (!initialized) return null;
 
-  if (!accessToken) return null;
+  // if (!accessToken) return null;
 
   return <>{children}</>;
 }

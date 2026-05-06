@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function ElectronicFooter() {
   return (
-    <footer className="mt-24 border-t border-gray-200 bg-gray-50">
+    <footer className="border-t border-gray-200 bg-gray-50">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 md:grid-cols-4 md:px-10">
         {/* Brand */}
         <div>

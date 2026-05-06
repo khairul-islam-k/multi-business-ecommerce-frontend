@@ -1,11 +1,12 @@
+import ElectronicLogin from '@/app/templates/electronic/pages/ElectronicLogin';
 import React from 'react';
 
-const LoginPage = () => {
+const Login = () => {
     return (
         <div>
-            Login page
+            <ElectronicLogin />
         </div>
     );
 };
 
-export default LoginPage;
+export default Login;

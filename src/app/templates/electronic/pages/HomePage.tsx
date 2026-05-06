@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { products } from "../components/data/products";
 import { ProductCard } from "../components/ProductCard";
+import RecentlyViewProduct from "../components/RecentlyViewProduct";
 
 export const metadata = {
   title: "Voltix — Premium Electronics Store",
@@ -66,7 +67,7 @@ export default function HomePage({ site }: Props) {
             "linear-gradient(135deg, rgb(248 250 252), rgb(239 246 255))",
         }}
       >
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-20 md:grid-cols-2 md:px-10 md:py-28">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-5 md:grid-cols-2 md:px-10 md:py-10">
           <div>
             <span className="mb-6 inline-block rounded-full bg-gray-900 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white">
               New season · 2026
@@ -252,6 +253,12 @@ export default function HomePage({ site }: Props) {
           </form>
         </div>
       </section>
+
+      {/* recently view product */}
+      <section>
+        <RecentlyViewProduct />
+      </section>
+
     </main>
   );
 }
