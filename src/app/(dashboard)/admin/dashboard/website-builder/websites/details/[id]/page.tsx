@@ -14,9 +14,9 @@ import { Button, Card, Col, Row, Tabs, Spin, Empty, Typography } from "antd";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-import WebsitePage from "../_components/WebsitePage";
-import WebsiteMenu from "../_components/WebsiteMenu";
-import WebsiteDomain from "../_components/WebsiteDomain";
+import WebsitePage from "../_components/website-page";
+import WebsiteMenu from "../_components/website-menu";
+import WebsiteDomain from "../_components/website-domain";
 
 const { Text } = Typography;
 

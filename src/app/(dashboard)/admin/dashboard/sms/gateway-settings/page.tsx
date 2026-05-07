@@ -16,13 +16,11 @@ const statusColor: Record<string, string> = {
 };
 
 const columns: Column<SmsGateway>[] = [
-  { key: "name", label: "Gateway", sortable: true },
+  { key: "name", label: "Gateway" },
   { key: "slug", label: "Slug" },
   {
     key: "status",
     label: "Status",
-    sortable: true,
-    filterOptions: ["active", "inactive"],
     render: (r) => (
       <Tag color={statusColor[r.status]}>{r.status.toUpperCase()}</Tag>
     ),
@@ -53,7 +51,6 @@ export default function SmsGatewaySettings() {
       <DataTable
         data={mockGateways}
         columns={columns}
-        searchKeys={["name"]}
         toolbarEnd={
           <Button
             type="primary"

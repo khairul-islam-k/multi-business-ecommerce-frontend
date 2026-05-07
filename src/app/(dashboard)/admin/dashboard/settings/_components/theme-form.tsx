@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Select, Input, Button, message } from "antd";
+import { Form, Select, Input, Button } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { themeSchema, ThemeValues } from "../schemas";

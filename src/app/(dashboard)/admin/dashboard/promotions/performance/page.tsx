@@ -10,7 +10,6 @@ import {
   DollarOutlined,
   RiseOutlined,
 } from "@ant-design/icons";
-
 import {
   BarChart,
   Bar,

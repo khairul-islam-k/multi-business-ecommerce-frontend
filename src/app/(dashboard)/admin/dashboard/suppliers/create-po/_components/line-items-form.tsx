@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import { useState } from "react";
 import { Table, Input, InputNumber, Button, Card } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
@@ -22,7 +23,7 @@ const LineItemsForm = () => {
     },
   ]);
 
-  console.log('items', items);
+  console.log("items", items);
 
   // Add new row
   const addItem = () => {
@@ -40,20 +41,21 @@ const LineItemsForm = () => {
 
   // Remove row
   const removeItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
+    setItems(items.filter((item) => item.id !== id));
   };
 
   // Update row
   const updateItem = (
     id: number,
     field: keyof LineItem,
-    value: string | number
+    value: string | number,
   ) => {
-    setItems(items.map(item =>
-      item.id === id ? { ...item, [field]: value } : item
-    ));
+    setItems(
+      items.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item,
+      ),
+    );
   };
-
 
   const columns = [
     {
@@ -62,9 +64,7 @@ const LineItemsForm = () => {
         <Input
           placeholder="Product"
           value={record.product}
-          onChange={e =>
-            updateItem(record.id, "product", e.target.value)
-          }
+          onChange={(e) => updateItem(record.id, "product", e.target.value)}
         />
       ),
     },
@@ -74,9 +74,7 @@ const LineItemsForm = () => {
         <Input
           placeholder="Variant"
           value={record.variant}
-          onChange={e =>
-            updateItem(record.id, "variant", e.target.value)
-          }
+          onChange={(e) => updateItem(record.id, "variant", e.target.value)}
         />
       ),
     },
@@ -87,9 +85,7 @@ const LineItemsForm = () => {
         <InputNumber
           min={1}
           value={record.qty}
-          onChange={value =>
-            updateItem(record.id, "qty", value || 1)
-          }
+          onChange={(value) => updateItem(record.id, "qty", value || 1)}
         />
       ),
     },
@@ -100,9 +96,7 @@ const LineItemsForm = () => {
         <InputNumber
           min={0}
           value={record.unitCost}
-          onChange={value =>
-            updateItem(record.id, "unitCost", value || 0)
-          }
+          onChange={(value) => updateItem(record.id, "unitCost", value || 0)}
         />
       ),
     },
@@ -128,10 +122,12 @@ const LineItemsForm = () => {
 
   return (
     <Card title="Line Items">
-      <div style={{
-        overflowX: 'auto',
-        overflowY: 'hidden'
-      }}>
+      <div
+        style={{
+          overflowX: "auto",
+          overflowY: "hidden",
+        }}
+      >
         <Table
           columns={columns}
           dataSource={items}
@@ -152,12 +148,8 @@ const LineItemsForm = () => {
       <div style={{ textAlign: "right", marginTop: 20 }}>
         <strong style={{ marginRight: 20 }}>
           Grand Total: Rs{" "}
-          {items.reduce(
-            (sum, item) => sum + item.qty * item.unitCost,
-            0
-          )}
+          {items.reduce((sum, item) => sum + item.qty * item.unitCost, 0)}
         </strong>
-
       </div>
     </Card>
   );

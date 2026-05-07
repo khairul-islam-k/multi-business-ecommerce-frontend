@@ -11,14 +11,11 @@ const columns: Column<SmsCreditTransaction>[] = [
   {
     key: "created_at",
     label: "Date",
-    sortable: true,
     render: (r) => new Date(r.created_at).toLocaleDateString(),
   },
   {
     key: "transaction_type",
     label: "Type",
-    sortable: true,
-    filterOptions: ["credit", "debit"],
     render: (r) => (
       <Tag color={r.transaction_type === "credit" ? "green" : "red"}>
         {r.transaction_type.toUpperCase()}
@@ -28,7 +25,6 @@ const columns: Column<SmsCreditTransaction>[] = [
   {
     key: "credits",
     label: "Credits",
-    sortable: true,
     render: (r) => (
       <span
         className={
@@ -45,7 +41,6 @@ const columns: Column<SmsCreditTransaction>[] = [
   {
     key: "amount",
     label: "Amount",
-    sortable: true,
     render: (r) => (r.amount ? `$${r.amount}` : "—"),
   },
   { key: "note", label: "Note" },
@@ -59,7 +54,6 @@ export default function SmsUsageLogs() {
       <DataTable
         data={mockTransactions}
         columns={columns}
-        searchKeys={["note"]}
         toolbarEnd={
           <Link href="/admin/dashboard/sms/credits/recharge">
             <Button type="primary">Buy More Credits</Button>

@@ -8,7 +8,6 @@ import { useSwal } from "@/hooks/use-swal";
 import SearchableSelect from "@/components/shared/searchable-select";
 import { useRouter } from "next/navigation";
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 export default function CreateUserPage() {
@@ -115,8 +114,8 @@ export default function CreateUserPage() {
                 rules={[{ required: true }]}
               >
                 <Select>
-                  <Option value="Active">Active</Option>
-                  <Option value="Inactive">Inactive</Option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
                 </Select>
               </Form.Item>
 
@@ -126,8 +125,8 @@ export default function CreateUserPage() {
                 rules={[{ required: true }]}
               >
                 <Select>
-                  <Option value="Admin">Admin</Option>
-                  <Option value="Employee">Employee</Option>
+                  <option value="Admin">Admin</option>
+                  <option value="Employee">Employee</option>
                 </Select>
               </Form.Item>
 
@@ -149,8 +148,8 @@ export default function CreateUserPage() {
             <Card title="Profile">
               <Form.Item name="gender" label="Gender">
                 <Select allowClear>
-                  <Option value="Male">Male</Option>
-                  <Option value="Female">Female</Option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                 </Select>
               </Form.Item>
 

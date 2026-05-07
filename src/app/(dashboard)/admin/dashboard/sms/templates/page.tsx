@@ -19,13 +19,10 @@ const columns: Column<SmsTemplate>[] = [
   {
     key: "name",
     label: "Name",
-    sortable: true,
   },
   {
     key: "category",
     label: "Category",
-    sortable: true,
-    filterOptions: ["Promotional", "Transactional", "Notification", "Alert"],
   },
   {
     key: "content",
@@ -39,8 +36,6 @@ const columns: Column<SmsTemplate>[] = [
   {
     key: "status",
     label: "Status",
-    sortable: true,
-    filterOptions: ["active", "draft", "inactive"],
     render: (r) => (
       <Tag color={statusColorMap[r.status]}>{r.status.toUpperCase()}</Tag>
     ),
@@ -55,7 +50,6 @@ export default function SmsTemplateList() {
       <DataTable
         data={mockTemplates}
         columns={columns}
-        searchKeys={["name", "content"]}
         toolbarEnd={
           <Link href="/admin/dashboard/sms/templates/create">
             <Button type="primary">Create Template</Button>

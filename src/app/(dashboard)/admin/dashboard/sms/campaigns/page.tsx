@@ -22,28 +22,23 @@ const statusColor: Record<string, string> = {
 };
 
 const columns: Column<SmsCampaign>[] = [
-  { key: "name", label: "Campaign", sortable: true },
+  { key: "name", label: "Campaign" },
   {
     key: "target_type",
     label: "Target",
-    sortable: true,
-    filterOptions: ["all_customers", "segment", "manual"],
   },
   {
     key: "status",
     label: "Status",
-    sortable: true,
-    filterOptions: ["draft", "scheduled", "running", "completed", "failed"],
     render: (r) => (
       <Tag color={statusColor[r.status]}>{r.status.toUpperCase()}</Tag>
     ),
   },
-  { key: "total_recipients", label: "Recipients", sortable: true },
-  { key: "total_sent", label: "Sent", sortable: true },
+  { key: "total_recipients", label: "Recipients" },
+  { key: "total_sent", label: "Sent" },
   {
     key: "total_failed",
     label: "Failed",
-    sortable: true,
     render: (r) => (
       <span className={r.total_failed > 0 ? "text-red-500 font-medium" : ""}>
         {r.total_failed}
@@ -53,7 +48,6 @@ const columns: Column<SmsCampaign>[] = [
   {
     key: "scheduled_at",
     label: "Scheduled",
-    sortable: true,
     render: (r) =>
       r.scheduled_at ? new Date(r.scheduled_at).toLocaleDateString() : "—",
   },
@@ -69,7 +63,6 @@ export default function CampaignList() {
       <DataTable
         data={mockCampaigns}
         columns={columns}
-        searchKeys={["name"]}
         toolbarEnd={
           <Link href="/admin/dashboard/sms/campaigns/create">
             <Button type="primary">Create Campaign</Button>

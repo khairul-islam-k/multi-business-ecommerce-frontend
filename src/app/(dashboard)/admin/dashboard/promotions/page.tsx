@@ -1,24 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import PageHeader from "@/components/shared/page-header";
-import { DataTable, Column } from "@/components/shared/data-table";
-import StatusBadge from "./_components/status-badge";
-import { mockPromotions, Promotion } from "./data";
+import { useRouter } from "next/navigation";
 import { Button, Space, Modal, Descriptions } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useRouter } from "next/navigation";
+
+import { mockPromotions, Promotion } from "./data";
+import StatusBadge from "./_components/status-badge";
+import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Link from "next/link";
+import { DataTable, Column } from "@/components/shared/data-table";
 
 const columns: Column<Promotion>[] = [
-  { key: "name", label: "Promotion", sortable: true },
+  { key: "name", label: "Promotion" },
 
   {
     key: "promotion_type",
     label: "Type",
-    sortable: true,
-    filterOptions: ["percentage", "fixed", "bogo", "free_shipping"],
     render: (r) => (
       <span className="capitalize">{r.promotion_type.replace("_", " ")}</span>
     ),
@@ -27,7 +26,6 @@ const columns: Column<Promotion>[] = [
   {
     key: "discount_value",
     label: "Discount",
-    sortable: true,
     render: (r) =>
       r.discount_type === "percentage"
         ? `${r.discount_value}%`
@@ -37,22 +35,18 @@ const columns: Column<Promotion>[] = [
   {
     key: "start_at",
     label: "Start",
-    sortable: true,
     render: (r) => new Date(r.start_at).toLocaleDateString(),
   },
 
   {
     key: "end_at",
     label: "End",
-    sortable: true,
     render: (r) => new Date(r.end_at).toLocaleDateString(),
   },
 
   {
     key: "status",
     label: "Status",
-    sortable: true,
-    filterOptions: ["active", "scheduled", "expired", "draft"],
     render: (r) => <StatusBadge status={r.status} />,
   },
 ];
@@ -75,7 +69,6 @@ export default function PromotionList() {
       <DataTable
         data={mockPromotions}
         columns={columns}
-        searchKeys={["name"]}
         toolbarEnd={
           <Link href="/admin/dashboard/promotions/create">
             <Button type="primary">Create Promotion</Button>
