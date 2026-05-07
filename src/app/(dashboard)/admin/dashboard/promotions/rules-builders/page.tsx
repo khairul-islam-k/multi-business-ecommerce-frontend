@@ -1,14 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { DataTable, Column } from "@/components/shared/data-table";
 import { mockRules, mockPromotions, PromotionRule } from "../data";
 
+import { useState } from "react";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Modal, Form, Input, Select, Space, Tag } from "antd";
-
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const promoMap = Object.fromEntries(mockPromotions.map((p) => [p.id, p.name]));
 
@@ -22,14 +21,6 @@ const columns: Column<PromotionRule>[] = [
     key: "rule_type",
     label: "Rule Type",
     render: (r) => <Tag>{r.rule_type.replace("_", " ")}</Tag>,
-    filterOptions: [
-      "min_order",
-      "max_discount",
-      "category",
-      "customer_segment",
-      "min_quantity",
-      "payment_method",
-    ],
   },
   { key: "rule_value", label: "Value" },
 ];
@@ -52,7 +43,6 @@ export default function PromotionRulesBuilder() {
       <DataTable
         data={mockRules}
         columns={columns}
-        searchKeys={["rule_type", "rule_value"]}
         toolbarEnd={
           <Button type="primary" onClick={() => handleOpen()}>
             Add Rule

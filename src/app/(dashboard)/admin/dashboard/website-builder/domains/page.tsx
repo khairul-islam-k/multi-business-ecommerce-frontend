@@ -1,7 +1,7 @@
 "use client";
 
-import DomainTable from "./_components/DomainTable";
-import { Button, Card, Col, Flex, Form, Input, Row, Select, theme } from "antd";
+import DomainTable from "./_components/domain-table";
+import { Button, Card, Col, Form, Input, Row, Select, theme } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import {

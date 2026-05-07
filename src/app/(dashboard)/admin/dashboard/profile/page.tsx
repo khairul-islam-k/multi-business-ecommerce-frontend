@@ -1,7 +1,6 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useState } from "react";
 import { CameraOutlined, UserOutlined } from "@ant-design/icons";
 import {
   Avatar,
@@ -17,10 +16,10 @@ import {
   theme,
   Upload,
 } from "antd";
-import { useState } from "react";
 
-import ChangePassword from "./components/ChangePassword";
-
+import PageHeader from "@/components/shared/page-header";
+import ChangePassword from "./components/change-password";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 const { TextArea } = Input;
 
 const BusinessProfile = () => {

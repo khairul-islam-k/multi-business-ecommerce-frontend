@@ -14,8 +14,6 @@ import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
 import Pagination from "@/components/shared/pagination";
 
-const { Option } = Select;
-
 export default function WebsiteMenuBuilder() {
   const swal = useSwal();
 
@@ -174,16 +172,16 @@ export default function WebsiteMenuBuilder() {
             rules={[{ required: true }]}
           >
             <Select placeholder="Select location">
-              <Option value="header">Header</Option>
-              <Option value="body">Body</Option>
-              <Option value="footer">Footer</Option>
+              <option value="header">Header</option>
+              <option value="body">Body</option>
+              <option value="footer">Footer</option>
             </Select>
           </Form.Item>
 
           <Form.Item name="status" label="Status" initialValue="Active">
             <Select>
-              <Option value="Active">Active</Option>
-              <Option value="Inactive">Inactive</Option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
             </Select>
           </Form.Item>
         </Form>

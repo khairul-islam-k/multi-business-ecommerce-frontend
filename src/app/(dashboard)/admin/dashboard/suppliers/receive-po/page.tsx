@@ -1,8 +1,9 @@
 "use client";
-import PageHeader from '@/components/shared/page-header';
-import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { Button, Card, Flex, Select, Table, Tag } from 'antd';
-import React, { useEffect, useState } from 'react';
+
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { Button, Card, Flex, Select, Table, Tag } from "antd";
+import { useEffect, useState } from "react";
 
 const { Option } = Select;
 
@@ -26,7 +27,7 @@ const Products: TProducts[] = [
     Variant: "_",
     Ordered: 150,
     Received: 150,
-    Difference: 0
+    Difference: 0,
   },
   {
     id: "PO-2026-005",
@@ -36,25 +37,22 @@ const Products: TProducts[] = [
     Variant: "_",
     Ordered: 150,
     Received: 150,
-    Difference: 0
-  }
+    Difference: 0,
+  },
 ];
 
 const ReceivePurchaseOrder = () => {
-
-
   const [productId, SetProductId] = useState<string>(Products[0].id);
   const [allProducts, setAllProducts] = useState<TProducts[]>([]);
 
   useEffect(() => {
-    const result = Products.filter(singleData => singleData.id === productId);
+    const result = Products.filter((singleData) => singleData.id === productId);
     const handleData = () => {
       setAllProducts(result);
-    }
+    };
 
     handleData();
-
-  }, [productId])
+  }, [productId]);
 
   const columns = [
     {
@@ -91,63 +89,71 @@ const ReceivePurchaseOrder = () => {
 
   const handleConfirm = () => {
     console.log(productId);
-  }
+  };
 
   return (
     <div>
-      <div style={{ marginBottom: '24px' }}>
-        <PageHeader title='Receive Purchase Order' breadcrumb={adminBreadcrumb}></PageHeader>
+      <div style={{ marginBottom: "24px" }}>
+        <PageHeader
+          title="Receive Purchase Order"
+          breadcrumb={adminBreadcrumb}
+        ></PageHeader>
       </div>
       <p>Record received goods against POs</p>
 
       <Card>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: 'bold'
-        }}>Select Purchase Order</h3>
-        <Select
-          value={productId}
-          onChange={(value) => SetProductId(value)}
+        <h3
+          style={{
+            fontSize: "20px",
+            fontWeight: "bold",
+          }}
         >
-          {
-            Products.map(product =>
-              <Option key={product.id} value={product.id}>{product.id}-{product.category}</Option>)
-          }
+          Select Purchase Order
+        </h3>
+        <Select value={productId} onChange={(value) => SetProductId(value)}>
+          {Products.map((product) => (
+            <Option key={product.id} value={product.id}>
+              {product.id}-{product.category}
+            </Option>
+          ))}
         </Select>
       </Card>
 
       <Card
-      style={{
-        marginTop: '16px'
-      }}
+        style={{
+          marginTop: "16px",
+        }}
       >
         {/* Search and filter */}
         <Flex
           justify="space-between"
           wrap="wrap"
-          style={{ marginBottom: '10px' }}
+          style={{ marginBottom: "10px" }}
         >
-
           <div>
-            <h3 style={{
-              fontSize: '20px',
-              fontWeight: 'bold'
-            }}>{productId} Items</h3>
+            <h3
+              style={{
+                fontSize: "20px",
+                fontWeight: "bold",
+              }}
+            >
+              {productId} Items
+            </h3>
           </div>
 
           <div>
             <Tag
               style={{
-                color: 'white',
-                background: 'blue'
+                color: "white",
+                background: "blue",
               }}
-            >{allProducts[0]?.status}</Tag>
+            >
+              {allProducts[0]?.status}
+            </Tag>
           </div>
         </Flex>
 
-        <div style={{ overflow: 'auto',
-          marginBottom: '20px'
-         }}>
+        <div style={{ overflow: "auto", marginBottom: "20px" }}>
           <Table
             columns={columns}
             dataSource={allProducts}
@@ -157,9 +163,9 @@ const ReceivePurchaseOrder = () => {
           />
         </div>
 
-        <Button
-        onClick={handleConfirm}
-        type='primary'>Confirm Receipt</Button>
+        <Button onClick={handleConfirm} type="primary">
+          Confirm Receipt
+        </Button>
       </Card>
     </div>
   );

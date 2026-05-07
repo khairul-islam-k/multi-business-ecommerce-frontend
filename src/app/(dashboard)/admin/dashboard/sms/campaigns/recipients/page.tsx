@@ -14,12 +14,10 @@ const statusColor: Record<string, string> = {
 };
 
 const columns: Column<SmsCampaignRecipient>[] = [
-  { key: "phone", label: "Phone", sortable: true },
+  { key: "phone", label: "Phone" },
   {
     key: "delivery_status",
     label: "Status",
-    sortable: true,
-    filterOptions: ["delivered", "sent", "pending", "failed"],
     render: (r) => (
       <Tag color={statusColor[r.delivery_status]}>
         {r.delivery_status.toUpperCase()}
@@ -29,7 +27,6 @@ const columns: Column<SmsCampaignRecipient>[] = [
   {
     key: "sent_at",
     label: "Sent At",
-    sortable: true,
     render: (r) => (r.sent_at ? new Date(r.sent_at).toLocaleString() : "—"),
   },
   {
@@ -48,11 +45,7 @@ export default function CampaignRecipientLog() {
     <div className="space-y-6">
       <PageHeader title="Campaign Recipient Log" breadcrumb={adminBreadcrumb} />
 
-      <DataTable
-        data={mockRecipients}
-        columns={columns}
-        searchKeys={["phone"]}
-      />
+      <DataTable data={mockRecipients} columns={columns} />
     </div>
   );
 }

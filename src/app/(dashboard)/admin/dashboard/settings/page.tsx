@@ -10,7 +10,6 @@ import {
   LinkOutlined,
   BgColorsOutlined,
   GlobalOutlined,
-  MailOutlined,
 } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";

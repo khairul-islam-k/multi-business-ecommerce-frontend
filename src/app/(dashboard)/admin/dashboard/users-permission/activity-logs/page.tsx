@@ -1,11 +1,10 @@
 "use client";
 
-import { Table, Typography, Popconfirm, Space, Input, Grid, Card, Tag } from "antd";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { Table, Space, Input, Grid, Card, Tag } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
 
 // Your activity data
 const activityLogsData = [
@@ -68,67 +67,68 @@ const activityLogsData = [
 ];
 
 const columns = [
-    {
-        title: "Action",
-        dataIndex: "action",
-        key: "action",
-        render: (action: string) => <Tag>{action}</Tag>
-    },
-    {
-        title: "User Name",
-        dataIndex: "userName",
-        key: "userName",
-    },
-    {
-        title: "target",
-        dataIndex: "target",
-        key: "target",
-    },
-    {
-        title: "Time",
-        dataIndex: "time",
-        key: "time",
-    },
-    {
-        title: "details",
-        dataIndex: "details",
-        key: "details",
-    },
+  {
+    title: "Action",
+    dataIndex: "action",
+    key: "action",
+    render: (action: string) => <Tag>{action}</Tag>,
+  },
+  {
+    title: "User Name",
+    dataIndex: "userName",
+    key: "userName",
+  },
+  {
+    title: "target",
+    dataIndex: "target",
+    key: "target",
+  },
+  {
+    title: "Time",
+    dataIndex: "time",
+    key: "time",
+  },
+  {
+    title: "details",
+    dataIndex: "details",
+    key: "details",
+  },
 ];
 
 const ActivityLogs = () => {
-    const screens = Grid.useBreakpoint();
-    return (
-        <div style={{ padding: 24 }}>
-            <div style={{ marginBottom: '24px' }}>
-                <PageHeader title='Activity Logs' breadcrumb={adminBreadcrumb}></PageHeader>
-            </div>
-            <p>Audit trail of all administrative actions.</p>
+  const screens = Grid.useBreakpoint();
+  return (
+    <div style={{ padding: 24 }}>
+      <div style={{ marginBottom: "24px" }}>
+        <PageHeader
+          title="Activity Logs"
+          breadcrumb={adminBreadcrumb}
+        ></PageHeader>
+      </div>
+      <p>Audit trail of all administrative actions.</p>
 
-            {/* Search field */}
-            <Space style={{ marginBottom: 16 }}>
-                <Input
-                    style={{
-                        width: screens.lg ? "330px" : "100%"
-                    }}
-                    prefix={<SearchOutlined />}
-                    placeholder="Search packages..."
-                />
-            </Space>
+      {/* Search field */}
+      <Space style={{ marginBottom: 16 }}>
+        <Input
+          style={{
+            width: screens.lg ? "330px" : "100%",
+          }}
+          prefix={<SearchOutlined />}
+          placeholder="Search packages..."
+        />
+      </Space>
 
-
-            <Card style={{ overflow: 'auto' }}>
-                <Table
-                    rowKey="id"
-                    columns={columns}
-                    dataSource={activityLogsData}
-                    bordered
-                    pagination={false}
-                />
-            </Card>
-
-        </div>
-    );
+      <Card style={{ overflow: "auto" }}>
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={activityLogsData}
+          bordered
+          pagination={false}
+        />
+      </Card>
+    </div>
+  );
 };
 
 export default ActivityLogs;

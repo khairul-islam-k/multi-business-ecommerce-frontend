@@ -10,7 +10,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import SearchableSelect from "@/components/shared/searchable-select";
 
-const { Option } = Select;
 const { TextArea } = Input;
 
 export default function EditUserPage() {
@@ -118,15 +117,15 @@ export default function EditUserPage() {
 
               <Form.Item name="status" label="Status">
                 <Select>
-                  <Option value="Active">Active</Option>
-                  <Option value="Inactive">Inactive</Option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
                 </Select>
               </Form.Item>
 
               <Form.Item name="user_type" label="User Type">
                 <Select>
-                  <Option value="Admin">Admin</Option>
-                  <Option value="Employee">Employee</Option>
+                  <option value="Admin">Admin</option>
+                  <option value="Employee">Employee</option>
                 </Select>
               </Form.Item>
 
@@ -148,8 +147,8 @@ export default function EditUserPage() {
             <Card title="Profile">
               <Form.Item name="gender" label="Gender">
                 <Select allowClear>
-                  <Option value="Male">Male</Option>
-                  <Option value="Female">Female</Option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
                 </Select>
               </Form.Item>
 
