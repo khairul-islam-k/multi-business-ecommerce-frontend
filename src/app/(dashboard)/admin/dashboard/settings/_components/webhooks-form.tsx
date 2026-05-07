@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Input, Select, Button, message } from "antd";
+import { Form, Input, Select, Button } from "antd";
 
 import useSubmit from "@/hooks/use-submit";
 import { webhookSchema, WebhookValues } from "../schemas";

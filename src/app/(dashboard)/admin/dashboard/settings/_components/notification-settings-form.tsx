@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Switch, Button, message } from "antd";
+import { Form, Switch, Button } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 
 import useSubmit from "@/hooks/use-submit";

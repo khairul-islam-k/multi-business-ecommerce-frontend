@@ -66,18 +66,20 @@ const DomainTable: React.FC = () => {
       dataIndex: "Domain",
       key: "Domain",
       render: (Domain: string) => {
-        return <div style={{
-            display: 'flex',
-            gap: '5px'
-        }}>
+        return (
+          <div
+            style={{
+              display: "flex",
+              gap: "5px",
+            }}
+          >
             <div>
-                <GlobalOutlined />
+              <GlobalOutlined />
             </div>
-            <div>
-                {Domain}
-            </div>
-        </div>
-      }
+            <div>{Domain}</div>
+          </div>
+        );
+      },
     },
     {
       title: "Website",
@@ -124,12 +126,7 @@ const DomainTable: React.FC = () => {
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={data}
-      rowKey="id"
-      pagination={false}
-    />
+    <Table columns={columns} dataSource={data} rowKey="id" pagination={false} />
   );
 };
 

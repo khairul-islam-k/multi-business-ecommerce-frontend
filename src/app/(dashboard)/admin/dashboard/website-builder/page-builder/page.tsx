@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, Button, Modal, Form, Input, Select, Spin, Empty } from "antd";
+import { Card, Button, Modal, Form, Input, Select, Empty } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/axios";
@@ -13,9 +13,6 @@ import SearchableSelect from "@/components/shared/searchable-select";
 import { useSwal } from "@/hooks/use-swal";
 import { queryClient } from "@/providers/query-provider";
 import Pagination from "@/components/shared/pagination";
-import Loader from "@/components/shared/loader";
-
-const { Option } = Select;
 
 export default function PageBuilder() {
   const swal = useSwal();
@@ -170,9 +167,9 @@ export default function PageBuilder() {
 
           <Form.Item name="page_type" label="Type" rules={[{ required: true }]}>
             <Select>
-              <Option value="home">Home</Option>
-              <Option value="page">Page</Option>
-              <Option value="product">Product</Option>
+              <option value="home">Home</option>
+              <option value="page">Page</option>
+              <option value="product">Product</option>
             </Select>
           </Form.Item>
 
@@ -186,8 +183,8 @@ export default function PageBuilder() {
 
           <Form.Item name="status" label="Status" initialValue="Active">
             <Select>
-              <Option value="Active">Published</Option>
-              <Option value="Inactive">Draft</Option>
+              <option value="Active">Published</option>
+              <option value="Inactive">Draft</option>
             </Select>
           </Form.Item>
         </Form>

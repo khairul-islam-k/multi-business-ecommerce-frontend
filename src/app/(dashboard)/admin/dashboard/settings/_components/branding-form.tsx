@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button } from "antd";
 
 import { brandingSchema, BrandingValues } from "../schemas";
 import useSubmit from "@/hooks/use-submit";
