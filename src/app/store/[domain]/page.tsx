@@ -1,4 +1,4 @@
-import ElectronicHomePage from '@/app/templates/electronic/pages/HomePage';
+import ElectronicHomePage from '@/app/templates/electronic/pages/home-page';
 import React from 'react';
 
 type Props = {

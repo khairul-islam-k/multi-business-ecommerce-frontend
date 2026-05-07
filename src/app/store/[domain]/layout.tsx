@@ -1,6 +1,6 @@
-import { CartProvider } from '@/app/templates/electronic/components/contex/CartContex';
-import { ElectronicFooter } from '@/app/templates/electronic/components/Footer';
-import { ElectronicNavBar } from '@/app/templates/electronic/components/Navbar';
+import { CartProvider } from '@/app/store/[domain]/_components/contex/CartContex';
+import { ElectronicFooter } from '@/app/templates/electronic/_components/footer';
+import { ElectronicNavBar } from '@/app/templates/electronic/_components/navbar';
 import React from 'react';
 
 const WebsiteLayout = ({

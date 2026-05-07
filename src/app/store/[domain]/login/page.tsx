@@ -1,4 +1,4 @@
-import ElectronicLogin from '@/app/templates/electronic/pages/ElectronicLogin';
+import ElectronicLogin from '@/app/templates/electronic/pages/electronic-login';
 import React from 'react';
 
 const Login = () => {

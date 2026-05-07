@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { products } from "@/app/templates/electronic/components/data/products";
-import { ProductCard } from "@/app/templates/electronic/components/ProductCard";
+import { products } from "@/app/templates/electronic/_components/data/products";
+import { ProductCard } from "@/app/templates/electronic/_components/product-card";
 
 export default function ElectronicProductsPage() {
   const categories = useMemo(() => {

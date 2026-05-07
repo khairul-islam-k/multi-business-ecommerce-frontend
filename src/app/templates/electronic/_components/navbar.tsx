@@ -5,7 +5,7 @@ import { useParams, usePathname } from "next/navigation";
 import { LogIn, Menu, ShoppingBag, X, Zap } from "lucide-react";
 import { useState } from "react";
 
-import { useCart } from "./contex/CartContex";
+import { useCart } from "../../../store/[domain]/_components/contex/CartContex";
 
 type Props = {
   site: {

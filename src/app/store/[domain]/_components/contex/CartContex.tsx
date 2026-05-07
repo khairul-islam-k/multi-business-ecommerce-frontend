@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import type { Product } from "../data/products";
+import type { Product } from "../../../../templates/electronic/_components/data/products";
 
 
 type CartItem = {

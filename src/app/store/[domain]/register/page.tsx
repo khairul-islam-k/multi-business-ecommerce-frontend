@@ -1,4 +1,4 @@
-import ElectronicRegister from '@/app/templates/electronic/pages/ElectronicRegister';
+import ElectronicRegister from '@/app/templates/electronic/pages/electronic-register';
 import React from 'react';
 
 const Register = () => {
