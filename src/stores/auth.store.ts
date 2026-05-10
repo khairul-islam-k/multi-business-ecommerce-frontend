@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import Cookies from "js-cookie";
 
 import api from "@/lib/axios";
 
@@ -7,7 +8,7 @@ type User = {
   name: string;
   email: string;
   phone: string;
-  user_type: string;
+  type: string;
 };
 
 type AuthState = {
@@ -21,7 +22,6 @@ type AuthState = {
   setRefreshToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
 
-  login: (username: string, password: string) => Promise<void>;
   fetchProfile: () => Promise<void>;
   refreshAuth: () => Promise<string | null>;
   logout: () => void;
@@ -35,214 +35,125 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loading: false,
   initialized: false,
 
-  // =========================
-  // SET ACCESS TOKEN
-  // =========================
-  setAccessToken: (token) => {
-    // console.log("🟡 [setAccessToken] called:", token);
-
-    if (token) {
-      localStorage.setItem("accessToken", JSON.stringify(token));
-      // console.log("💾 [setAccessToken] saved to localStorage");
-    } else {
-      localStorage.removeItem("accessToken");
-      // console.log("🧹 [setAccessToken] removed from localStorage");
-    }
+  setAccessToken: token => {
 
     set({ accessToken: token });
-
-    // console.log("🟢 [setAccessToken] state updated");
   },
 
-  // =========================
-  // SET REFRESH TOKEN
-  // =========================
-  setRefreshToken: (token) => {
-    // console.log("🟡 [setRefreshToken] called:", token);
-
+  setRefreshToken: token => {
     if (token) {
-      localStorage.setItem("refreshToken", JSON.stringify(token));
-      // console.log("💾 [setRefreshToken] saved to localStorage");
+      Cookies.set("refreshToken", token, {
+        path: "/",
+        sameSite: "lax",
+      });
     } else {
-      localStorage.removeItem("refreshToken");
-      // console.log("🧹 [setRefreshToken] removed from localStorage");
+      Cookies.remove("refreshToken", { path: "/" });
     }
 
     set({ refreshToken: token });
-
-    // console.log("🟢 [setRefreshToken] state updated");
   },
 
-  setUser: (user) => {
-    // console.log("👤 [setUser] called:", user);
+  setUser: user => {
+
+    if (user) {
+      Cookies.set("user", JSON.stringify(user), {
+        path: "/",
+        sameSite: "lax",
+      });
+    } else {
+      Cookies.remove("user", { path: "/" });
+    }
+
     set({ user });
   },
 
-  // =========================
-  // LOGIN
-  // =========================
-  login: async (username, password) => {
-    // console.log("🚀 [login] started", { username, password });
-
-    set({ loading: true });
-
-    try {
-      const res = await api.post("/auth-onecomm/login", {
-        username,
-        password,
-      });
-
-      // console.log("📡 [login] response:", res.data);
-
-      const { access_token, refresh_token } = res.data.data;
-
-      // console.log("🔐 [login] tokens received:", {
-      //   access_token,
-      //   refresh_token,
-      // });
-
-      get().setAccessToken(access_token);
-      get().setRefreshToken(refresh_token);
-
-      // console.log("➡️ [login] calling fetchProfile...");
-
-      await get().fetchProfile();
-
-      // console.log("✅ [login] completed");
-    } catch (err) {
-      console.error("❌ [login] error:", err);
-    } finally {
-      set({ loading: false });
-      // console.log("🏁 [login] loading=false");
-    }
-  },
-
-  // =========================
-  // FETCH PROFILE
-  // =========================
   fetchProfile: async () => {
-    // console.log("📡 [fetchProfile] called");
-
     const token = get().accessToken;
 
-    // console.log("🔑 [fetchProfile] token:", token);
-
-    if (!token) {
-      // console.log("⛔ [fetchProfile] no token, aborting");
-      return;
-    }
+    if (!token) return;
 
     set({ loading: true });
 
     try {
       const res = await api.get("/auth-onecomm/profile");
-
-      // console.log("✅ [fetchProfile] response:", res.data);
-
       set({ user: res.data.data });
-
-      // console.log("👤 [fetchProfile] user set");
     } catch (err) {
-      console.error("❌ [fetchProfile] FAILED:", err);
-
+      console.error("fetchProfile failed:", err);
       get().logout();
     } finally {
       set({ loading: false });
-      // console.log("🏁 [fetchProfile] loading=false");
     }
   },
 
-  // =========================
-  // REFRESH TOKEN
-  // =========================
   refreshAuth: async () => {
-    // console.log("🔄 [refreshAuth] called");
-
     try {
-      const refreshToken = get().refreshToken;
+      const refreshToken =
+        get().refreshToken ?? Cookies.get("refreshToken");
 
-      // console.log("🔑 [refreshAuth] refreshToken:", refreshToken);
+      if (!refreshToken) return null;
 
-      if (!refreshToken) {
-        // console.log("⛔ [refreshAuth] no refresh token");
-        return null;
-      }
-
-      const res = await api.post("/auth-onecomm/refresh", {
-        refreshToken,
+      const res = await api.post("/auth/refresh", {
+        refreshToken
       });
 
-      // console.log("📡 [refreshAuth] response:", res.data);
-
       const newAccessToken = res.data.accessToken;
+      const newRefreshToken = res.data.refreshToken;
 
-      // console.log("🆕 [refreshAuth] new accessToken:", newAccessToken);
+      console.log('authstore accessToken', newAccessToken);
+      console.log('authstore refresh', newRefreshToken);
 
       get().setAccessToken(newAccessToken);
+      get().setRefreshToken(newRefreshToken);
 
       return newAccessToken;
     } catch (err) {
-      console.error("❌ [refreshAuth] FAILED:", err);
-
+      console.error("refreshAuth failed:", err);
       get().logout();
 
       return null;
     }
   },
 
-  // =========================
-  // LOGOUT
-  // =========================
-  logout: () => {
-    // console.log("🚪 [logout] called");
+  logout: async () => {
+    const refreshToken = get().refreshToken;
+    const res = await api.post('/auth/logout', { refreshToken });
 
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    if (res.status === 201) {
+      Cookies.remove("refreshToken", { path: "/" });
+      Cookies.remove("user", { path: "/" });
+    }
+
+
 
     set({
       user: null,
       accessToken: null,
       refreshToken: null,
     });
-
-    // console.log("🧹 [logout] state cleared");
   },
 
-  // =========================
-  // INIT
-  // =========================
   init: () => {
-    // console.log("🔥 [init] CALLED");
+    // const accessToken = Cookies.get("accessToken") ?? null;
+    const refreshToken = Cookies.get("refreshToken") ?? null;
 
-    const rawAccess = localStorage.getItem("accessToken");
-    const rawRefresh = localStorage.getItem("refreshToken");
+    // api.post('/auth/refresh', {
+    //   refreshToken
+    // })
+    // .then(res => {
+    //   console.log('token data authstore', res.data);
+    // })
+    // .catch(error => {
+    //   console.log(error);
+    // })
 
-    // console.log("📦 [init] raw localStorage:", {
-    //   rawAccess,
-    //   rawRefresh,
-    // });
-
-    const accessToken = rawAccess ? JSON.parse(rawAccess) : null;
-    const refreshToken = rawRefresh ? JSON.parse(rawRefresh) : null;
-
-    // console.log("🔓 [init] parsed tokens:", {
-    //   accessToken,
-    //   refreshToken,
-    // });
 
     set({
-      accessToken,
       refreshToken,
       initialized: true,
     });
 
-    // console.log("🟢 [init] state updated (initialized=true)");
-
-    if (accessToken) {
-      // console.log("➡️ [init] calling fetchProfile...");
-      get().fetchProfile();
-    } else {
-      // console.log("⛔ [init] no accessToken, skipping profile");
-    }
+    // if (accessToken) {
+    //   get().fetchProfile();
+    // }
   },
 }));

@@ -6,9 +6,9 @@ import {
   RotateCcw,
   Headphones,
 } from "lucide-react";
-import { products } from "../components/data/products";
-import { ProductCard } from "../components/ProductCard";
-import RecentlyViewProduct from "../components/RecentlyViewProduct";
+import { products } from "../_components/data/products";
+import { ProductCard } from "../_components/product-card";
+import RecentlyViewProduct from "../_components/recently-view-product";
 
 export const metadata = {
   title: "Voltix — Premium Electronics Store",

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
-import { useCart } from "@/app/templates/electronic/components/contex/CartContex";
+import { useCart } from "@/app/store/[domain]/_components/contex/CartContex";
 
 export default function CartPage() {
   const { items, remove, setQty, total, clear } = useCart();

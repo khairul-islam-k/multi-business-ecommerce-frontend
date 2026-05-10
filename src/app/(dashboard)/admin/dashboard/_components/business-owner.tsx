@@ -3,6 +3,7 @@
 import React from "react";
 import { DownOutlined } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Space } from "antd";
+import Link from "next/link";
 
 const companies = ["Google", "Microsoft", "Apple", "Amazon", "Meta"];
 
@@ -30,9 +31,11 @@ const BusinessDropdown = () => {
           {
             key: "create",
             label: (
-              <Button type="text" style={{ width: "100%", textAlign: "left" }}>
-                + Create Business
-              </Button>
+              <Link href='/admin/dashboard/business/create'>
+                <Button type="text" style={{ width: "100%", textAlign: "left" }}>
+                  + Create Business
+                </Button>
+              </Link>
             ),
           },
         ],
