@@ -25,7 +25,6 @@ import {
   GlobalOutlined,
   HistoryOutlined,
   HomeOutlined,
-  IdcardOutlined,
   InboxOutlined,
   KeyOutlined,
   LayoutOutlined,
@@ -73,102 +72,59 @@ export const items: MenuProps["items"] = [
     icon: <DashboardOutlined />,
     label: <Link href="/admin/dashboard">Dashboard</Link>,
   },
-  {
-    key: "companies",
-    icon: <IdcardOutlined />,
-    label: <Link href="/admin/dashboard/companies">Companies</Link>,
-  },
-  {
-    key: "notifications",
-    icon: <BellOutlined />,
-    label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
-  },
 
-  // business
+  // Business
   {
     key: "business",
     icon: <TeamOutlined />,
-    label: "Business",
+    label: "Business Settings",
     children: [
-      {
-        key: "branding",
-        icon: <AppstoreOutlined />,
-        label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
-      },
       {
         key: "settings",
         icon: <SettingOutlined />,
         label: <Link href="/admin/dashboard/business/setting">Settings</Link>,
       },
       {
+        key: "branding",
+        icon: <AppstoreOutlined />,
+        label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
+      },
+      {
         key: "usage-limit",
         icon: <FileTextOutlined />,
         label: (
-          <Link href="/admin/dashboard/business/usageLimit">Usage & Limit</Link>
+          <Link href="/admin/dashboard/business/usage-limit">Usage & Limit</Link>
         ),
       },
     ],
   },
 
-  // billing
+  // Employees / Roles
   {
-    key: "billing",
-    icon: <CreditCardOutlined />, // Billing / Payments
-    label: "Billing",
-    children: [
-      {
-        key: "addons",
-        icon: <AppstoreAddOutlined />, // Add-ons / extras
-        label: <Link href="/admin/dashboard/billing/addons">Addons</Link>,
-      },
-      {
-        key: "history",
-        icon: <HistoryOutlined />, // Payment / invoice history
-        label: <Link href="/admin/dashboard/billing/history">History</Link>,
-      },
-      {
-        key: "subscription",
-        icon: <SyncOutlined />, // Subscription / recurring
-        label: (
-          <Link href="/admin/dashboard/billing/subscription">Subscription</Link>
-        ),
-      },
-      {
-        key: "upgrade-plan",
-        icon: <ArrowUpOutlined />, // Upgrade
-        label: (
-          <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>
-        ),
-      },
-    ],
-  },
-
-  // User-Permission
-  {
-    key: "User-Permission",
-    icon: <SafetyOutlined />, // Permissions / access control
-    label: "Users / Permissions",
+    key: "users-permissions",
+    icon: <SafetyOutlined />,
+    label: "Employees & Roles",
     children: [
       {
         key: "users",
-        icon: <UserOutlined />, // Users list
+        icon: <UserOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permission/users">Users</Link>
+          <Link href="/admin/dashboard/users-permissions/users">Employees</Link>
         ),
       },
       {
         key: "roles",
-        icon: <TeamOutlined />, // Represents groups/roles
+        icon: <TeamOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permission/roles">Roles</Link>
+          <Link href="/admin/dashboard/users-permissions/roles">Roles</Link>
         ),
       },
       {
         key: "permission",
         icon: <KeyOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permission/permission">
-            Permission
+          <Link href="/admin/dashboard/users-permissions/permission">
+            Permissions
           </Link>
         ),
       },
@@ -176,7 +132,7 @@ export const items: MenuProps["items"] = [
         key: "login-history",
         icon: <HistoryOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permission/login-history">
+          <Link href="/admin/dashboard/users-permissions/login-history">
             Login History
           </Link>
         ),
@@ -185,7 +141,7 @@ export const items: MenuProps["items"] = [
         key: "activity-logs",
         icon: <AuditOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permission/activity-logs">
+          <Link href="/admin/dashboard/users-permissions/activity-logs">
             Activity Logs
           </Link>
         ),
@@ -193,6 +149,38 @@ export const items: MenuProps["items"] = [
     ],
   },
 
+  // Billing
+  {
+    key: "billing",
+    icon: <CreditCardOutlined />,
+    label: "Billing",
+    children: [
+      {
+        key: "addons",
+        icon: <AppstoreAddOutlined />,
+        label: <Link href="/admin/dashboard/billing/addons">Addons</Link>,
+      },
+      {
+        key: "history",
+        icon: <HistoryOutlined />,
+        label: <Link href="/admin/dashboard/billing/history">History</Link>,
+      },
+      {
+        key: "subscription",
+        icon: <SyncOutlined />,
+        label: (
+          <Link href="/admin/dashboard/billing/subscription">Subscription</Link>
+        ),
+      },
+      {
+        key: "upgrade-plan",
+        icon: <ArrowUpOutlined />,
+        label: (
+          <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>
+        ),
+      },
+    ],
+  },
   // products-management
   {
     key: "products-management",
@@ -1067,5 +1055,10 @@ export const items: MenuProps["items"] = [
         ),
       },
     ],
+  },
+  {
+    key: "notifications",
+    icon: <BellOutlined />,
+    label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
   },
 ];

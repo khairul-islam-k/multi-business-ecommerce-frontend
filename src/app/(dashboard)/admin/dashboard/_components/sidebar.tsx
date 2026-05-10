@@ -44,19 +44,19 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
         if (key === "dashboard") return item;
         if (key === "business") return businessAccess.allowed ? item : null;
 
-        if (key === "User-Permission") {
-          const children = ((item as MenuItemWithChildren).children ?? []).filter(
-            (child) => {
-              const childKey = itemKey(child);
+        if (key === "users-permissions") {
+          const children = (
+            (item as MenuItemWithChildren).children ?? []
+          ).filter((child) => {
+            const childKey = itemKey(child);
 
-              if (childKey === "users") return employeeAccess.allowed;
-              if (childKey === "roles" || childKey === "permission") {
-                return roleAccess.allowed;
-              }
+            if (childKey === "users") return employeeAccess.allowed;
+            if (childKey === "roles" || childKey === "permission") {
+              return roleAccess.allowed;
+            }
 
-              return false;
-            },
-          );
+            return false;
+          });
 
           if (!children.length) return null;
 
@@ -77,44 +77,72 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     roleAccess.allowed,
     userType,
   ]);
+  const primaryMenuItems = useMemo(
+    () => (menuItems ?? []).filter((item) => itemKey(item) !== "notifications"),
+    [menuItems],
+  );
+  const notificationMenuItems = useMemo(
+    () => (menuItems ?? []).filter((item) => itemKey(item) === "notifications"),
+    [menuItems],
+  );
 
   return (
     <div
       style={{
-        background: token.colorBgBase,
-        overflow: "auto",
+        background: token.colorBgContainer,
+        borderRight: `1px solid ${token.colorBorderSecondary}`,
+        display: "flex",
+        flexDirection: "column",
         height: "100vh",
       }}
     >
-      {/* Logo */}
       <div
         style={{
-          height: 64,
+          padding: screens.xs ? "8px 10px" : "10px 18px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          borderBottom: `1px solid ${token.colorBorder}`,
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          flexShrink: 0,
         }}
       >
         <Logo collapsed={collapsed} />
       </div>
 
-      {/* Menu */}
-      <Menu
-        mode="inline"
-        inlineCollapsed={collapsed}
-        items={menuItems}
-        onClick={close}
-        style={{ borderRight: 0 }}
-      />
+      <div style={{ flex: 1, overflow: "auto", paddingBlock: 8 }}>
+        <Menu
+          mode="inline"
+          inlineCollapsed={collapsed}
+          items={primaryMenuItems}
+          onClick={close}
+          style={{ borderRight: 0, background: "transparent" }}
+        />
+      </div>
+
+      <div
+        style={{
+          borderTop: `1px solid ${token.colorBorderSecondary}`,
+          paddingBlock: 8,
+          flexShrink: 0,
+        }}
+      >
+        <Menu
+          mode="inline"
+          inlineCollapsed={collapsed}
+          items={notificationMenuItems}
+          onClick={close}
+          style={{ borderRight: 0, background: "transparent" }}
+        />
+      </div>
 
       <div
         style={{
           display: screens.xs ? "flex" : "none",
           alignItems: "center",
           justifyContent: "center",
-          borderTop: `1px solid ${token.colorBorder}`,
-          paddingTop: 20,
+          borderTop: `1px solid ${token.colorBorderSecondary}`,
+          padding: 12,
+          flexShrink: 0,
         }}
       >
         <BusinessDropdown />

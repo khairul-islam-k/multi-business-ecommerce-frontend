@@ -21,7 +21,7 @@ async function probePermission(
   permission: PermissionRequirement,
 ) {
   switch (permission.feature) {
-    case "BUSINESS":
+    case "BUSINESS_MANAGEMENT":
       await businessesApi.get(businessId);
       return true;
     case "EMPLOYEE_MANAGEMENT":

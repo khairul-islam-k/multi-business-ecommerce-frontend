@@ -150,7 +150,7 @@ export default function Users() {
               icon={<PlusOutlined />}
               onClick={() =>
                 router.push(
-                  "/admin/dashboard/users-permission/users/create-user",
+                  "/admin/dashboard/users-permissions/users/create-user",
                 )
               }
             >
@@ -175,7 +175,7 @@ export default function Users() {
           actions={(row) => (
             <Flex gap={8}>
               <Link
-                href={`/admin/dashboard/users-permission/users/details/${row.id}`}
+                href={`/admin/dashboard/users-permissions/users/details/${row.id}`}
               >
                 <Button type="text" icon={<EyeOutlined />} />
               </Link>
@@ -188,7 +188,7 @@ export default function Users() {
                       label: "Edit",
                       onClick: () =>
                         router.push(
-                          `/admin/dashboard/users-permission/users/edit-user/${row.id}`,
+                          `/admin/dashboard/users-permissions/users/edit-user/${row.id}`,
                         ),
                     },
                     {

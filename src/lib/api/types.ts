@@ -159,6 +159,13 @@ export type BusinessPayload = {
   branding?: BusinessBranding;
 };
 
+export type UpdateProfilePayload = {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  profile?: EmployeeProfile;
+};
+
 export type PermissionAction = string;
 export type RbacFeature = string;
 

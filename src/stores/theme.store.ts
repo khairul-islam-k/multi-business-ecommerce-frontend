@@ -25,8 +25,8 @@ const getSystemTheme = (): ResolvedTheme => {
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set, get) => ({
-      theme: "system",
-      resolvedTheme: getSystemTheme(),
+      theme: "light",
+      resolvedTheme: "light",
 
       setTheme: (theme) =>
         set({
@@ -47,9 +47,12 @@ export const useThemeStore = create<ThemeState>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
-        state.setResolvedTheme(
-          state.theme === "system" ? getSystemTheme() : state.theme,
-        );
+        if (state.theme === "system") {
+          state.setTheme("light");
+          return;
+        }
+
+        state.setResolvedTheme(state.theme);
       },
     },
   ),

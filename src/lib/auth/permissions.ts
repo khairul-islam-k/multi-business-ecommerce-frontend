@@ -5,7 +5,7 @@ export const TENANT_DASHBOARD_PATH = "/admin/dashboard";
 export const SIGN_IN_PATH = "/sign-in";
 
 export type RbacFeature =
-  | "BUSINESS"
+  | "BUSINESS_MANAGEMENT"
   | "EMPLOYEE_MANAGEMENT"
   | "ROLE_PERMISSION_MANAGEMENT";
 
@@ -19,7 +19,10 @@ export type PermissionRequirement = {
 export type RoutePermission = PermissionRequirement | "DENY" | null;
 
 export const PERMISSIONS = {
-  businessRead: { feature: "BUSINESS", action: "READ" },
+  businessCreate: { feature: "BUSINESS_MANAGEMENT", action: "CREATE" },
+  businessRead: { feature: "BUSINESS_MANAGEMENT", action: "READ" },
+  businessUpdate: { feature: "BUSINESS_MANAGEMENT", action: "UPDATE" },
+  businessDelete: { feature: "BUSINESS_MANAGEMENT", action: "DELETE" },
   employeeCreate: { feature: "EMPLOYEE_MANAGEMENT", action: "CREATE" },
   employeeRead: { feature: "EMPLOYEE_MANAGEMENT", action: "READ" },
   employeeUpdate: { feature: "EMPLOYEE_MANAGEMENT", action: "UPDATE" },
@@ -54,7 +57,7 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.businessRead;
   }
 
-  const usersPath = `${TENANT_DASHBOARD_PATH}/users-permission/users`;
+  const usersPath = `${TENANT_DASHBOARD_PATH}/users-permissions/users`;
   if (pathname.startsWith(`${usersPath}/create-user`)) {
     return PERMISSIONS.employeeCreate;
   }
@@ -65,7 +68,7 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.employeeRead;
   }
 
-  const rolesPath = `${TENANT_DASHBOARD_PATH}/users-permission/roles`;
+  const rolesPath = `${TENANT_DASHBOARD_PATH}/users-permissions/roles`;
   if (pathname.startsWith(`${rolesPath}/create`)) {
     return PERMISSIONS.roleCreate;
   }
@@ -76,7 +79,7 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.roleRead;
   }
 
-  const permissionPath = `${TENANT_DASHBOARD_PATH}/users-permission/permission`;
+  const permissionPath = `${TENANT_DASHBOARD_PATH}/users-permissions/permission`;
   if (pathname.startsWith(`${permissionPath}/create`)) {
     return PERMISSIONS.roleCreate;
   }

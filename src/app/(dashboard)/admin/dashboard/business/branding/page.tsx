@@ -1,296 +1,177 @@
 "use client";
 
-import { useState } from "react";
-import { UploadOutlined } from "@ant-design/icons";
+import { useEffect } from "react";
 import {
   Button,
   Card,
   Col,
-  ColorPicker,
+  Empty,
+  Form,
   Input,
   Row,
+  Skeleton,
   Space,
-  theme,
-  Upload,
+  Typography,
 } from "antd";
 
-import Preview from "./components/Preview";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useBusiness, useBusinessMutations } from "@/lib/api";
+import type { BusinessBranding } from "@/lib/api";
 
-const BusinessBranding = () => {
-  const { token } = theme.useToken();
+const { Text } = Typography;
 
-  // upload file
-  const [fileName, setFileName] = useState<string>("");
+type BrandingValues = BusinessBranding;
 
-  // color state
-  const [primaryColor, setPrimaryColor] = useState<string>("#1677ff");
-  const [secondaryColor, setSecondaryColor] = useState<string>("#f4f4f5");
-  const [accentColor, setAccentColor] = useState<string>("#8b5cf6");
+const colorFields = [
+  ["primaryColor", "Primary color"],
+  ["secondaryColor", "Secondary color"],
+  ["accentColor", "Accent color"],
+] as const;
 
-  const beforeUpload = (file: File) => {
-    if (file.size / 1024 / 1024 > 2) {
-      return Upload.LIST_IGNORE;
+export default function BusinessBrandingPage() {
+  const [form] = Form.useForm<BrandingValues>();
+  const swal = useSwal();
+  const businessId = useActiveBusinessId();
+  const { data: business, isLoading } = useBusiness(businessId ?? undefined);
+  const { updateBusiness } = useBusinessMutations();
+  const watchedValues = Form.useWatch([], form) ?? {};
+
+  useEffect(() => {
+    if (!business) return;
+
+    form.setFieldsValue({
+      logoUrl: business.branding?.logoUrl ?? undefined,
+      faviconUrl: business.branding?.faviconUrl ?? undefined,
+      primaryColor: business.branding?.primaryColor ?? "#0f766e",
+      secondaryColor: business.branding?.secondaryColor ?? "#f8fafc",
+      accentColor: business.branding?.accentColor ?? "#f59e0b",
+      fontFamily: business.branding?.fontFamily ?? "Inter",
+      seoTitle: business.branding?.seoTitle ?? business.name,
+      seoDescription: business.branding?.seoDescription ?? undefined,
+    });
+  }, [business, form]);
+
+  const onFinish = async (values: BrandingValues) => {
+    if (!businessId) return;
+
+    try {
+      await updateBusiness.mutateAsync({
+        businessId,
+        payload: {
+          branding: values,
+        },
+      });
+
+      swal.success("Branding settings saved.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     }
-    setFileName(file.name);
-    return false; // prevent automatic upload
   };
+
+  if (!businessId) return <Empty description="No active business selected" />;
+
+  if (isLoading) return <Skeleton active paragraph={{ rows: 8 }} />;
+
   return (
-    <div>
-      <div style={{ marginBottom: "24px" }}>
-        <PageHeader title="Branding" breadcrumb={adminBreadcrumb}></PageHeader>
-      </div>
+    <div className="space-y-6">
+      <PageHeader
+        title="Business Branding"
+        subtitle="Brand assets and SEO metadata are saved against the active business."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      <Row gutter={[16, 16]}>
-        {/* different Logo */}
-        <Col xs={24} md={12}>
-          <Card style={{ height: "100%" }}>
-            <h4 style={{ fontWeight: 500, fontSize: "20px" }}>
-              Logos & Assets
-            </h4>
-            <p>Upload your brand assets for use across the platform.</p>
-
-            <section style={{ marginBottom: "30px", marginTop: "30px" }}>
-              <h5>Company Logo</h5>
-              <p>Used in sidebar and emails. Recommended: 200×60px PNG.</p>
-              <Row gutter={8} align="middle">
-                {/* File Name Field */}
-                <Col>
-                  <Input
-                    style={{
-                      height: "60px",
-                      width: "100px",
-                      background: token.colorBgContainerDisabled,
-                    }}
-                    placeholder="No file"
-                    value={fileName}
-                    readOnly
-                  />
+      <Form form={form} layout="vertical" onFinish={onFinish}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={14}>
+            <Card title="Brand Assets">
+              <Row gutter={12}>
+                <Col xs={24} md={12}>
+                  <Form.Item name="logoUrl" label="Logo URL">
+                    <Input placeholder="https://example.com/logo.png" />
+                  </Form.Item>
                 </Col>
-
-                {/* Upload Button */}
-                <Col>
-                  <Upload
-                    beforeUpload={beforeUpload}
-                    showUploadList={false}
-                    accept=".pdf,.jpg,.png"
-                  >
-                    <Button icon={<UploadOutlined />}>Upload</Button>
-                  </Upload>
+                <Col xs={24} md={12}>
+                  <Form.Item name="faviconUrl" label="Favicon URL">
+                    <Input placeholder="https://example.com/favicon.ico" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item name="fontFamily" label="Font family">
+                    <Input placeholder="Inter" />
+                  </Form.Item>
                 </Col>
               </Row>
-            </section>
+            </Card>
 
-            <section style={{ marginBottom: "30px" }}>
-              <h5>Favicon</h5>
-              <p>Browser tab icon. Recommended: 32×32px ICO/PNG.</p>
-              <Row gutter={8} align="middle">
-                {/* File Name Field */}
-                <Col>
-                  <Input
-                    style={{
-                      height: "60px",
-                      width: "100px",
-                      background: token.colorBgContainerDisabled,
-                    }}
-                    placeholder="No file"
-                    value={fileName}
-                    readOnly
-                  />
-                </Col>
+            <Card title="SEO" className="mt-4">
+              <Form.Item name="seoTitle" label="SEO title">
+                <Input placeholder="Business title" maxLength={255} />
+              </Form.Item>
+              <Form.Item name="seoDescription" label="SEO description">
+                <Input.TextArea rows={4} placeholder="Short store description" />
+              </Form.Item>
+            </Card>
+          </Col>
 
-                {/* Upload Button */}
-                <Col>
-                  <Upload
-                    beforeUpload={beforeUpload}
-                    showUploadList={false}
-                    accept=".pdf,.jpg,.png"
-                  >
-                    <Button icon={<UploadOutlined />}>Upload</Button>
-                  </Upload>
-                </Col>
-              </Row>
-            </section>
+          <Col xs={24} lg={10}>
+            <Card title="Brand Palette">
+              <Space direction="vertical" size={16} className="w-full">
+                {colorFields.map(([name, label]) => (
+                  <Form.Item key={name} name={name} label={label} className="mb-0">
+                    <Input type="color" style={{ height: 42 }} />
+                  </Form.Item>
+                ))}
+              </Space>
 
-            <section style={{ marginBottom: "30px" }}>
-              <h5>Invoice Header Logo</h5>
-              <p>
-                Appears on invoices and receipts. Recommended: 300×100px PNG.
-              </p>
-              <Row gutter={8} align="middle">
-                {/* File Name Field */}
-                <Col>
-                  <Input
-                    style={{
-                      height: "60px",
-                      width: "100px",
-                      background: token.colorBgContainerDisabled,
-                    }}
-                    placeholder="No file"
-                    value={fileName}
-                    readOnly
-                  />
-                </Col>
-
-                {/* Upload Button */}
-                <Col>
-                  <Upload
-                    beforeUpload={beforeUpload}
-                    showUploadList={false}
-                    accept=".pdf,.jpg,.png"
-                  >
-                    <Button icon={<UploadOutlined />}>Upload</Button>
-                  </Upload>
-                </Col>
-              </Row>
-            </section>
-          </Card>
-        </Col>
-
-        {/* color here */}
-        <Col xs={24} md={12}>
-          <Card style={{ height: "100%" }}>
-            <h4 style={{ fontWeight: 500, fontSize: "20px" }}>Brand Colors</h4>
-            <p>Set your brand palette for emails, receipts, and invoices.</p>
-
-            {/* Primary Color */}
-            <section style={{ marginBottom: "30px" }}>
-              <h5>Primary Color</h5>
-
-              {/* color pick */}
-              <Space size={12}>
-                {/* Color Picker Square */}
-                <ColorPicker
-                  value={primaryColor}
-                  onChange={(value) => setPrimaryColor(value.toHexString())}
-                  showText={false}
-                  styles={{
-                    popupOverlayInner: { width: 220 },
+              <div
+                className="mt-6 rounded-lg border p-5"
+                style={{
+                  borderColor: watchedValues.secondaryColor ?? "#e5e7eb",
+                  background: watchedValues.secondaryColor ?? "#f8fafc",
+                }}
+              >
+                <Text
+                  strong
+                  style={{ color: watchedValues.primaryColor ?? "#0f766e" }}
+                >
+                  {watchedValues.seoTitle || business?.name || "Business preview"}
+                </Text>
+                <p
+                  className="mt-2 text-sm"
+                  style={{ color: watchedValues.primaryColor ?? "#0f766e" }}
+                >
+                  {watchedValues.seoDescription ||
+                    "Preview how the selected palette may feel across storefront surfaces."}
+                </p>
+                <Button
+                  className="mt-3"
+                  style={{
+                    background: watchedValues.accentColor ?? "#f59e0b",
+                    borderColor: watchedValues.accentColor ?? "#f59e0b",
+                    color: "#111827",
                   }}
                 >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 6,
-                      border: "1px solid #d9d9d9",
-                      backgroundColor: primaryColor,
-                      cursor: "pointer",
-                    }}
-                  />
-                </ColorPicker>
+                  Accent action
+                </Button>
+              </div>
+            </Card>
+          </Col>
+        </Row>
 
-                {/* Color Code Input Square */}
-                <Input
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  style={{
-                    width: 120,
-                    height: 40,
-                    borderRadius: 6,
-                    textTransform: "uppercase",
-                  }}
-                  placeholder="#FFFFFF"
-                />
-              </Space>
-            </section>
-
-            {/* Secondary Color */}
-            <section style={{ marginBottom: "30px" }}>
-              <h5>Secondary Color</h5>
-
-              {/* color pick */}
-              <Space size={12}>
-                {/* Color Picker Square */}
-                <ColorPicker
-                  value={secondaryColor}
-                  onChange={(value) => setSecondaryColor(value.toHexString())}
-                  showText={false}
-                  styles={{
-                    popupOverlayInner: { width: 220 },
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 6,
-                      border: "1px solid #d9d9d9",
-                      backgroundColor: secondaryColor,
-                      cursor: "pointer",
-                    }}
-                  />
-                </ColorPicker>
-
-                {/* Color Code Input Square */}
-                <Input
-                  value={secondaryColor}
-                  onChange={(e) => setSecondaryColor(e.target.value)}
-                  style={{
-                    width: 120,
-                    height: 40,
-                    borderRadius: 6,
-                    textTransform: "uppercase",
-                  }}
-                  placeholder="#FFFFFF"
-                />
-              </Space>
-            </section>
-
-            {/* Accent Color */}
-            <section style={{ marginBottom: "30px" }}>
-              <h5>Accent Color</h5>
-
-              {/* color pick */}
-              <Space size={12}>
-                {/* Color Picker Square */}
-                <ColorPicker
-                  value={accentColor}
-                  onChange={(value) => setAccentColor(value.toHexString())}
-                  showText={false}
-                  styles={{
-                    popupOverlayInner: { width: 220 },
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 6,
-                      border: "1px solid #d9d9d9",
-                      backgroundColor: accentColor,
-                      cursor: "pointer",
-                    }}
-                  />
-                </ColorPicker>
-
-                {/* Color Code Input Square */}
-                <Input
-                  value={accentColor}
-                  onChange={(e) => setAccentColor(e.target.value)}
-                  style={{
-                    width: 120,
-                    height: 40,
-                    borderRadius: 6,
-                    textTransform: "uppercase",
-                  }}
-                  placeholder="#FFFFFF"
-                />
-              </Space>
-            </section>
-
-            {/* preview */}
-            <Preview
-              primaryColor={primaryColor}
-              secondaryColor={secondaryColor}
-              accentColor={accentColor}
-            />
-          </Card>
-        </Col>
-      </Row>
+        <div className="mt-4 flex justify-end">
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={updateBusiness.isPending}
+          >
+            Save branding
+          </Button>
+        </div>
+      </Form>
     </div>
   );
-};
-
-export default BusinessBranding;
+}

@@ -30,7 +30,7 @@ export default function AdminDashboardLayout({
             breakpoint="md"
             // collapsedWidth="0"
             trigger={null}
-            style={{ background: token.colorBgBase }}
+            style={{ background: token.colorBgContainer }}
           >
             <Sidebar collapsed={collapsed} />
           </Sider>
@@ -56,10 +56,10 @@ export default function AdminDashboardLayout({
           <Header
             style={{
               padding: 0,
-              background: token.colorBgBase,
+              background: token.colorBgContainer,
               display: "flex",
               alignItems: "center",
-              borderLeft: `1px solid ${token.colorBorder}`,
+              borderLeft: `1px solid ${token.colorBorderSecondary}`,
             }}
           >
             <TopBar
@@ -74,6 +74,7 @@ export default function AdminDashboardLayout({
               overflowY: "auto",
               overflowX: "hidden",
               padding: screens.xs ? "10px" : "24px",
+              background: token.colorBgLayout,
             }}
           >
             {children}

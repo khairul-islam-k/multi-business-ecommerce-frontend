@@ -1,16 +1,13 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { Layout, Space, Badge, Button, theme, Grid, Flex } from "antd";
-import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
+import { Space, Button, theme, Grid, Flex } from "antd";
+import { LayoutOutlined, MenuOutlined } from "@ant-design/icons";
 
 import GlobalSearch from "./global-search";
 import BusinessDropdown from "./business-owner";
 import ProfileDropdown from "./profile-dropdown";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
-
-const { Header } = Layout;
 
 type TopbarProps = {
   toggle: () => void;
@@ -24,12 +21,15 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
 
   return (
     <>
-      <Header
+      <div
         style={{
-          background: token.colorBgBase,
-          padding: "8px 16px",
-          // boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-          height: "auto",
+          background: token.colorBgContainer,
+          borderBottom: `1px solid ${token.colorBorderSecondary}`,
+          boxShadow: "none",
+          display: "flex",
+          alignItems: "center",
+          padding: screens.xs ? "0 10px" : "0 18px",
+          height: 64,
           width: "100%",
           lineHeight: "normal",
         }}
@@ -38,33 +38,25 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
           style={{ width: "100%", justifyContent: "space-between" }}
           align="center"
         >
-          <Flex style={{ gap: "8px" }} align="center">
-            <div
+          <Flex style={{ gap: 12, minWidth: 0 }} align="center">
+            <Button
+              type="text"
+              icon={<LayoutOutlined style={{ fontSize: 20 }} />}
               onClick={toggleSidebar}
               style={{
                 display: screens.xs ? "none" : "block",
-                cursor: "pointer",
               }}
-            >
-              <LayoutOutlined style={{ fontSize: "20px" }} />
-            </div>
+            />
 
             <GlobalSearch />
           </Flex>
 
-          <Space size="small" align="center">
+          <Space size={screens.xs ? 4 : 8} align="center">
+            <ThemeToggle />
+
             <div style={{ display: screens.xs ? "none" : "block" }}>
               <BusinessDropdown />
             </div>
-
-            {/* theme toggle */}
-            <ThemeToggle />
-
-            <Link href="/admin/dashboard/notifications">
-              <Badge dot>
-                <BellOutlined style={{ fontSize: 18 }} />
-              </Badge>
-            </Link>
 
             <ProfileDropdown />
 
@@ -77,7 +69,7 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
             />
           </Space>
         </Space>
-      </Header>
+      </div>
 
       <style jsx>{`
         @media (min-width: 768px) {

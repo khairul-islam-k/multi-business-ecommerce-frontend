@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Col, Empty, Form, Input, Row, Select, Spin } from "antd";
+import { useRouter } from "next/navigation";
+import { Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
 
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  useEmployee,
-  useEmployeeMutations,
-  useRoles,
-} from "@/lib/api";
+import { useEmployeeMutations, useRoles } from "@/lib/api";
 
-type EditEmployeeValues = {
-  name?: string;
-  email?: string;
+type CreateEmployeeValues = {
+  name: string;
+  email: string;
   phone?: string;
-  password?: string;
+  password: string;
+  confirmPassword: string;
   status?: string;
   roleIds?: number[];
   firstName?: string;
@@ -34,98 +30,68 @@ type EditEmployeeValues = {
 
 const { TextArea } = Input;
 
-export default function EditUserPage() {
-  const [form] = Form.useForm<EditEmployeeValues>();
+export default function CreateUserPage() {
+  const [form] = Form.useForm<CreateEmployeeValues>();
   const swal = useSwal();
   const router = useRouter();
-  const { id } = useParams<{ id: string }>();
   const businessId = useActiveBusinessId();
-  const employeeId = Number(id);
-
-  const employeeQuery = useEmployee(businessId ?? undefined, employeeId);
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
-  const { updateEmployee, updateEmployeeStatus, replaceEmployeeRoles } =
-    useEmployeeMutations(businessId ?? 0);
+  const { createEmployee } = useEmployeeMutations(businessId ?? 0);
 
-  useEffect(() => {
-    const employee = employeeQuery.data;
-    if (!employee) return;
-
-    form.setFieldsValue({
-      name: employee.name,
-      email: employee.email,
-      phone: employee.phone ?? undefined,
-      status: employee.status,
-      roleIds: employee.roles?.map((role) => role.id) ?? [],
-      firstName: employee.profile?.firstName ?? undefined,
-      lastName: employee.profile?.lastName ?? undefined,
-      gender: employee.profile?.gender,
-      dateOfBirth: employee.profile?.dateOfBirth ?? undefined,
-      address: employee.profile?.address ?? undefined,
-      city: employee.profile?.city ?? undefined,
-      country: employee.profile?.country ?? undefined,
-      bio: employee.profile?.bio ?? undefined,
-    });
-  }, [employeeQuery.data, form]);
-
-  const onFinish = async (values: EditEmployeeValues) => {
+  const onFinish = async (values: CreateEmployeeValues) => {
     if (!businessId) return;
 
+    if (values.password !== values.confirmPassword) {
+      swal.error("Passwords do not match.");
+      return;
+    }
+
     try {
-      await updateEmployee.mutateAsync({
-        employeeId,
-        payload: {
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          password: values.password || undefined,
-          profile: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            gender: values.gender,
-            dateOfBirth: values.dateOfBirth,
-            address: values.address,
-            city: values.city,
-            country: values.country,
-            bio: values.bio,
-          },
+      await createEmployee.mutateAsync({
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        password: values.password,
+        status: values.status,
+        roleIds: values.roleIds ?? [],
+        profile: {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          gender: values.gender,
+          dateOfBirth: values.dateOfBirth,
+          address: values.address,
+          city: values.city,
+          country: values.country,
+          bio: values.bio,
         },
       });
 
-      if (values.status) {
-        await updateEmployeeStatus.mutateAsync({
-          employeeId,
-          payload: { status: values.status },
-        });
-      }
-
-      await replaceEmployeeRoles.mutateAsync({
-        employeeId,
-        payload: { roleIds: values.roleIds ?? [] },
-      });
-
-      swal.success("Employee updated successfully.");
-      router.push("/admin/dashboard/users-permission/users");
+      swal.success("Employee created successfully.");
+      form.resetFields();
+      router.push("/admin/dashboard/users-permissions/users");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
   };
 
-  if (!businessId) return <Empty description="No active business selected" />;
-
-  if (employeeQuery.isLoading) {
-    return (
-      <div className="flex min-h-80 items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
+  if (!businessId) {
+    return <Empty description="No active business selected" />;
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Edit Employee" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Create Employee"
+        subtitle="Creates an employee for the active business."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ status: "ACTIVE" }}
+      >
         <Row gutter={16}>
           <Col xs={24} md={12}>
             <Card title="Account">
@@ -145,8 +111,34 @@ export default function EditUserPage() {
                 <Input />
               </Form.Item>
 
-              <Form.Item name="password" label="New Password">
-                <Input.Password placeholder="Leave blank to keep current password" />
+              <Form.Item
+                name="password"
+                label="Password"
+                rules={[{ required: true, min: 6 }]}
+              >
+                <Input.Password />
+              </Form.Item>
+
+              <Form.Item
+                name="confirmPassword"
+                label="Confirm Password"
+                dependencies={["password"]}
+                rules={[
+                  { required: true },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+
+                      return Promise.reject(
+                        new Error("Passwords do not match"),
+                      );
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password />
               </Form.Item>
 
               <Form.Item name="status" label="Status">
@@ -227,18 +219,10 @@ export default function EditUserPage() {
         </Row>
 
         <div className="mt-4 flex gap-2">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={
-              updateEmployee.isPending ||
-              updateEmployeeStatus.isPending ||
-              replaceEmployeeRoles.isPending
-            }
-          >
-            Update Employee
+          <Button type="primary" htmlType="submit" loading={createEmployee.isPending}>
+            Create Employee
           </Button>
-          <Button onClick={() => router.push("/admin/dashboard/users-permission/users")}>
+          <Button onClick={() => router.push("/admin/dashboard/users-permissions/users")}>
             Cancel
           </Button>
         </div>
