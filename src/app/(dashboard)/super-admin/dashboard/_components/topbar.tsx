@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
 import {
@@ -18,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
 import { useAuthStore } from "@/stores/auth.store";
-import { useSwal } from "@/hooks/use-swal";
+import successMessage from "@/hooks/succes-message";
 
 const { Search } = Input;
 const { useToken } = theme;
@@ -32,7 +31,6 @@ export default function Topbar({
   onMobileMenuToggle,
   onSidebarToggle,
 }: TopbarProps) {
-  const swal = useSwal();
   const router = useRouter();
   const { token } = useToken();
   const logout = useAuthStore((s) => s.logout);
@@ -43,8 +41,8 @@ export default function Topbar({
 
   const handleLogout = async () => {
     logout();
-    swal.success("Logged out successfully");
-    router.push("/super-admin/dashboard");
+    successMessage("Logged out successfully");
+    router.push("/sign-in");
   };
 
   const items: MenuProps["items"] = [

@@ -49,13 +49,13 @@ export const Navbar = () => {
         <div className="hidden md:flex items-center gap-3">
           <ThemeToggle />
           <Link
-            href="/admin/sign-in"
+            href="/sign-in"
             className="flex items-center h-10 px-5 rounded-full border border-foreground/80 text-sm font-semibold text-foreground hover:bg-foreground hover:text-background transition-colors"
           >
             Log In
           </Link>
           <Link
-            href="/admin/sign-in"
+            href="/sign-in"
             className="h-10 px-5 rounded-full gradient-primary text-primary-foreground text-sm font-semibold shadow-soft hover:shadow-elevated hover:-translate-y-0.5 transition-all inline-flex items-center gap-1.5"
           >
             Create Your Store
@@ -150,13 +150,13 @@ export const Navbar = () => {
 
           <div className="absolute bottom-0 left-0 right-0 p-5 border-t border-border bg-background grid gap-2.5">
             <Link
-              href="/admin/sign-in"
+              href="/sign-in"
               className="flex-items-center h-11 rounded-full border border-foreground text-sm font-semibold hover:bg-foreground hover:text-background transition-colors"
             >
               Log In
             </Link>
             <Link
-              href="/admin/sign-in"
+              href="/sign-in"
               className="h-11 rounded-full inline-flex items-center justify-center gap-1.5"
             >
               Create Your Store <ArrowRight className="h-4 w-4" />
