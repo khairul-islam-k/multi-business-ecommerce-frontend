@@ -1,18 +1,41 @@
-import { create } from "zustand";
+"use client";
+
 import Cookies from "js-cookie";
+import { create } from "zustand";
 
-import api from "@/lib/axios";
+import { authApi } from "@/lib/api/auth";
+import type {
+  AuthBusiness,
+  AuthPayload,
+  LoginPayload,
+  RegisterPayload,
+  SystemUser,
+} from "@/lib/api/types";
 
-type User = {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  type: string;
+const REFRESH_TOKEN_COOKIE = "refreshToken";
+const USER_COOKIE = "user";
+const BUSINESS_COOKIE = "selectedBusiness";
+const COOKIE_OPTIONS = {
+  path: "/",
+  sameSite: "lax" as const,
+};
+
+const parseCookieJson = <T>(key: string): T | null => {
+  const value = Cookies.get(key);
+  if (!value) return null;
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    Cookies.remove(key, COOKIE_OPTIONS);
+    return null;
+  }
 };
 
 type AuthState = {
-  user: User | null;
+  user: SystemUser | null;
+  selectedBusiness: AuthBusiness | null;
+  businesses: AuthBusiness[];
   accessToken: string | null;
   refreshToken: string | null;
   loading: boolean;
@@ -20,140 +43,220 @@ type AuthState = {
 
   setAccessToken: (token: string | null) => void;
   setRefreshToken: (token: string | null) => void;
-  setUser: (user: User | null) => void;
+  setUser: (user: SystemUser | null) => void;
+  setSelectedBusiness: (business: AuthBusiness | null) => void;
+  setBusinesses: (businesses: AuthBusiness[]) => void;
+  applyAuthPayload: (payload: Partial<AuthPayload>) => void;
 
+  register: (payload: RegisterPayload) => Promise<void>;
+  login: (email: string, password: string) => Promise<AuthPayload>;
   fetchProfile: () => Promise<void>;
-  refreshAuth: () => Promise<string | null>;
-  logout: () => void;
-  init: () => void;
+  refreshAuth: (businessId?: number | null) => Promise<string | null>;
+  selectBusiness: (businessId: number) => Promise<void>;
+  logout: () => Promise<void>;
+  logoutAll: () => Promise<void>;
+  init: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
+  selectedBusiness: null,
+  businesses: [],
   accessToken: null,
   refreshToken: null,
   loading: false,
   initialized: false,
 
-  setAccessToken: token => {
+  setAccessToken: (token) => set({ accessToken: token }),
 
-    set({ accessToken: token });
-  },
-
-  setRefreshToken: token => {
+  setRefreshToken: (token) => {
     if (token) {
-      Cookies.set("refreshToken", token, {
-        path: "/",
-        sameSite: "lax",
-      });
+      Cookies.set(REFRESH_TOKEN_COOKIE, token, COOKIE_OPTIONS);
     } else {
-      Cookies.remove("refreshToken", { path: "/" });
+      Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
     }
 
     set({ refreshToken: token });
   },
 
-  setUser: user => {
-
+  setUser: (user) => {
     if (user) {
-      Cookies.set("user", JSON.stringify(user), {
-        path: "/",
-        sameSite: "lax",
-      });
+      Cookies.set(USER_COOKIE, JSON.stringify(user), COOKIE_OPTIONS);
     } else {
-      Cookies.remove("user", { path: "/" });
+      Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
     }
 
     set({ user });
   },
 
-  fetchProfile: async () => {
-    const token = get().accessToken;
+  setSelectedBusiness: (business) => {
+    if (business) {
+      Cookies.set(BUSINESS_COOKIE, JSON.stringify(business), COOKIE_OPTIONS);
+    } else {
+      Cookies.remove(BUSINESS_COOKIE, COOKIE_OPTIONS);
+    }
 
-    if (!token) return;
+    set({ selectedBusiness: business });
+  },
 
+  setBusinesses: (businesses) => set({ businesses }),
+
+  applyAuthPayload: (payload) => {
+    const {
+      accessToken,
+      refreshToken,
+      user,
+      selectedBusiness,
+      businesses,
+    } = payload;
+
+    if (accessToken !== undefined) get().setAccessToken(accessToken);
+    if (refreshToken !== undefined) get().setRefreshToken(refreshToken);
+    if (user !== undefined) get().setUser(user);
+    if (selectedBusiness !== undefined) {
+      get().setSelectedBusiness(selectedBusiness);
+    }
+    if (businesses !== undefined) get().setBusinesses(businesses);
+  },
+
+  register: async (payload) => {
     set({ loading: true });
 
     try {
-      const res = await api.get("/auth-onecomm/profile");
-      set({ user: res.data.data });
-    } catch (err) {
-      console.error("fetchProfile failed:", err);
-      get().logout();
+      await authApi.register(payload);
     } finally {
       set({ loading: false });
     }
   },
 
-  refreshAuth: async () => {
+  login: async (email, password) => {
+    set({ loading: true });
+
     try {
-      const refreshToken =
-        get().refreshToken ?? Cookies.get("refreshToken");
+      const payload = await authApi.login({ email, password } satisfies LoginPayload);
+      get().applyAuthPayload(payload);
 
-      if (!refreshToken) return null;
+      return payload;
+    } finally {
+      set({ loading: false });
+    }
+  },
 
-      const res = await api.post("/auth/refresh", {
-        refreshToken
-      });
+  fetchProfile: async () => {
+    if (!get().accessToken) return;
 
-      const newAccessToken = res.data.accessToken;
-      const newRefreshToken = res.data.refreshToken;
+    set({ loading: true });
 
-      console.log('authstore accessToken', newAccessToken);
-      console.log('authstore refresh', newRefreshToken);
+    try {
+      const profile = await authApi.me();
+      get().applyAuthPayload(profile);
+    } catch {
+      await get().logout();
+    } finally {
+      set({ loading: false });
+    }
+  },
 
-      get().setAccessToken(newAccessToken);
-      get().setRefreshToken(newRefreshToken);
+  refreshAuth: async (businessId) => {
+    const refreshToken =
+      get().refreshToken ?? Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
 
-      return newAccessToken;
-    } catch (err) {
-      console.error("refreshAuth failed:", err);
-      get().logout();
+    if (!refreshToken) return null;
 
+    try {
+      const payload = await authApi.refresh({ refreshToken, businessId });
+      get().applyAuthPayload(payload);
+
+      return payload.accessToken;
+    } catch {
+      await get().logout();
       return null;
     }
   },
 
-  logout: async () => {
-    const refreshToken = get().refreshToken;
-    const res = await api.post('/auth/logout', { refreshToken });
+  selectBusiness: async (businessId) => {
+    const refreshToken =
+      get().refreshToken ?? Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
 
-    if (res.status === 201) {
-      Cookies.remove("refreshToken", { path: "/" });
-      Cookies.remove("user", { path: "/" });
+    if (!refreshToken) {
+      await get().logout();
+      return;
     }
 
+    set({ loading: true });
 
+    try {
+      const payload = await authApi.selectBusiness({
+        businessId,
+        refreshToken,
+      });
 
-    set({
-      user: null,
-      accessToken: null,
-      refreshToken: null,
-    });
+      get().applyAuthPayload(payload);
+    } finally {
+      set({ loading: false });
+    }
   },
 
-  init: () => {
-    // const accessToken = Cookies.get("accessToken") ?? null;
-    const refreshToken = Cookies.get("refreshToken") ?? null;
+  logout: async () => {
+    const refreshToken =
+      get().refreshToken ?? Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
 
-    // api.post('/auth/refresh', {
-    //   refreshToken
-    // })
-    // .then(res => {
-    //   console.log('token data authstore', res.data);
-    // })
-    // .catch(error => {
-    //   console.log(error);
-    // })
+    set({ loading: true });
 
+    try {
+      if (refreshToken && get().accessToken) {
+        await authApi.logout({ refreshToken });
+      }
+    } catch {
+      // Local cleanup still needs to happen if the session is already invalid.
+    } finally {
+      Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(BUSINESS_COOKIE, COOKIE_OPTIONS);
+
+      set({
+        user: null,
+        selectedBusiness: null,
+        businesses: [],
+        accessToken: null,
+        refreshToken: null,
+        loading: false,
+        initialized: true,
+      });
+    }
+  },
+
+  logoutAll: async () => {
+    set({ loading: true });
+
+    try {
+      if (get().accessToken) {
+        await authApi.logoutAll();
+      }
+    } finally {
+      await get().logout();
+    }
+  },
+
+  init: async () => {
+    const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
+    const user = parseCookieJson<SystemUser>(USER_COOKIE);
+    const selectedBusiness = parseCookieJson<AuthBusiness>(BUSINESS_COOKIE);
 
     set({
       refreshToken,
-      initialized: true,
+      user,
+      selectedBusiness,
+      initialized: false,
+      loading: Boolean(refreshToken),
     });
 
-    // if (accessToken) {
-    //   get().fetchProfile();
-    // }
+    if (!refreshToken) {
+      set({ initialized: true, loading: false });
+      return;
+    }
+
+    await get().refreshAuth(selectedBusiness?.id ?? null);
+    set({ initialized: true, loading: false });
   },
 }));

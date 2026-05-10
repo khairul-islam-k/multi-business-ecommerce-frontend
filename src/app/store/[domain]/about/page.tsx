@@ -1,4 +1,4 @@
-import ElectronicAboutPage from '@/app/templates/electronic/pages/abouts';
+import ElectronicAboutPage from "@/app/templates/electronic/pages/Abouts";
 import React from 'react';
 
 const AboutPage = () => {

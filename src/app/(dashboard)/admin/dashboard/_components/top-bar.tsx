@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { Layout, Space, Badge, Button, theme, Grid, Flex } from "antd";
 import { BellOutlined, LayoutOutlined, MenuOutlined } from "@ant-design/icons";
@@ -9,7 +9,6 @@ import GlobalSearch from "./global-search";
 import BusinessDropdown from "./business-owner";
 import ProfileDropdown from "./profile-dropdown";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
-import { useAuthStore } from "@/stores/auth.store";
 
 const { Header } = Layout;
 
@@ -22,11 +21,6 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
   const { token } = theme.useToken();
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
-  const refreshAuth = useAuthStore((s)=> s.refreshAuth);
-
-  useEffect(()=> {
-    refreshAuth();
-  },[])
 
   return (
     <>

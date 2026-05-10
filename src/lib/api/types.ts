@@ -1,0 +1,293 @@
+export type SortOrder = "asc" | "desc" | "ASC" | "DESC";
+
+export type PaginatedResponse<T> = {
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  items: T[];
+};
+
+export type ListQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: SortOrder;
+  includeDeleted?: boolean;
+};
+
+export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
+export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
+export type BusinessStatus = "TRIAL" | "ACTIVE" | "INACTIVE" | string;
+export type RoleStatus = "ACTIVE" | "INACTIVE" | string;
+export type AssignmentStatus = "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
+export type EmployeeStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
+
+export type SystemUser = {
+  id: number;
+  uuid?: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  type: SystemUserType;
+  status?: SystemUserStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type AuthBusiness = {
+  id: number;
+  name: string;
+  ownerUserId: number;
+  members?: Array<{
+    id: number;
+    userId: number;
+  }>;
+};
+
+export type AuthPayload = {
+  accessToken: string;
+  refreshToken: string;
+  user: SystemUser;
+  selectedBusiness: AuthBusiness | null;
+  businesses?: AuthBusiness[];
+};
+
+export type RegisterPayload = {
+  name: string;
+  email: string;
+  password: string;
+  businessName?: string;
+};
+
+export type RegisterResponse = {
+  user: SystemUser;
+  selectedBusiness: Business;
+};
+
+export type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+export type RefreshPayload = {
+  refreshToken: string;
+  businessId?: number | null;
+};
+
+export type SelectBusinessPayload = {
+  businessId: number;
+  refreshToken: string;
+};
+
+export type LogoutPayload = {
+  refreshToken: string;
+};
+
+export type MessageResponse = {
+  message: string;
+};
+
+export type BusinessSetting = {
+  id?: number;
+  orderPrefix?: string;
+  invoicePrefix?: string;
+  defaultLanguage?: string;
+  defaultCurrency?: string;
+  timezone?: string;
+  lowStockThreshold?: number;
+  allowBackorder?: boolean;
+  autoConfirmOrder?: boolean;
+  codEnabled?: boolean;
+  onlinePaymentEnabled?: boolean;
+};
+
+export type BusinessBranding = {
+  id?: number;
+  logoUrl?: string | null;
+  faviconUrl?: string | null;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
+  accentColor?: string | null;
+  fontFamily?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+};
+
+export type Business = {
+  id: number;
+  uuid?: string;
+  name: string;
+  slug?: string;
+  email?: string | null;
+  phone?: string | null;
+  country?: string | null;
+  currencyCode?: string;
+  timezone?: string;
+  status?: BusinessStatus;
+  ownerUserId?: number;
+  ownerUser?: SystemUser;
+  settings?: BusinessSetting | null;
+  branding?: BusinessBranding | null;
+  createdAt?: string;
+  updatedAt?: string;
+  _count?: {
+    members?: number;
+    roles?: number;
+  };
+};
+
+export type BusinessQuery = ListQuery & {
+  status?: BusinessStatus;
+  currencyCode?: string;
+  country?: string;
+};
+
+export type BusinessPayload = {
+  name: string;
+  slug?: string;
+  email?: string;
+  phone?: string;
+  country?: string;
+  currencyCode?: string;
+  timezone?: string;
+  status?: BusinessStatus;
+  settings?: BusinessSetting;
+  branding?: BusinessBranding;
+};
+
+export type PermissionAction = string;
+export type RbacFeature = string;
+
+export type PermissionItem = {
+  feature: RbacFeature;
+  action: PermissionAction;
+};
+
+export type Permission = PermissionItem & {
+  id?: number;
+  roleId?: number;
+  businessId?: number;
+  createdAt?: string;
+};
+
+export type PermissionQuery = {
+  page?: number;
+  limit?: number;
+  roleId?: number;
+  feature?: string;
+  action?: string;
+};
+
+export type PermissionPayload = {
+  permissions: PermissionItem[];
+};
+
+export type Role = {
+  id: number;
+  uuid?: string;
+  name: string;
+  description?: string | null;
+  status?: RoleStatus;
+  permissions?: PermissionItem[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type RoleQuery = ListQuery & {
+  status?: RoleStatus;
+};
+
+export type RolePayload = {
+  name: string;
+  description?: string;
+  status?: RoleStatus;
+  permissions?: PermissionItem[];
+};
+
+export type RoleAssignment = {
+  id: number;
+  userId: number;
+  roleId: number;
+  status?: AssignmentStatus;
+  expiresAt?: string | null;
+  user?: SystemUser;
+  role?: Role;
+  createdAt?: string;
+};
+
+export type RoleAssignmentQuery = {
+  page?: number;
+  limit?: number;
+  userId?: number;
+  roleId?: number;
+  status?: AssignmentStatus;
+};
+
+export type AssignRolePayload = {
+  userId: number;
+  expiresAt?: string;
+};
+
+export type UpdateRoleAssignmentPayload = {
+  status?: AssignmentStatus;
+  expiresAt?: string | null;
+};
+
+export type EmployeeProfile = {
+  firstName?: string | null;
+  lastName?: string | null;
+  imageUrl?: string | null;
+  dateOfBirth?: string | null;
+  gender?: string;
+  address?: string | null;
+  city?: string | null;
+  country?: string | null;
+  bio?: string | null;
+};
+
+export type Employee = {
+  id: number;
+  uuid?: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+  status?: EmployeeStatus;
+  profile?: EmployeeProfile | null;
+  roles?: Role[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type EmployeeQuery = ListQuery & {
+  status?: EmployeeStatus;
+};
+
+export type CreateEmployeePayload = {
+  name: string;
+  email: string;
+  phone?: string;
+  password: string;
+  status?: EmployeeStatus;
+  profile?: EmployeeProfile;
+  roleIds?: number[];
+};
+
+export type UpdateEmployeePayload = {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  password?: string;
+  profile?: EmployeeProfile;
+};
+
+export type UpdateEmployeeStatusPayload = {
+  status: EmployeeStatus;
+};
+
+export type AssignEmployeeRolesPayload = {
+  roleIds: number[];
+};

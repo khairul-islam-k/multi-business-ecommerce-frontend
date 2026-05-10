@@ -1,70 +1,102 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
+
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { Card, Form, Input, Select, Row, Col, Button } from "antd";
-import api from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
-import SearchableSelect from "@/components/shared/searchable-select";
-import { useRouter } from "next/navigation";
+import { useEmployeeMutations, useRoles } from "@/lib/api";
+
+type CreateEmployeeValues = {
+  name: string;
+  email: string;
+  phone?: string;
+  password: string;
+  confirmPassword: string;
+  status?: string;
+  roleIds?: number[];
+  firstName?: string;
+  lastName?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  bio?: string;
+};
 
 const { TextArea } = Input;
 
 export default function CreateUserPage() {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<CreateEmployeeValues>();
   const swal = useSwal();
   const router = useRouter();
+  const businessId = useActiveBusinessId();
+  const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
+  const { createEmployee } = useEmployeeMutations(businessId ?? 0);
 
-  /* =========================
-     SUBMIT
-  ========================= */
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: CreateEmployeeValues) => {
+    if (!businessId) return;
+
+    if (values.password !== values.confirmPassword) {
+      swal.error("Passwords do not match.");
+      return;
+    }
+
     try {
-      const payload = {
+      await createEmployee.mutateAsync({
         name: values.name,
         email: values.email,
         phone: values.phone,
         password: values.password,
         status: values.status,
-        user_type: values.user_type,
-        role_ids: values.role_ids || [],
-
+        roleIds: values.roleIds ?? [],
         profile: {
+          firstName: values.firstName,
+          lastName: values.lastName,
           gender: values.gender,
-          date_of_birth: values.date_of_birth,
+          dateOfBirth: values.dateOfBirth,
           address: values.address,
           city: values.city,
-          state: values.state,
-          postal_code: values.postal_code,
           country: values.country,
-          emergency_contact: values.emergency_contact,
-          notes: values.notes,
+          bio: values.bio,
         },
-      };
+      });
 
-      await api.post("/users", payload);
-
-      swal.success("Created successfully");
+      swal.success("Employee created successfully.");
       form.resetFields();
       router.push("/admin/dashboard/users-permission/users");
-    } catch {
-      swal.error("Create failed");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     }
   };
 
-  return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <PageHeader title="Create User" breadcrumb={adminBreadcrumb} />
-      </div>
+  if (!businessId) {
+    return <Empty description="No active business selected" />;
+  }
 
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Create Employee"
+        subtitle="Creates an employee for the active business."
+        breadcrumb={adminBreadcrumb}
+      />
+
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{ status: "ACTIVE" }}
+      >
         <Row gutter={16}>
-          {/* ================= ACCOUNT ================= */}
           <Col xs={24} md={12}>
             <Card title="Account">
               <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                <Input placeholder="Name" />
+                <Input />
               </Form.Item>
 
               <Form.Item
@@ -72,11 +104,11 @@ export default function CreateUserPage() {
                 label="Email"
                 rules={[{ required: true, type: "email" }]}
               >
-                <Input placeholder="Email" />
+                <Input />
               </Form.Item>
 
               <Form.Item name="phone" label="Phone">
-                <Input placeholder="Phone" />
+                <Input />
               </Form.Item>
 
               <Form.Item
@@ -84,11 +116,11 @@ export default function CreateUserPage() {
                 label="Password"
                 rules={[{ required: true, min: 6 }]}
               >
-                <Input.Password placeholder="Password" />
+                <Input.Password />
               </Form.Item>
 
               <Form.Item
-                name="password_confirmation"
+                name="confirmPassword"
                 label="Confirm Password"
                 dependencies={["password"]}
                 rules={[
@@ -98,6 +130,7 @@ export default function CreateUserPage() {
                       if (!value || getFieldValue("password") === value) {
                         return Promise.resolve();
                       }
+
                       return Promise.reject(
                         new Error("Passwords do not match"),
                       );
@@ -105,55 +138,59 @@ export default function CreateUserPage() {
                   }),
                 ]}
               >
-                <Input.Password placeholder="Confirm Password" />
+                <Input.Password />
               </Form.Item>
 
-              <Form.Item
-                name="status"
-                label="Status"
-                rules={[{ required: true }]}
-              >
-                <Select>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </Select>
+              <Form.Item name="status" label="Status">
+                <Select
+                  options={[
+                    { label: "Active", value: "ACTIVE" },
+                    { label: "Inactive", value: "INACTIVE" },
+                    { label: "Suspended", value: "SUSPENDED" },
+                  ]}
+                />
               </Form.Item>
 
-              <Form.Item
-                name="user_type"
-                label="User Type"
-                rules={[{ required: true }]}
-              >
-                <Select>
-                  <option value="Admin">Admin</option>
-                  <option value="Employee">Employee</option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item name="role_ids" label="Roles">
-                <SearchableSelect
-                  onChange={(roles) => {
-                    form.setFieldsValue({ role_ids: roles });
-                  }}
-                  endpoint="/roles"
+              <Form.Item name="roleIds" label="Roles">
+                <Select
                   mode="multiple"
-                  placeholder="Select roles"
+                  loading={rolesQuery.isLoading}
+                  options={(rolesQuery.data?.items ?? []).map((role) => ({
+                    label: role.name,
+                    value: role.id,
+                  }))}
                 />
               </Form.Item>
             </Card>
           </Col>
 
-          {/* ================= PROFILE ================= */}
           <Col xs={24} md={12}>
             <Card title="Profile">
+              <Row gutter={12}>
+                <Col xs={24} md={12}>
+                  <Form.Item name="firstName" label="First Name">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item name="lastName" label="Last Name">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
+
               <Form.Item name="gender" label="Gender">
-                <Select allowClear>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </Select>
+                <Select
+                  allowClear
+                  options={[
+                    { label: "Male", value: "MALE" },
+                    { label: "Female", value: "FEMALE" },
+                    { label: "Other", value: "OTHER" },
+                  ]}
+                />
               </Form.Item>
 
-              <Form.Item name="date_of_birth" label="Date of Birth">
+              <Form.Item name="dateOfBirth" label="Date of Birth">
                 <Input type="date" />
               </Form.Item>
 
@@ -161,36 +198,34 @@ export default function CreateUserPage() {
                 <Input />
               </Form.Item>
 
-              <Form.Item name="city" label="City">
-                <Input />
-              </Form.Item>
+              <Row gutter={12}>
+                <Col xs={24} md={12}>
+                  <Form.Item name="city" label="City">
+                    <Input />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item name="country" label="Country">
+                    <Input />
+                  </Form.Item>
+                </Col>
+              </Row>
 
-              <Form.Item name="state" label="State">
-                <Input />
-              </Form.Item>
-
-              <Form.Item name="postal_code" label="Postal Code">
-                <Input />
-              </Form.Item>
-
-              <Form.Item name="country" label="Country">
-                <Input />
-              </Form.Item>
-
-              <Form.Item name="emergency_contact" label="Emergency Contact">
-                <Input />
-              </Form.Item>
-
-              <Form.Item name="notes" label="Notes">
+              <Form.Item name="bio" label="Bio">
                 <TextArea rows={3} />
               </Form.Item>
             </Card>
           </Col>
         </Row>
 
-        <Button type="primary" htmlType="submit" style={{ marginTop: 16 }}>
-          Create
-        </Button>
+        <div className="mt-4 flex gap-2">
+          <Button type="primary" htmlType="submit" loading={createEmployee.isPending}>
+            Create Employee
+          </Button>
+          <Button onClick={() => router.push("/admin/dashboard/users-permission/users")}>
+            Cancel
+          </Button>
+        </div>
       </Form>
     </div>
   );

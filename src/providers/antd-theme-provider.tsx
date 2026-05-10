@@ -2,90 +2,123 @@
 
 import type { ThemeConfig } from "antd";
 import { ConfigProvider, theme as antdTheme } from "antd";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
+
+import { useThemeStore, type AppTheme } from "@/stores/theme.store";
 
 const { defaultAlgorithm, darkAlgorithm } = antdTheme;
 
-type Theme = "light" | "dark";
-
-interface AntdThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
-}
-
-const AntdThemeContext = createContext<AntdThemeContextType | null>(null);
-
 const lightTheme: ThemeConfig = {
   token: {
-    colorPrimary: "#6366F1",
+    colorPrimary: "#2563EB",
     colorBgBase: "#FFFFFF",
     colorBgContainer: "#FFFFFF",
-    colorText: "#0F172A",
-    colorTextSecondary: "#64748B",
-    colorBorder: "#E4E4E7",
+    colorText: "#111827",
+    colorTextSecondary: "#6B7280",
+    colorBorder: "#E5E7EB",
     borderRadius: 8,
-    controlItemBgActive: "#EEF2FF",
-    controlItemBgHover: "#F5F7FF",
+    controlHeight: 38,
+    controlItemBgActive: "#EFF6FF",
+    controlItemBgHover: "#F8FAFC",
+  },
+  components: {
+    Layout: {
+      bodyBg: "#F6F8FB",
+      headerBg: "#FFFFFF",
+      siderBg: "#FFFFFF",
+    },
+    Card: {
+      borderRadiusLG: 8,
+      boxShadowTertiary: "0 1px 2px rgba(15, 23, 42, 0.04)",
+    },
+    Table: {
+      headerBg: "#F8FAFC",
+      headerColor: "#374151",
+      rowHoverBg: "#F8FAFC",
+    },
   },
 };
 
 const darkTheme: ThemeConfig = {
   token: {
-    colorPrimary: "#6366F1",
-    colorBgBase: "#0B0B0F",
-    colorBgContainer: "#111113",
-    colorText: "#F4F4F5",
-    colorTextSecondary: "#A1A1AA",
-    colorBorder: "#27272A",
+    colorPrimary: "#60A5FA",
+    colorBgBase: "#0F172A",
+    colorBgContainer: "#111827",
+    colorText: "#F8FAFC",
+    colorTextSecondary: "#CBD5E1",
+    colorBorder: "#263244",
     borderRadius: 8,
-    controlItemBgActive: "#1E1E2F",
-    controlItemBgHover: "#191927",
+    controlHeight: 38,
+    controlItemBgActive: "#1E3A5F",
+    controlItemBgHover: "#172033",
+  },
+  components: {
+    Layout: {
+      bodyBg: "#0B1120",
+      headerBg: "#111827",
+      siderBg: "#111827",
+    },
+    Card: {
+      borderRadiusLG: 8,
+    },
+    Table: {
+      headerBg: "#172033",
+      headerColor: "#E5E7EB",
+      rowHoverBg: "#172033",
+    },
   },
 };
-
-const STORAGE_KEY = "antd-theme";
 
 export default function AntdThemeProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const theme = useThemeStore((state) => state.theme);
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+  const setResolvedTheme = useThemeStore((state) => state.setResolvedTheme);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    if (stored) setTheme(stored);
-    // else if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-    //   setTheme("dark");
-
-    setMounted(true);
-  }, []);
+    const root = document.documentElement;
+    root.classList.toggle("dark", resolvedTheme === "dark");
+    root.style.colorScheme = resolvedTheme;
+  }, [resolvedTheme]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, theme);
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    if (theme !== "system") return;
 
-  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSystemTheme = () =>
+      setResolvedTheme(media.matches ? "dark" : "light");
 
-  const config: ThemeConfig = {
-    algorithm: theme === "dark" ? darkAlgorithm : defaultAlgorithm,
-    ...(theme === "dark" ? darkTheme : lightTheme),
-  };
+    syncSystemTheme();
+    media.addEventListener("change", syncSystemTheme);
 
-  if (!mounted) return null; // prevent FOUC on SSR
+    return () => media.removeEventListener("change", syncSystemTheme);
+  }, [theme, setResolvedTheme]);
 
-  return (
-    <AntdThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      <ConfigProvider theme={config}>{children}</ConfigProvider>
-    </AntdThemeContext.Provider>
+  const config = useMemo<ThemeConfig>(
+    () => ({
+      algorithm: resolvedTheme === "dark" ? darkAlgorithm : defaultAlgorithm,
+      ...(resolvedTheme === "dark" ? darkTheme : lightTheme),
+    }),
+    [resolvedTheme],
   );
+
+  return <ConfigProvider theme={config}>{children}</ConfigProvider>;
 }
 
 export function useTheme() {
-  const context = useContext(AntdThemeContext);
-  if (!context) throw new Error("useTheme must be used inside ThemeProvider");
-  return context;
+  const theme = useThemeStore((state) => state.theme);
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+
+  return {
+    theme,
+    resolvedTheme,
+    isDark: resolvedTheme === "dark",
+    setTheme: setTheme as (theme: AppTheme) => void,
+    toggleTheme,
+  };
 }

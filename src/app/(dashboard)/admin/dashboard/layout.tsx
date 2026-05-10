@@ -20,7 +20,7 @@ export default function AdminDashboardLayout({
   const { token } = theme.useToken();
 
   return (
-    <AuthGuard redirectUrl="/admin/sign-in" role="Tenant">
+    <AuthGuard redirectUrl="/sign-in" role="Tenant">
       <Layout hasSider style={{ maxHeight: "100vh", overflow: "hidden" }}>
         {/* Desktop Sidebar */}
         {!screens.xs && (

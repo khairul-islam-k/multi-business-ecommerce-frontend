@@ -1,54 +1,33 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useEffect, type ReactNode } from "react";
 
-type Theme = "light" | "dark";
-type Ctx = { theme: Theme; toggle: () => void; setTheme: (t: Theme) => void };
-
-const ShadcnThemeContext = createContext<Ctx | null>(null);
-
-const STORAGE_KEY = "shadcn-theme";
-
-const getInitial = (): Theme => {
-  if (typeof window === "undefined") return "light";
-  const saved = localStorage.getItem(STORAGE_KEY) as Theme | null;
-  if (saved === "light" || saved === "dark") return saved;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
-};
+import { useThemeStore, type AppTheme } from "@/stores/theme.store";
 
 export const ShadcnThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(getInitial);
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle("dark", theme === "dark");
-    root.style.colorScheme = theme;
-    localStorage.setItem(STORAGE_KEY, theme);
-  }, [theme]);
+    root.classList.toggle("dark", resolvedTheme === "dark");
+    root.style.colorScheme = resolvedTheme;
+  }, [resolvedTheme]);
 
-  return (
-    <ShadcnThemeContext.Provider
-      value={{
-        theme,
-        setTheme,
-        toggle: () => setTheme(theme === "dark" ? "light" : "dark"),
-      }}
-    >
-      {children}
-    </ShadcnThemeContext.Provider>
-  );
+  return <>{children}</>;
 };
 
 export const useTheme = () => {
-  const ctx = useContext(ShadcnThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ShadcnThemeProvider");
-  return ctx;
+  const theme = useThemeStore((state) => state.theme);
+  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const toggleTheme = useThemeStore((state) => state.toggleTheme);
+
+  return {
+    theme,
+    resolvedTheme,
+    isDark: resolvedTheme === "dark",
+    setTheme: setTheme as (theme: AppTheme) => void,
+    toggle: toggleTheme,
+    toggleTheme,
+  };
 };

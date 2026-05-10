@@ -1,48 +1,68 @@
 "use client";
 
 import { Tree } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
+import { useMemo } from "react";
+
 import Loader from "@/components/shared/loader";
+import { useAvailablePermissions, type PermissionItem } from "@/lib/api";
+
+const toKey = (permission: PermissionItem) =>
+  `${permission.feature}:${permission.action}`;
+
+const fromKey = (key: string): PermissionItem | null => {
+  const [feature, action] = key.split(":");
+  if (!feature || !action) return null;
+
+  return { feature, action };
+};
 
 export default function PermissionTree({
   value = [],
   onChange,
 }: {
-  value?: number[];
-  onChange?: (v: number[]) => void;
+  value?: PermissionItem[];
+  onChange?: (value: PermissionItem[]) => void;
 }) {
-  const { data, isLoading } = useQuery({
-    queryKey: ["permission-tree"],
-    queryFn: async () => {
-      const res = await api.get("/permissions/tree");
-      return res.data?.data;
-    },
-  });
+  const { data = [], isLoading } = useAvailablePermissions();
+
+  const treeData = useMemo(() => {
+    const grouped = data.reduce<Record<string, PermissionItem[]>>(
+      (acc, permission) => {
+        acc[permission.feature] ??= [];
+        acc[permission.feature].push(permission);
+        return acc;
+      },
+      {},
+    );
+
+    return Object.entries(grouped).map(([feature, permissions]) => ({
+      title: feature,
+      key: `feature-${feature}`,
+      children: permissions.map((permission) => ({
+        title: permission.action,
+        key: toKey(permission),
+      })),
+    }));
+  }, [data]);
 
   if (isLoading) return <Loader />;
-
-  /* ================= TRANSFORM ================= */
-  const treeData =
-    data?.map((module: any) => ({
-      title: module.module_key,
-      key: `module-${module.module_key}`,
-      children: module.features.map((feature: any) => ({
-        title: feature.feature_key,
-        key: `feature-${feature.feature_key}`,
-        children: feature.permissions.map((p: any) => ({
-          title: p.label || p.action_key,
-          key: p.id,
-        })),
-      })),
-    })) || [];
 
   return (
     <Tree
       checkable
       treeData={treeData}
-      checkedKeys={value}
-      onCheck={(keys) => onChange?.(keys as number[])}
+      checkedKeys={value.map(toKey)}
+      onCheck={(keys) => {
+        const checkedKeys = Array.isArray(keys) ? keys : keys.checked;
+        onChange?.(
+          checkedKeys
+            .map(String)
+            .map(fromKey)
+            .filter((permission): permission is PermissionItem =>
+              Boolean(permission),
+            ),
+        );
+      }}
     />
   );
 }

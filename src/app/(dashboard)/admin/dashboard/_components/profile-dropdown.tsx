@@ -6,18 +6,20 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Dropdown, Flex, Typography } from "antd";
+
+import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
-import successMessage from "@/hooks/succes-message";
 
 const { Text } = Typography;
 
 const ProfileDropdown = () => {
   const logout = useAuthStore((s) => s.logout);
   const router = useRouter();
+  const swal = useSwal();
 
   const handleLogout = async () => {
-    logout();
-    successMessage("Logged out successfully.");
+    await logout();
+    swal.success("Logged out successfully.");
     router.push("/sign-in");
   };
 

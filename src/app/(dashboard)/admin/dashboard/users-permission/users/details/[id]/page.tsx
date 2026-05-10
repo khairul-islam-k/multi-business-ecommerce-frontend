@@ -1,216 +1,141 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import {
-  Card,
-  Descriptions,
   Avatar,
-  Tag,
-  Row,
+  Card,
   Col,
-  Typography,
-  Spin,
-  Empty,
-  Space,
+  Descriptions,
   Divider,
-  Tabs,
+  Empty,
+  Row,
+  Space,
+  Spin,
+  Tag,
+  Typography,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
+
+import { useEmployee } from "@/lib/api";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
 
 const UserDetail = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const businessId = useActiveBusinessId();
+  const employeeId = Number(id);
 
-  const { data: user, isLoading } = useQuery({
-    queryKey: ["user", id],
-    queryFn: async () => {
-      const res = await api.get(`/users/${id}`);
-      return res.data?.data;
-    },
-    enabled: !!id,
-  });
+  const { data: user, isLoading } = useEmployee(
+    businessId ?? undefined,
+    employeeId,
+  );
+
+  if (!businessId) return <Empty description="No active business selected" />;
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: "center", padding: 40 }}>
+      <div className="flex min-h-80 items-center justify-center">
         <Spin size="large" />
       </div>
     );
   }
 
-  if (!user) {
-    return <Empty description="User not found" />;
-  }
-
-  /* =========================
-     OVERVIEW TAB
-  ========================= */
-  const OverviewTab = (
-    <Row gutter={16}>
-      {/* PROFILE SUMMARY */}
-      <Col xs={24} md={8}>
-        <Card>
-          <div style={{ textAlign: "center" }}>
-            <Avatar size={96} src={user.image_url} icon={<UserOutlined />} />
-
-            <Title level={5} style={{ marginTop: 12 }}>
-              {user.name}
-            </Title>
-
-            <Space>
-              <Tag color={user.status === "Active" ? "green" : "red"}>
-                {user.status}
-              </Tag>
-              <Tag color="purple">{user.user_type}</Tag>
-            </Space>
-
-            {user.is_email_verified && (
-              <div style={{ marginTop: 8 }}>
-                <Tag color="blue">Email Verified</Tag>
-              </div>
-            )}
-          </div>
-
-          <Divider />
-
-          <Text strong>Roles</Text>
-          <div style={{ marginTop: 8 }}>
-            {user.roles?.length ? (
-              <Space wrap>
-                {user.roles.map((role: any) => (
-                  <Tag key={role.id}>{role.name}</Tag>
-                ))}
-              </Space>
-            ) : (
-              <Text type="secondary">No roles assigned</Text>
-            )}
-          </div>
-        </Card>
-      </Col>
-
-      {/* ACCOUNT INFO */}
-      <Col xs={24} md={16}>
-        <Card title="Account Information">
-          <Descriptions bordered column={1}>
-            <Descriptions.Item label="ID">{user.id}</Descriptions.Item>
-            <Descriptions.Item label="UUID">{user.uuid}</Descriptions.Item>
-            <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
-            <Descriptions.Item label="Phone">
-              {user.phone || "—"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Last Login">
-              {user.last_login_at || "—"}
-            </Descriptions.Item>
-            <Descriptions.Item label="Created At">
-              {user.createdAt}
-            </Descriptions.Item>
-            <Descriptions.Item label="Updated At">
-              {user.updatedAt}
-            </Descriptions.Item>
-          </Descriptions>
-        </Card>
-      </Col>
-    </Row>
-  );
-
-  /* =========================
-     PROFILE TAB
-  ========================= */
-  const ProfileTab = (
-    <Card title="Profile Information">
-      <Descriptions bordered column={1}>
-        <Descriptions.Item label="Gender">
-          {user.profile?.gender || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Date of Birth">
-          {user.profile?.date_of_birth || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Address">
-          {user.profile?.address || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="City">
-          {user.profile?.city || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="State">
-          {user.profile?.state || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Postal Code">
-          {user.profile?.postal_code || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Country">
-          {user.profile?.country || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Emergency Contact">
-          {user.profile?.emergency_contact || "—"}
-        </Descriptions.Item>
-        <Descriptions.Item label="Notes">
-          {user.profile?.notes || "—"}
-        </Descriptions.Item>
-      </Descriptions>
-    </Card>
-  );
-
-  /* =========================
-     ACTIVITY TAB
-  ========================= */
-  const ActivityTab = (
-    <Card title="Activity">
-      <Empty description="No activity data yet" />
-    </Card>
-  );
-
-  /* =========================
-     PERMISSIONS TAB
-  ========================= */
-  const PermissionsTab = (
-    <Card title="Permissions & Roles">
-      <Text strong>Assigned Roles</Text>
-      <div style={{ marginTop: 12 }}>
-        {user.roles?.length ? (
-          <Space wrap>
-            {user.roles.map((role: any) => (
-              <Tag key={role.id}>{role.name}</Tag>
-            ))}
-          </Space>
-        ) : (
-          <Text type="secondary">No roles assigned</Text>
-        )}
-      </div>
-
-      <Divider />
-
-      <Text strong>Permissions</Text>
-      <div style={{ marginTop: 8 }}>
-        <Text type="secondary">Permissions system not implemented yet</Text>
-      </div>
-    </Card>
-  );
+  if (!user) return <Empty description="Employee not found" />;
 
   return (
-    <>
-      <div style={{ marginBottom: 24 }}>
-        <PageHeader title="User Details" breadcrumb={adminBreadcrumb} />
-      </div>
+    <div className="space-y-6">
+      <PageHeader title="Employee Details" breadcrumb={adminBreadcrumb} />
 
-      <Tabs
-        defaultActiveKey="overview"
-        items={[
-          { key: "overview", label: "Overview", children: OverviewTab },
-          { key: "profile", label: "Profile", children: ProfileTab },
-          { key: "activity", label: "Activity", children: ActivityTab },
-          {
-            key: "permissions",
-            label: "Permissions",
-            children: PermissionsTab,
-          },
-        ]}
-      />
-    </>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={8}>
+          <Card>
+            <div className="text-center">
+              <Avatar
+                size={96}
+                src={user.profile?.imageUrl}
+                icon={<UserOutlined />}
+              />
+
+              <Title level={5} style={{ marginTop: 12 }}>
+                {user.name}
+              </Title>
+
+              <Tag color={user.status === "ACTIVE" ? "green" : "red"}>
+                {user.status ?? "ACTIVE"}
+              </Tag>
+            </div>
+
+            <Divider />
+
+            <Text strong>Roles</Text>
+            <div className="mt-2">
+              {user.roles?.length ? (
+                <Space wrap>
+                  {user.roles.map((role) => (
+                    <Tag key={role.id}>{role.name}</Tag>
+                  ))}
+                </Space>
+              ) : (
+                <Text type="secondary">No roles assigned</Text>
+              )}
+            </div>
+          </Card>
+        </Col>
+
+        <Col xs={24} md={16}>
+          <Card title="Account Information">
+            <Descriptions bordered column={1}>
+              <Descriptions.Item label="ID">{user.id}</Descriptions.Item>
+              <Descriptions.Item label="UUID">
+                {user.uuid || "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
+              <Descriptions.Item label="Phone">
+                {user.phone || "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Created At">
+                {user.createdAt || "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Updated At">
+                {user.updatedAt || "-"}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        </Col>
+      </Row>
+
+      <Card title="Profile Information">
+        <Descriptions bordered column={{ xs: 1, md: 2 }}>
+          <Descriptions.Item label="First Name">
+            {user.profile?.firstName || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Last Name">
+            {user.profile?.lastName || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Gender">
+            {user.profile?.gender || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Date of Birth">
+            {user.profile?.dateOfBirth || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Address">
+            {user.profile?.address || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="City">
+            {user.profile?.city || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Country">
+            {user.profile?.country || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Bio">
+            {user.profile?.bio || "-"}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
+    </div>
   );
 };
 

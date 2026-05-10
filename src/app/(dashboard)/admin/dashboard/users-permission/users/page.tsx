@@ -1,102 +1,80 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  Button,
+  Card,
+  Dropdown,
+  Empty,
+  Flex,
+  Modal,
+  Select,
+  Tag,
+} from "antd";
 import {
   EyeOutlined,
   MoreOutlined,
   PlusOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Dropdown, Flex, Modal, Tag } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
-import api from "@/lib/axios";
-import { Column, DataTable } from "@/components/shared/data-table";
 import { useSwal } from "@/hooks/use-swal";
-import { queryClient } from "@/providers/query-provider";
-import SearchableSelect from "@/components/shared/searchable-select";
-
-interface TUser {
-  id: number;
-  uuid: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: string;
-  created_by: string;
-  [key: string]: any;
-}
+import type { Employee } from "@/lib/api";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { Column, DataTable } from "@/components/shared/data-table";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import {
+  useEmployeeMutations,
+  useEmployees,
+  useRoles,
+} from "@/lib/api";
 
 export default function Users() {
   const router = useRouter();
   const swal = useSwal();
+  const businessId = useActiveBusinessId();
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Modal state
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<TUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Employee | null>(null);
   const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
 
-  /* =========================
-     FETCH USERS
-  ========================= */
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["users", search, currentPage],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (currentPage) params.append("page", String(currentPage));
-
-      const res = await api.get(`/users?${params.toString()}`);
-      return res.data?.data || [];
-    },
+  const usersQuery = useEmployees(businessId ?? undefined, {
+    search,
+    page: currentPage,
+    limit: 10,
   });
+  const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
+  const employeeMutations = useEmployeeMutations(businessId ?? 0);
 
-  const setRoles = async (uuid: string, roles: number[]) => {
-    try {
-      await api.patch(`/users/${uuid}`, { role_ids: roles });
-      swal.success("Roles applied successfully");
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-    } catch (error) {
-      swal.error("Failed to apply roles");
-    }
-  };
-
-  /* =========================
-     OPEN MODAL
-  ========================= */
-  const openRoleModal = (user: TUser) => {
+  const openRoleModal = (user: Employee) => {
     setSelectedUser(user);
-    console.log(user);
-    setSelectedRoles(user.roles?.map((role: any) => role?.name) || []);
+    setSelectedRoles(user.roles?.map((role) => role.id) ?? []);
     setIsRoleModalOpen(true);
   };
 
   const handleRoleModalOk = async () => {
-    if (!selectedUser) return;
+    if (!businessId || !selectedUser) return;
 
-    await setRoles(selectedUser.uuid, selectedRoles);
-    setIsRoleModalOpen(false);
-    setSelectedUser(null);
-    setSelectedRoles([]);
+    try {
+      await employeeMutations.replaceEmployeeRoles.mutateAsync({
+        employeeId: selectedUser.id,
+        payload: { roleIds: selectedRoles },
+      });
+      swal.success("Roles applied successfully.");
+      setIsRoleModalOpen(false);
+      setSelectedUser(null);
+      setSelectedRoles([]);
+    } catch {
+      swal.error("Failed to apply roles.");
+    }
   };
 
-  const handleRoleModalCancel = () => {
-    setIsRoleModalOpen(false);
-    setSelectedUser(null);
-    setSelectedRoles([]);
-  };
-
-  /* =========================
-     TABLE COLUMNS
-  ========================= */
-  const columns: Column<TUser>[] = [
+  const columns: Column<Employee>[] = [
     {
       key: "name",
       label: "Name",
@@ -106,21 +84,35 @@ export default function Users() {
     {
       key: "email",
       label: "Email",
-      render: (row) => row.email,
     },
     {
       key: "phone",
       label: "Phone",
-      render: (row) => row.phone,
+      render: (row) => row.phone || "-",
     },
     {
       key: "status",
       label: "Status",
+      type: "meta",
       render: (row) => (
-        <Tag color={row.status === "Active" ? "green" : "red"}>
-          {row.status}
+        <Tag color={row.status === "ACTIVE" ? "green" : "red"}>
+          {row.status ?? "ACTIVE"}
         </Tag>
       ),
+    },
+    {
+      key: "roles",
+      label: "Roles",
+      render: (row) =>
+        row.roles?.length ? (
+          <Flex wrap gap={4}>
+            {row.roles.map((role) => (
+              <Tag key={role.id}>{role.name}</Tag>
+            ))}
+          </Flex>
+        ) : (
+          "-"
+        ),
     },
     {
       key: "assignRole",
@@ -135,61 +127,23 @@ export default function Users() {
         </Button>
       ),
     },
-    {
-      key: "actions",
-      label: "Actions",
-      render: (row) => (
-        <Flex gap={8}>
-          <Link
-            href={`/admin/dashboard/users-permission/users/details/${row.uuid}`}
-          >
-            <Button type="text" icon={<EyeOutlined />} />
-          </Link>
-
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  key: "edit",
-                  label: "Edit",
-                  onClick: () =>
-                    router.push(
-                      `/admin/dashboard/users-permission/users/edit-user/${row.uuid}`,
-                    ),
-                },
-                {
-                  key: "delete",
-                  label: "Delete",
-                  onClick: async () => {
-                    const { isConfirmed } = await swal.confirm({
-                      title: "Confirm Deletion",
-                      text: "Are you sure you want to delete this user?",
-                    });
-                    if (isConfirmed) {
-                      await api.delete(`/users/${row.uuid}`);
-                      queryClient.invalidateQueries({ queryKey: ["users"] });
-                      swal.success("Deleted successfully");
-                    }
-                  },
-                  danger: true,
-                },
-              ],
-            }}
-          >
-            <Button type="text" icon={<MoreOutlined />} />
-          </Dropdown>
-        </Flex>
-      ),
-    },
   ];
+
+  if (!businessId) {
+    return <Empty description="No active business selected" />;
+  }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Users List" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Employees"
+        subtitle="Users are now integrated with the backend employee API."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Card>
         <DataTable
-          data={data?.data || []}
+          data={usersQuery.data?.items ?? []}
           toolbarEnd={
             <Button
               type="primary"
@@ -200,35 +154,95 @@ export default function Users() {
                 )
               }
             >
-              Create User
+              Create Employee
             </Button>
           }
           columns={columns}
-          loading={isLoading || isFetching}
-          onSearch={(value) => setSearch(value)}
+          loading={
+            usersQuery.isLoading ||
+            usersQuery.isFetching ||
+            employeeMutations.removeEmployee.isPending
+          }
+          onSearch={(value) => {
+            setSearch(value);
+            setCurrentPage(1);
+          }}
           pagination={{
             currentPage,
             onPageChange: setCurrentPage,
-            totalPages: data?.meta?.totalPages || 1,
+            totalPages: usersQuery.data?.meta.totalPages || 1,
           }}
+          actions={(row) => (
+            <Flex gap={8}>
+              <Link
+                href={`/admin/dashboard/users-permission/users/details/${row.id}`}
+              >
+                <Button type="text" icon={<EyeOutlined />} />
+              </Link>
+
+              <Dropdown
+                menu={{
+                  items: [
+                    {
+                      key: "edit",
+                      label: "Edit",
+                      onClick: () =>
+                        router.push(
+                          `/admin/dashboard/users-permission/users/edit-user/${row.id}`,
+                        ),
+                    },
+                    {
+                      key: "delete",
+                      label: "Delete",
+                      danger: true,
+                      onClick: async () => {
+                        const { isConfirmed } = await swal.confirm({
+                          title: "Confirm Deletion",
+                          text: "Are you sure you want to delete this employee?",
+                        });
+
+                        if (!isConfirmed) return;
+
+                        await employeeMutations.removeEmployee.mutateAsync(
+                          row.id,
+                        );
+                        swal.success("Deleted successfully.");
+                      },
+                    },
+                  ],
+                }}
+              >
+                <Button type="text" icon={<MoreOutlined />} />
+              </Dropdown>
+            </Flex>
+          )}
         />
       </Card>
 
-      {/* Role Assignment Modal */}
       <Modal
-        title={`Assign Roles to ${selectedUser?.name || ""}`}
+        title={`Assign roles to ${selectedUser?.name || ""}`}
         open={isRoleModalOpen}
         onOk={handleRoleModalOk}
-        onCancel={handleRoleModalCancel}
+        onCancel={() => {
+          setIsRoleModalOpen(false);
+          setSelectedUser(null);
+          setSelectedRoles([]);
+        }}
         okText="Apply Roles"
         cancelText="Cancel"
+        confirmLoading={employeeMutations.replaceEmployeeRoles.isPending}
       >
-        <SearchableSelect
-          value={selectedRoles}
-          onChange={(roles) => setSelectedRoles(roles as number[])}
-          endpoint="/roles"
+        <Select
           mode="multiple"
+          className="w-full"
           placeholder="Select roles"
+          value={selectedRoles}
+          loading={rolesQuery.isLoading}
+          onChange={setSelectedRoles}
+          options={(rolesQuery.data?.items ?? []).map((role) => ({
+            label: role.name,
+            value: role.id,
+          }))}
         />
       </Modal>
     </div>

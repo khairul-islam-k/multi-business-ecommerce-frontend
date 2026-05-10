@@ -1,8 +1,14 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
 
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+
+export const publicApi = axios.create({
+  baseURL,
+});
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL!,
+  baseURL,
 });
 
 api.interceptors.request.use((config) => {
@@ -16,12 +22,27 @@ api.interceptors.request.use((config) => {
 });
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+export const getApiErrorMessage = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | { message?: string; errors?: string[] }
+      | undefined;
+
+    return data?.message ?? error.message;
+  }
+
+  return error instanceof Error ? error.message : "Something went wrong";
+};
+
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((p) => {
     if (error) p.reject(error);
-    else p.resolve(token);
+    else if (token) p.resolve(token);
   });
   failedQueue = [];
 };
@@ -31,11 +52,13 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status !== 401) {
+    if (!originalRequest || error.response?.status !== 401) {
       return Promise.reject(error);
     }
 
-    if (originalRequest._retry) {
+    const isRefreshRequest = originalRequest.url?.includes("/auth/refresh");
+
+    if (originalRequest._retry || isRefreshRequest) {
       return Promise.reject(error);
     }
 
@@ -65,12 +88,9 @@ api.interceptors.response.use(
 
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
 
-      console.log(api.getUri());
-
       return api(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      console.error(err);
       logout();
       return Promise.reject(err);
     } finally {

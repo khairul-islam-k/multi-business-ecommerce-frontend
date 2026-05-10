@@ -5,12 +5,13 @@ import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { useTheme } from "@/providers/antd-theme-provider";
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
 
   return (
     <Button
       type="text"
-      icon={theme === "dark" ? <SunOutlined /> : <MoonOutlined />}
+      aria-label="Toggle theme"
+      icon={isDark ? <SunOutlined /> : <MoonOutlined />}
       onClick={toggleTheme}
     />
   );

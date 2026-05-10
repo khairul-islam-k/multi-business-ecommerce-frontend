@@ -1,22 +1,82 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Grid, Menu, theme } from "antd";
+import type { MenuProps } from "antd";
 
 import { items } from "./side-navigation";
 import Logo from "@/components/shared/logo";
 import BusinessDropdown from "./business-owner";
+import { useAuthStore } from "@/stores/auth.store";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 type SidebarProps = {
   close?: () => void;
   collapsed?: boolean;
 };
 
+type MenuItem = NonNullable<MenuProps["items"]>[number];
+type MenuItemWithChildren = MenuItem & {
+  key?: React.Key;
+  children?: MenuItemWithChildren[];
+};
+
+const itemKey = (item: MenuItem | null | undefined) =>
+  item && "key" in item && item.key != null ? String(item.key) : null;
+
 const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const { token } = theme.useToken();
+  const userType = useAuthStore((state) => state.user?.type);
+  const businessAccess = usePermissionAccess(PERMISSIONS.businessRead);
+  const employeeAccess = usePermissionAccess(PERMISSIONS.employeeRead);
+  const roleAccess = usePermissionAccess(PERMISSIONS.roleRead);
 
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+  const menuItems = useMemo(() => {
+    if (userType !== "EMPLOYEE") return items;
+
+    const employeeMenuItems = (items ?? [])
+      .map((item) => {
+        const key = itemKey(item);
+
+        if (key === "dashboard") return item;
+        if (key === "business") return businessAccess.allowed ? item : null;
+
+        if (key === "User-Permission") {
+          const children = ((item as MenuItemWithChildren).children ?? []).filter(
+            (child) => {
+              const childKey = itemKey(child);
+
+              if (childKey === "users") return employeeAccess.allowed;
+              if (childKey === "roles" || childKey === "permission") {
+                return roleAccess.allowed;
+              }
+
+              return false;
+            },
+          );
+
+          if (!children.length) return null;
+
+          return {
+            ...(item as MenuItemWithChildren),
+            children,
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean) as MenuProps["items"];
+
+    return employeeMenuItems;
+  }, [
+    businessAccess.allowed,
+    employeeAccess.allowed,
+    roleAccess.allowed,
+    userType,
+  ]);
 
   return (
     <div
@@ -43,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
       <Menu
         mode="inline"
         inlineCollapsed={collapsed}
-        items={items}
+        items={menuItems}
         onClick={close}
         style={{ borderRight: 0 }}
       />

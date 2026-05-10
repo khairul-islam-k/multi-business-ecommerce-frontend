@@ -54,6 +54,7 @@ const Pagination: React.FC<PaginationProps> = ({
     <div
       style={{
         display: "flex",
+        flexWrap: "wrap",
         gap: 8,
         alignItems: "center",
         justifyContent: "center",
@@ -82,8 +83,12 @@ const Pagination: React.FC<PaginationProps> = ({
               style={{
                 padding: "6px 10px",
                 fontWeight: page === currentPage ? "bold" : "normal",
-                background: page === currentPage ? token.colorPrimary : "#fff",
-                color: page === currentPage ? token.colorWhite : "#000",
+                background:
+                  page === currentPage
+                    ? token.colorPrimary
+                    : token.colorBgContainer,
+                color:
+                  page === currentPage ? token.colorWhite : token.colorText,
                 borderRadius: "8px",
               }}
             >

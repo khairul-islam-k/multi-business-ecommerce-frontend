@@ -1,80 +1,84 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Card, Form, Input, Button } from "antd";
-import { useRouter, useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Button, Card, Empty, Form, Input, Select, Spin } from "antd";
 
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import type { PermissionItem } from "@/lib/api";
+import { useRole, useRoleMutations } from "@/lib/api";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import SearchableSelect from "@/components/shared/searchable-select";
 import PermissionTree from "../../_components/permission-tree";
 
+type EditRoleValues = {
+  name: string;
+  description?: string;
+  status?: string;
+};
+
 export default function EditRole() {
-  const [form] = Form.useForm();
-  const { id } = useParams();
+  const [form] = Form.useForm<EditRoleValues>();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const swal = useSwal();
+  const businessId = useActiveBusinessId();
+  const roleId = Number(id);
+  const roleQuery = useRole(businessId ?? undefined, roleId);
+  const { updateRole } = useRoleMutations(businessId ?? 0);
 
-  const [permissions, setPermissions] = useState<number[]>([]);
+  const [permissions, setPermissions] = useState<PermissionItem[] | null>(null);
+  const selectedPermissions = permissions ?? roleQuery.data?.permissions ?? [];
 
-  const assignablePermissionIds = useMemo(() => {
-    const treePermissions = permissions.filter((p) => !Number.isNaN(Number(p)));
-    return [...new Set([...treePermissions])];
-  }, [permissions]);
-
-  /* ================= FETCH ROLE ================= */
-  const { data: role } = useQuery({
-    queryKey: ["role", id],
-    queryFn: async () => {
-      const res = await api.get(`/roles/${id}`);
-      return res.data?.data;
-    },
-    enabled: !!id,
-  });
-
-  /* ================= HYDRATE ================= */
   useEffect(() => {
+    const role = roleQuery.data;
     if (!role) return;
 
     form.setFieldsValue({
       name: role.name,
-      slug: role.slug,
-      description: role.description,
+      description: role.description ?? undefined,
+      status: role.status,
     });
+  }, [roleQuery.data, form]);
 
-    const ids = role.permissions?.map((p: any) => p.id) || [];
-    setPermissions(ids);
-  }, [role, form]);
+  const onFinish = async (values: EditRoleValues) => {
+    if (!businessId) return;
 
-  /* ================= UPDATE ================= */
-  const onFinish = async (values: any) => {
     try {
-      await api.patch(`/roles/${id}`, {
-        ...values,
-        permission_ids: assignablePermissionIds,
+      await updateRole.mutateAsync({
+        roleId,
+        payload: {
+          ...values,
+          permissions: selectedPermissions,
+        },
       });
 
-      swal.success("Role updated");
+      swal.success("Role updated.");
       router.push("/admin/dashboard/users-permission/roles");
-    } catch {
-      swal.error("Update failed");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     }
   };
+
+  if (!businessId) return <Empty description="No active business selected" />;
+
+  if (roleQuery.isLoading) {
+    return (
+      <div className="flex min-h-80 items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader title="Edit Role" breadcrumb={adminBreadcrumb} />
 
-      <Card className="w-full">
+      <Card>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item name="name" label="Role Name" rules={[{ required: true }]}>
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="slug" label="Slug" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
 
@@ -82,28 +86,31 @@ export default function EditRole() {
             <Input.TextArea rows={3} />
           </Form.Item>
 
-          <Form.Item label="Permissions">
-            <PermissionTree value={permissions} onChange={setPermissions} />
-          </Form.Item>
-
-          <Form.Item label="Permissions">
-            <SearchableSelect
-              endpoint="/permissions"
-              placeholder="Search permissions"
-              mode="multiple"
-              value={permissions}
-              onChange={(v) => setPermissions(v as number[])}
-              labelKey="label"
-              valueKey="id"
+          <Form.Item name="status" label="Status">
+            <Select
+              options={[
+                { label: "Active", value: "ACTIVE" },
+                { label: "Inactive", value: "INACTIVE" },
+              ]}
             />
           </Form.Item>
 
-          <div className="flex gap-2 items-center">
-            <Button type="primary" htmlType="submit">
+          <Form.Item label="Permissions">
+            <PermissionTree
+              value={selectedPermissions}
+              onChange={setPermissions}
+            />
+          </Form.Item>
+
+          <div className="flex gap-2">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateRole.isPending}
+            >
               Update Role
             </Button>
             <Button
-              type="default"
               htmlType="button"
               onClick={() =>
                 router.push("/admin/dashboard/users-permission/roles")

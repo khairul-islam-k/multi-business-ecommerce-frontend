@@ -1,92 +1,107 @@
 "use client";
 
-import { Row, Col, Tabs } from "antd";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { Card, Col, Descriptions, Empty, Row, Spin, Statistic, Tag } from "antd";
 
-import api from "@/lib/axios";
-import UsageTab from "./_components/usage-tab";
-import Loader from "@/components/shared/loader";
-import LogsTable from "./_components/logs-table";
-import ModulesTab from "./_components/modules-tab";
-import OverviewTab from "./_components/overview-tab";
-import FeaturesTab from "./_components/features-tab";
-import BillingTable from "./_components/billing-table";
-import CompanyTable from "./_components/company-table";
+import { useBusiness } from "@/lib/api";
 import PageHeader from "@/components/shared/page-header";
-import TenantInfoCard from "./_components/tenant-info-card";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function TenantDetailPage() {
-  const { id: uuid } = useParams();
+  const { id } = useParams<{ id: string }>();
+  const businessId = Number(id);
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["tenant-details", uuid],
-    queryFn: async () =>
-      api.get(`/auth-tenant/${uuid}`).then((res) => res.data),
-    enabled: !!uuid,
-  });
+  const { data: business, isLoading, isError } = useBusiness(businessId);
 
-  if (isLoading) return <Loader />;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-80 items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
-  if (error) return <div>Failed to load tenant</div>;
-
-  const tenant = data?.data;
+  if (isError || !business) {
+    return <Empty description="Business not found" />;
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={tenant?.business_name || "Tenant Details"}
+        title={business.name}
+        subtitle="Business details from the backend businesses API."
         breadcrumb={superAdminBreadcrumb}
       />
 
-      <Row gutter={[24, 24]}>
+      <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>
-          <TenantInfoCard tenant={tenant} />
+          <Card>
+            <Statistic title="Members" value={business._count?.members ?? 0} />
+          </Card>
         </Col>
-
-        <Col xs={24} md={16}>
-          <Tabs
-            items={[
-              {
-                key: "overview",
-                label: "Overview",
-                children: <OverviewTab tenant={tenant} />,
-              },
-              {
-                key: "companies",
-                label: "Companies",
-                children: <CompanyTable tenantId={String(uuid)} />,
-              },
-              {
-                key: "usage",
-                label: "Usage",
-                children: <UsageTab tenant={tenant} />,
-              },
-              {
-                key: "billing",
-                label: "Billing",
-                children: <BillingTable tenantId={String(uuid)} />,
-              },
-              {
-                key: "modules",
-                label: "Modules",
-                children: <ModulesTab modules={tenant?.modules || []} />,
-              },
-              {
-                key: "features",
-                label: "Features",
-                children: <FeaturesTab features={tenant?.features || []} />,
-              },
-              {
-                key: "logs",
-                label: "Logs",
-                children: <LogsTable tenantId={String(uuid)} />,
-              },
-            ]}
-          />
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic title="Roles" value={business._count?.roles ?? 0} />
+          </Card>
+        </Col>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Status"
+              value={business.status ?? "TRIAL"}
+              formatter={(value) => (
+                <Tag color={value === "ACTIVE" ? "green" : "blue"}>
+                  {value}
+                </Tag>
+              )}
+            />
+          </Card>
         </Col>
       </Row>
+
+      <Card title="Business Information">
+        <Descriptions bordered column={{ xs: 1, md: 2 }}>
+          <Descriptions.Item label="ID">{business.id}</Descriptions.Item>
+          <Descriptions.Item label="Slug">
+            {business.slug || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Email">
+            {business.email || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Phone">
+            {business.phone || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Country">
+            {business.country || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Currency">
+            {business.currencyCode || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Timezone">
+            {business.timezone || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Owner">
+            {business.ownerUser?.name ?? `User #${business.ownerUserId ?? "-"}`}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
+
+      <Card title="Branding">
+        <Descriptions bordered column={{ xs: 1, md: 2 }}>
+          <Descriptions.Item label="Primary Color">
+            {business.branding?.primaryColor || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="Accent Color">
+            {business.branding?.accentColor || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="SEO Title">
+            {business.branding?.seoTitle || "-"}
+          </Descriptions.Item>
+          <Descriptions.Item label="SEO Description">
+            {business.branding?.seoDescription || "-"}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
     </div>
   );
 }

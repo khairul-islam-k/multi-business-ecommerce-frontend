@@ -19,7 +19,7 @@ export default function SuperAdminDashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <AuthGuard redirectUrl="/super-admin/sign-in" role="Admin">
+    <AuthGuard redirectUrl="/sign-in" role="Admin">
       <Layout style={{ minHeight: "100vh" }}>
         <Sidebar
           collapsed={collapsed}
