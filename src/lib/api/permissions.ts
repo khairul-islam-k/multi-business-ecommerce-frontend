@@ -45,6 +45,12 @@ export const permissionsApi = {
       .then((res) => normalizeAvailablePermissions(res.data));
   },
 
+  has(businessId: number, payload: PermissionItem) {
+    return api
+      .post<boolean>(`permissions/has/businesses/${businessId}`, payload)
+      .then((res) => res.data);
+  },
+
   list(businessId: number, query?: PermissionQuery) {
     return api
       .get<

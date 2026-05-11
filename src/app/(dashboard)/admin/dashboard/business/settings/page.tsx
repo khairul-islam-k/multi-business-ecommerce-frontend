@@ -35,6 +35,8 @@ import {
   currencyOptions,
   timezoneOptions,
 } from "@/lib/business/options";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 const { Text } = Typography;
 
@@ -65,6 +67,8 @@ export default function BusinessSettingsPage() {
   const deletableBusinesses = businesses.filter(
     (item) => item.id !== businessId,
   );
+  const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
+  const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
   useEffect(() => {
     if (!business) return;
@@ -324,15 +328,17 @@ export default function BusinessSettingsPage() {
           </Col>
         </Row>
 
-        <div className="mt-4 flex justify-end">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={updateBusiness.isPending}
-          >
-            Save settings
-          </Button>
-        </div>
+        {updatePermission.allowed && (
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateBusiness.isPending}
+            >
+              Save settings
+            </Button>
+          </div>
+        )}
       </Form>
 
       <Card title="Other Businesses">
@@ -362,14 +368,16 @@ export default function BusinessSettingsPage() {
                       Business ID {item.id}
                     </Text>
                   </div>
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    loading={removeBusiness.isPending}
-                    onClick={() => handleDeleteBusiness(item)}
-                  >
-                    Delete
-                  </Button>
+                  {deletePermission.allowed && (
+                    <Button
+                      danger
+                      icon={<DeleteOutlined />}
+                      loading={removeBusiness.isPending}
+                      onClick={() => handleDeleteBusiness(item)}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </Flex>
               ))}
             </Space>

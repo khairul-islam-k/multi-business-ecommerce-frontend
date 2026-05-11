@@ -3,36 +3,15 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 
-import { rolesApi } from "@/lib/api/roles";
-import { employeesApi } from "@/lib/api/employees";
-import { businessesApi } from "@/lib/api/businesses";
 import { useAuthStore } from "@/stores/auth.store";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import type { PermissionRequirement } from "@/lib/auth/permissions";
 import { isPrivilegedDashboardUser } from "@/lib/auth/permissions";
+import { permissionsApi } from "@/lib/api";
 
 function getErrorStatus(error: unknown) {
   if (axios.isAxiosError(error)) return error.response?.status ?? null;
   return null;
-}
-
-async function probePermission(
-  businessId: number,
-  permission: PermissionRequirement,
-) {
-  switch (permission.feature) {
-    case "BUSINESS_MANAGEMENT":
-      await businessesApi.get(businessId);
-      return true;
-    case "EMPLOYEE_MANAGEMENT":
-      await employeesApi.list(businessId, { limit: 1 });
-      return true;
-    case "ROLE_PERMISSION_MANAGEMENT":
-      await rolesApi.list(businessId, { limit: 1 });
-      return true;
-    default:
-      return false;
-  }
 }
 
 export function usePermissionAccess(permission?: PermissionRequirement | null) {
@@ -54,7 +33,10 @@ export function usePermissionAccess(permission?: PermissionRequirement | null) {
       permission?.action,
     ],
     queryFn: () =>
-      probePermission(businessId as number, permission as PermissionRequirement),
+      permissionsApi.has(
+        businessId as number,
+        permission as PermissionRequirement,
+      ),
     enabled: shouldProbe,
     retry: false,
     staleTime: 60_000,
@@ -100,7 +82,7 @@ export function usePermissionAccess(permission?: PermissionRequirement | null) {
   const denied = probeQuery.isError && status === 403;
 
   return {
-    allowed: probeQuery.isSuccess,
+    allowed: probeQuery.data,
     denied: denied || (probeQuery.isError && status !== 401),
     loading: probeQuery.isLoading || probeQuery.isFetching,
     status,
