@@ -66,7 +66,7 @@ export default function BusinessDropdown() {
   const selectBusiness = useAuthStore((state) => state.selectBusiness);
   const { createBusiness } = useBusinessMutations();
 
-  const canCreateBusiness = userType === "TENANT" || userType === "ADMIN";
+  const canCreateBusiness = userType === "TENANT";
 
   const sortedBusinesses = useMemo(
     () =>

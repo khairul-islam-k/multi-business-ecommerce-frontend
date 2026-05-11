@@ -57,10 +57,14 @@ export default function BusinessSettingsPage() {
   const businessId = useActiveBusinessId();
   const { data: business, isLoading } = useBusiness(businessId ?? undefined);
   const { updateBusiness, removeBusiness } = useBusinessMutations();
-  const setSelectedBusiness = useAuthStore((state) => state.setSelectedBusiness);
+  const setSelectedBusiness = useAuthStore(
+    (state) => state.setSelectedBusiness,
+  );
   const businesses = useAuthStore((state) => state.businesses);
   const setBusinesses = useAuthStore((state) => state.setBusinesses);
-  const deletableBusinesses = businesses.filter((item) => item.id !== businessId);
+  const deletableBusinesses = businesses.filter(
+    (item) => item.id !== businessId,
+  );
 
   useEffect(() => {
     if (!business) return;
@@ -77,10 +81,6 @@ export default function BusinessSettingsPage() {
       settings: {
         orderPrefix: business.settings?.orderPrefix ?? "ORD",
         invoicePrefix: business.settings?.invoicePrefix ?? "INV",
-        defaultLanguage: business.settings?.defaultLanguage ?? "en",
-        defaultCurrency:
-          business.settings?.defaultCurrency ?? business.currencyCode ?? "BDT",
-        timezone: business.settings?.timezone ?? business.timezone ?? "Asia/Dhaka",
         lowStockThreshold: business.settings?.lowStockThreshold ?? 5,
         allowBackorder: business.settings?.allowBackorder ?? false,
         autoConfirmOrder: business.settings?.autoConfirmOrder ?? false,
@@ -183,7 +183,11 @@ export default function BusinessSettingsPage() {
                   </Form.Item>
                 </Col>
                 <Col xs={24} md={12}>
-                  <Form.Item name="email" label="Email" rules={[{ type: "email" }]}>
+                  <Form.Item
+                    name="email"
+                    label="Email"
+                    rules={[{ type: "email" }]}
+                  >
                     <Input placeholder="business@example.com" />
                   </Form.Item>
                 </Col>
@@ -246,37 +250,14 @@ export default function BusinessSettingsPage() {
                 </Col>
                 <Col xs={24} md={12}>
                   <Form.Item
-                    name={["settings", "defaultCurrency"]}
-                    label="Default order currency"
-                  >
-                    <Input placeholder="BDT" maxLength={10} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name={["settings", "timezone"]} label="Default timezone">
-                    <Input placeholder="Asia/Dhaka" />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name={["settings", "defaultLanguage"]}
-                    label="Default language"
-                  >
-                    <Select
-                      options={[
-                        { label: "English", value: "en" },
-                        { label: "Bangla", value: "bn" },
-                        { label: "Hindi", value: "hi" },
-                      ]}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item
                     name={["settings", "lowStockThreshold"]}
                     label="Low stock threshold"
                   >
-                    <InputNumber min={0} max={999999} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={0}
+                      max={999999}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -287,7 +268,10 @@ export default function BusinessSettingsPage() {
             <Card title="Operational Defaults">
               <Row gutter={12}>
                 <Col xs={24} md={8}>
-                  <Form.Item name={["settings", "orderPrefix"]} label="Order prefix">
+                  <Form.Item
+                    name={["settings", "orderPrefix"]}
+                    label="Order prefix"
+                  >
                     <Input placeholder="ORD" maxLength={20} />
                   </Form.Item>
                 </Col>

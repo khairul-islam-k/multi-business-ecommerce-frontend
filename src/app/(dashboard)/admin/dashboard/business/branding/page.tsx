@@ -112,7 +112,10 @@ export default function BusinessBrandingPage() {
                 <Input placeholder="Business title" maxLength={255} />
               </Form.Item>
               <Form.Item name="seoDescription" label="SEO description">
-                <Input.TextArea rows={4} placeholder="Short store description" />
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Short store description"
+                />
               </Form.Item>
             </Card>
           </Col>
@@ -121,7 +124,12 @@ export default function BusinessBrandingPage() {
             <Card title="Brand Palette">
               <Space direction="vertical" size={16} className="w-full">
                 {colorFields.map(([name, label]) => (
-                  <Form.Item key={name} name={name} label={label} className="mb-0">
+                  <Form.Item
+                    key={name}
+                    name={name}
+                    label={label}
+                    className="mb-0"
+                  >
                     <Input type="color" style={{ height: 42 }} />
                   </Form.Item>
                 ))}
@@ -138,7 +146,9 @@ export default function BusinessBrandingPage() {
                   strong
                   style={{ color: watchedValues.primaryColor ?? "#0f766e" }}
                 >
-                  {watchedValues.seoTitle || business?.name || "Business preview"}
+                  {watchedValues.seoTitle ||
+                    business?.name ||
+                    "Business preview"}
                 </Text>
                 <p
                   className="mt-2 text-sm"

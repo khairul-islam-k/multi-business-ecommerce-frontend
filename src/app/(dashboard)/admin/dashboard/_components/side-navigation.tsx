@@ -93,7 +93,9 @@ export const items: MenuProps["items"] = [
         key: "usage-limit",
         icon: <FileTextOutlined />,
         label: (
-          <Link href="/admin/dashboard/business/usage-limit">Usage & Limit</Link>
+          <Link href="/admin/dashboard/business/usage-limit">
+            Usage & Limit
+          </Link>
         ),
       },
     ],
@@ -109,15 +111,15 @@ export const items: MenuProps["items"] = [
         key: "employees",
         icon: <UserOutlined />,
         label: (
-          <Link href="/admin/dashboard/access-control/employees">Employees</Link>
+          <Link href="/admin/dashboard/access-control/employees">
+            Employees
+          </Link>
         ),
       },
       {
         key: "roles",
         icon: <TeamOutlined />,
-        label: (
-          <Link href="/admin/dashboard/access-control/roles">Roles</Link>
-        ),
+        label: <Link href="/admin/dashboard/access-control/roles">Roles</Link>,
       },
       {
         key: "permissions",

@@ -1,1 +1,3 @@
-# Fleek ECommerce ERP Frontend
+# OneComm
+
+Frontend code for OneComm

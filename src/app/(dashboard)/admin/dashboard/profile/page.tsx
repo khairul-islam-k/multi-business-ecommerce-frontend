@@ -199,13 +199,25 @@ export default function UserProfilePage() {
           <Card title="Account Details">
             <Row gutter={[12, 12]}>
               <Col xs={24} md={12}>
-                <FieldRow icon={<IdcardOutlined />} label="User ID" value={user.id} />
+                <FieldRow
+                  icon={<IdcardOutlined />}
+                  label="User ID"
+                  value={user.id}
+                />
               </Col>
               <Col xs={24} md={12}>
-                <FieldRow icon={<UserOutlined />} label="Name" value={user.name} />
+                <FieldRow
+                  icon={<UserOutlined />}
+                  label="Name"
+                  value={user.name}
+                />
               </Col>
               <Col xs={24} md={12}>
-                <FieldRow icon={<MailOutlined />} label="Email" value={user.email} />
+                <FieldRow
+                  icon={<MailOutlined />}
+                  label="Email"
+                  value={user.email}
+                />
               </Col>
               <Col xs={24} md={12}>
                 <FieldRow
@@ -215,7 +227,11 @@ export default function UserProfilePage() {
                 />
               </Col>
               <Col xs={24} md={12}>
-                <FieldRow icon={<IdcardOutlined />} label="UUID" value={user.uuid} />
+                <FieldRow
+                  icon={<IdcardOutlined />}
+                  label="UUID"
+                  value={user.uuid}
+                />
               </Col>
               <Col xs={24} md={12}>
                 <FieldRow

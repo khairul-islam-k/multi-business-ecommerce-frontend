@@ -92,8 +92,7 @@ export function useEmployee(businessId?: number, employeeId?: number) {
       businessId && employeeId
         ? apiQueryKeys.employees.detail(businessId, employeeId)
         : ["employees", "detail", "idle"],
-    queryFn: () =>
-      employeesApi.get(businessId as number, employeeId as number),
+    queryFn: () => employeesApi.get(businessId as number, employeeId as number),
     enabled: Boolean(businessId && employeeId),
   });
 }
@@ -179,7 +178,8 @@ export function useRoleMutations(businessId: number) {
 
   return {
     createRole: useMutation({
-      mutationFn: (payload: RolePayload) => rolesApi.create(businessId, payload),
+      mutationFn: (payload: RolePayload) =>
+        rolesApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
     updateRole: useMutation({

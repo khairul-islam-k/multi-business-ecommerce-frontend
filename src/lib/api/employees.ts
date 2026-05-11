@@ -16,9 +16,9 @@ const basePath = (businessId: number) => `/employees/businesses/${businessId}`;
 export const employeesApi = {
   list(businessId: number, query?: EmployeeQuery) {
     return api
-      .get<PaginatedResponse<Employee>>(
-        `${basePath(businessId)}${buildQueryString(query)}`,
-      )
+      .get<
+        PaginatedResponse<Employee>
+      >(`${basePath(businessId)}${buildQueryString(query)}`)
       .then((res) => res.data);
   },
 

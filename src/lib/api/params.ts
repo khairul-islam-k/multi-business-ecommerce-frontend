@@ -1,8 +1,6 @@
 type QueryValue = string | number | boolean | null | undefined;
 
-export function buildQueryString(
-  query?: Record<string, QueryValue>,
-): string {
+export function buildQueryString(query?: Record<string, QueryValue>): string {
   if (!query) return "";
 
   const params = new URLSearchParams();

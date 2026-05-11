@@ -20,7 +20,9 @@ export const businessesApi = {
   },
 
   get(businessId: number) {
-    return api.get<Business>(`/businesses/${businessId}`).then((res) => res.data);
+    return api
+      .get<Business>(`/businesses/${businessId}`)
+      .then((res) => res.data);
   },
 
   update(businessId: number, payload: Partial<BusinessPayload>) {

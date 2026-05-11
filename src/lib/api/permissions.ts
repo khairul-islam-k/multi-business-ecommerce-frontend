@@ -47,9 +47,9 @@ export const permissionsApi = {
 
   list(businessId: number, query?: PermissionQuery) {
     return api
-      .get<PaginatedResponse<Permission>>(
-        `${businessPath(businessId)}${buildQueryString(query)}`,
-      )
+      .get<
+        PaginatedResponse<Permission>
+      >(`${businessPath(businessId)}${buildQueryString(query)}`)
       .then((res) => res.data);
   },
 
@@ -59,11 +59,7 @@ export const permissionsApi = {
       .then((res) => res.data);
   },
 
-  addToRole(
-    businessId: number,
-    roleId: number,
-    payload: PermissionPayload,
-  ) {
+  addToRole(businessId: number, roleId: number, payload: PermissionPayload) {
     return api
       .post<PermissionItem[]>(rolePath(businessId, roleId), payload)
       .then((res) => res.data);

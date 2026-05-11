@@ -9,7 +9,9 @@ import { PaymentStatusBadge } from "../../_components/badge";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
-export default function OrderPaymentHistory({}: { params: { id: string } }) {
+export default function OrderPaymentHistory({}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = useParams();
   const order = mockOrders.find((order) => order.id === id);
   const payments = mockPayments.filter((payment) => payment.order_id === id);
