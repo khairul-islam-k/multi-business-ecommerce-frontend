@@ -9,7 +9,6 @@ import {
   Form,
   Input,
   Row,
-  Skeleton,
   Space,
   Typography,
 } from "antd";
@@ -21,6 +20,9 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useBusiness, useBusinessMutations } from "@/lib/api";
 import type { BusinessBranding } from "@/lib/api";
+import Loader from "@/components/shared/loader";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 const { Text } = Typography;
 
@@ -39,6 +41,7 @@ export default function BusinessBrandingPage() {
   const { data: business, isLoading } = useBusiness(businessId ?? undefined);
   const { updateBusiness } = useBusinessMutations();
   const watchedValues = Form.useWatch([], form) ?? {};
+  const updateAccess = usePermissionAccess(PERMISSIONS.businessUpdate);
 
   useEffect(() => {
     if (!business) return;
@@ -74,17 +77,29 @@ export default function BusinessBrandingPage() {
 
   if (!businessId) return <Empty description="No active business selected" />;
 
-  if (isLoading) return <Skeleton active paragraph={{ rows: 8 }} />;
+  if (isLoading) {
+    return (
+      <Loader
+        label="Loading branding"
+        description="Fetching the active business brand settings."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Business Branding"
-        subtitle="Brand assets and SEO metadata are saved against the active business."
+        subtitle="Manage visual identity, palette, and store metadata for the active business."
         breadcrumb={adminBreadcrumb}
       />
 
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        disabled={!updateAccess.allowed}
+      >
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={14}>
             <Card title="Brand Assets">
@@ -172,15 +187,17 @@ export default function BusinessBrandingPage() {
           </Col>
         </Row>
 
-        <div className="mt-4 flex justify-end">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={updateBusiness.isPending}
-          >
-            Save branding
-          </Button>
-        </div>
+        {updateAccess.allowed && (
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateBusiness.isPending}
+            >
+              Save branding
+            </Button>
+          </div>
+        )}
       </Form>
     </div>
   );

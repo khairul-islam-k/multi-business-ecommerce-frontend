@@ -10,7 +10,6 @@ import {
   Empty,
   Row,
   Space,
-  Spin,
   Tag,
   Typography,
 } from "antd";
@@ -19,6 +18,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { useEmployee } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
+import Loader from "@/components/shared/loader";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Title, Text } = Typography;
@@ -37,9 +37,10 @@ const UserDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-80 items-center justify-center">
-        <Spin size="large" />
-      </div>
+      <Loader
+        label="Loading employee"
+        description="Fetching the selected employee profile."
+      />
     );
   }
 
@@ -47,7 +48,11 @@ const UserDetail = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Employee Details" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Employee Details"
+        subtitle="Review account details, profile data, and assigned roles for this employee."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>

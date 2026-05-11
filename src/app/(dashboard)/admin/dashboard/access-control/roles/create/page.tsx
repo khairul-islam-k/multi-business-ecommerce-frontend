@@ -52,7 +52,11 @@ export default function CreateRole() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Create Role" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Create Role"
+        subtitle="Create a permission bundle that can be assigned to employees."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Card>
         <Form

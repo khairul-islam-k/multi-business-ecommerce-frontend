@@ -254,7 +254,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
-    await get().refreshAuth(selectedBusiness?.id ?? null);
+    const accessToken = await get().refreshAuth(selectedBusiness?.id ?? null);
+    if (accessToken) {
+      await get().fetchProfile();
+    }
     set({ initialized: true, loading: false });
   },
 }));
