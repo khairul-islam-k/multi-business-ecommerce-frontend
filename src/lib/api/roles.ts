@@ -1,9 +1,14 @@
 import api from "@/lib/axios";
 import { buildQueryString } from "@/lib/api/params";
+import {
+  normalizePaginatedResponse,
+  unwrapApiResponse,
+} from "@/lib/api/response";
 import type {
+  ApiId,
+  ApiPaginatedResponse,
+  ApiResponse,
   AssignRolePayload,
-  MessageResponse,
-  PaginatedResponse,
   Role,
   RoleAssignment,
   RoleAssignmentQuery,
@@ -12,73 +17,78 @@ import type {
   UpdateRoleAssignmentPayload,
 } from "@/lib/api/types";
 
-const basePath = (businessId: number) => `/roles/businesses/${businessId}`;
+const basePath = (businessId: ApiId) => `/roles/businesses/${businessId}`;
 
 export const rolesApi = {
-  list(businessId: number, query?: RoleQuery) {
+  list(businessId: ApiId, query?: RoleQuery) {
     return api
-      .get<PaginatedResponse<Role>>(
+      .get<ApiPaginatedResponse<Role>>(
         `${basePath(businessId)}${buildQueryString(query)}`,
       )
-      .then((res) => res.data);
+      .then((res) => normalizePaginatedResponse(res.data));
   },
 
-  create(businessId: number, payload: RolePayload) {
+  create(businessId: ApiId, payload: RolePayload) {
     return api
-      .post<Role>(basePath(businessId), payload)
-      .then((res) => res.data);
+      .post<ApiResponse<Role>>(basePath(businessId), payload)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  get(businessId: number, roleId: number) {
+  get(businessId: ApiId, roleId: ApiId) {
     return api
-      .get<Role>(`${basePath(businessId)}/${roleId}`)
-      .then((res) => res.data);
+      .get<ApiResponse<Role>>(`${basePath(businessId)}/${roleId}`)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  update(businessId: number, roleId: number, payload: Partial<RolePayload>) {
+  update(businessId: ApiId, roleId: ApiId, payload: Partial<RolePayload>) {
     return api
-      .patch<Role>(`${basePath(businessId)}/${roleId}`, payload)
-      .then((res) => res.data);
+      .patch<ApiResponse<Role>>(`${basePath(businessId)}/${roleId}`, payload)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  remove(businessId: number, roleId: number) {
+  remove(businessId: ApiId, roleId: ApiId) {
     return api
-      .delete<MessageResponse>(`${basePath(businessId)}/${roleId}`)
-      .then((res) => res.data);
+      .delete<ApiResponse<null>>(`${basePath(businessId)}/${roleId}`)
+      .then((res) => ({
+        message: res.data.message ?? "Role deleted successfully",
+      }));
   },
 
-  assign(businessId: number, roleId: number, payload: AssignRolePayload) {
+  assign(businessId: ApiId, roleId: ApiId, payload: AssignRolePayload) {
     return api
-      .post<RoleAssignment>(`${basePath(businessId)}/${roleId}/assign`, payload)
-      .then((res) => res.data);
+      .post<ApiResponse<RoleAssignment>>(
+        `${basePath(businessId)}/${roleId}/assign`,
+        payload,
+      )
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  assignments(businessId: number, query?: RoleAssignmentQuery) {
+  assignments(businessId: ApiId, query?: RoleAssignmentQuery) {
     return api
-      .get<PaginatedResponse<RoleAssignment>>(
+      .get<ApiPaginatedResponse<RoleAssignment>>(
         `${basePath(businessId)}/assignments${buildQueryString(query)}`,
       )
-      .then((res) => res.data);
+      .then((res) => normalizePaginatedResponse(res.data));
   },
 
   updateAssignment(
-    businessId: number,
-    assignmentId: number,
+    businessId: ApiId,
+    assignmentId: ApiId,
     payload: UpdateRoleAssignmentPayload,
   ) {
     return api
-      .patch<RoleAssignment>(
+      .patch<ApiResponse<RoleAssignment>>(
         `${basePath(businessId)}/assignments/${assignmentId}`,
         payload,
       )
-      .then((res) => res.data);
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  revokeAssignment(businessId: number, assignmentId: number) {
+  revokeAssignment(businessId: ApiId, assignmentId: ApiId) {
     return api
-      .delete<MessageResponse>(
+      .delete<ApiResponse<RoleAssignment>>(
         `${basePath(businessId)}/assignments/${assignmentId}`,
       )
-      .then((res) => res.data);
+      .then((res) => unwrapApiResponse(res.data));
   },
 };

@@ -13,6 +13,8 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useRoleMutations, useRoles } from "@/lib/api";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 export default function RolesPage() {
   const router = useRouter();
@@ -26,7 +28,10 @@ export default function RolesPage() {
     page: currentPage,
     limit: 10,
   });
-  const { removeRole } = useRoleMutations(businessId ?? 0);
+  const { removeRole } = useRoleMutations(businessId ?? "");
+  const createAccess = usePermissionAccess(PERMISSIONS.roleCreate);
+  const updateAccess = usePermissionAccess(PERMISSIONS.roleUpdate);
+  const deleteAccess = usePermissionAccess(PERMISSIONS.roleDelete);
 
   const columns: Column<Role>[] = [
     {
@@ -64,7 +69,7 @@ export default function RolesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Roles"
-        subtitle="Roles are scoped to the active business."
+        subtitle="Create and maintain permission bundles for employees in the active business."
         breadcrumb={adminBreadcrumb}
       />
 
@@ -82,36 +87,42 @@ export default function RolesPage() {
             removeRole.isPending
           }
           toolbarEnd={
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push("/admin/dashboard/access-control/roles/create")
-              }
-            >
-              Create Role
-            </Button>
+            createAccess.allowed ? (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/access-control/roles/create")
+                }
+              >
+                Create Role
+              </Button>
+            ) : null
           }
           actions={(row) => (
             <div className="flex items-center gap-2">
-              <Link
-                href={`/admin/dashboard/access-control/roles/edit/${row.id}`}
-              >
-                <Button type="text" icon={<EditOutlined />} />
-              </Link>
-              <Popconfirm
-                title="Delete role?"
-                onConfirm={async () => {
-                  try {
-                    await removeRole.mutateAsync(row.id);
-                    swal.success("Deleted successfully.");
-                  } catch {
-                    swal.error("Failed to delete role.");
-                  }
-                }}
-              >
-                <Button danger type="text" icon={<DeleteOutlined />} />
-              </Popconfirm>
+              {updateAccess.allowed && (
+                <Link
+                  href={`/admin/dashboard/access-control/roles/edit/${row.id}`}
+                >
+                  <Button type="text" icon={<EditOutlined />} />
+                </Link>
+              )}
+              {deleteAccess.allowed && (
+                <Popconfirm
+                  title="Delete role?"
+                  onConfirm={async () => {
+                    try {
+                      await removeRole.mutateAsync(row.id);
+                      swal.success("Deleted successfully.");
+                    } catch {
+                      swal.error("Failed to delete role.");
+                    }
+                  }}
+                >
+                  <Button danger type="text" icon={<DeleteOutlined />} />
+                </Popconfirm>
+              )}
             </div>
           )}
           pagination={{

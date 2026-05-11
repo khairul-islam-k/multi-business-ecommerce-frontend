@@ -51,8 +51,8 @@ type AuthState = {
   register: (payload: RegisterPayload) => Promise<void>;
   login: (email: string, password: string) => Promise<AuthPayload>;
   fetchProfile: () => Promise<void>;
-  refreshAuth: (businessId?: number | null) => Promise<string | null>;
-  selectBusiness: (businessId: number) => Promise<void>;
+  refreshAuth: (businessId?: string | null) => Promise<string | null>;
+  selectBusiness: (businessId: string) => Promise<void>;
   logout: () => Promise<void>;
   logoutAll: () => Promise<void>;
   init: () => Promise<void>;
@@ -254,7 +254,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
-    await get().refreshAuth(selectedBusiness?.id ?? null);
+    const accessToken = await get().refreshAuth(selectedBusiness?.id ?? null);
+    if (accessToken) {
+      await get().fetchProfile();
+    }
     set({ initialized: true, loading: false });
   },
 }));

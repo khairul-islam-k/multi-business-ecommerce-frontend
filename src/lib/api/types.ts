@@ -1,4 +1,10 @@
 export type SortOrder = "asc" | "desc" | "ASC" | "DESC";
+export type ApiId = string;
+
+export type ApiResponse<T> = {
+  data: T;
+  message?: string;
+};
 
 export type PaginatedResponse<T> = {
   meta: {
@@ -8,6 +14,11 @@ export type PaginatedResponse<T> = {
     totalPages: number;
   };
   items: T[];
+};
+
+export type ApiPaginatedResponse<T> = {
+  meta: PaginatedResponse<T>["meta"];
+  data: T[];
 };
 
 export type ListQuery = {
@@ -27,8 +38,7 @@ export type AssignmentStatus = "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
 export type EmployeeStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
 
 export type SystemUser = {
-  id: number;
-  uuid?: string;
+  id: ApiId;
   name: string;
   email: string;
   phone?: string | null;
@@ -39,12 +49,12 @@ export type SystemUser = {
 };
 
 export type AuthBusiness = {
-  id: number;
+  id: ApiId;
   name: string;
-  ownerUserId: number;
+  ownerUserId: ApiId;
   members?: Array<{
-    id: number;
-    userId: number;
+    id: ApiId;
+    userId: ApiId;
   }>;
 };
 
@@ -75,11 +85,11 @@ export type LoginPayload = {
 
 export type RefreshPayload = {
   refreshToken: string;
-  businessId?: number | null;
+  businessId?: ApiId | null;
 };
 
 export type SelectBusinessPayload = {
-  businessId: number;
+  businessId: ApiId;
   refreshToken: string;
 };
 
@@ -92,7 +102,7 @@ export type MessageResponse = {
 };
 
 export type BusinessSetting = {
-  id?: number;
+  id?: ApiId;
   orderPrefix?: string;
   invoicePrefix?: string;
   defaultLanguage?: string;
@@ -106,7 +116,7 @@ export type BusinessSetting = {
 };
 
 export type BusinessBranding = {
-  id?: number;
+  id?: ApiId;
   logoUrl?: string | null;
   faviconUrl?: string | null;
   primaryColor?: string | null;
@@ -118,8 +128,7 @@ export type BusinessBranding = {
 };
 
 export type Business = {
-  id: number;
-  uuid?: string;
+  id: ApiId;
   name: string;
   slug?: string;
   email?: string | null;
@@ -128,7 +137,7 @@ export type Business = {
   currencyCode?: string;
   timezone?: string;
   status?: BusinessStatus;
-  ownerUserId?: number;
+  ownerUserId?: ApiId;
   ownerUser?: SystemUser;
   settings?: BusinessSetting | null;
   branding?: BusinessBranding | null;
@@ -175,16 +184,16 @@ export type PermissionItem = {
 };
 
 export type Permission = PermissionItem & {
-  id?: number;
-  roleId?: number;
-  businessId?: number;
+  id?: ApiId;
+  roleId?: ApiId;
+  businessId?: ApiId;
   createdAt?: string;
 };
 
 export type PermissionQuery = {
   page?: number;
   limit?: number;
-  roleId?: number;
+  roleId?: ApiId;
   feature?: string;
   action?: string;
 };
@@ -194,8 +203,8 @@ export type PermissionPayload = {
 };
 
 export type Role = {
-  id: number;
-  uuid?: string;
+  id: ApiId;
+  businessId?: ApiId;
   name: string;
   description?: string | null;
   status?: RoleStatus;
@@ -216,9 +225,9 @@ export type RolePayload = {
 };
 
 export type RoleAssignment = {
-  id: number;
-  userId: number;
-  roleId: number;
+  id: ApiId;
+  userId: ApiId;
+  roleId: ApiId;
   status?: AssignmentStatus;
   expiresAt?: string | null;
   user?: SystemUser;
@@ -229,13 +238,13 @@ export type RoleAssignment = {
 export type RoleAssignmentQuery = {
   page?: number;
   limit?: number;
-  userId?: number;
-  roleId?: number;
+  userId?: ApiId;
+  roleId?: ApiId;
   status?: AssignmentStatus;
 };
 
 export type AssignRolePayload = {
-  userId: number;
+  userId: ApiId;
   expiresAt?: string;
 };
 
@@ -257,8 +266,7 @@ export type EmployeeProfile = {
 };
 
 export type Employee = {
-  id: number;
-  uuid?: string;
+  id: ApiId;
   name: string;
   email: string;
   phone?: string | null;
@@ -266,7 +274,7 @@ export type Employee = {
   profile?: EmployeeProfile | null;
   roles?: Role[];
   userRoleMaps?: Array<{
-    id: number;
+    id: ApiId;
     status?: AssignmentStatus;
     assignedAt?: string;
     expiresAt?: string | null;
@@ -287,7 +295,7 @@ export type CreateEmployeePayload = {
   password: string;
   status?: EmployeeStatus;
   profile?: EmployeeProfile;
-  roleIds?: number[];
+  roleIds?: ApiId[];
 };
 
 export type UpdateEmployeePayload = {
@@ -303,5 +311,5 @@ export type UpdateEmployeeStatusPayload = {
 };
 
 export type AssignEmployeeRolesPayload = {
-  roleIds: number[];
+  roleIds: ApiId[];
 };

@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import {
   Avatar,
-  Button,
   Card,
   Col,
   Empty,
@@ -19,7 +18,6 @@ import {
   IdcardOutlined,
   MailOutlined,
   PhoneOutlined,
-  ReloadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
@@ -82,8 +80,6 @@ export default function UserProfilePage() {
   const user = useAuthStore((state) => state.user);
   const selectedBusiness = useAuthStore((state) => state.selectedBusiness);
   const businesses = useAuthStore((state) => state.businesses);
-  const fetchProfile = useAuthStore((state) => state.fetchProfile);
-  const loading = useAuthStore((state) => state.loading);
   const { token } = theme.useToken();
 
   if (!user) return <Empty description="No user profile loaded" />;
@@ -94,15 +90,6 @@ export default function UserProfilePage() {
         title="User Profile"
         subtitle="Your account and active business details."
         breadcrumb={adminBreadcrumb}
-        actions={
-          <Button
-            icon={<ReloadOutlined />}
-            loading={loading}
-            onClick={() => fetchProfile()}
-          >
-            Refresh
-          </Button>
-        }
       />
 
       <Card styles={{ body: { padding: 0 } }} style={{ overflow: "hidden" }}>
@@ -229,8 +216,8 @@ export default function UserProfilePage() {
               <Col xs={24} md={12}>
                 <FieldRow
                   icon={<IdcardOutlined />}
-                  label="UUID"
-                  value={user.uuid}
+                  label="User ID"
+                  value={user.id}
                 />
               </Col>
               <Col xs={24} md={12}>

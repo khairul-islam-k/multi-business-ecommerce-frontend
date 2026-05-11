@@ -1,9 +1,9 @@
 "use client";
 
-import { Spin } from "antd";
 import type { ReactNode } from "react";
 
 import AccessDenied from "@/components/auth/access-denied";
+import Loader from "@/components/shared/loader";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import type { PermissionRequirement } from "@/lib/auth/permissions";
 
@@ -23,9 +23,10 @@ export default function PermissionGate({
   if (access.loading) {
     return (
       loadingFallback ?? (
-        <div className="flex min-h-80 items-center justify-center">
-          <Spin size="large" />
-        </div>
+        <Loader
+          label="Checking permissions"
+          description="Confirming your access for this business."
+        />
       )
     );
   }

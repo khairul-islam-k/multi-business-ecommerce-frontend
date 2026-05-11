@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Empty, Form, Input, Select, Spin } from "antd";
+import { Button, Card, Empty, Form, Input, Select } from "antd";
 
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -10,6 +10,7 @@ import { useActiveBusinessId } from "@/hooks/use-active-business";
 import type { PermissionItem } from "@/lib/api";
 import { useRole, useRoleMutations } from "@/lib/api";
 import PageHeader from "@/components/shared/page-header";
+import Loader from "@/components/shared/loader";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import PermissionTree from "../../_components/permission-tree";
 
@@ -25,9 +26,9 @@ export default function EditRole() {
   const router = useRouter();
   const swal = useSwal();
   const businessId = useActiveBusinessId();
-  const roleId = Number(id);
+  const roleId = id;
   const roleQuery = useRole(businessId ?? undefined, roleId);
-  const { updateRole } = useRoleMutations(businessId ?? 0);
+  const { updateRole } = useRoleMutations(businessId ?? "");
 
   const [permissions, setPermissions] = useState<PermissionItem[] | null>(null);
   const selectedPermissions = permissions ?? roleQuery.data?.permissions ?? [];
@@ -51,6 +52,7 @@ export default function EditRole() {
         roleId,
         payload: {
           ...values,
+          // TODO: is this right?
           permissions: selectedPermissions,
         },
       });
@@ -66,15 +68,20 @@ export default function EditRole() {
 
   if (roleQuery.isLoading) {
     return (
-      <div className="flex min-h-80 items-center justify-center">
-        <Spin size="large" />
-      </div>
+      <Loader
+        label="Loading role"
+        description="Fetching role details and selected permissions."
+      />
     );
   }
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Edit Role" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Edit Role"
+        subtitle="Update role details and the permissions assigned to it."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Card>
         <Form form={form} layout="vertical" onFinish={onFinish}>

@@ -14,7 +14,6 @@ import {
   InputNumber,
   Row,
   Select,
-  Skeleton,
   Space,
   Switch,
   Tag,
@@ -35,6 +34,9 @@ import {
   currencyOptions,
   timezoneOptions,
 } from "@/lib/business/options";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import Loader from "@/components/shared/loader";
 
 const { Text } = Typography;
 
@@ -65,6 +67,8 @@ export default function BusinessSettingsPage() {
   const deletableBusinesses = businesses.filter(
     (item) => item.id !== businessId,
   );
+  const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
+  const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
   useEffect(() => {
     if (!business) return;
@@ -112,7 +116,7 @@ export default function BusinessSettingsPage() {
       setSelectedBusiness({
         id: updated.id,
         name: updated.name,
-        ownerUserId: updated.ownerUserId ?? 0,
+        ownerUserId: updated.ownerUserId ?? "",
       });
       setBusinesses(
         businesses.map((item) =>
@@ -153,17 +157,29 @@ export default function BusinessSettingsPage() {
 
   if (!businessId) return <Empty description="No active business selected" />;
 
-  if (isLoading) return <Skeleton active paragraph={{ rows: 10 }} />;
+  if (isLoading) {
+    return (
+      <Loader
+        label="Loading business settings"
+        description="Fetching the active business configuration."
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Business Settings"
-        subtitle="These settings are scoped to the active business."
+        subtitle="Update identity, regional defaults, and operational settings for the active business."
         breadcrumb={adminBreadcrumb}
       />
 
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        disabled={!updatePermission.allowed}
+      >
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
             <Card title="Business Identity">
@@ -324,15 +340,17 @@ export default function BusinessSettingsPage() {
           </Col>
         </Row>
 
-        <div className="mt-4 flex justify-end">
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={updateBusiness.isPending}
-          >
-            Save settings
-          </Button>
-        </div>
+        {updatePermission.allowed && (
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateBusiness.isPending}
+            >
+              Save settings
+            </Button>
+          </div>
+        )}
       </Form>
 
       <Card title="Other Businesses">
@@ -362,14 +380,16 @@ export default function BusinessSettingsPage() {
                       Business ID {item.id}
                     </Text>
                   </div>
-                  <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    loading={removeBusiness.isPending}
-                    onClick={() => handleDeleteBusiness(item)}
-                  >
-                    Delete
-                  </Button>
+                  {deletePermission.allowed && (
+                    <Button
+                      danger
+                      icon={<DeleteOutlined />}
+                      loading={removeBusiness.isPending}
+                      onClick={() => handleDeleteBusiness(item)}
+                    >
+                      Delete
+                    </Button>
+                  )}
                 </Flex>
               ))}
             </Space>

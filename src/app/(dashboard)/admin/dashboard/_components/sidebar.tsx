@@ -34,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
 
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
+
   const menuItems = useMemo(() => {
     if (userType !== "EMPLOYEE") return items;
 
@@ -77,10 +78,12 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     roleAccess.allowed,
     userType,
   ]);
+
   const primaryMenuItems = useMemo(
     () => (menuItems ?? []).filter((item) => itemKey(item) !== "notifications"),
     [menuItems],
   );
+
   const notificationMenuItems = useMemo(
     () => (menuItems ?? []).filter((item) => itemKey(item) === "notifications"),
     [menuItems],

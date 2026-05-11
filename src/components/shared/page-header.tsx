@@ -28,20 +28,26 @@ export default function PageHeader({
   const width = useWidth();
 
   return (
-    <div className="flex w-full min-w-0 flex-col gap-3 border-b border-black/5 pb-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="min-w-0">
-        <Title level={4} style={{ marginBottom: 0 }}>
-          {title}
-        </Title>
+    <div className="w-full min-w-0 border-b border-black/5 pb-4">
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <Title level={4} style={{ marginBottom: 0, lineHeight: 1.25 }}>
+            {title}
+          </Title>
 
-        {subtitle && (
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">{subtitle}</p>
-        )}
-      </div>
+          {subtitle && (
+            <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-500">
+              {subtitle}
+            </p>
+          )}
+        </div>
 
-      <div className="flex min-w-0 flex-col gap-2 sm:items-end">
-        <Breadcrumbs {...breadcrumb} maxItems={width > 512 ? 5 : 3} />
-        {actions}
+        <div className="flex min-w-0 flex-col items-start gap-2 lg:items-end">
+          <Breadcrumbs {...breadcrumb} maxItems={width > 512 ? 5 : 3} />
+          {actions && (
+            <div className="flex flex-wrap justify-end gap-2">{actions}</div>
+          )}
+        </div>
       </div>
     </div>
   );

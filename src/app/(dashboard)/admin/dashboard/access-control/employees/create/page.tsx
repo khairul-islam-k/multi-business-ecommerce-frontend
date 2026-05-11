@@ -9,6 +9,7 @@ import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useEmployeeMutations, useRoles } from "@/lib/api";
+import type { ApiId } from "@/lib/api";
 
 type CreateEmployeeValues = {
   name: string;
@@ -17,7 +18,7 @@ type CreateEmployeeValues = {
   password: string;
   confirmPassword: string;
   status?: string;
-  roleIds?: number[];
+  roleIds?: ApiId[];
   firstName?: string;
   lastName?: string;
   gender?: string;
@@ -36,7 +37,7 @@ export default function CreateUserPage() {
   const router = useRouter();
   const businessId = useActiveBusinessId();
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
-  const { createEmployee } = useEmployeeMutations(businessId ?? 0);
+  const { createEmployee } = useEmployeeMutations(businessId ?? "");
 
   const onFinish = async (values: CreateEmployeeValues) => {
     if (!businessId) return;
