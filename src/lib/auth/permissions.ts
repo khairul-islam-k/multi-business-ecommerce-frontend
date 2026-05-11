@@ -58,18 +58,18 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.businessRead;
   }
 
-  const usersPath = `${TENANT_DASHBOARD_PATH}/users-permissions/users`;
-  if (pathname.startsWith(`${usersPath}/create-user`)) {
+  const employeesPath = `${TENANT_DASHBOARD_PATH}/access-control/employees`;
+  if (pathname.startsWith(`${employeesPath}/create`)) {
     return PERMISSIONS.employeeCreate;
   }
-  if (pathname.startsWith(`${usersPath}/edit-user`)) {
+  if (pathname.startsWith(`${employeesPath}/edit`)) {
     return PERMISSIONS.employeeUpdate;
   }
-  if (pathname.startsWith(usersPath)) {
+  if (pathname.startsWith(employeesPath)) {
     return PERMISSIONS.employeeRead;
   }
 
-  const rolesPath = `${TENANT_DASHBOARD_PATH}/users-permissions/roles`;
+  const rolesPath = `${TENANT_DASHBOARD_PATH}/access-control/roles`;
   if (pathname.startsWith(`${rolesPath}/create`)) {
     return PERMISSIONS.roleCreate;
   }
@@ -80,14 +80,14 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.roleRead;
   }
 
-  const permissionPath = `${TENANT_DASHBOARD_PATH}/users-permissions/permission`;
-  if (pathname.startsWith(`${permissionPath}/create`)) {
+  const permissionsPath = `${TENANT_DASHBOARD_PATH}/access-control/permissions`;
+  if (pathname.startsWith(`${permissionsPath}/create`)) {
     return PERMISSIONS.roleCreate;
   }
-  if (pathname.startsWith(`${permissionPath}/edit`)) {
+  if (pathname.startsWith(`${permissionsPath}/edit`)) {
     return PERMISSIONS.roleUpdate;
   }
-  if (pathname.startsWith(permissionPath)) {
+  if (pathname.startsWith(permissionsPath)) {
     return PERMISSIONS.roleRead;
   }
 

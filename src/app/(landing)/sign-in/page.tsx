@@ -50,9 +50,10 @@ export default function SignInPage() {
       swal.success("Signed in successfully!");
       const requestedRedirect = searchParams.get("redirect");
       const fallbackPath = getDashboardPath(result.user.type);
-      const redirectPath = requestedRedirect && isSafeInternalPath(requestedRedirect)
-        ? requestedRedirect
-        : fallbackPath;
+      const redirectPath =
+        requestedRedirect && isSafeInternalPath(requestedRedirect)
+          ? requestedRedirect
+          : fallbackPath;
 
       router.push(redirectPath);
     } catch (error) {

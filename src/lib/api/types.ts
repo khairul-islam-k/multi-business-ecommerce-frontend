@@ -265,6 +265,13 @@ export type Employee = {
   status?: EmployeeStatus;
   profile?: EmployeeProfile | null;
   roles?: Role[];
+  userRoleMaps?: Array<{
+    id: number;
+    status?: AssignmentStatus;
+    assignedAt?: string;
+    expiresAt?: string | null;
+    role: Role;
+  }>;
   createdAt?: string;
   updatedAt?: string;
 };

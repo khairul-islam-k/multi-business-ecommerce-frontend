@@ -86,7 +86,7 @@ export default function RolesPage() {
               type="primary"
               icon={<PlusOutlined />}
               onClick={() =>
-                router.push("/admin/dashboard/users-permissions/roles/create")
+                router.push("/admin/dashboard/access-control/roles/create")
               }
             >
               Create Role
@@ -95,7 +95,7 @@ export default function RolesPage() {
           actions={(row) => (
             <div className="flex items-center gap-2">
               <Link
-                href={`/admin/dashboard/users-permissions/roles/edit/${row.id}`}
+                href={`/admin/dashboard/access-control/roles/edit/${row.id}`}
               >
                 <Button type="text" icon={<EditOutlined />} />
               </Link>

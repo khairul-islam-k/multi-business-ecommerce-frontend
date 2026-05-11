@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
 import {
   EyeOutlined,
@@ -18,6 +18,9 @@ import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
+
+const getEmployeeRoles = (employee: Employee) =>
+  employee.roles ?? employee.userRoleMaps?.map((map) => map.role) ?? [];
 
 export default function Users() {
   const router = useRouter();
@@ -37,10 +40,23 @@ export default function Users() {
   });
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
   const employeeMutations = useEmployeeMutations(businessId ?? 0);
+  const roleOptions = useMemo(() => {
+    const options = new Map<number, { label: string; value: number }>();
+
+    (rolesQuery.data?.items ?? []).forEach((role) => {
+      options.set(role.id, { label: role.name, value: role.id });
+    });
+
+    (selectedUser ? getEmployeeRoles(selectedUser) : []).forEach((role) => {
+      options.set(role.id, { label: role.name, value: role.id });
+    });
+
+    return Array.from(options.values());
+  }, [rolesQuery.data?.items, selectedUser]);
 
   const openRoleModal = (user: Employee) => {
     setSelectedUser(user);
-    setSelectedRoles(user.roles?.map((role) => role.id) ?? []);
+    setSelectedRoles(getEmployeeRoles(user).map((role) => role.id));
     setIsRoleModalOpen(true);
   };
 
@@ -91,9 +107,9 @@ export default function Users() {
       key: "roles",
       label: "Roles",
       render: (row) =>
-        row.roles?.length ? (
+        getEmployeeRoles(row).length ? (
           <Flex wrap gap={4}>
-            {row.roles.map((role) => (
+            {getEmployeeRoles(row).map((role) => (
               <Tag key={role.id}>{role.name}</Tag>
             ))}
           </Flex>
@@ -137,7 +153,7 @@ export default function Users() {
               icon={<PlusOutlined />}
               onClick={() =>
                 router.push(
-                  "/admin/dashboard/users-permissions/users/create-user",
+                  "/admin/dashboard/access-control/employees/create",
                 )
               }
             >
@@ -162,7 +178,7 @@ export default function Users() {
           actions={(row) => (
             <Flex gap={8}>
               <Link
-                href={`/admin/dashboard/users-permissions/users/details/${row.id}`}
+                href={`/admin/dashboard/access-control/employees/details/${row.id}`}
               >
                 <Button type="text" icon={<EyeOutlined />} />
               </Link>
@@ -175,7 +191,7 @@ export default function Users() {
                       label: "Edit",
                       onClick: () =>
                         router.push(
-                          `/admin/dashboard/users-permissions/users/edit-user/${row.id}`,
+                          `/admin/dashboard/access-control/employees/edit/${row.id}`,
                         ),
                     },
                     {
@@ -221,15 +237,14 @@ export default function Users() {
       >
         <Select
           mode="multiple"
+          showSearch
           className="w-full"
           placeholder="Select roles"
           value={selectedRoles}
           loading={rolesQuery.isLoading}
           onChange={setSelectedRoles}
-          options={(rolesQuery.data?.items ?? []).map((role) => ({
-            label: role.name,
-            value: role.id,
-          }))}
+          optionFilterProp="label"
+          options={roleOptions}
         />
       </Modal>
     </div>

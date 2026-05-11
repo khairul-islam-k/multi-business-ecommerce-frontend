@@ -24,12 +24,19 @@ const { Text } = Typography;
 const ProfileDropdown = () => {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
-  const selectedBusiness = useAuthStore((s) => s.selectedBusiness);
   const router = useRouter();
   const swal = useSwal();
   const { token } = theme.useToken();
 
   const handleLogout = async () => {
+    const { isConfirmed } = await swal.confirm({
+      title: "Log out?",
+      text: "You will need to sign in again to continue.",
+      confirmButtonText: "Log out",
+    });
+
+    if (!isConfirmed) return;
+
     await logout();
     swal.success("Logged out successfully.");
     router.push("/sign-in");

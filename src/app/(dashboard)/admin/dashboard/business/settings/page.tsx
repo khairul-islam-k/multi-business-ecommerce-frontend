@@ -8,13 +8,17 @@ import {
   Card,
   Col,
   Empty,
+  Flex,
   Form,
   Input,
   InputNumber,
   Row,
   Select,
   Skeleton,
+  Space,
   Switch,
+  Tag,
+  Typography,
 } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -24,8 +28,15 @@ import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useBusiness, useBusinessMutations } from "@/lib/api";
-import type { BusinessPayload } from "@/lib/api";
+import type { AuthBusiness, BusinessPayload } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
+import {
+  countryOptions,
+  currencyOptions,
+  timezoneOptions,
+} from "@/lib/business/options";
+
+const { Text } = Typography;
 
 type BusinessSettingsValues = {
   name: string;
@@ -49,8 +60,7 @@ export default function BusinessSettingsPage() {
   const setSelectedBusiness = useAuthStore((state) => state.setSelectedBusiness);
   const businesses = useAuthStore((state) => state.businesses);
   const setBusinesses = useAuthStore((state) => state.setBusinesses);
-  const selectBusiness = useAuthStore((state) => state.selectBusiness);
-  const refreshAuth = useAuthStore((state) => state.refreshAuth);
+  const deletableBusinesses = businesses.filter((item) => item.id !== businessId);
 
   useEffect(() => {
     if (!business) return;
@@ -88,12 +98,12 @@ export default function BusinessSettingsPage() {
         businessId,
         payload: {
           name: values.name,
-          slug: values.slug,
-          email: values.email,
-          phone: values.phone,
-          country: values.country,
-          currencyCode: values.currencyCode,
-          timezone: values.timezone,
+          slug: values.slug?.trim() || undefined,
+          email: values.email?.trim() || undefined,
+          phone: values.phone?.trim() || undefined,
+          country: values.country?.trim() || undefined,
+          currencyCode: values.currencyCode || undefined,
+          timezone: values.timezone || undefined,
           status: values.status,
           settings: values.settings,
         },
@@ -115,32 +125,24 @@ export default function BusinessSettingsPage() {
     }
   };
 
-  const handleDeleteBusiness = async () => {
-    if (!businessId || !business) return;
+  const handleDeleteBusiness = async (targetBusiness: AuthBusiness) => {
+    if (targetBusiness.id === businessId) return;
 
     const { isConfirmed } = await swal.confirm({
       title: "Delete business?",
-      text: `This will delete ${business.name}. This action cannot be undone.`,
+      text: `This will delete ${targetBusiness.name}. This action cannot be undone.`,
       confirmButtonText: "Delete business",
     });
 
     if (!isConfirmed) return;
 
     try {
-      await removeBusiness.mutateAsync(businessId);
+      await removeBusiness.mutateAsync(targetBusiness.id);
 
       const remainingBusinesses = businesses.filter(
-        (item) => item.id !== businessId,
+        (item) => item.id !== targetBusiness.id,
       );
       setBusinesses(remainingBusinesses);
-
-      const nextBusiness = remainingBusinesses[0];
-      if (nextBusiness) {
-        await selectBusiness(nextBusiness.id);
-      } else {
-        setSelectedBusiness(null);
-        await refreshAuth(null);
-      }
 
       await queryClient.invalidateQueries();
       swal.success("Business deleted.");
@@ -192,7 +194,13 @@ export default function BusinessSettingsPage() {
                 </Col>
                 <Col xs={24} md={12}>
                   <Form.Item name="country" label="Country">
-                    <Input placeholder="Bangladesh" />
+                    <Select
+                      showSearch
+                      allowClear
+                      placeholder="Select country"
+                      optionFilterProp="label"
+                      options={countryOptions}
+                    />
                   </Form.Item>
                 </Col>
                 <Col xs={24} md={12}>
@@ -217,12 +225,11 @@ export default function BusinessSettingsPage() {
                 <Col xs={24} md={12}>
                   <Form.Item name="currencyCode" label="Business currency">
                     <Select
-                      options={[
-                        { label: "BDT", value: "BDT" },
-                        { label: "USD", value: "USD" },
-                        { label: "EUR", value: "EUR" },
-                        { label: "GBP", value: "GBP" },
-                      ]}
+                      showSearch
+                      allowClear
+                      placeholder="Select currency"
+                      optionFilterProp="label"
+                      options={currencyOptions}
                     />
                   </Form.Item>
                 </Col>
@@ -230,12 +237,10 @@ export default function BusinessSettingsPage() {
                   <Form.Item name="timezone" label="Business timezone">
                     <Select
                       showSearch
-                      options={[
-                        { label: "Asia/Dhaka", value: "Asia/Dhaka" },
-                        { label: "UTC", value: "UTC" },
-                        { label: "Asia/Kolkata", value: "Asia/Kolkata" },
-                        { label: "Europe/London", value: "Europe/London" },
-                      ]}
+                      allowClear
+                      placeholder="Select timezone"
+                      optionFilterProp="label"
+                      options={timezoneOptions}
                     />
                   </Form.Item>
                 </Col>
@@ -346,23 +351,49 @@ export default function BusinessSettingsPage() {
         </div>
       </Form>
 
-      <Card title="Danger Zone">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <Card title="Other Businesses">
+        <div className="space-y-4">
           <Alert
             showIcon
             type="warning"
-            message="Delete this business"
-            description="Deleting the active business removes it from your accessible business list. Make sure your team has moved anything important first."
-            className="flex-1"
+            message="Active business is protected"
+            description="The currently selected business cannot be deleted from this screen. Switch to another business first, then delete it from this list."
           />
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            loading={removeBusiness.isPending}
-            onClick={handleDeleteBusiness}
-          >
-            Delete current business
-          </Button>
+
+          {deletableBusinesses.length ? (
+            <Space direction="vertical" className="w-full" size={10}>
+              {deletableBusinesses.map((item) => (
+                <Flex
+                  key={item.id}
+                  align="center"
+                  justify="space-between"
+                  gap={16}
+                  className="rounded-lg border border-solid border-black/10 p-3"
+                >
+                  <div className="min-w-0">
+                    <Text strong ellipsis style={{ display: "block" }}>
+                      {item.name}
+                    </Text>
+                    <Text type="secondary" className="text-xs">
+                      Business ID {item.id}
+                    </Text>
+                  </div>
+                  <Button
+                    danger
+                    icon={<DeleteOutlined />}
+                    loading={removeBusiness.isPending}
+                    onClick={() => handleDeleteBusiness(item)}
+                  >
+                    Delete
+                  </Button>
+                </Flex>
+              ))}
+            </Space>
+          ) : (
+            <Empty description="No other businesses available to delete" />
+          )}
+
+          {business && <Tag color="green">Current: {business.name}</Tag>}
         </div>
       </Card>
     </div>

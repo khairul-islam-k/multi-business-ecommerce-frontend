@@ -31,6 +31,11 @@ import { useBusinessMutations } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
 import type { AuthBusiness, BusinessPayload } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
+import {
+  countryOptions,
+  currencyOptions,
+  timezoneOptions,
+} from "@/lib/business/options";
 
 const { Text } = Typography;
 
@@ -261,17 +266,23 @@ export default function BusinessDropdown() {
             </Col>
             <Col xs={24} md={8}>
               <Form.Item name="country" label="Country">
-                <Input placeholder="Bangladesh" />
+                <Select
+                  showSearch
+                  allowClear
+                  placeholder="Select country"
+                  optionFilterProp="label"
+                  options={countryOptions}
+                />
               </Form.Item>
             </Col>
             <Col xs={24} md={8}>
               <Form.Item name="currencyCode" label="Currency">
                 <Select
-                  options={[
-                    { label: "BDT", value: "BDT" },
-                    { label: "USD", value: "USD" },
-                    { label: "EUR", value: "EUR" },
-                  ]}
+                  showSearch
+                  allowClear
+                  placeholder="Select currency"
+                  optionFilterProp="label"
+                  options={currencyOptions}
                 />
               </Form.Item>
             </Col>
@@ -279,11 +290,10 @@ export default function BusinessDropdown() {
               <Form.Item name="timezone" label="Timezone">
                 <Select
                   showSearch
-                  options={[
-                    { label: "Asia/Dhaka", value: "Asia/Dhaka" },
-                    { label: "UTC", value: "UTC" },
-                    { label: "Asia/Kolkata", value: "Asia/Kolkata" },
-                  ]}
+                  allowClear
+                  placeholder="Select timezone"
+                  optionFilterProp="label"
+                  options={timezoneOptions}
                 />
               </Form.Item>
             </Col>

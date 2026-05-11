@@ -82,7 +82,7 @@ export const items: MenuProps["items"] = [
       {
         key: "settings",
         icon: <SettingOutlined />,
-        label: <Link href="/admin/dashboard/business/setting">Settings</Link>,
+        label: <Link href="/admin/dashboard/business/settings">Settings</Link>,
       },
       {
         key: "branding",
@@ -101,29 +101,29 @@ export const items: MenuProps["items"] = [
 
   // Employees / Roles
   {
-    key: "users-permissions",
+    key: "access-control",
     icon: <SafetyOutlined />,
     label: "Employees & Roles",
     children: [
       {
-        key: "users",
+        key: "employees",
         icon: <UserOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permissions/users">Employees</Link>
+          <Link href="/admin/dashboard/access-control/employees">Employees</Link>
         ),
       },
       {
         key: "roles",
         icon: <TeamOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permissions/roles">Roles</Link>
+          <Link href="/admin/dashboard/access-control/roles">Roles</Link>
         ),
       },
       {
-        key: "permission",
+        key: "permissions",
         icon: <KeyOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permissions/permission">
+          <Link href="/admin/dashboard/access-control/permissions">
             Permissions
           </Link>
         ),
@@ -132,7 +132,7 @@ export const items: MenuProps["items"] = [
         key: "login-history",
         icon: <HistoryOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permissions/login-history">
+          <Link href="/admin/dashboard/access-control/login-history">
             Login History
           </Link>
         ),
@@ -141,7 +141,7 @@ export const items: MenuProps["items"] = [
         key: "activity-logs",
         icon: <AuditOutlined />,
         label: (
-          <Link href="/admin/dashboard/users-permissions/activity-logs">
+          <Link href="/admin/dashboard/access-control/activity-logs">
             Activity Logs
           </Link>
         ),

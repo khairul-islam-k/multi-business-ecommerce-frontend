@@ -33,7 +33,7 @@ export const authApi = {
     return api
       .post<
         Omit<AuthPayload, "refreshToken" | "businesses">
-      >("/auth/select-store", payload)
+      >("/auth/select-business", payload)
       .then((res) => res.data);
   },
 

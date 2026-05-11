@@ -40,7 +40,7 @@ export default function CreateRole() {
       });
 
       swal.success("Role created.");
-      router.push("/admin/dashboard/users-permissions/roles");
+      router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
@@ -93,7 +93,7 @@ export default function CreateRole() {
             <Button
               htmlType="button"
               onClick={() =>
-                router.push("/admin/dashboard/users-permissions/roles")
+                router.push("/admin/dashboard/access-control/roles")
               }
             >
               Cancel

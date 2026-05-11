@@ -44,14 +44,14 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
         if (key === "dashboard") return item;
         if (key === "business") return businessAccess.allowed ? item : null;
 
-        if (key === "users-permissions") {
+        if (key === "access-control") {
           const children = (
             (item as MenuItemWithChildren).children ?? []
           ).filter((child) => {
             const childKey = itemKey(child);
 
-            if (childKey === "users") return employeeAccess.allowed;
-            if (childKey === "roles" || childKey === "permission") {
+            if (childKey === "employees") return employeeAccess.allowed;
+            if (childKey === "roles" || childKey === "permissions") {
               return roleAccess.allowed;
             }
 
