@@ -60,10 +60,13 @@ export default function AdminDashboardLayout({
               display: "flex",
               alignItems: "center",
               borderLeft: `1px solid ${token.colorBorderSecondary}`,
+              height: 64,
+              lineHeight: "normal",
             }}
           >
             <TopBar
-              toggleSidebar={() => setCollapsed(!collapsed)} // 👈 toggle
+              collapsed={collapsed}
+              toggleSidebar={() => setCollapsed(!collapsed)}
               toggle={() => setOpen(true)}
             />
           </Header>

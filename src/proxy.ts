@@ -8,7 +8,7 @@ type CookieUser = {
   phone: string | null;
   type: "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 };
-// This function can be marked `async` if using `await` inside
+
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("refreshToken")?.value;

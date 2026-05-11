@@ -98,7 +98,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     >
       <div
         style={{
-          padding: screens.xs ? "8px 10px" : "10px 18px",
+          boxSizing: "border-box",
+          height: 64,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",

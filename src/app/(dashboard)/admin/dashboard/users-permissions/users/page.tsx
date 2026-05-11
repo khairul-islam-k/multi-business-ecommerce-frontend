@@ -3,16 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  Button,
-  Card,
-  Dropdown,
-  Empty,
-  Flex,
-  Modal,
-  Select,
-  Tag,
-} from "antd";
+import { Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
 import {
   EyeOutlined,
   MoreOutlined,
@@ -26,11 +17,7 @@ import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  useEmployeeMutations,
-  useEmployees,
-  useRoles,
-} from "@/lib/api";
+import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
 
 export default function Users() {
   const router = useRouter();

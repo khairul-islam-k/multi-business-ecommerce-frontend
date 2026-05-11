@@ -52,6 +52,7 @@ export function isSafeInternalPath(path?: string | null) {
 export function getAdminRoutePermission(pathname: string): RoutePermission {
   if (!pathname.startsWith(TENANT_DASHBOARD_PATH)) return null;
   if (pathname === TENANT_DASHBOARD_PATH) return null;
+  if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/profile`)) return null;
 
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/business`)) {
     return PERMISSIONS.businessRead;

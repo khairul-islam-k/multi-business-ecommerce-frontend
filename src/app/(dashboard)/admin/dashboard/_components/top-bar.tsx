@@ -2,7 +2,11 @@
 
 import React from "react";
 import { Space, Button, theme, Grid, Flex } from "antd";
-import { LayoutOutlined, MenuOutlined } from "@ant-design/icons";
+import {
+  MenuFoldOutlined,
+  MenuOutlined,
+  MenuUnfoldOutlined,
+} from "@ant-design/icons";
 
 import GlobalSearch from "./global-search";
 import BusinessDropdown from "./business-owner";
@@ -10,11 +14,16 @@ import ProfileDropdown from "./profile-dropdown";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
 
 type TopbarProps = {
+  collapsed?: boolean;
   toggle: () => void;
   toggleSidebar: () => void;
 };
 
-const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
+const TopBar: React.FC<TopbarProps> = ({
+  collapsed,
+  toggle,
+  toggleSidebar,
+}) => {
   const { token } = theme.useToken();
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -29,7 +38,9 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
           display: "flex",
           alignItems: "center",
           padding: screens.xs ? "0 10px" : "0 18px",
-          height: 64,
+          boxSizing: "border-box",
+          height: "100%",
+          minHeight: 64,
           width: "100%",
           lineHeight: "normal",
         }}
@@ -41,7 +52,14 @@ const TopBar: React.FC<TopbarProps> = ({ toggle, toggleSidebar }) => {
           <Flex style={{ gap: 12, minWidth: 0 }} align="center">
             <Button
               type="text"
-              icon={<LayoutOutlined style={{ fontSize: 20 }} />}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              icon={
+                collapsed ? (
+                  <MenuUnfoldOutlined style={{ fontSize: 20 }} />
+                ) : (
+                  <MenuFoldOutlined style={{ fontSize: 20 }} />
+                )
+              }
               onClick={toggleSidebar}
               style={{
                 display: screens.xs ? "none" : "block",

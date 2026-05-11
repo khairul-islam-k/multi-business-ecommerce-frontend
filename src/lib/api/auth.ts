@@ -18,7 +18,9 @@ export const authApi = {
   },
 
   login(payload: LoginPayload) {
-    return publicApi.post<AuthPayload>("/auth/login", payload).then((res) => res.data);
+    return publicApi
+      .post<AuthPayload>("/auth/login", payload)
+      .then((res) => res.data);
   },
 
   refresh(payload: RefreshPayload) {
@@ -29,18 +31,17 @@ export const authApi = {
 
   selectBusiness(payload: SelectBusinessPayload) {
     return api
-      .post<Omit<AuthPayload, "refreshToken" | "businesses">>(
-        "/auth/select-store",
-        payload,
-      )
+      .post<
+        Omit<AuthPayload, "refreshToken" | "businesses">
+      >("/auth/select-store", payload)
       .then((res) => res.data);
   },
 
   me() {
     return api
-      .get<Pick<AuthPayload, "user" | "selectedBusiness" | "businesses">>(
-        "/auth/me",
-      )
+      .get<
+        Pick<AuthPayload, "user" | "selectedBusiness" | "businesses">
+      >("/auth/me")
       .then((res) => res.data);
   },
 
@@ -51,6 +52,8 @@ export const authApi = {
   },
 
   logoutAll() {
-    return api.post<MessageResponse>("/auth/logout-all").then((res) => res.data);
+    return api
+      .post<MessageResponse>("/auth/logout-all")
+      .then((res) => res.data);
   },
 };

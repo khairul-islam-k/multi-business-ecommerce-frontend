@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -14,6 +16,7 @@ import {
   Skeleton,
   Switch,
 } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -39,12 +42,15 @@ type BusinessSettingsValues = {
 export default function BusinessSettingsPage() {
   const [form] = Form.useForm<BusinessSettingsValues>();
   const swal = useSwal();
+  const queryClient = useQueryClient();
   const businessId = useActiveBusinessId();
   const { data: business, isLoading } = useBusiness(businessId ?? undefined);
-  const { updateBusiness } = useBusinessMutations();
+  const { updateBusiness, removeBusiness } = useBusinessMutations();
   const setSelectedBusiness = useAuthStore((state) => state.setSelectedBusiness);
   const businesses = useAuthStore((state) => state.businesses);
   const setBusinesses = useAuthStore((state) => state.setBusinesses);
+  const selectBusiness = useAuthStore((state) => state.selectBusiness);
+  const refreshAuth = useAuthStore((state) => state.refreshAuth);
 
   useEffect(() => {
     if (!business) return;
@@ -104,6 +110,40 @@ export default function BusinessSettingsPage() {
         ),
       );
       swal.success("Business settings saved.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleDeleteBusiness = async () => {
+    if (!businessId || !business) return;
+
+    const { isConfirmed } = await swal.confirm({
+      title: "Delete business?",
+      text: `This will delete ${business.name}. This action cannot be undone.`,
+      confirmButtonText: "Delete business",
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      await removeBusiness.mutateAsync(businessId);
+
+      const remainingBusinesses = businesses.filter(
+        (item) => item.id !== businessId,
+      );
+      setBusinesses(remainingBusinesses);
+
+      const nextBusiness = remainingBusinesses[0];
+      if (nextBusiness) {
+        await selectBusiness(nextBusiness.id);
+      } else {
+        setSelectedBusiness(null);
+        await refreshAuth(null);
+      }
+
+      await queryClient.invalidateQueries();
+      swal.success("Business deleted.");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
@@ -305,6 +345,26 @@ export default function BusinessSettingsPage() {
           </Button>
         </div>
       </Form>
+
+      <Card title="Danger Zone">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Alert
+            showIcon
+            type="warning"
+            message="Delete this business"
+            description="Deleting the active business removes it from your accessible business list. Make sure your team has moved anything important first."
+            className="flex-1"
+          />
+          <Button
+            danger
+            icon={<DeleteOutlined />}
+            loading={removeBusiness.isPending}
+            onClick={handleDeleteBusiness}
+          >
+            Delete current business
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 }

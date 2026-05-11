@@ -102,13 +102,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setBusinesses: (businesses) => set({ businesses }),
 
   applyAuthPayload: (payload) => {
-    const {
-      accessToken,
-      refreshToken,
-      user,
-      selectedBusiness,
-      businesses,
-    } = payload;
+    const { accessToken, refreshToken, user, selectedBusiness, businesses } =
+      payload;
 
     if (accessToken !== undefined) get().setAccessToken(accessToken);
     if (refreshToken !== undefined) get().setRefreshToken(refreshToken);
@@ -133,7 +128,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
 
     try {
-      const payload = await authApi.login({ email, password } satisfies LoginPayload);
+      const payload = await authApi.login({
+        email,
+        password,
+      } satisfies LoginPayload);
       get().applyAuthPayload(payload);
 
       return payload;

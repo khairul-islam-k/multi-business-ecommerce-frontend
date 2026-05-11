@@ -87,12 +87,22 @@ export default function BusinessDropdown() {
 
   const handleCreate = async (values: BusinessFormValues) => {
     try {
-      const business = await createBusiness.mutateAsync({
+      const payload = {
         ...values,
+        slug: values.slug?.trim() || undefined,
+        email: values.email?.trim() || undefined,
+        phone: values.phone?.trim() || undefined,
+        country: values.country?.trim() || undefined,
+        currencyCode: values.currencyCode || undefined,
+        timezone: values.timezone || undefined,
+      } satisfies BusinessFormValues;
+
+      const business = await createBusiness.mutateAsync({
+        ...payload,
         status: "TRIAL",
         settings: {
-          defaultCurrency: values.currencyCode,
-          timezone: values.timezone,
+          defaultCurrency: payload.currencyCode,
+          timezone: payload.timezone,
           defaultLanguage: "en",
           orderPrefix: "ORD",
           invoicePrefix: "INV",
@@ -107,7 +117,7 @@ export default function BusinessDropdown() {
           secondaryColor: "#f8fafc",
           accentColor: "#f59e0b",
           fontFamily: "Inter",
-          seoTitle: values.name,
+          seoTitle: payload.name,
         },
       });
 
@@ -184,7 +194,11 @@ export default function BusinessDropdown() {
 
   return (
     <>
-      <Dropdown menu={{ items: menuItems }} trigger={["click"]} placement="bottomRight">
+      <Dropdown
+        menu={{ items: menuItems }}
+        trigger={["click"]}
+        placement="bottomRight"
+      >
         <Button
           size="large"
           style={{
