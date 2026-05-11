@@ -116,7 +116,7 @@ export default function BusinessSettingsPage() {
       setSelectedBusiness({
         id: updated.id,
         name: updated.name,
-        ownerUserId: updated.ownerUserId ?? 0,
+        ownerUserId: updated.ownerUserId ?? "",
       });
       setBusinesses(
         businesses.map((item) =>

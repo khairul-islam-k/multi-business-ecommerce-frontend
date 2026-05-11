@@ -16,6 +16,7 @@ import {
   useRoles,
 } from "@/lib/api";
 import type { Employee } from "@/lib/api";
+import type { ApiId } from "@/lib/api";
 
 type EditEmployeeValues = {
   name?: string;
@@ -23,7 +24,7 @@ type EditEmployeeValues = {
   phone?: string;
   password?: string;
   status?: string;
-  roleIds?: number[];
+  roleIds?: ApiId[];
   firstName?: string;
   lastName?: string;
   gender?: string;
@@ -45,14 +46,14 @@ export default function EditUserPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const businessId = useActiveBusinessId();
-  const employeeId = Number(id);
+  const employeeId = id;
 
   const employeeQuery = useEmployee(businessId ?? undefined, employeeId);
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
   const { updateEmployee, updateEmployeeStatus, replaceEmployeeRoles } =
-    useEmployeeMutations(businessId ?? 0);
+    useEmployeeMutations(businessId ?? "");
   const roleOptions = useMemo(() => {
-    const options = new Map<number, { label: string; value: number }>();
+    const options = new Map<ApiId, { label: string; value: ApiId }>();
 
     (rolesQuery.data?.items ?? []).forEach((role) => {
       options.set(role.id, { label: role.name, value: role.id });

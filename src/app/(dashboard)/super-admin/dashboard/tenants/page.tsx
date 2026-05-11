@@ -80,7 +80,7 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleDelete = async (businessId: number) => {
+  const handleDelete = async (businessId: string) => {
     try {
       await removeBusiness.mutateAsync(businessId);
       swal.success("Business deleted successfully.");

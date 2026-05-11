@@ -9,7 +9,7 @@ import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function TenantDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const businessId = Number(id);
+  const businessId = id;
 
   const { data: business, isLoading, isError } = useBusiness(businessId);
 

@@ -1,39 +1,50 @@
 import api from "@/lib/axios";
 import { buildQueryString } from "@/lib/api/params";
+import {
+  normalizePaginatedResponse,
+  unwrapApiResponse,
+} from "@/lib/api/response";
 import type {
+  ApiId,
+  ApiPaginatedResponse,
+  ApiResponse,
   Business,
   BusinessPayload,
   BusinessQuery,
-  MessageResponse,
-  PaginatedResponse,
 } from "@/lib/api/types";
 
 export const businessesApi = {
   list(query?: BusinessQuery) {
     return api
-      .get<PaginatedResponse<Business>>(`/businesses${buildQueryString(query)}`)
-      .then((res) => res.data);
+      .get<ApiPaginatedResponse<Business>>(
+        `/businesses${buildQueryString(query)}`,
+      )
+      .then((res) => normalizePaginatedResponse(res.data));
   },
 
   create(payload: BusinessPayload) {
-    return api.post<Business>("/businesses", payload).then((res) => res.data);
+    return api
+      .post<ApiResponse<Business>>("/businesses", payload)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  get(businessId: number) {
+  get(businessId: ApiId) {
     return api
-      .get<Business>(`/businesses/${businessId}`)
-      .then((res) => res.data);
+      .get<ApiResponse<Business>>(`/businesses/${businessId}`)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  update(businessId: number, payload: Partial<BusinessPayload>) {
+  update(businessId: ApiId, payload: Partial<BusinessPayload>) {
     return api
-      .patch<Business>(`/businesses/${businessId}`, payload)
-      .then((res) => res.data);
+      .patch<ApiResponse<Business>>(`/businesses/${businessId}`, payload)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
-  remove(businessId: number) {
+  remove(businessId: ApiId) {
     return api
-      .delete<MessageResponse>(`/businesses/${businessId}`)
-      .then((res) => res.data);
+      .delete<ApiResponse<null>>(`/businesses/${businessId}`)
+      .then((res) => ({
+        message: res.data.message ?? "Business deleted successfully",
+      }));
   },
 };

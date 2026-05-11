@@ -24,7 +24,7 @@ export default function CreateRole() {
   const router = useRouter();
   const swal = useSwal();
   const businessId = useActiveBusinessId();
-  const { createRole } = useRoleMutations(businessId ?? 0);
+  const { createRole } = useRoleMutations(businessId ?? "");
 
   const [permissions, setPermissions] = useState<PermissionItem[]>([]);
 

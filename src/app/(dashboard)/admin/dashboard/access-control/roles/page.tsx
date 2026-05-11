@@ -28,7 +28,7 @@ export default function RolesPage() {
     page: currentPage,
     limit: 10,
   });
-  const { removeRole } = useRoleMutations(businessId ?? 0);
+  const { removeRole } = useRoleMutations(businessId ?? "");
   const createAccess = usePermissionAccess(PERMISSIONS.roleCreate);
   const updateAccess = usePermissionAccess(PERMISSIONS.roleUpdate);
   const deleteAccess = usePermissionAccess(PERMISSIONS.roleDelete);

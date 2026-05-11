@@ -45,6 +45,7 @@ type BusinessFormValues = Pick<
 >;
 
 const defaultValues: Partial<BusinessFormValues> = {
+  country: "Bangladesh",
   currencyCode: "BDT",
   timezone: "Asia/Dhaka",
 };
@@ -78,7 +79,7 @@ export default function BusinessDropdown() {
     [businesses, selectedBusiness?.id],
   );
 
-  const handleSelect = async (businessId: number) => {
+  const handleSelect = async (businessId: string) => {
     if (businessId === selectedBusiness?.id) return;
 
     try {
@@ -106,9 +107,6 @@ export default function BusinessDropdown() {
         ...payload,
         status: "TRIAL",
         settings: {
-          defaultCurrency: payload.currencyCode,
-          timezone: payload.timezone,
-          defaultLanguage: "en",
           orderPrefix: "ORD",
           invoicePrefix: "INV",
           lowStockThreshold: 5,
@@ -129,7 +127,7 @@ export default function BusinessDropdown() {
       const nextBusiness: AuthBusiness = {
         id: business.id,
         name: business.name,
-        ownerUserId: business.ownerUserId ?? 0,
+        ownerUserId: business.ownerUserId ?? "",
       };
 
       setBusinesses([
@@ -148,7 +146,7 @@ export default function BusinessDropdown() {
 
   const menuItems = [
     ...sortedBusinesses.map((business) => ({
-      key: String(business.id),
+      key: business.id,
       label: (
         <Flex align="center" justify="space-between" gap={16}>
           <Space size={10}>

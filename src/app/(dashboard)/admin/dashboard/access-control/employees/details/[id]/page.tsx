@@ -26,7 +26,7 @@ const { Title, Text } = Typography;
 const UserDetail = () => {
   const { id } = useParams<{ id: string }>();
   const businessId = useActiveBusinessId();
-  const employeeId = Number(id);
+  const employeeId = id;
 
   const { data: user, isLoading } = useEmployee(
     businessId ?? undefined,
@@ -94,9 +94,7 @@ const UserDetail = () => {
           <Card title="Account Information">
             <Descriptions bordered column={1}>
               <Descriptions.Item label="ID">{user.id}</Descriptions.Item>
-              <Descriptions.Item label="UUID">
-                {user.uuid || "-"}
-              </Descriptions.Item>
+              <Descriptions.Item label="User ID">{user.id}</Descriptions.Item>
               <Descriptions.Item label="Email">{user.email}</Descriptions.Item>
               <Descriptions.Item label="Phone">
                 {user.phone || "-"}

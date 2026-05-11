@@ -26,9 +26,9 @@ export default function EditRole() {
   const router = useRouter();
   const swal = useSwal();
   const businessId = useActiveBusinessId();
-  const roleId = Number(id);
+  const roleId = id;
   const roleQuery = useRole(businessId ?? undefined, roleId);
-  const { updateRole } = useRoleMutations(businessId ?? 0);
+  const { updateRole } = useRoleMutations(businessId ?? "");
 
   const [permissions, setPermissions] = useState<PermissionItem[] | null>(null);
   const selectedPermissions = permissions ?? roleQuery.data?.permissions ?? [];
@@ -52,6 +52,7 @@ export default function EditRole() {
         roleId,
         payload: {
           ...values,
+          // TODO: is this right?
           permissions: selectedPermissions,
         },
       });

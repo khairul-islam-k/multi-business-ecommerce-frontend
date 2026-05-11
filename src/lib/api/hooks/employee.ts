@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "@/lib/api/query-keys";
 import { employeesApi } from "@/lib/api/employees";
 import type {
+  ApiId,
   AssignEmployeeRolesPayload,
   CreateEmployeePayload,
   EmployeeQuery,
@@ -12,28 +13,28 @@ import type {
   UpdateEmployeeStatusPayload,
 } from "@/lib/api/types";
 
-export function useEmployees(businessId?: number, query?: EmployeeQuery) {
+export function useEmployees(businessId?: ApiId | null, query?: EmployeeQuery) {
   return useQuery({
     queryKey: businessId
       ? apiQueryKeys.employees.list(businessId, query)
       : ["employees", "idle", query],
-    queryFn: () => employeesApi.list(businessId as number, query),
+    queryFn: () => employeesApi.list(businessId as ApiId, query),
     enabled: Boolean(businessId),
   });
 }
 
-export function useEmployee(businessId?: number, employeeId?: number) {
+export function useEmployee(businessId?: ApiId | null, employeeId?: ApiId) {
   return useQuery({
     queryKey:
       businessId && employeeId
         ? apiQueryKeys.employees.detail(businessId, employeeId)
         : ["employees", "detail", "idle"],
-    queryFn: () => employeesApi.get(businessId as number, employeeId as number),
+    queryFn: () => employeesApi.get(businessId as ApiId, employeeId as ApiId),
     enabled: Boolean(businessId && employeeId),
   });
 }
 
-export function useEmployeeMutations(businessId: number) {
+export function useEmployeeMutations(businessId: ApiId) {
   const queryClient = useQueryClient();
   const invalidate = () =>
     queryClient.invalidateQueries({
@@ -51,7 +52,7 @@ export function useEmployeeMutations(businessId: number) {
         employeeId,
         payload,
       }: {
-        employeeId: number;
+        employeeId: ApiId;
         payload: UpdateEmployeePayload;
       }) => employeesApi.update(businessId, employeeId, payload),
       onSuccess: invalidate,
@@ -61,7 +62,7 @@ export function useEmployeeMutations(businessId: number) {
         employeeId,
         payload,
       }: {
-        employeeId: number;
+        employeeId: ApiId;
         payload: UpdateEmployeeStatusPayload;
       }) => employeesApi.updateStatus(businessId, employeeId, payload),
       onSuccess: invalidate,
@@ -71,13 +72,13 @@ export function useEmployeeMutations(businessId: number) {
         employeeId,
         payload,
       }: {
-        employeeId: number;
+        employeeId: ApiId;
         payload: AssignEmployeeRolesPayload;
       }) => employeesApi.replaceRoles(businessId, employeeId, payload),
       onSuccess: invalidate,
     }),
     removeEmployee: useMutation({
-      mutationFn: (employeeId: number) =>
+      mutationFn: (employeeId: ApiId) =>
         employeesApi.remove(businessId, employeeId),
       onSuccess: invalidate,
     }),

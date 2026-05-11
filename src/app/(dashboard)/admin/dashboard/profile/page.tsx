@@ -216,8 +216,8 @@ export default function UserProfilePage() {
               <Col xs={24} md={12}>
                 <FieldRow
                   icon={<IdcardOutlined />}
-                  label="UUID"
-                  value={user.uuid}
+                  label="User ID"
+                  value={user.id}
                 />
               </Col>
               <Col xs={24} md={12}>

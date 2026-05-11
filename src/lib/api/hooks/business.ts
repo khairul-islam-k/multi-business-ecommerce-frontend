@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiQueryKeys } from "@/lib/api/query-keys";
 import { businessesApi } from "@/lib/api/businesses";
-import type { BusinessPayload, BusinessQuery } from "@/lib/api/types";
+import type { ApiId, BusinessPayload, BusinessQuery } from "@/lib/api/types";
 
 export function useBusinesses(query?: BusinessQuery) {
   return useQuery({
@@ -13,12 +13,12 @@ export function useBusinesses(query?: BusinessQuery) {
   });
 }
 
-export function useBusiness(businessId?: number) {
+export function useBusiness(businessId?: ApiId | null) {
   return useQuery({
     queryKey: businessId
       ? apiQueryKeys.businesses.detail(businessId)
       : ["businesses", "detail", "idle"],
-    queryFn: () => businessesApi.get(businessId as number),
+    queryFn: () => businessesApi.get(businessId as ApiId),
     enabled: Boolean(businessId),
   });
 }
@@ -39,7 +39,7 @@ export function useBusinessMutations() {
         businessId,
         payload,
       }: {
-        businessId: number;
+        businessId: ApiId;
         payload: Partial<BusinessPayload>;
       }) => businessesApi.update(businessId, payload),
       onSuccess: invalidate,

@@ -20,6 +20,7 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import type { ApiId } from "@/lib/api";
 
 const getEmployeeRoles = (employee: Employee) =>
   employee.roles ?? employee.userRoleMaps?.map((map) => map.role) ?? [];
@@ -33,7 +34,7 @@ export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<Employee | null>(null);
-  const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
+  const [selectedRoles, setSelectedRoles] = useState<ApiId[]>([]);
 
   const usersQuery = useEmployees(businessId ?? undefined, {
     search,
@@ -41,12 +42,12 @@ export default function Users() {
     limit: 10,
   });
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
-  const employeeMutations = useEmployeeMutations(businessId ?? 0);
+  const employeeMutations = useEmployeeMutations(businessId ?? "");
   const createAccess = usePermissionAccess(PERMISSIONS.employeeCreate);
   const updateAccess = usePermissionAccess(PERMISSIONS.employeeUpdate);
   const deleteAccess = usePermissionAccess(PERMISSIONS.employeeDelete);
   const roleOptions = useMemo(() => {
-    const options = new Map<number, { label: string; value: number }>();
+    const options = new Map<ApiId, { label: string; value: ApiId }>();
 
     (rolesQuery.data?.items ?? []).forEach((role) => {
       options.set(role.id, { label: role.name, value: role.id });

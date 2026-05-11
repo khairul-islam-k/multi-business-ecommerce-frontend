@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { useAuthStore } from "@/stores/auth.store";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
+import type { ApiId } from "@/lib/api";
 import type { PermissionRequirement } from "@/lib/auth/permissions";
 import { isPrivilegedDashboardUser } from "@/lib/auth/permissions";
 import { permissionsApi } from "@/lib/api";
@@ -34,7 +35,7 @@ export function usePermissionAccess(permission?: PermissionRequirement | null) {
     ],
     queryFn: () =>
       permissionsApi.has(
-        businessId as number,
+        businessId as ApiId,
         permission as PermissionRequirement,
       ),
     enabled: shouldProbe,
