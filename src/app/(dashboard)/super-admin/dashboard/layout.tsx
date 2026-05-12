@@ -20,7 +20,14 @@ export default function SuperAdminDashboardLayout({
 
   return (
     <AuthGuard redirectUrl="/sign-in" role="Admin">
-      <Layout style={{ minHeight: "100vh" }}>
+      <Layout
+        hasSider
+        style={{
+          background: token.colorBgLayout,
+          color: token.colorText,
+          minHeight: "100vh",
+        }}
+      >
         <Sidebar
           collapsed={collapsed}
           mobileOpen={mobileOpen}
@@ -28,6 +35,7 @@ export default function SuperAdminDashboardLayout({
         />
         <Layout
           style={{
+            background: token.colorBgLayout,
             marginLeft: mobileOpen ? 256 : 0,
             transition: "margin-left 0.2s",
           }}
@@ -49,7 +57,18 @@ export default function SuperAdminDashboardLayout({
             />
           </Header>
 
-          <Content className="p-4 lg:p-8">{children}</Content>
+          <Content
+            className="p-4 lg:p-8"
+            style={{
+              background: token.colorBgLayout,
+              color: token.colorText,
+              minHeight: "calc(100vh - 64px)",
+              overflowX: "hidden",
+              overflowY: "auto",
+            }}
+          >
+            {children}
+          </Content>
         </Layout>
       </Layout>
     </AuthGuard>

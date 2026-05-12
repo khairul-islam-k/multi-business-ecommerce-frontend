@@ -5,7 +5,7 @@ import { Input, Button, Space } from "antd";
 import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 
 const GlobalSearch = () => {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -16,7 +16,7 @@ const GlobalSearch = () => {
             placeholder="Search..."
             prefix={<SearchOutlined />}
             allowClear
-            style={{ width: 220 }}
+            style={{ maxWidth: 320 }}
           />
         </div>
 

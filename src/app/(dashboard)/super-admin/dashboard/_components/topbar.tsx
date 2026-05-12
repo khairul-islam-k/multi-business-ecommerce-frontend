@@ -115,7 +115,21 @@ export default function Topbar({
             type="text"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             onClick={onSidebarToggle}
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={
+              collapsed ? (
+                <MenuUnfoldOutlined
+                  style={{
+                    fontSize: 20,
+                  }}
+                />
+              ) : (
+                <MenuFoldOutlined
+                  style={{
+                    fontSize: 20,
+                  }}
+                />
+              )
+            }
           />
         </div>
 
@@ -124,6 +138,9 @@ export default function Topbar({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           allowClear
+          style={{
+            maxWidth: 320,
+          }}
         />
       </Flex>
 
@@ -154,14 +171,6 @@ export default function Topbar({
             </div>
           )}
         </div>
-
-        <Badge dot>
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            onClick={() => router.push("/super-admin/dashboard/notifications")}
-          />
-        </Badge>
 
         <ThemeToggle />
 

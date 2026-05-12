@@ -108,6 +108,7 @@ export default function Sidebar({
         selectedKeys={[activeKey]}
         onClick={handleClick}
         className="border-r-0 flex-1 px-2 overflow-y-auto"
+        style={{ background: "transparent", borderInlineEnd: 0 }}
         items={navItems}
       />
     </div>
@@ -123,10 +124,7 @@ export default function Sidebar({
         trigger={null}
         className="hidden md:block"
         style={{
-          background:
-            token.colorBgContainer === "#141414"
-              ? "linear-gradient(180deg, #141414 0%, #1f1f1f 100%)"
-              : "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
+          background: `linear-gradient(180deg, ${token.colorBgContainer} 0%, ${token.colorBgLayout} 100%)`,
           borderRight: `1px solid ${token.colorBorderSecondary}`,
           transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "sticky",
