@@ -5,3 +5,4 @@ export * from "./hooks/current-user";
 export * from "./hooks/employee";
 export * from "./hooks/permission";
 export * from "./hooks/role";
+export * from "./hooks/tenant";

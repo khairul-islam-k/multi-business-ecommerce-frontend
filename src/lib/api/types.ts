@@ -175,6 +175,20 @@ export type UpdateProfilePayload = {
   profile?: EmployeeProfile;
 };
 
+export type Tenant = SystemUser & {
+  _count?: {
+    ownedBusinesses?: number;
+  };
+};
+
+export type TenantQuery = ListQuery & {
+  status?: SystemUserStatus;
+};
+
+export type UpdateTenantStatusPayload = {
+  status: SystemUserStatus;
+};
+
 export type PermissionAction = string;
 export type RbacFeature = string;
 
