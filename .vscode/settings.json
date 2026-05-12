@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "Appstore",
+        "Backorder",
         "cssinjs",
         "curtomerscustomers",
         "Ladgers",
@@ -8,6 +9,7 @@
         "Popconfirm",
         "swal",
         "sweetalert",
-        "Topbar"
+        "Topbar",
+        "tzdb"
     ]
 }

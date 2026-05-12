@@ -70,6 +70,8 @@ export default function BusinessSettingsPage() {
   const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
   const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
+  console.log(JSON.stringify(updatePermission));
+
   useEffect(() => {
     if (!business) return;
 
@@ -358,12 +360,12 @@ export default function BusinessSettingsPage() {
           <Alert
             showIcon
             type="warning"
-            message="Active business is protected"
+            title="Active business is protected"
             description="The currently selected business cannot be deleted from this screen. Switch to another business first, then delete it from this list."
           />
 
           {deletableBusinesses.length ? (
-            <Space direction="vertical" className="w-full" size={10}>
+            <Space orientation="vertical" className="w-full" size={10}>
               {deletableBusinesses.map((item) => (
                 <Flex
                   key={item.id}
