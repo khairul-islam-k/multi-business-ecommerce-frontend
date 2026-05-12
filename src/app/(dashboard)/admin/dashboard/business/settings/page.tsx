@@ -42,7 +42,6 @@ const { Text } = Typography;
 
 type BusinessSettingsValues = {
   name: string;
-  slug?: string;
   email?: string;
   phone?: string;
   country?: string;
@@ -77,7 +76,6 @@ export default function BusinessSettingsPage() {
 
     form.setFieldsValue({
       name: business.name,
-      slug: business.slug,
       email: business.email ?? undefined,
       phone: business.phone ?? undefined,
       country: business.country ?? undefined,
@@ -104,7 +102,6 @@ export default function BusinessSettingsPage() {
         businessId,
         payload: {
           name: values.name,
-          slug: values.slug?.trim() || undefined,
           email: values.email?.trim() || undefined,
           phone: values.phone?.trim() || undefined,
           country: values.country?.trim() || undefined,
@@ -186,18 +183,13 @@ export default function BusinessSettingsPage() {
           <Col xs={24} lg={12}>
             <Card title="Business Identity">
               <Row gutter={12}>
-                <Col xs={24} md={12}>
+                <Col span={24}>
                   <Form.Item
                     name="name"
                     label="Business name"
                     rules={[{ required: true, min: 2 }]}
                   >
                     <Input placeholder="Business name" />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="slug" label="Slug">
-                    <Input placeholder="business-slug" />
                   </Form.Item>
                 </Col>
                 <Col xs={24} md={12}>
