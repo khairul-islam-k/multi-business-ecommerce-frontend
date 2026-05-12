@@ -2,20 +2,31 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button, Popconfirm, Space, Tag } from "antd";
-import { DeleteOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Flex, Tag } from "antd";
+import { EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
-import type { Business } from "@/lib/api";
-import { useBusinesses, useBusinessMutations } from "@/lib/api";
+import type { SystemUserStatus, Tenant } from "@/lib/api";
+import { useTenantMutations, useTenants } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 
+const statusOptions: Array<{ label: string; value: SystemUserStatus }> = [
+  { label: "Activate", value: "ACTIVE" },
+  { label: "Deactivate", value: "INACTIVE" },
+  { label: "Suspend", value: "SUSPENDED" },
+];
+
+const statusColor: Record<string, string> = {
+  ACTIVE: "green",
+  INACTIVE: "default",
+  SUSPENDED: "red",
+};
+
 export default function TenantListPage() {
   const swal = useSwal();
-  const router = useRouter();
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -28,49 +39,38 @@ export default function TenantListPage() {
     sortOrder: "desc" as const,
   };
 
-  const { data, isLoading, isFetching } = useBusinesses(query);
-  const { removeBusiness } = useBusinessMutations();
+  const { data, isLoading, isFetching } = useTenants(query);
+  const { updateTenantStatus } = useTenantMutations();
 
-  const columns: Column<Business>[] = [
+  const columns: Column<Tenant>[] = [
     {
       key: "name",
-      label: "Business",
+      label: "Tenant",
       type: "primary",
     },
     {
-      key: "slug",
-      label: "Slug",
-      render: (row) => row.slug || "-",
+      key: "email",
+      label: "Email",
+    },
+    {
+      key: "phone",
+      label: "Phone",
+      render: (row) => row.phone || "-",
+    },
+    {
+      key: "ownedBusinesses",
+      label: "Businesses",
+      render: (row) => row._count?.ownedBusinesses ?? 0,
     },
     {
       key: "status",
       label: "Status",
       type: "meta",
       render: (row) => (
-        <Tag color={row.status === "ACTIVE" ? "green" : "blue"}>
-          {row.status ?? "TRIAL"}
+        <Tag color={statusColor[row.status ?? ""] ?? "default"}>
+          {row.status ?? "ACTIVE"}
         </Tag>
       ),
-    },
-    {
-      key: "email",
-      label: "Email",
-      render: (row) => row.email || "-",
-    },
-    {
-      key: "owner",
-      label: "Owner",
-      render: (row) => row.ownerUser?.name ?? `User #${row.ownerUserId ?? "-"}`,
-    },
-    {
-      key: "currencyCode",
-      label: "Currency",
-      render: (row) => row.currencyCode || "-",
-    },
-    {
-      key: "timezone",
-      label: "Timezone",
-      render: (row) => row.timezone || "-",
     },
     {
       key: "createdAt",
@@ -80,27 +80,43 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleDelete = async (businessId: string) => {
+  const handleStatusChange = async (
+    tenant: Tenant,
+    status: SystemUserStatus,
+  ) => {
+    if (tenant.status === status) return;
+
+    const { isConfirmed } = await swal.confirm({
+      title: "Update tenant status?",
+      text: `Set ${tenant.name}'s account status to ${status}?`,
+      confirmButtonText: "Update status",
+    });
+
+    if (!isConfirmed) return;
+
     try {
-      await removeBusiness.mutateAsync(businessId);
-      swal.success("Business deleted successfully.");
-    } catch {
-      swal.error("Failed to delete business.");
+      await updateTenantStatus.mutateAsync({
+        tenantId: tenant.id,
+        payload: { status },
+      });
+      swal.success("Tenant status updated successfully.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     }
   };
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Businesses"
-        subtitle="Live businesses from the backend API."
+        title="Tenants"
+        subtitle="Manage tenant accounts, statuses, and ownership activity across the platform."
         breadcrumb={superAdminBreadcrumb}
       />
 
       <DataTable
         data={data?.items ?? []}
         columns={columns}
-        loading={isLoading || isFetching || removeBusiness.isPending}
+        loading={isLoading || isFetching || updateTenantStatus.isPending}
         onSearch={(q) => {
           setSearch(q);
           setCurrentPage(1);
@@ -108,35 +124,33 @@ export default function TenantListPage() {
         toolbarEnd={
           <Link href="/super-admin/dashboard/tenants/create">
             <Button type="primary" icon={<PlusOutlined />}>
-              Create Business
+              Create Tenant
             </Button>
           </Link>
         }
         actions={(row) => (
-          <Space>
-            <Button
-              type="text"
-              aria-label="View business"
-              icon={<EyeOutlined />}
-              onClick={() =>
-                router.push(`/super-admin/dashboard/tenants/${row.id}`)
-              }
-            />
-            <Popconfirm
-              title="Delete business?"
-              description="This will deactivate and soft-delete the business."
-              okText="Delete"
-              cancelText="Cancel"
-              onConfirm={() => handleDelete(row.id)}
+          <Flex gap={16}>
+            <Link href={`/super-admin/dashboard/tenants/${row.id}`}>
+              <Button icon={<EyeOutlined />} />
+            </Link>
+
+            <Dropdown
+              menu={{
+                items: statusOptions.map((option) => ({
+                  key: option.value,
+                  label: option.label,
+                  disabled: row.status === option.value,
+                  onClick: () => handleStatusChange(row, option.value),
+                })),
+              }}
             >
               <Button
                 type="text"
-                danger
-                aria-label="Delete business"
-                icon={<DeleteOutlined />}
+                aria-label="Tenant actions"
+                icon={<MoreOutlined />}
               />
-            </Popconfirm>
-          </Space>
+            </Dropdown>
+          </Flex>
         )}
         pagination={{
           currentPage,

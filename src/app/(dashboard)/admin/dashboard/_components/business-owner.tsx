@@ -41,7 +41,7 @@ const { Text } = Typography;
 
 type BusinessFormValues = Pick<
   BusinessPayload,
-  "name" | "slug" | "email" | "phone" | "country" | "currencyCode" | "timezone"
+  "name" | "email" | "phone" | "country" | "currencyCode" | "timezone"
 >;
 
 const defaultValues: Partial<BusinessFormValues> = {
@@ -95,7 +95,6 @@ export default function BusinessDropdown() {
     try {
       const payload = {
         ...values,
-        slug: values.slug?.trim() || undefined,
         email: values.email?.trim() || undefined,
         phone: values.phone?.trim() || undefined,
         country: values.country?.trim() || undefined,
@@ -238,18 +237,13 @@ export default function BusinessDropdown() {
           onFinish={handleCreate}
         >
           <Row gutter={12}>
-            <Col xs={24} md={12}>
+            <Col span={24}>
               <Form.Item
                 name="name"
                 label="Business name"
                 rules={[{ required: true, min: 2 }]}
               >
                 <Input prefix={<BankOutlined />} placeholder="Acme Store" />
-              </Form.Item>
-            </Col>
-            <Col xs={24} md={12}>
-              <Form.Item name="slug" label="Slug">
-                <Input placeholder="acme-store" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>

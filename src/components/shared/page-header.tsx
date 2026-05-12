@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { Typography } from "antd";
+import { Typography, theme } from "antd";
 
 import Breadcrumbs from "./breadcrumb";
 import useWidth from "@/hooks/use-width";
@@ -26,9 +26,13 @@ export default function PageHeader({
   breadcrumb,
 }: PageHeaderProps) {
   const width = useWidth();
+  const { token } = theme.useToken();
 
   return (
-    <div className="w-full min-w-0 border-b border-black/5 pb-4">
+    <div
+      className="w-full min-w-0 border-b pb-4"
+      style={{ borderColor: token.colorBorderSecondary }}
+    >
       <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
           <Title level={4} style={{ marginBottom: 0, lineHeight: 1.25 }}>
@@ -36,7 +40,10 @@ export default function PageHeader({
           </Title>
 
           {subtitle && (
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-500">
+            <p
+              className="mt-1 max-w-3xl text-sm leading-6"
+              style={{ color: token.colorTextSecondary }}
+            >
               {subtitle}
             </p>
           )}

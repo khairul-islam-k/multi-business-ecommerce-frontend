@@ -222,10 +222,18 @@ export default function CreateUserPage() {
         </Row>
 
         <div className="mt-4 flex gap-2">
-          <Button type="primary" htmlType="submit" loading={createEmployee.isPending}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={createEmployee.isPending}
+          >
             Create Employee
           </Button>
-          <Button onClick={() => router.push("/admin/dashboard/access-control/employees")}>
+          <Button
+            onClick={() =>
+              router.push("/admin/dashboard/access-control/employees")
+            }
+          >
             Cancel
           </Button>
         </div>

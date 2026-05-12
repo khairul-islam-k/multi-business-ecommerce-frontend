@@ -1,5 +1,6 @@
 "use client";
 
+import type React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { theme, Layout, Menu, Drawer, MenuProps } from "antd";
 import {
@@ -56,6 +57,13 @@ interface Props {
   onMobileClose: () => void;
 }
 
+type MenuItem = NonNullable<MenuProps["items"]>[number];
+type MenuItemWithChildren = MenuItem & {
+  key?: React.Key;
+  label?: React.ReactNode;
+  children?: MenuItemWithChildren[];
+};
+
 export default function Sidebar({
   collapsed,
   mobileOpen,
@@ -66,10 +74,10 @@ export default function Sidebar({
   const { token } = theme.useToken();
 
   const activeKey =
-    navItems
-      ?.flatMap((group: any) => group.children || [])
+    String((navItems as MenuItemWithChildren[])
+      .flatMap((group) => group.children || [])
       ?.find((item) => pathname.endsWith(`${BASE_PATH}${String(item?.key)}`))
-      ?.key ?? "/";
+      ?.key ?? "/");
 
   const handleClick: MenuProps["onClick"] = ({ key }) => {
     router.push(`${BASE_PATH}${key}`);
@@ -85,8 +93,9 @@ export default function Sidebar({
         }`}
         style={{
           borderBottom: `1px solid ${token.colorBorderSecondary}`,
-          background: "rgba(0,0,0,0.02)",
-          backdropFilter: "blur(6px)",
+          background: token.colorBgContainer,
+          boxSizing: "border-box",
+          flexShrink: 0,
         }}
       >
         <Logo collapsed={collapsed} />
@@ -99,17 +108,8 @@ export default function Sidebar({
         selectedKeys={[activeKey]}
         onClick={handleClick}
         className="border-r-0 flex-1 px-2 overflow-y-auto"
-        items={navItems?.map((group: any) => ({
-          ...group,
-          children: group.children.map((item: any) => ({
-            ...item,
-            label: collapsed ? (
-              <span title={item.label}>{item.label}</span>
-            ) : (
-              item.label
-            ),
-          })),
-        }))}
+        style={{ background: "transparent", borderInlineEnd: 0 }}
+        items={navItems}
       />
     </div>
   );
@@ -124,10 +124,7 @@ export default function Sidebar({
         trigger={null}
         className="hidden md:block"
         style={{
-          background:
-            token.colorBgContainer === "#141414"
-              ? "linear-gradient(180deg, #141414 0%, #1f1f1f 100%)"
-              : "linear-gradient(180deg, #ffffff 0%, #f9fafb 100%)",
+          background: `linear-gradient(180deg, ${token.colorBgContainer} 0%, ${token.colorBgLayout} 100%)`,
           borderRight: `1px solid ${token.colorBorderSecondary}`,
           transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
           position: "sticky",

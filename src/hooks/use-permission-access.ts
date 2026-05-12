@@ -83,7 +83,7 @@ export function usePermissionAccess(permission?: PermissionRequirement | null) {
   const denied = probeQuery.isError && status === 403;
 
   return {
-    allowed: probeQuery.data,
+    allowed: probeQuery.data?.hasPermission,
     denied: denied || (probeQuery.isError && status !== 401),
     loading: probeQuery.isLoading || probeQuery.isFetching,
     status,

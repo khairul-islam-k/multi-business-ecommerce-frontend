@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Input, Button, Dropdown, Avatar, Badge, MenuProps, theme } from "antd";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Dropdown,
+  Flex,
+  Grid,
+  Input,
+  MenuProps,
+  Space,
+  theme,
+} from "antd";
 import {
   BellOutlined,
   MenuOutlined,
@@ -15,31 +26,37 @@ import {
   MenuFoldOutlined,
 } from "@ant-design/icons";
 
-import { cn } from "@/lib/utils";
 import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
+import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
 
 const { Search } = Input;
 const { useToken } = theme;
 
 interface TopbarProps {
+  collapsed: boolean;
   onMobileMenuToggle: () => void;
   onSidebarToggle: () => void;
 }
 
 export default function Topbar({
+  collapsed,
   onMobileMenuToggle,
   onSidebarToggle,
 }: TopbarProps) {
   const router = useRouter();
   const swal = useSwal();
   const { token } = useToken();
+  const screens = Grid.useBreakpoint();
   const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
 
   const [search, setSearch] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+
+  const avatarSeed = getUserAvatarSeed(user, "super-admin");
+  const avatarSrc = getUserAvatarUrl(user, "super-admin");
 
   const handleLogout = async () => {
     await logout();
@@ -70,8 +87,20 @@ export default function Topbar({
   ];
 
   return (
-    <div className="flex items-center w-full gap-3 p-2 sm:p-4">
-      {/* Mobile menu button */}
+    <div
+      style={{
+        alignItems: "center",
+        background: token.colorBgContainer,
+        borderBottom: `1px solid ${token.colorBorderSecondary}`,
+        boxSizing: "border-box",
+        display: "flex",
+        gap: 12,
+        height: "100%",
+        minHeight: 64,
+        padding: screens.xs ? "0 10px" : "0 18px",
+        width: "100%",
+      }}
+    >
       <div className="md:hidden">
         <Button
           type="text"
@@ -80,16 +109,27 @@ export default function Topbar({
         />
       </div>
 
-      {/* Desktop search */}
-      <div className="hidden md:flex items-center flex-1 max-w-md gap-3">
-        <div className="hidden md:block">
+      <Flex className="hidden md:flex" align="center" gap={12} flex="1 1 auto">
+        <div>
           <Button
             type="text"
-            onClick={() => {
-              setCollapsed(!collapsed);
-              onSidebarToggle();
-            }}
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={onSidebarToggle}
+            icon={
+              collapsed ? (
+                <MenuUnfoldOutlined
+                  style={{
+                    fontSize: 20,
+                  }}
+                />
+              ) : (
+                <MenuFoldOutlined
+                  style={{
+                    fontSize: 20,
+                  }}
+                />
+              )
+            }
           />
         </div>
 
@@ -98,13 +138,14 @@ export default function Topbar({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           allowClear
+          style={{
+            maxWidth: 320,
+          }}
         />
-      </div>
+      </Flex>
 
-      {/* Right side actions */}
-      <div className="flex items-center gap-1 ml-auto">
-        {/* Mobile search */}
-        <div className="md:hidden flex items-center ml-auto">
+      <Space size={screens.xs ? 4 : 8} align="center" className="ml-auto">
+        <div className="md:hidden flex items-center">
           {!mobileSearchOpen && (
             <Button
               type="text"
@@ -131,30 +172,17 @@ export default function Topbar({
           )}
         </div>
 
-        {/* Notifications */}
-        <Badge dot>
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            onClick={() => router.push("/super-admin/dashboard/notifications")}
-          />
-        </Badge>
-
-        {/* Theme toggle */}
         <ThemeToggle />
 
-        {/* Profile dropdown */}
         <Dropdown menu={{ items }} trigger={["click"]}>
           <div
-            className={cn(
-              "flex items-center gap-2 cursor-pointer rounded-full border",
-              `border-[${token.colorPrimary}]`,
-            )}
+            className="flex cursor-pointer items-center gap-2 rounded-full border"
+            style={{ borderColor: token.colorPrimary }}
           >
-            <Avatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=utshomh" />
+            <Avatar alt={avatarSeed} src={avatarSrc} />
           </div>
         </Dropdown>
-      </div>
+      </Space>
     </div>
   );
 }

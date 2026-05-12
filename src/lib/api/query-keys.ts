@@ -5,6 +5,7 @@ import type {
   PermissionQuery,
   RoleAssignmentQuery,
   RoleQuery,
+  TenantQuery,
 } from "@/lib/api/types";
 
 export const apiQueryKeys = {
@@ -16,6 +17,11 @@ export const apiQueryKeys = {
     list: (query?: BusinessQuery) => ["businesses", "list", query] as const,
     detail: (businessId: ApiId) =>
       ["businesses", "detail", businessId] as const,
+  },
+  tenants: {
+    all: ["tenants"] as const,
+    list: (query?: TenantQuery) => ["tenants", "list", query] as const,
+    detail: (tenantId: ApiId) => ["tenants", "detail", tenantId] as const,
   },
   employees: {
     all: (businessId: ApiId) => ["employees", businessId] as const,

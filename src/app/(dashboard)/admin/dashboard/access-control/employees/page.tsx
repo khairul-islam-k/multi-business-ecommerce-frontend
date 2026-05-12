@@ -162,7 +162,9 @@ export default function Users() {
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() =>
-                  router.push("/admin/dashboard/access-control/employees/create")
+                  router.push(
+                    "/admin/dashboard/access-control/employees/create",
+                  )
                 }
               >
                 Create Employee

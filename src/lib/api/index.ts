@@ -5,4 +5,5 @@ export * from "./hooks";
 export * from "./permissions";
 export * from "./query-keys";
 export * from "./roles";
+export * from "./tenants";
 export * from "./types";
