@@ -69,8 +69,6 @@ export default function BusinessSettingsPage() {
   const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
   const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
-  console.log(JSON.stringify(updatePermission));
-
   useEffect(() => {
     if (!business) return;
 

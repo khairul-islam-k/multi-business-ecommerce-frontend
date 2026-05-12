@@ -42,6 +42,9 @@ export type SystemUser = {
   name: string;
   email: string;
   phone?: string | null;
+  imageUrl?: string | null;
+  avatarUrl?: string | null;
+  profile?: EmployeeProfile | null;
   type: SystemUserType;
   status?: SystemUserStatus;
   createdAt?: string;
@@ -178,7 +181,13 @@ export type UpdateProfilePayload = {
 export type Tenant = SystemUser & {
   _count?: {
     ownedBusinesses?: number;
+    businessMembers?: number;
   };
+};
+
+export type TenantDetail = Tenant & {
+  profile?: EmployeeProfile | null;
+  ownedBusinesses?: Business[];
 };
 
 export type TenantQuery = ListQuery & {

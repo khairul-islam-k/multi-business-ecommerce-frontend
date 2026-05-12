@@ -17,6 +17,16 @@ export function useTenants(query?: TenantQuery) {
   });
 }
 
+export function useTenant(tenantId?: ApiId | null) {
+  return useQuery({
+    queryKey: tenantId
+      ? apiQueryKeys.tenants.detail(tenantId)
+      : ["tenants", "detail", "idle"],
+    queryFn: () => tenantsApi.get(tenantId as ApiId),
+    enabled: Boolean(tenantId),
+  });
+}
+
 export function useTenantMutations() {
   const queryClient = useQueryClient();
 
@@ -32,7 +42,12 @@ export function useTenantMutations() {
         tenantId: ApiId;
         payload: UpdateTenantStatusPayload;
       }) => tenantsApi.updateStatus(tenantId, payload),
-      onSuccess: invalidate,
+      onSuccess: (tenant) => {
+        invalidate();
+        queryClient.invalidateQueries({
+          queryKey: apiQueryKeys.tenants.detail(tenant.id),
+        });
+      },
     }),
   };
 }

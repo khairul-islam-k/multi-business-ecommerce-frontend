@@ -9,6 +9,7 @@ import type {
   ApiPaginatedResponse,
   ApiResponse,
   Tenant,
+  TenantDetail,
   TenantQuery,
   UpdateTenantStatusPayload,
 } from "@/lib/api/types";
@@ -18,6 +19,12 @@ export const tenantsApi = {
     return api
       .get<ApiPaginatedResponse<Tenant>>(`/tenants${buildQueryString(query)}`)
       .then((res) => normalizePaginatedResponse(res.data));
+  },
+
+  get(tenantId: ApiId) {
+    return api
+      .get<ApiResponse<TenantDetail>>(`/tenants/${tenantId}`)
+      .then((res) => unwrapApiResponse(res.data));
   },
 
   updateStatus(tenantId: ApiId, payload: UpdateTenantStatusPayload) {

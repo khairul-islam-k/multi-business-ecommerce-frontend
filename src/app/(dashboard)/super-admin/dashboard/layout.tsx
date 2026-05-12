@@ -34,9 +34,16 @@ export default function SuperAdminDashboardLayout({
         >
           <Header
             className="flex items-center"
-            style={{ background: token.colorBgBase, paddingInline: 12 }}
+            style={{
+              background: token.colorBgContainer,
+              borderLeft: `1px solid ${token.colorBorderSecondary}`,
+              height: 64,
+              lineHeight: "normal",
+              padding: 0,
+            }}
           >
             <Topbar
+              collapsed={collapsed}
               onMobileMenuToggle={() => setMobileOpen(true)}
               onSidebarToggle={() => setCollapsed(!collapsed)}
             />

@@ -2,7 +2,7 @@
 
 import { useDebounce } from "use-debounce";
 import { SearchOutlined } from "@ant-design/icons";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Card,
   Empty,
@@ -86,10 +86,15 @@ export function DataTable<T extends object>({
 
   const [search, setSearch] = useState("");
   const [debouncedSearch] = useDebounce(search.trim(), 300);
+  const onSearchRef = useRef(onSearch);
 
   useEffect(() => {
-    onSearch?.(debouncedSearch);
-  }, [debouncedSearch, onSearch]);
+    onSearchRef.current = onSearch;
+  }, [onSearch]);
+
+  useEffect(() => {
+    onSearchRef.current?.(debouncedSearch);
+  }, [debouncedSearch]);
 
   const primaryColumn = useMemo(
     () => columns.find((column) => column.type === "primary") ?? columns[0],

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button, Dropdown, Space, Tag } from "antd";
-import { MoreOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Flex, Tag } from "antd";
+import { EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
 import type { SystemUserStatus, Tenant } from "@/lib/api";
@@ -129,7 +129,11 @@ export default function TenantListPage() {
           </Link>
         }
         actions={(row) => (
-          <Space>
+          <Flex gap={16}>
+            <Link href={`/super-admin/dashboard/tenants/${row.id}`}>
+              <Button icon={<EyeOutlined />} />
+            </Link>
+
             <Dropdown
               menu={{
                 items: statusOptions.map((option) => ({
@@ -146,7 +150,7 @@ export default function TenantListPage() {
                 icon={<MoreOutlined />}
               />
             </Dropdown>
-          </Space>
+          </Flex>
         )}
         pagination={{
           currentPage,

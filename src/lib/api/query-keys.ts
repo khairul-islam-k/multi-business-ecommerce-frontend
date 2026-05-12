@@ -21,6 +21,7 @@ export const apiQueryKeys = {
   tenants: {
     all: ["tenants"] as const,
     list: (query?: TenantQuery) => ["tenants", "list", query] as const,
+    detail: (tenantId: ApiId) => ["tenants", "detail", tenantId] as const,
   },
   employees: {
     all: (businessId: ApiId) => ["employees", businessId] as const,
