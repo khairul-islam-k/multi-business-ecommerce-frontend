@@ -3,6 +3,7 @@ import type {
   BusinessQuery,
   EmployeeQuery,
   PermissionQuery,
+  MediaQuery,
   RoleAssignmentQuery,
   RoleQuery,
   TenantQuery,
@@ -45,5 +46,10 @@ export const apiQueryKeys = {
       ["permissions", businessId, "list", query] as const,
     role: (businessId: ApiId, roleId: ApiId) =>
       ["permissions", businessId, "role", roleId] as const,
+  },
+  media: {
+    all: (businessId: ApiId) => ["media", businessId] as const,
+    list: (businessId: ApiId, query?: MediaQuery) =>
+      ["media", businessId, "list", query] as const,
   },
 };

@@ -171,6 +171,45 @@ export type BusinessPayload = {
   branding?: BusinessBranding;
 };
 
+export type MediaAsset = {
+  id: ApiId;
+  businessId?: ApiId;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  fileUrl: string;
+  altText?: string | null;
+  tags: MediaTag[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type MediaTag = {
+  id: ApiId;
+  name: string;
+  status: string;
+};
+
+export type MediaQuery = {
+  tags?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: "createdAt" | "fileName" | "fileSize";
+  sortOrder?: "asc" | "desc";
+};
+
+export type UploadMediaPayload = {
+  file: File;
+  altText?: string;
+  tags?: string;
+};
+
+export type UploadMediaBulkPayload = {
+  files: File[];
+  altText?: string;
+  tags?: string;
+};
+
 export type UpdateProfilePayload = {
   name?: string;
   email?: string;
