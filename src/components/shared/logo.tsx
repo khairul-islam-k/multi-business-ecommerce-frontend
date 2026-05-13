@@ -21,7 +21,7 @@ export default function Logo({ collapsed = false, className = "" }: LogoProps) {
       </div>
       {!collapsed && (
         <span className="font-display text-2xl font-bold tracking-tight">
-          One<span className="text-muted-foreground font-medium">Comm</span>
+          One<span className="text-muted-foreground font-medium">comm</span>
         </span>
       )}
     </Link>

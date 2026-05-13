@@ -66,7 +66,7 @@ export default function SignUpPage() {
       swal.success("Account created successfully");
       router.push("/sign-in");
     } catch (error: any) {
-      swal.error(error?.message || "Could not sign-up!");
+      swal.error(getApiErrorMessage(error));
     }
   };
 

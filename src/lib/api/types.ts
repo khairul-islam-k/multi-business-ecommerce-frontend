@@ -181,7 +181,7 @@ export type UpdateProfilePayload = {
 export type Tenant = SystemUser & {
   _count?: {
     ownedBusinesses?: number;
-    businessMembers?: number;
+    tenantUsers?: number;
   };
 };
 

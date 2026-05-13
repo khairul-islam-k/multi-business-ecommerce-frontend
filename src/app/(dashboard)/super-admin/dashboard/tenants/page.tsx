@@ -63,6 +63,11 @@ export default function TenantListPage() {
       render: (row) => row._count?.ownedBusinesses ?? 0,
     },
     {
+      key: "tenantUsers",
+      label: "Users",
+      render: (row) => row._count?.tenantUsers ?? 0,
+    },
+    {
       key: "status",
       label: "Status",
       type: "meta",
