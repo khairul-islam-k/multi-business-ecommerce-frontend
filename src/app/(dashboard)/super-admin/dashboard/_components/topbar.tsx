@@ -59,8 +59,16 @@ export default function Topbar({
   const avatarSrc = getUserAvatarUrl(user, "super-admin");
 
   const handleLogout = async () => {
+    const { isConfirmed } = await swal.confirm({
+      title: "Log out?",
+      text: "You will need to sign in again to continue.",
+      confirmButtonText: "Log out",
+    });
+
+    if (!isConfirmed) return;
+
     await logout();
-    swal.success("Logged out successfully");
+    swal.success("Logged out successfully.");
     router.push("/sign-in");
   };
 

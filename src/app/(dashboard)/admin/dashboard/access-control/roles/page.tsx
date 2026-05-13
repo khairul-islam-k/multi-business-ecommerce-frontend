@@ -15,6 +15,7 @@ import { Column, DataTable } from "@/components/shared/data-table";
 import { useRoleMutations, useRoles } from "@/lib/api";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import { getApiErrorMessage } from "@/lib/axios";
 
 export default function RolesPage() {
   const router = useRouter();
@@ -115,8 +116,8 @@ export default function RolesPage() {
                     try {
                       await removeRole.mutateAsync(row.id);
                       swal.success("Deleted successfully.");
-                    } catch {
-                      swal.error("Failed to delete role.");
+                    } catch (error) {
+                      swal.error(getApiErrorMessage(error));
                     }
                   }}
                 >

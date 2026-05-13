@@ -151,6 +151,13 @@ export const items: MenuProps["items"] = [
     ],
   },
 
+  // Media Manager
+  {
+    key: "media",
+    icon: <PictureOutlined />,
+    label: <Link href="/admin/dashboard/media">Media Library</Link>,
+  },
+
   // Billing
   {
     key: "billing",
@@ -183,7 +190,8 @@ export const items: MenuProps["items"] = [
       },
     ],
   },
-  // products-management
+
+  // Product Catalogue
   {
     key: "products-management",
     icon: <ShoppingOutlined />, // Product / inventory related
@@ -222,15 +230,6 @@ export const items: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/products-management/top-selling">
             Top Selling
-          </Link>
-        ),
-      },
-      {
-        key: "image-manager",
-        icon: <PictureOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/image-manager">
-            Image Manager
           </Link>
         ),
       },

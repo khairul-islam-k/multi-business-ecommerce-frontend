@@ -36,6 +36,7 @@ export function useEmployee(businessId?: ApiId | null, employeeId?: ApiId) {
 
 export function useEmployeeMutations(businessId: ApiId) {
   const queryClient = useQueryClient();
+
   const invalidate = () =>
     queryClient.invalidateQueries({
       queryKey: apiQueryKeys.employees.all(businessId),
@@ -47,6 +48,7 @@ export function useEmployeeMutations(businessId: ApiId) {
         employeesApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
+
     updateEmployee: useMutation({
       mutationFn: ({
         employeeId,
@@ -57,6 +59,7 @@ export function useEmployeeMutations(businessId: ApiId) {
       }) => employeesApi.update(businessId, employeeId, payload),
       onSuccess: invalidate,
     }),
+
     updateEmployeeStatus: useMutation({
       mutationFn: ({
         employeeId,
@@ -67,6 +70,7 @@ export function useEmployeeMutations(businessId: ApiId) {
       }) => employeesApi.updateStatus(businessId, employeeId, payload),
       onSuccess: invalidate,
     }),
+
     replaceEmployeeRoles: useMutation({
       mutationFn: ({
         employeeId,
@@ -77,6 +81,7 @@ export function useEmployeeMutations(businessId: ApiId) {
       }) => employeesApi.replaceRoles(businessId, employeeId, payload),
       onSuccess: invalidate,
     }),
+
     removeEmployee: useMutation({
       mutationFn: (employeeId: ApiId) =>
         employeesApi.remove(businessId, employeeId),
