@@ -343,3 +343,74 @@ body {
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
 }
+
+.media-theme-scope .ant-input,
+.media-theme-scope .ant-input-affix-wrapper,
+.media-theme-scope .ant-select-selector,
+.media-theme-scope .ant-upload-list-item {
+  background: var(--media-control-bg) !important;
+  border-color: var(--media-control-border) !important;
+  color: var(--media-control-text) !important;
+}
+
+.media-theme-scope .ant-input-affix-wrapper .ant-input {
+  background: transparent !important;
+}
+
+.media-theme-scope .ant-input::placeholder,
+.media-theme-scope .ant-select-selection-placeholder,
+.media-theme-scope .ant-upload-list-item-name {
+  color: var(--media-control-muted) !important;
+}
+
+.media-theme-scope .ant-select-selection-item,
+.media-theme-scope .ant-select-arrow,
+.media-theme-scope .ant-input-clear-icon,
+.media-theme-scope .ant-upload-list-item-actions .anticon {
+  color: var(--media-control-text) !important;
+}
+
+.media-theme-scope .media-secondary-button.ant-btn-default {
+  background: var(--media-control-bg) !important;
+  border-color: var(--media-control-border) !important;
+  color: var(--media-control-text) !important;
+}
+
+.media-theme-scope .media-secondary-button.ant-btn-default:not(:disabled):hover {
+  background: var(--media-control-hover-bg) !important;
+  border-color: var(--media-control-border) !important;
+  color: var(--media-control-text) !important;
+}
+
+.media-theme-scope .media-danger-button.ant-btn-default.ant-btn-dangerous {
+  background: var(--media-danger-bg) !important;
+  border-color: var(--media-danger) !important;
+  color: var(--media-danger) !important;
+}
+
+.media-theme-scope
+  .media-danger-button.ant-btn-default.ant-btn-dangerous:not(:disabled):hover {
+  background: var(--media-control-hover-bg) !important;
+  border-color: var(--media-danger) !important;
+  color: var(--media-danger) !important;
+}
+
+.media-themed-popup {
+  border-radius: 8px;
+}
+
+.dark .media-themed-popup {
+  background: #172033 !important;
+  border: 1px solid #243044;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+}
+
+.dark .media-themed-popup .ant-select-item {
+  color: #a8b3c7;
+}
+
+.dark .media-themed-popup .ant-select-item-option-active,
+.dark .media-themed-popup .ant-select-item-option-selected {
+  background: #1e3a5f !important;
+  color: #e5edf7 !important;
+}

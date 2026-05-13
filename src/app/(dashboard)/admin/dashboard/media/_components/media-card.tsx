@@ -103,12 +103,17 @@ export default function MediaCard({
         </Flex>
 
         <Flex gap={8} justify="space-between">
-          <Button icon={<CopyOutlined />} onClick={() => onCopy(src)}>
+          <Button
+            className="media-secondary-button"
+            icon={<CopyOutlined />}
+            onClick={() => onCopy(src)}
+          >
             Copy URL
           </Button>
 
           <Button
             danger
+            className="media-danger-button"
             icon={<DeleteOutlined />}
             loading={deleting}
             disabled={!canDelete}
