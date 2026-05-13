@@ -1,8 +1,9 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
-import { Button, Card, Empty, Form } from "antd";
+import { Button, Card, Empty, Form, theme } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
 import { getApiErrorMessage } from "@/lib/axios";
@@ -25,6 +26,7 @@ export default function MediaLibraryPage() {
   const [form] = Form.useForm();
   const swal = useSwal();
   const businessId = useActiveBusinessId();
+  const { token } = theme.useToken();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [tags, setTags] = useState("");
@@ -149,6 +151,16 @@ export default function MediaLibraryPage() {
     swal.success("Media URL copied.");
   };
 
+  const mediaThemeStyle = {
+    "--media-control-bg": token.colorBgContainer,
+    "--media-control-hover-bg": token.controlItemBgHover,
+    "--media-control-border": token.colorBorder,
+    "--media-control-text": token.colorText,
+    "--media-control-muted": token.colorTextSecondary,
+    "--media-danger": token.colorError,
+    "--media-danger-bg": token.colorFillTertiary,
+  } as CSSProperties;
+
   if (!businessId) {
     return (
       <Empty description="Select or create a business before managing media." />
@@ -156,13 +168,17 @@ export default function MediaLibraryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="media-theme-scope space-y-6" style={mediaThemeStyle}>
       <PageHeader
         title="Media Library"
         subtitle="Upload, organize, copy, and remove reusable images for the active business."
         breadcrumb={adminBreadcrumb}
         actions={
-          <Button icon={<ReloadOutlined />} onClick={() => refetch()}>
+          <Button
+            className="media-secondary-button"
+            icon={<ReloadOutlined />}
+            onClick={() => refetch()}
+          >
             Refresh
           </Button>
         }
@@ -226,7 +242,12 @@ export default function MediaLibraryPage() {
           )}
         </>
       ) : (
-        <Card>
+        <Card
+          style={{
+            background: token.colorBgContainer,
+            borderColor: token.colorBorderSecondary,
+          }}
+        >
           <Empty
             description={
               isFetching

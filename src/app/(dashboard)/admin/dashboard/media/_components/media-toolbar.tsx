@@ -52,6 +52,11 @@ export default function MediaToolbar({
           <Select
             value={sortBy}
             style={{ width: 150 }}
+            popupClassName="media-themed-popup"
+            dropdownStyle={{
+              background: token.colorBgElevated,
+              border: `1px solid ${token.colorBorderSecondary}`,
+            }}
             onChange={onSortByChange}
             options={[
               { label: "Newest", value: "createdAt" },
@@ -63,6 +68,11 @@ export default function MediaToolbar({
           <Select
             value={sortOrder}
             style={{ width: 120 }}
+            popupClassName="media-themed-popup"
+            dropdownStyle={{
+              background: token.colorBgElevated,
+              border: `1px solid ${token.colorBorderSecondary}`,
+            }}
             onChange={onSortOrderChange}
             options={[
               { label: "Desc", value: "desc" },
@@ -73,6 +83,7 @@ export default function MediaToolbar({
 
         <Button
           danger
+          className="media-danger-button"
           disabled={!selectedCount || !canDelete}
           icon={<DeleteOutlined />}
           loading={deleting}
