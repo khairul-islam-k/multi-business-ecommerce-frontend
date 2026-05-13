@@ -1,31 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  CopyOutlined,
-  DeleteOutlined,
-  InboxOutlined,
-  ReloadOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Col,
-  Empty,
-  Flex,
-  Form,
-  Image,
-  Input,
-  Row,
-  Select,
-  Space,
-  Tag,
-  Typography,
-  Upload,
-  theme,
-} from "antd";
+import { ReloadOutlined } from "@ant-design/icons";
+import { Button, Card, Empty, Form } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
 import { getApiErrorMessage } from "@/lib/axios";
@@ -39,45 +16,15 @@ import Pagination from "@/components/shared/pagination";
 import { useSwal } from "@/hooks/use-swal";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
-
-const { Dragger } = Upload;
-const { Text, Title } = Typography;
-
-const apiOrigin = (() => {
-  try {
-    return new URL(process.env.NEXT_PUBLIC_API_BASE_URL ?? "").origin;
-  } catch {
-    return "";
-  }
-})();
-
-function mediaUrl(asset: MediaAsset) {
-  const value = asset.fileUrl;
-
-  if (!value) return "";
-  if (/^https?:\/\//i.test(value)) return value;
-  if (value.startsWith("/")) return `${apiOrigin}${value}`;
-
-  return value;
-}
-
-function formatFileSize(size?: number | null) {
-  if (!size) return "Unknown size";
-
-  if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
-
-  return `${(size / 1024 / 1024).toFixed(1)} MB`;
-}
-
-function fileName(asset: MediaAsset) {
-  return asset.fileName;
-}
+import MediaGrid from "./_components/media-grid";
+import MediaToolbar from "./_components/media-toolbar";
+import MediaUploadPanel from "./_components/media-upload-panel";
+import { fileName } from "./_utils/media";
 
 export default function MediaLibraryPage() {
   const [form] = Form.useForm();
   const swal = useSwal();
   const businessId = useActiveBusinessId();
-  const { token } = theme.useToken();
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [tags, setTags] = useState("");
@@ -108,7 +55,6 @@ export default function MediaLibraryPage() {
     useMediaMutations(businessId);
 
   const assets = data?.items ?? [];
-  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const busy =
     uploadMedia.isPending ||
     uploadMediaBulk.isPending ||
@@ -198,6 +144,11 @@ export default function MediaLibraryPage() {
     );
   };
 
+  const handleCopyUrl = (url: string) => {
+    navigator.clipboard?.writeText(url);
+    swal.success("Media URL copied.");
+  };
+
   if (!businessId) {
     return (
       <Empty description="Select or create a business before managing media." />
@@ -217,117 +168,37 @@ export default function MediaLibraryPage() {
         }
       />
 
-      <Card>
-        <Form form={form} layout="vertical" onFinish={handleUpload}>
-          <Row gutter={[16, 8]}>
-            <Col xs={24} lg={10}>
-              <Form.Item
-                label="Images"
-                required
-                tooltip="Choose one or more images for this business."
-              >
-                <Dragger
-                  accept="image/*"
-                  beforeUpload={() => false}
-                  disabled={!createAccess.allowed || busy}
-                  fileList={fileList}
-                  multiple
-                  onChange={({ fileList: nextFiles }) => setFileList(nextFiles)}
-                  showUploadList={{ showRemoveIcon: true }}
-                >
-                  <p className="ant-upload-drag-icon">
-                    <InboxOutlined />
-                  </p>
-                  <p className="ant-upload-text">Drop images here</p>
-                  <p className="ant-upload-hint">
-                    Upload single images or a small batch with shared metadata.
-                  </p>
-                </Dragger>
-              </Form.Item>
-            </Col>
+      <MediaUploadPanel
+        form={form}
+        fileList={fileList}
+        canUpload={Boolean(createAccess.allowed)}
+        disabled={busy}
+        loading={uploadMedia.isPending || uploadMediaBulk.isPending}
+        onFileListChange={setFileList}
+        onFinish={handleUpload}
+      />
 
-            <Col xs={24} lg={14}>
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item label="Alt text" name="altText">
-                    <Input placeholder="Hero banner, storefront logo..." />
-                  </Form.Item>
-                </Col>
-
-                <Col xs={24} md={12}>
-                  <Form.Item label="Tags" name="tags">
-                    <Input placeholder="hero,banner,homepage" />
-                  </Form.Item>
-                </Col>
-              </Row>
-
-              <Button
-                disabled={!createAccess.allowed}
-                htmlType="submit"
-                icon={<UploadOutlined />}
-                loading={uploadMedia.isPending || uploadMediaBulk.isPending}
-                type="primary"
-              >
-                Upload media
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </Card>
-
-      <Card>
-        <Flex gap={12} justify="space-between" wrap="wrap">
-          <Space wrap>
-            <Input
-              allowClear
-              placeholder="Filter by tags"
-              style={{ width: 220 }}
-              value={tags}
-              onChange={(event) => {
-                setTags(event.target.value);
-                setCurrentPage(1);
-              }}
-            />
-
-            <Select
-              value={sortBy}
-              style={{ width: 150 }}
-              onChange={(value) => {
-                setSortBy(value);
-                setCurrentPage(1);
-              }}
-              options={[
-                { label: "Newest", value: "createdAt" },
-                { label: "File name", value: "fileName" },
-                { label: "File size", value: "fileSize" },
-              ]}
-            />
-
-            <Select
-              value={sortOrder}
-              style={{ width: 120 }}
-              onChange={(value) => {
-                setSortOrder(value);
-                setCurrentPage(1);
-              }}
-              options={[
-                { label: "Desc", value: "desc" },
-                { label: "Asc", value: "asc" },
-              ]}
-            />
-          </Space>
-
-          <Button
-            danger
-            disabled={!selectedIds.length || !deleteAccess.allowed}
-            icon={<DeleteOutlined />}
-            loading={removeMediaBulk.isPending}
-            onClick={handleBulkDelete}
-          >
-            Delete selected
-          </Button>
-        </Flex>
-      </Card>
+      <MediaToolbar
+        tags={tags}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        selectedCount={selectedIds.length}
+        canDelete={Boolean(deleteAccess.allowed)}
+        deleting={removeMediaBulk.isPending}
+        onTagsChange={(value) => {
+          setTags(value);
+          setCurrentPage(1);
+        }}
+        onSortByChange={(value) => {
+          setSortBy(value);
+          setCurrentPage(1);
+        }}
+        onSortOrderChange={(value) => {
+          setSortOrder(value);
+          setCurrentPage(1);
+        }}
+        onBulkDelete={handleBulkDelete}
+      />
 
       {isLoading ? (
         <Loader
@@ -336,105 +207,15 @@ export default function MediaLibraryPage() {
         />
       ) : assets.length ? (
         <>
-          <Row gutter={[16, 16]}>
-            {assets.map((asset) => {
-              const src = mediaUrl(asset);
-
-              return (
-                <Col key={asset.id} xs={24} sm={12} lg={8} xl={6}>
-                  <Card
-                    hoverable
-                    styles={{ body: { padding: 14 } }}
-                    style={{
-                      borderColor: selectedSet.has(asset.id)
-                        ? token.colorPrimary
-                        : token.colorBorderSecondary,
-                    }}
-                    cover={
-                      <div
-                        className="relative flex aspect-[4/3] items-center justify-center overflow-hidden"
-                        style={{ background: token.colorFillTertiary }}
-                      >
-                        <Checkbox
-                          checked={selectedSet.has(asset.id)}
-                          className="absolute left-3 top-3 z-10"
-                          disabled={!deleteAccess.allowed}
-                          onChange={(event) =>
-                            toggleSelection(asset.id, event.target.checked)
-                          }
-                        />
-                        {src ? (
-                          <Image
-                            alt={asset.altText || fileName(asset)}
-                            src={src}
-                            height="100%"
-                            width="100%"
-                            style={{ objectFit: "cover" }}
-                          />
-                        ) : (
-                          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                        )}
-                      </div>
-                    }
-                  >
-                    <div className="space-y-3">
-                      <div className="min-w-0">
-                        <Title
-                          level={5}
-                          ellipsis={{ rows: 1 }}
-                          style={{ margin: 0 }}
-                        >
-                          {fileName(asset)}
-                        </Title>
-                        <Text type="secondary">
-                          {formatFileSize(asset.fileSize)}
-                        </Text>
-                      </div>
-
-                      {asset.altText && (
-                        <Text type="secondary" className="block" ellipsis>
-                          {asset.altText}
-                        </Text>
-                      )}
-
-                      <Flex gap={6} wrap="wrap">
-                        {tags.length ? (
-                          asset.tags?.map((tag) => (
-                            <Tag key={tag.id}>{tag.name}</Tag>
-                          ))
-                        ) : (
-                          <Tag>untagged</Tag>
-                        )}
-                      </Flex>
-
-                      <Flex gap={8} justify="space-between">
-                        <Button
-                          icon={<CopyOutlined />}
-                          onClick={() => {
-                            navigator.clipboard?.writeText(src);
-                            swal.success("Media URL copied.");
-                          }}
-                        >
-                          Copy URL
-                        </Button>
-
-                        <Button
-                          danger
-                          icon={<DeleteOutlined />}
-                          loading={
-                            removeMedia.isPending &&
-                            removeMedia.variables === asset.id
-                          }
-                          disabled={!deleteAccess.allowed}
-                          onClick={() => handleDelete(asset)}
-                        />
-                      </Flex>
-                    </div>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
+          <MediaGrid
+            assets={assets}
+            selectedIds={selectedIds}
+            canDelete={Boolean(deleteAccess.allowed)}
+            deletingId={removeMedia.variables}
+            onCopy={handleCopyUrl}
+            onDelete={handleDelete}
+            onSelectionChange={toggleSelection}
+          />
 
           {data && data.meta.totalPages > 1 && (
             <Pagination
