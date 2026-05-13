@@ -1,7 +1,7 @@
 "use client";
 
 import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Form, Input, Row, Upload } from "antd";
+import { Button, Card, Col, Form, Input, Row, Upload, theme } from "antd";
 import type { FormInstance } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
@@ -31,8 +31,15 @@ export default function MediaUploadPanel({
   onFileListChange,
   onFinish,
 }: MediaUploadPanelProps) {
+  const { token } = theme.useToken();
+
   return (
-    <Card>
+    <Card
+      style={{
+        background: token.colorBgContainer,
+        borderColor: token.colorBorderSecondary,
+      }}
+    >
       <Form form={form} layout="vertical" onFinish={onFinish}>
         <Row gutter={[16, 8]}>
           <Col xs={24} lg={10}>
@@ -51,12 +58,24 @@ export default function MediaUploadPanel({
                   onFileListChange(nextFiles)
                 }
                 showUploadList={{ showRemoveIcon: true }}
+                style={{
+                  background: token.colorFillTertiary,
+                  borderColor: token.colorBorder,
+                }}
               >
                 <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
+                  <InboxOutlined style={{ color: token.colorPrimary }} />
                 </p>
-                <p className="ant-upload-text">Drop images here</p>
-                <p className="ant-upload-hint">
+                <p
+                  className="ant-upload-text"
+                  style={{ color: token.colorText }}
+                >
+                  Drop images here
+                </p>
+                <p
+                  className="ant-upload-hint"
+                  style={{ color: token.colorTextSecondary }}
+                >
                   Upload single images or a small batch with shared metadata.
                 </p>
               </Dragger>

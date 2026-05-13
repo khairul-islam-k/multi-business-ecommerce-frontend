@@ -49,7 +49,9 @@ export default function MediaCard({
       hoverable
       styles={{ body: { padding: 14 } }}
       style={{
+        background: token.colorBgContainer,
         borderColor: selected ? token.colorPrimary : token.colorBorderSecondary,
+        boxShadow: selected ? `0 0 0 1px ${token.colorPrimary}` : undefined,
       }}
       cover={
         <div

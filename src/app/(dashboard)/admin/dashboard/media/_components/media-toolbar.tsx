@@ -1,7 +1,7 @@
 "use client";
 
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button, Card, Flex, Input, Select, Space } from "antd";
+import { Button, Card, Flex, Input, Select, Space, theme } from "antd";
 
 import type { MediaQuery } from "@/lib/api";
 
@@ -30,8 +30,15 @@ export default function MediaToolbar({
   onSortOrderChange,
   onBulkDelete,
 }: MediaToolbarProps) {
+  const { token } = theme.useToken();
+
   return (
-    <Card>
+    <Card
+      style={{
+        background: token.colorBgContainer,
+        borderColor: token.colorBorderSecondary,
+      }}
+    >
       <Flex gap={12} justify="space-between" wrap="wrap">
         <Space wrap>
           <Input
