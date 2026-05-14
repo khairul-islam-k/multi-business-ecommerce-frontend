@@ -7,7 +7,6 @@ import {
   DashboardOutlined,
   BankOutlined,
   AppstoreOutlined,
-  ClusterOutlined,
   CreditCardOutlined,
   BarChartOutlined,
   BellOutlined,
@@ -35,15 +34,17 @@ const navItems: MenuProps["items"] = [
     label: "Management",
     children: [
       { key: "/tenants", icon: <BankOutlined />, label: "Tenants" },
-      { key: "/addons", icon: <ClusterOutlined />, label: "Addons" },
-      { key: "/packages", icon: <AppstoreOutlined />, label: "Packages" },
+      {
+        key: "/packages",
+        icon: <AppstoreOutlined />,
+        label: "Packages & Add-ons",
+      },
     ],
   },
   {
     type: "group",
     label: "System",
     children: [
-      { key: "/billing", icon: <CreditCardOutlined />, label: "Billing" },
       { key: "/notifications", icon: <BellOutlined />, label: "Notifications" },
       { key: "/monitoring", icon: <RadarChartOutlined />, label: "Monitoring" },
       { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
@@ -73,11 +74,12 @@ export default function Sidebar({
   const pathname = usePathname();
   const { token } = theme.useToken();
 
-  const activeKey =
-    String((navItems as MenuItemWithChildren[])
+  const activeKey = String(
+    (navItems as MenuItemWithChildren[])
       .flatMap((group) => group.children || [])
       ?.find((item) => pathname.endsWith(`${BASE_PATH}${String(item?.key)}`))
-      ?.key ?? "/");
+      ?.key ?? "/",
+  );
 
   const handleClick: MenuProps["onClick"] = ({ key }) => {
     router.push(`${BASE_PATH}${key}`);

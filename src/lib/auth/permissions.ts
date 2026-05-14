@@ -8,6 +8,7 @@ export type RbacFeature =
   | "BUSINESS_MANAGEMENT"
   | "EMPLOYEE_MANAGEMENT"
   | "MEDIA_MANAGEMENT"
+  | "PACKAGE_MANAGEMENT"
   | "ROLE_PERMISSION_MANAGEMENT";
 
 export type PermissionAction = "CREATE" | "READ" | "UPDATE" | "DELETE";
@@ -32,6 +33,10 @@ export const PERMISSIONS = {
   mediaRead: { feature: "MEDIA_MANAGEMENT", action: "READ" },
   mediaUpdate: { feature: "MEDIA_MANAGEMENT", action: "UPDATE" },
   mediaDelete: { feature: "MEDIA_MANAGEMENT", action: "DELETE" },
+  packageCreate: { feature: "PACKAGE_MANAGEMENT", action: "CREATE" },
+  packageRead: { feature: "PACKAGE_MANAGEMENT", action: "READ" },
+  packageUpdate: { feature: "PACKAGE_MANAGEMENT", action: "UPDATE" },
+  packageDelete: { feature: "PACKAGE_MANAGEMENT", action: "DELETE" },
   roleCreate: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "CREATE" },
   roleRead: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "READ" },
   roleUpdate: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "UPDATE" },
@@ -65,6 +70,10 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
 
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/media`)) {
     return PERMISSIONS.mediaRead;
+  }
+
+  if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/billing`)) {
+    return PERMISSIONS.packageRead;
   }
 
   const employeesPath = `${TENANT_DASHBOARD_PATH}/access-control/employees`;
