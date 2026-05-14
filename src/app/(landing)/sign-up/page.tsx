@@ -2,8 +2,9 @@
 
 import { z } from "zod";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDebounce } from "use-debounce";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -18,27 +19,50 @@ import {
 
 import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
-import { getApiErrorMessage } from "@/lib/axios";
+import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
+import OtpVerifyDialog from "../_components/otp-verify-dialog";
 
-const signUpSchema = z.object({
-  name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  email: z.string().trim().email("Enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  businessName: z
-    .string()
-    .trim()
-    .max(80, "Store name cannot be longer than 80 characters")
-    .optional(),
-});
+const signUpSchema = z
+  .object({
+    name: z.string().trim().min(2, "Name must be at least 2 characters"),
+    email: z.string().trim().email("Enter a valid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z
+      .string()
+      .min(6, "Confirm password must be at least 6 characters"),
+    businessName: z
+      .string()
+      .trim()
+      .max(80, "Store name cannot be longer than 80 characters")
+      .optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password and confirm password must be same",
+    path: ["confirmPassword"],
+  });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+type CheckEmailResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    exists: boolean;
+    available: boolean;
+  };
+};
 
 const inputClassName =
   "h-10 sm:h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [otpOpen, setOtpOpen] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState("");
+  const [isEmailChecking, setIsEmailChecking] = useState(false);
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+
   const registerAccount = useAuthStore((state) => state.register);
   const router = useRouter();
   const swal = useSwal();
@@ -46,19 +70,103 @@ export default function SignUpPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
+    clearErrors,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      confirmPassword: "",
       businessName: "",
     },
   });
 
+  const emailValue = watch("email");
+  const [debouncedEmail] = useDebounce(emailValue, 600);
+
+  // Email validation
+  useEffect(() => {
+    const checkEmail = async () => {
+      const email = debouncedEmail?.trim().toLowerCase();
+
+      setIsEmailAvailable(false);
+
+      if (!email) return;
+
+      const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      if (!isValidEmail) return;
+
+      try {
+        setIsEmailChecking(true);
+
+        const response = await api.get(
+          `/auth/check-email?email=${encodeURIComponent(
+            email,
+          )}`,
+        );
+
+        const result = response.data as CheckEmailResponse;
+
+        if (result.data.exists) {
+          setError("email", {
+            type: "manual",
+            message: "Email already exists",
+          });
+
+          setIsEmailAvailable(false);
+          return;
+        }
+
+        clearErrors("email");
+        setIsEmailAvailable(true);
+      } catch {
+        setError("email", {
+          type: "manual",
+          message: "Could not validate email",
+        });
+
+        setIsEmailAvailable(false);
+      } finally {
+        setIsEmailChecking(false);
+      }
+    };
+
+    checkEmail();
+  }, [debouncedEmail, setError, clearErrors]);
+
   const onSubmit = async (data: SignUpFormValues) => {
+    if (isEmailChecking) {
+      swal.error("Please wait. Email checking is running.");
+      return;
+    }
+
+    const { name, email, password, businessName } = data;
+
+    const payload = {
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password,
+      businessName: businessName?.trim() || undefined,
+    };
+
     try {
+<<<<<<< HEAD
+      await registerAccount(payload);
+
+      setVerifyEmail(payload.email);
+      setOtpOpen(true);
+
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+      console.log(error);
+=======
       await registerAccount({
         ...data,
         businessName: data.businessName?.trim() || undefined,
@@ -67,6 +175,7 @@ export default function SignUpPage() {
       router.push("/sign-in");
     } catch (error: any) {
       swal.error(getApiErrorMessage(error));
+>>>>>>> fefd864e955f7c4d1d908d3bbba8ca9f0df4df52
     }
   };
 
@@ -185,6 +294,18 @@ export default function SignUpPage() {
                     />
                   </div>
 
+                  {isEmailChecking && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Checking email...
+                    </p>
+                  )}
+
+                  {!isEmailChecking && isEmailAvailable && !errors.email && (
+                    <p className="mt-1 text-xs text-green-600">
+                      Email is available
+                    </p>
+                  )}
+
                   {errors.email && (
                     <p className="mt-1 text-xs text-red-600">
                       {errors.email.message}
@@ -246,9 +367,7 @@ export default function SignUpPage() {
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -265,9 +384,50 @@ export default function SignUpPage() {
                   )}
                 </div>
 
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="mb-1 block text-xs font-medium text-foreground"
+                  >
+                    Confirm Password
+                  </label>
+
+                  <div className="relative">
+                    <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+
+                    <input
+                      id="confirmPassword"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
+                      placeholder="Confirm your password"
+                      className={`${inputClassName} pl-9 pr-9`}
+                      {...register("confirmPassword")}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((value) => !value)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+
+                  {errors.confirmPassword && (
+                    <p className="mt-1 text-xs text-red-600">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isEmailChecking}
                   className="flex h-10 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60 sm:h-11"
                 >
                   {isSubmitting ? "Creating account..." : "Create account"}
@@ -287,6 +447,13 @@ export default function SignUpPage() {
           </section>
         </div>
       </div>
+
+      <OtpVerifyDialog
+        open={otpOpen}
+        email={verifyEmail}
+        onClose={() => setOtpOpen(false)}
+        onVerified={() => router.push("/sign-in")}
+      />
     </main>
   );
 }

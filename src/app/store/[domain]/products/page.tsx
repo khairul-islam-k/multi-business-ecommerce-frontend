@@ -1,4 +1,5 @@
-import ElectronicProductsPage from "@/app/templates/electronic/pages/Products";
+// import ElectronicProductsPage from "@/app/templates/electronic/pages/Products";
+import ElectronicProductsPage from '@/app/templates/electronic/pages/products';
 import React from 'react';
 
 const Products = () => {
