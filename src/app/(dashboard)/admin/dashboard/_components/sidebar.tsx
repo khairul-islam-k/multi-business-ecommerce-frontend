@@ -30,6 +30,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const userType = useAuthStore((state) => state.user?.type);
   const businessAccess = usePermissionAccess(PERMISSIONS.businessRead);
   const employeeAccess = usePermissionAccess(PERMISSIONS.employeeRead);
+  const mediaAccess = usePermissionAccess(PERMISSIONS.mediaRead);
+  const packageAccess = usePermissionAccess(PERMISSIONS.packageRead);
   const roleAccess = usePermissionAccess(PERMISSIONS.roleRead);
 
   const { useBreakpoint } = Grid;
@@ -44,6 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
 
         if (key === "dashboard") return item;
         if (key === "business") return businessAccess.allowed ? item : null;
+        if (key === "media") return mediaAccess.allowed ? item : null;
+        if (key === "billing") return packageAccess.allowed ? item : null;
 
         if (key === "access-control") {
           const children = (
@@ -75,6 +79,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   }, [
     businessAccess.allowed,
     employeeAccess.allowed,
+    mediaAccess.allowed,
+    packageAccess.allowed,
     roleAccess.allowed,
     userType,
   ]);

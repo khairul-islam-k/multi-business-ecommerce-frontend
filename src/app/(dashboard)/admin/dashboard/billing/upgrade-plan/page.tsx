@@ -1,116 +1,100 @@
 "use client";
 
 import { useState } from "react";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
-import { Card, Typography, Row, Col, Button, Switch, Tag } from "antd";
+import { Col, Empty, Row } from "antd";
 
-import { mockPlans } from "./data";
+import { getApiErrorMessage } from "@/lib/axios";
+import {
+  useTenantCurrentSubscription,
+  useTenantPackageMutations,
+  useTenantPackagePlans,
+} from "@/lib/api";
+import type { PackagePlan } from "@/lib/api";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-const { Title, Text } = Typography;
+import Loader from "@/components/shared/loader";
+import Pagination from "@/components/shared/pagination";
+import { useSwal } from "@/hooks/use-swal";
+import PlanCard from "../_components/plan-card";
+import { money } from "../_utils/package-display";
 
 export default function UpgradePlanPage() {
-  const [yearly, setYearly] = useState(false);
+  const swal = useSwal();
+  const [currentPage, setCurrentPage] = useState(1);
+  const plans = useTenantPackagePlans({ page: currentPage, limit: 9 });
+  const currentSubscription = useTenantCurrentSubscription();
+  const mutations = useTenantPackageMutations();
+
+  const handleCheckout = async (plan: PackagePlan) => {
+    const { isConfirmed } = await swal.confirm({
+      title: "Create checkout?",
+      text: `A pending payment for ${money(plan.price, plan.currencyCode)} will be created for ${plan.name}.`,
+      confirmButtonText: "Create checkout",
+    });
+
+    if (!isConfirmed) return;
+
+    try {
+      const payment = await mutations.checkoutPlan.mutateAsync(plan.id);
+      const confirm = await swal.confirm({
+        title: "Confirm mock payment?",
+        text: `Confirm payment ${money(payment.amount, payment.currencyCode)} now?`,
+        confirmButtonText: "Confirm payment",
+      });
+
+      if (confirm.isConfirmed) {
+        await mutations.confirmMockPayment.mutateAsync(payment.id);
+        swal.success("Plan changed successfully.");
+      } else {
+        swal.success("Checkout created. Confirm it before it expires.");
+      }
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  };
 
   return (
-    <div className="p-6">
-      <PageHeader title="Upgrade Plan" breadcrumb={adminBreadcrumb} />
+    <div className="space-y-6">
+      <PageHeader
+        title="Upgrade Plan"
+        subtitle="Choose an available package plan for this tenant account."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      {/* TOGGLE */}
-      <div className="flex items-center gap-3 my-4 w-fit mx-auto">
-        <Text>Monthly</Text>
-        <Switch checked={yearly} onChange={setYearly} />
-        <Text>Yearly</Text>
-        <Tag color="green">Save 20%</Tag>
-      </div>
+      {plans.isLoading ? (
+        <Loader
+          label="Loading plans"
+          description="Fetching available packages."
+        />
+      ) : plans.data?.items.length ? (
+        <>
+          <Row gutter={[16, 16]}>
+            {plans.data.items.map((plan) => (
+              <Col xs={24} md={12} xl={8} key={plan.id}>
+                <PlanCard
+                  plan={plan}
+                  currentPlanId={currentSubscription.data?.packageId}
+                  loading={
+                    mutations.checkoutPlan.isPending ||
+                    mutations.confirmMockPayment.isPending
+                  }
+                  onCheckout={handleCheckout}
+                />
+              </Col>
+            ))}
+          </Row>
 
-      <Row gutter={[16, 16]}>
-        {mockPlans.map((plan, i) => (
-          <Col xs={24} md={12} lg={8} key={i}>
-            <Card
-              className={`h-full flex flex-col ${
-                plan.current ? "border border-blue-500" : ""
-              }`}
-            >
-              {/* HEADER */}
-              <div className="mb-3">
-                <div className="flex justify-between items-center">
-                  <Title level={4} className="mb-0">
-                    {plan.name}
-                  </Title>
-                  {plan.current && <Tag color="blue">Current</Tag>}
-                </div>
-
-                <Text type="secondary">{plan.desc}</Text>
-              </div>
-
-              {/* PRICE */}
-              <div className="mb-4">
-                {plan.custom ? (
-                  <Title level={4}>Custom</Title>
-                ) : (
-                  <>
-                    <Title level={3} className="mb-0">
-                      {yearly ? plan.yearly : plan.monthly}
-                    </Title>
-                    <Text type="secondary">/{yearly ? "year" : "month"}</Text>
-                  </>
-                )}
-              </div>
-
-              {/* INCLUDED */}
-              <div className="flex-1">
-                <Text strong>Includes:</Text>
-
-                <div className="mt-2">
-                  {plan.included.map((f, idx) => (
-                    <div key={idx} className="flex items-center gap-2 mb-2">
-                      <CheckOutlined className="text-green-500" />
-                      <Text>{f}</Text>
-                    </div>
-                  ))}
-                </div>
-
-                {/* EXCLUDED */}
-                {plan.excluded && (
-                  <>
-                    <div className="mt-4">
-                      <Text strong>Not included:</Text>
-                    </div>
-
-                    <div className="mt-2">
-                      {plan.excluded.map((f, idx) => (
-                        <div key={idx} className="flex items-center gap-2 mb-2">
-                          <CloseOutlined className="text-red-400" />
-                          <Text type="secondary">{f}</Text>
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* ACTION */}
-              <div className="mt-6">
-                {plan.current ? (
-                  <Button block disabled>
-                    Current Plan
-                  </Button>
-                ) : plan.custom ? (
-                  <Button type="primary" block>
-                    Contact Sales
-                  </Button>
-                ) : (
-                  <Button type="primary" block>
-                    Upgrade
-                  </Button>
-                )}
-              </div>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+          {plans.data.meta.totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={plans.data.meta.totalPages}
+              onPageChange={setCurrentPage}
+            />
+          )}
+        </>
+      ) : (
+        <Empty description="No package plans are available right now." />
+      )}
     </div>
   );
 }

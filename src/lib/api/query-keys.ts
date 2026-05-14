@@ -3,8 +3,12 @@ import type {
   BusinessQuery,
   EmployeeQuery,
   PermissionQuery,
+  MediaQuery,
+  PackageQuery,
   RoleAssignmentQuery,
   RoleQuery,
+  TenantQuery,
+  TenantSubscriptionQuery,
 } from "@/lib/api/types";
 
 export const apiQueryKeys = {
@@ -16,6 +20,31 @@ export const apiQueryKeys = {
     list: (query?: BusinessQuery) => ["businesses", "list", query] as const,
     detail: (businessId: ApiId) =>
       ["businesses", "detail", businessId] as const,
+  },
+  tenants: {
+    all: ["tenants"] as const,
+    list: (query?: TenantQuery) => ["tenants", "list", query] as const,
+    detail: (tenantId: ApiId) => ["tenants", "detail", tenantId] as const,
+  },
+  adminPackages: {
+    all: ["admin-packages"] as const,
+    plans: (query?: PackageQuery) =>
+      ["admin-packages", "plans", query] as const,
+    addons: (query?: PackageQuery) =>
+      ["admin-packages", "addons", query] as const,
+    subscriptions: (query?: TenantSubscriptionQuery) =>
+      ["admin-packages", "subscriptions", query] as const,
+  },
+  tenantPackages: {
+    all: ["tenant-packages"] as const,
+    plans: (query?: PackageQuery) =>
+      ["tenant-packages", "plans", query] as const,
+    addons: (query?: PackageQuery) =>
+      ["tenant-packages", "addons", query] as const,
+    current: ["tenant-packages", "current"] as const,
+    history: (query?: PackageQuery) =>
+      ["tenant-packages", "history", query] as const,
+    usage: ["tenant-packages", "usage"] as const,
   },
   employees: {
     all: (businessId: ApiId) => ["employees", businessId] as const,
@@ -39,5 +68,10 @@ export const apiQueryKeys = {
       ["permissions", businessId, "list", query] as const,
     role: (businessId: ApiId, roleId: ApiId) =>
       ["permissions", businessId, "role", roleId] as const,
+  },
+  media: {
+    all: (businessId: ApiId) => ["media", businessId] as const,
+    list: (businessId: ApiId, query?: MediaQuery) =>
+      ["media", businessId, "list", query] as const,
   },
 };

@@ -58,7 +58,7 @@ export default function CreateTenantForm() {
           form={form}
           onFinish={handleSubmit}
           initialValues={{
-            businessName: "New Business",
+            businessName: "My Business",
           }}
         >
           <Row gutter={16}>
@@ -135,11 +135,13 @@ export default function CreateTenantForm() {
             </Col>
           </Row>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button type="primary" htmlType="submit">
               Create Tenant
             </Button>
-            <Button onClick={() => router.push("/super-admin/dashboard/tenants")}>
+            <Button
+              onClick={() => router.push("/super-admin/dashboard/tenants")}
+            >
               Cancel
             </Button>
           </div>

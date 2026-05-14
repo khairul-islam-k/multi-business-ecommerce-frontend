@@ -1,11 +1,18 @@
 "use client";
 
 import React, { useState } from "react";
-import { Input, Button, Space } from "antd";
+import { Input, Button, Space, theme } from "antd";
 import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 
 const GlobalSearch = () => {
-    const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { token } = theme.useToken();
+  const inputStyle: React.CSSProperties = {
+    background: token.colorBgContainer,
+    borderColor: token.colorBorder,
+    color: token.colorText,
+  };
+  const prefix = <SearchOutlined style={{ color: token.colorTextTertiary }} />;
 
   return (
     <>
@@ -14,9 +21,9 @@ const GlobalSearch = () => {
         <div className="desktop-search">
           <Input
             placeholder="Search..."
-            prefix={<SearchOutlined />}
+            prefix={prefix}
             allowClear
-            style={{ width: 220 }}
+            style={{ maxWidth: 320, ...inputStyle }}
           />
         </div>
 
@@ -25,7 +32,11 @@ const GlobalSearch = () => {
           {!open ? (
             <Button
               type="text"
-              icon={<SearchOutlined style={{ fontSize: 18 }} />}
+              icon={
+                <SearchOutlined
+                  style={{ color: token.colorText, fontSize: 18 }}
+                />
+              }
               onClick={() => setOpen(true)}
             />
           ) : (
@@ -34,8 +45,8 @@ const GlobalSearch = () => {
                 autoFocus
                 placeholder="Search..."
                 allowClear
-                prefix={<SearchOutlined />}
-                style={{ width: 180 }}
+                prefix={prefix}
+                style={{ width: 180, ...inputStyle }}
                 onBlur={() => setOpen(false)}
               />
               <Button

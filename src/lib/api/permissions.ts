@@ -31,6 +31,10 @@ type AvailablePermissionsResponse =
       }>;
     };
 
+type HasPermissionResponse = {
+  hasPermission: boolean;
+};
+
 const normalizeAvailablePermissions = (
   payload: AvailablePermissionsResponse,
 ): PermissionItem[] => {
@@ -48,15 +52,16 @@ export const permissionsApi = {
   available() {
     return api
       .get<ApiResponse<AvailablePermissionsResponse>>("/permissions/available")
-      .then((res) => normalizeAvailablePermissions(unwrapApiResponse(res.data)));
+      .then((res) =>
+        normalizeAvailablePermissions(unwrapApiResponse(res.data)),
+      );
   },
 
   has(businessId: ApiId, payload: PermissionItem) {
     return api
-      .post<boolean | ApiResponse<boolean>>(
-        `permissions/has/businesses/${businessId}`,
-        payload,
-      )
+      .post<
+        ApiResponse<HasPermissionResponse>
+      >(`permissions/has/businesses/${businessId}`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 
@@ -76,10 +81,9 @@ export const permissionsApi = {
 
   addToRole(businessId: ApiId, roleId: ApiId, payload: PermissionPayload) {
     return api
-      .post<ApiResponse<{ permissions?: PermissionItem[] }>>(
-        rolePath(businessId, roleId),
-        payload,
-      )
+      .post<
+        ApiResponse<{ permissions?: PermissionItem[] }>
+      >(rolePath(businessId, roleId), payload)
       .then((res) => unwrapApiResponse(res.data).permissions ?? []);
   },
 
@@ -89,10 +93,9 @@ export const permissionsApi = {
     payload: PermissionPayload,
   ) {
     return api
-      .put<ApiResponse<{ permissions?: PermissionItem[] }>>(
-        rolePath(businessId, roleId),
-        payload,
-      )
+      .put<
+        ApiResponse<{ permissions?: PermissionItem[] }>
+      >(rolePath(businessId, roleId), payload)
       .then((res) => unwrapApiResponse(res.data).permissions ?? []);
   },
 
@@ -103,9 +106,9 @@ export const permissionsApi = {
     action: string,
   ) {
     return api
-      .delete<ApiResponse<{ permissions?: PermissionItem[] }>>(
-        `${rolePath(businessId, roleId)}/${feature}/${action}`,
-      )
+      .delete<
+        ApiResponse<{ permissions?: PermissionItem[] }>
+      >(`${rolePath(businessId, roleId)}/${feature}/${action}`)
       .then((res) => ({
         message: res.data.message ?? "Permission removed successfully",
       }));

@@ -21,6 +21,7 @@ import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
 import type { ApiId } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
 
 const getEmployeeRoles = (employee: Employee) =>
   employee.roles ?? employee.userRoleMaps?.map((map) => map.role) ?? [];
@@ -78,8 +79,8 @@ export default function Users() {
       setIsRoleModalOpen(false);
       setSelectedUser(null);
       setSelectedRoles([]);
-    } catch {
-      swal.error("Failed to apply roles.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     }
   };
 
@@ -162,7 +163,9 @@ export default function Users() {
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() =>
-                  router.push("/admin/dashboard/access-control/employees/create")
+                  router.push(
+                    "/admin/dashboard/access-control/employees/create",
+                  )
                 }
               >
                 Create Employee

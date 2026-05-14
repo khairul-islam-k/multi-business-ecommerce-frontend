@@ -18,6 +18,7 @@ import {
 
 import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
+import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
 
 const { Text } = Typography;
 
@@ -27,6 +28,8 @@ const ProfileDropdown = () => {
   const router = useRouter();
   const swal = useSwal();
   const { token } = theme.useToken();
+  const avatarSeed = getUserAvatarSeed(user);
+  const avatarSrc = getUserAvatarUrl(user);
 
   const handleLogout = async () => {
     const { isConfirmed } = await swal.confirm({
@@ -51,9 +54,9 @@ const ProfileDropdown = () => {
               key: "profile",
               label: (
                 <Link href="/admin/dashboard/profile">
-                  <Flex align="center" gap={8}>
+                  <Flex align="center" gap={8} style={{ color: token.colorText }}>
                     <ProfileOutlined />
-                    <Text>Profile</Text>
+                    <Text style={{ color: token.colorText }}>Profile</Text>
                   </Flex>
                 </Link>
               ),
@@ -62,9 +65,11 @@ const ProfileDropdown = () => {
               key: "account",
               label: (
                 <Link href="/admin/dashboard/profile">
-                  <Flex align="center" gap={8}>
+                  <Flex align="center" gap={8} style={{ color: token.colorText }}>
                     <SettingOutlined />
-                    <Text>Account Settings</Text>
+                    <Text style={{ color: token.colorText }}>
+                      Account Settings
+                    </Text>
                   </Flex>
                 </Link>
               ),
@@ -78,7 +83,11 @@ const ProfileDropdown = () => {
                 <Button
                   icon={<LogoutOutlined />}
                   type="text"
-                  style={{ width: "100%", textAlign: "left" }}
+                  style={{
+                    color: token.colorText,
+                    width: "100%",
+                    textAlign: "left",
+                  }}
                   onClick={handleLogout}
                 >
                   Log out
@@ -91,11 +100,17 @@ const ProfileDropdown = () => {
       >
         <Button type="text" style={{ height: 44, paddingInline: 8 }}>
           <Space size={10}>
-            <Avatar style={{ background: token.colorPrimary }}>
-              {user?.name?.charAt(0).toUpperCase() ?? "U"}
-            </Avatar>
+            <Avatar
+              alt={avatarSeed}
+              src={avatarSrc}
+              style={{ background: token.colorPrimary }}
+            />
             <div className="hidden min-w-0 text-left md:block">
-              <Text strong ellipsis style={{ maxWidth: 140 }}>
+              <Text
+                strong
+                ellipsis
+                style={{ color: token.colorText, maxWidth: 140 }}
+              >
                 {user?.name ?? "User"}
               </Text>
               <div>

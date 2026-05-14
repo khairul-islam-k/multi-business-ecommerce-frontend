@@ -157,6 +157,7 @@ export default function SignUpPage() {
     };
 
     try {
+<<<<<<< HEAD
       await registerAccount(payload);
 
       setVerifyEmail(payload.email);
@@ -165,6 +166,16 @@ export default function SignUpPage() {
     } catch (error) {
       swal.error(getApiErrorMessage(error));
       console.log(error);
+=======
+      await registerAccount({
+        ...data,
+        businessName: data.businessName?.trim() || undefined,
+      });
+      swal.success("Account created successfully");
+      router.push("/sign-in");
+    } catch (error: any) {
+      swal.error(getApiErrorMessage(error));
+>>>>>>> fefd864e955f7c4d1d908d3bbba8ca9f0df4df52
     }
   };
 
