@@ -35,6 +35,17 @@ export const apiQueryKeys = {
     subscriptions: (query?: TenantSubscriptionQuery) =>
       ["admin-packages", "subscriptions", query] as const,
   },
+  tenantPackages: {
+    all: ["tenant-packages"] as const,
+    plans: (query?: PackageQuery) =>
+      ["tenant-packages", "plans", query] as const,
+    addons: (query?: PackageQuery) =>
+      ["tenant-packages", "addons", query] as const,
+    current: ["tenant-packages", "current"] as const,
+    history: (query?: PackageQuery) =>
+      ["tenant-packages", "history", query] as const,
+    usage: ["tenant-packages", "usage"] as const,
+  },
   employees: {
     all: (businessId: ApiId) => ["employees", businessId] as const,
     list: (businessId: ApiId, query?: EmployeeQuery) =>

@@ -8,3 +8,4 @@ export * from "./hooks/media";
 export * from "./hooks/permission";
 export * from "./hooks/role";
 export * from "./hooks/tenant";
+export * from "./hooks/tenant-package";

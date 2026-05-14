@@ -191,15 +191,15 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // Product Catalogue
+  // Product Management
   {
     key: "products-management",
-    icon: <ShoppingOutlined />, // Product / inventory related
+    icon: <ShoppingOutlined />,
     label: "Products Management",
     children: [
       {
         key: "products",
-        icon: <BarcodeOutlined />, // Individual products
+        icon: <BarcodeOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/products">
             Products
@@ -254,15 +254,15 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // inventory
+  // Inventory
   {
     key: "inventory",
-    icon: <ShopOutlined />, // Inventory / store
+    icon: <ShopOutlined />,
     label: "Inventory",
     children: [
       {
         key: "stock-overview",
-        icon: <DashboardOutlined />, // Overview / summary
+        icon: <DashboardOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-overview">
             Stock Overview
@@ -271,7 +271,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "warehouse-stocks",
-        icon: <HomeOutlined />, // Warehouse
+        icon: <HomeOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/warehouse-stock">
             Warehouse Stocks
@@ -280,7 +280,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "inventory-transactions",
-        icon: <SwapOutlined />, // In / out transactions
+        icon: <SwapOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/transactions">
             Inventory Transactions
@@ -289,14 +289,14 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "stock-entry",
-        icon: <PlusSquareOutlined />, // Add stock
+        icon: <PlusSquareOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-entry">Stock Entry</Link>
         ),
       },
       {
         key: "stock-adjustments",
-        icon: <SettingOutlined />, // Adjust / configure
+        icon: <SettingOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-adjustments">
             Stock Adjustments
@@ -305,7 +305,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "stock-transfers",
-        icon: <ExportOutlined />, // Transfer between locations
+        icon: <ExportOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-transfers">
             Stock Transfers
@@ -314,7 +314,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "damaged-product",
-        icon: <WarningOutlined />, // Damaged / issue
+        icon: <WarningOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/damaged-products">
             Damaged Products
@@ -323,7 +323,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "low-stock",
-        icon: <AlertOutlined />, // Low stock alert
+        icon: <AlertOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/low-stock-alert">
             Low Stocks
@@ -332,7 +332,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "inventory-value",
-        icon: <DollarOutlined />, // Inventory value
+        icon: <DollarOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/value-report">
             Inventory Value
@@ -341,7 +341,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "missing-products",
-        icon: <QuestionCircleOutlined />, // Missing items
+        icon: <QuestionCircleOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/missing-products">
             Missing Products
@@ -351,36 +351,36 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // orders
+  // Orders
   {
     key: "orders",
-    icon: <ShopOutlined />, // Orders / Store
+    icon: <ShopOutlined />,
     label: "Orders",
     children: [
       {
         key: "all-orders",
-        icon: <UnorderedListOutlined />, // Order list
+        icon: <UnorderedListOutlined />,
         label: <Link href="/admin/dashboard/orders">All Orders</Link>,
       },
       {
         key: "returns",
-        icon: <RollbackOutlined />, // Returns / refunds
+        icon: <RollbackOutlined />,
         label: <Link href="/admin/dashboard/orders/returns">Returns</Link>,
       },
       {
         key: "payments",
-        icon: <CreditCardOutlined />, // Payments
+        icon: <CreditCardOutlined />,
         label: <Link href="/admin/dashboard/orders/payments">Payments</Link>,
       },
       {
         key: "analytics",
-        icon: <LineChartOutlined />, // Order analytics
+        icon: <LineChartOutlined />,
         label: <Link href="/admin/dashboard/orders/analytics">Analytics</Link>,
       },
     ],
   },
 
-  // masters-settings
+  // Product Catalogue
   {
     key: "masters-settings",
     icon: <ShopOutlined />, // Orders / Store
@@ -418,7 +418,7 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // finance-account
+  // Finance
   {
     key: "finance-account",
     icon: <BankOutlined />, // Finance / Accounts
@@ -459,7 +459,7 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // finance-expense
+  // Expense
   {
     key: "finance-expense",
     icon: <DollarOutlined />, // Expenses
@@ -792,13 +792,8 @@ export const items: MenuProps["items"] = [
       },
     ],
   },
-  {
-    key: "ai-websites",
-    icon: <RobotOutlined />, // AI Website Generator
-    label: <Link href="/admin/dashboard/ai-websites">Website Generator</Link>,
-  },
 
-  // sms-marketing
+  // SMS Marketing
   {
     key: "sms-marketing",
     icon: <MessageOutlined />, // SMS / messaging
@@ -885,7 +880,7 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // marketing-assistant
+  // AI Marketing Assistant
   {
     key: "marketing-assistant",
     icon: <RobotOutlined />, // AI / assistant
@@ -978,6 +973,7 @@ export const items: MenuProps["items"] = [
       },
     ],
   },
+
   {
     key: "reports-analytics",
     icon: <BarChartOutlined />, // Reports & Analytics
@@ -1057,6 +1053,7 @@ export const items: MenuProps["items"] = [
       },
     ],
   },
+
   {
     key: "notifications",
     icon: <BellOutlined />,

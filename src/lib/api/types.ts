@@ -536,6 +536,8 @@ export type PackageMockPayment = {
   confirmedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
+  plan?: PackagePlan;
+  addon?: PackageAddon;
 };
 
 export type TenantSubscription = {
@@ -574,3 +576,26 @@ export type ChangeTenantSubscriptionPlanPayload = {
 export type CancelPackageSubscriptionPayload = {
   reason?: string;
 };
+
+export type CheckoutPackageAddonPayload = {
+  quantity?: number;
+};
+
+export type PackageUsageSummaryItem = {
+  limitKey: PackageLimitKey;
+  allowed: number;
+  liveUsed: number;
+  consumed: number;
+  used: number;
+  remaining: number;
+};
+
+export type ConfirmPackagePaymentResult =
+  | {
+      payment: PackageMockPayment;
+      subscription: TenantSubscription;
+    }
+  | {
+      payment: PackageMockPayment;
+      subscriptionAddon: PackageSubscriptionAddon;
+    };
