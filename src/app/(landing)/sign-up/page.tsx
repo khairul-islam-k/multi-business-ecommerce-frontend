@@ -107,7 +107,7 @@ export default function SignUpPage() {
         setIsEmailChecking(true);
 
         const response = await api.get(
-          `http://192.168.0.122:8080/api/v1/auth/check-email?email=${encodeURIComponent(
+          `/auth/check-email?email=${encodeURIComponent(
             email,
           )}`,
         );
@@ -161,6 +161,7 @@ export default function SignUpPage() {
 
       setVerifyEmail(payload.email);
       setOtpOpen(true);
+
     } catch (error) {
       swal.error(getApiErrorMessage(error));
       console.log(error);

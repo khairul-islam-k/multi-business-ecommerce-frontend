@@ -4,6 +4,7 @@ import UserProfilePage from './_components/user-profilepage';
 import { Tabs, TabsProps } from 'antd';
 import EditProfile from './_components/edit-profile';
 import ResetPassword from './_components/reset-password';
+import ChangeEmailForm from './_components/change-email-form';
 
 const Profile = () => {
 
@@ -26,6 +27,11 @@ const Profile = () => {
       key: 'password Reset',
       label: 'Reset Password',
       children: <ResetPassword />,
+    },
+    {
+      key: 'change email',
+      label: 'Change Email',
+      children: <ChangeEmailForm />,
     },
   ];
 

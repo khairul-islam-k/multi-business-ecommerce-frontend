@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Button, Card, Col, Form, Input, Row } from "antd";
 import { useMutation } from "@tanstack/react-query";
 
@@ -13,13 +12,18 @@ type ResetPasswordFormValues = {
   confirmPassword: string;
 };
 
+type ResetPasswordPayload = {
+  oldPassword: string;
+  newPassword: string;
+};
+
 export default function ResetPassword() {
   const [form] = Form.useForm<ResetPasswordFormValues>();
   const swal = useSwal();
 
   const resetPasswordMutation = useMutation({
-    mutationFn: async (values: ResetPasswordFormValues) => {
-      const response = await api.post("/auth/reset", values);
+    mutationFn: async (payload: ResetPasswordPayload) => {
+      const response = await api.post("/auth/reset", payload);
       return response.data;
     },
 
@@ -34,7 +38,12 @@ export default function ResetPassword() {
   });
 
   const onFinish = (values: ResetPasswordFormValues) => {
-    resetPasswordMutation.mutate(values);
+    const { oldPassword, newPassword } = values;
+
+    resetPasswordMutation.mutate({
+      oldPassword,
+      newPassword,
+    });
   };
 
   return (

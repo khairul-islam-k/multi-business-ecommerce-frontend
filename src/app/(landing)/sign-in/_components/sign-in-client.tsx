@@ -10,9 +10,10 @@ import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
 import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
-import { getApiErrorMessage } from "@/lib/axios";
+import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { getDashboardPath, isSafeInternalPath } from "@/lib/auth/permissions";
+import ForgerOtpVerify from "./forget-otp";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -31,12 +32,18 @@ const inputClassName =
 export default function SignInClient({ redirectTo }: SignInClientProps) {
   const [showPassword, setShowPassword] = useState(false);
 
+  // verify
+  const [otpOpen, setOtpOpen] = useState(false);
+  const [verifyEmail, setVerifyEmail] = useState("");
+  const [verificationId, setVerificationId] = useState<string>("");
+
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
   const swal = useSwal();
 
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormValues>({
@@ -46,6 +53,8 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
       password: "",
     },
   });
+
+  const emailValue = watch("email");
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
@@ -65,6 +74,29 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
       swal.error(getApiErrorMessage(error));
     }
   };
+
+  const handleForget = async () => {
+    const email = emailValue?.trim().toLowerCase();
+
+    if (!email) return;
+
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValidEmail) {
+      swal.error("Invalid Email");
+      return;
+    }
+
+    try {
+      const res = await api.post('/auth/forgot-password', { email });
+      console.log('res', res);
+      setVerifyEmail(email)
+      setOtpOpen(true);
+
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  }
 
   return (
     <main className="min-h-dvh bg-background px-3 py-4 text-foreground sm:p-5">
@@ -169,12 +201,12 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
                       Password
                     </label>
 
-                    <Link
-                      href="/forgot-password"
-                      className="text-xs font-medium text-muted-foreground underline-offset-4 transition hover:text-foreground hover:underline"
+                    <p
+                      onClick={handleForget}
+                      className="text-xs cursor-pointer font-medium text-muted-foreground underline-offset-4 transition hover:text-foreground hover:underline"
                     >
                       Forgot?
-                    </Link>
+                    </p>
                   </div>
 
                   <div className="relative">
@@ -234,6 +266,13 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
           </section>
         </div>
       </div>
+
+      <ForgerOtpVerify
+        open={otpOpen}
+        email={verifyEmail}
+        onClose={() => setOtpOpen(false)}
+        onVerified={() => router.push("/sign-in")}
+      />
     </main>
   );
 }
