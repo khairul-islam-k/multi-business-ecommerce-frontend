@@ -4,9 +4,11 @@ import type {
   EmployeeQuery,
   PermissionQuery,
   MediaQuery,
+  PackageQuery,
   RoleAssignmentQuery,
   RoleQuery,
   TenantQuery,
+  TenantSubscriptionQuery,
 } from "@/lib/api/types";
 
 export const apiQueryKeys = {
@@ -23,6 +25,15 @@ export const apiQueryKeys = {
     all: ["tenants"] as const,
     list: (query?: TenantQuery) => ["tenants", "list", query] as const,
     detail: (tenantId: ApiId) => ["tenants", "detail", tenantId] as const,
+  },
+  adminPackages: {
+    all: ["admin-packages"] as const,
+    plans: (query?: PackageQuery) =>
+      ["admin-packages", "plans", query] as const,
+    addons: (query?: PackageQuery) =>
+      ["admin-packages", "addons", query] as const,
+    subscriptions: (query?: TenantSubscriptionQuery) =>
+      ["admin-packages", "subscriptions", query] as const,
   },
   employees: {
     all: (businessId: ApiId) => ["employees", businessId] as const,

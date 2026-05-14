@@ -375,3 +375,202 @@ export type UpdateEmployeeStatusPayload = {
 export type AssignEmployeeRolesPayload = {
   roleIds: ApiId[];
 };
+
+export type PackageBillingCycle = "FREE" | "MONTHLY" | "YEARLY" | "LIFETIME";
+
+export type PackageStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED";
+
+export type PackageResetCycle = "LIFETIME" | "DAILY" | "MONTHLY" | "YEARLY";
+
+export type PackageLimitKey =
+  | "MAX_ROLES"
+  | "MAX_MEDIAS"
+  | "MAX_EMPLOYEES"
+  | "MAX_BUSINESSES";
+
+export type PackageSubscriptionStatus =
+  | "TRIALING"
+  | "ACTIVE"
+  | "PAST_DUE"
+  | "CANCELLED"
+  | "EXPIRED";
+
+export type PackageSubscriptionAddonStatus = "ACTIVE" | "CANCELLED" | "EXPIRED";
+
+export type PackagePaymentStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CANCELLED"
+  | "EXPIRED";
+
+export type PackagePaymentType = "PLAN_CHANGE" | "ADDON_PURCHASE";
+
+export type PackagePlanLimit = {
+  id?: ApiId;
+  packageId?: ApiId;
+  limitKey: PackageLimitKey;
+  limitValue: number;
+  resetCycle?: PackageResetCycle;
+  description?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PackagePlan = {
+  id: ApiId;
+  name: string;
+  description?: string | null;
+  price: number | string;
+  billingCycle: PackageBillingCycle;
+  currencyCode: string;
+  freeTrialDays: number;
+  isDefault: boolean;
+  status: PackageStatus;
+  sortOrder: number;
+  limits?: PackagePlanLimit[];
+  _count?: {
+    subscriptions?: number;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PackageAddon = {
+  id: ApiId;
+  name: string;
+  description?: string | null;
+  price: number | string;
+  billingCycle: PackageBillingCycle;
+  currencyCode: string;
+  limitKey: PackageLimitKey;
+  limitValue: number;
+  resetCycle?: PackageResetCycle;
+  status: PackageStatus;
+  sortOrder: number;
+  createdBy?: ApiId | null;
+  updatedBy?: ApiId | null;
+  _count?: {
+    subscriptions?: number;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PackagePlanPayload = {
+  name: string;
+  description?: string;
+  price: number;
+  billingCycle: PackageBillingCycle;
+  currencyCode?: string;
+  freeTrialDays?: number;
+  isDefault?: boolean;
+  status?: PackageStatus;
+  sortOrder?: number;
+  limits?: PackagePlanLimit[];
+};
+
+export type PackageAddonPayload = {
+  name: string;
+  description?: string;
+  price: number;
+  billingCycle: PackageBillingCycle;
+  currencyCode?: string;
+  limitKey: PackageLimitKey;
+  limitValue: number;
+  resetCycle?: PackageResetCycle;
+  status?: PackageStatus;
+  sortOrder?: number;
+};
+
+export type PackageQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: PackageStatus;
+};
+
+export type TenantSubscriptionQuery = {
+  page?: number;
+  limit?: number;
+  status?: PackageSubscriptionStatus;
+  tenantId?: ApiId;
+};
+
+export type PackageSubscriptionAddon = {
+  id: ApiId;
+  subscriptionId: ApiId;
+  addonId: ApiId;
+  quantity: number;
+  status: PackageSubscriptionAddonStatus;
+  price: number | string;
+  currencyCode: string;
+  addon?: PackageAddon;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PackageUsageCounter = {
+  id: ApiId;
+  subscriptionId: ApiId;
+  limitKey: PackageLimitKey;
+  usedValue: number;
+  periodStart: string;
+  periodEnd: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type PackageMockPayment = {
+  id: ApiId;
+  tenantId: ApiId;
+  subscriptionId?: ApiId | null;
+  planId?: ApiId | null;
+  addonId?: ApiId | null;
+  type: PackagePaymentType;
+  status: PackagePaymentStatus;
+  amount: number | string;
+  currencyCode: string;
+  quantity: number;
+  metadata?: unknown;
+  expiresAt: string;
+  confirmedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type TenantSubscription = {
+  id: ApiId;
+  tenantId: ApiId;
+  packageId: ApiId;
+  status: PackageSubscriptionStatus;
+  billingCycle: PackageBillingCycle;
+  price: number | string;
+  currencyCode: string;
+  startedAt: string;
+  trialEndsAt?: string | null;
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  endedAt?: string | null;
+  endReason?: string | null;
+  autoRenew: boolean;
+  tenant?: Pick<SystemUser, "id" | "name" | "email" | "status">;
+  package?: PackagePlan;
+  addons?: PackageSubscriptionAddon[];
+  usageCounters?: PackageUsageCounter[];
+  mockPayments?: PackageMockPayment[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CreateTenantSubscriptionPayload = {
+  tenantId: ApiId;
+  planId: ApiId;
+};
+
+export type ChangeTenantSubscriptionPlanPayload = {
+  planId: ApiId;
+};
+
+export type CancelPackageSubscriptionPayload = {
+  reason?: string;
+};

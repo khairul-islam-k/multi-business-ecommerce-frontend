@@ -1,6 +1,7 @@
 "use client";
 
 export * from "./hooks/business";
+export * from "./hooks/admin-package";
 export * from "./hooks/current-user";
 export * from "./hooks/employee";
 export * from "./hooks/media";
