@@ -92,7 +92,7 @@ const ForgerOtpVerify = ({
 
   const verifyMutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post("/auth/forgot-password/verify-otp", {
+      const response = await api.post("/auth/reset-password/verify-otp", {
         email,
         otp,
       });
@@ -128,8 +128,7 @@ const ForgerOtpVerify = ({
       const response = await api.post("/auth/forgot-password/reset", {
         verificationId,
         email,
-        newPassword: payload.newPassword,
-        confirmPassword: payload.confirmPassword,
+        password: payload.newPassword,
       });
 
       return response.data;

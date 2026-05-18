@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import dayjs, { type Dayjs } from "dayjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -16,8 +16,27 @@ import {
 
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useSwal } from "@/hooks/use-swal";
+import ImageUpload from "./image-upload";
+import { useAuthStore } from "@/stores/auth.store";
 
 type Gender = "MALE" | "FEMALE" | "OTHER";
+
+type UserProfile = {
+  id: string;
+  userId: string;
+  firstName: string | null;
+  lastName: string | null;
+  imageUrl: string | null;
+  dateOfBirth: string | null;
+  gender: Gender | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  bio: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
 
 type MeResponse = {
   data: {
@@ -25,25 +44,22 @@ type MeResponse = {
       id: string;
       name: string;
       email: string;
+      phone: string | null;
       type: string;
       status: string;
-      businessId: string;
+      emailVerifiedAt: string | null;
+      tenantId: string | null;
+      createdById: string | null;
+      updatedById: string | null;
+      deletedById: string | null;
       createdAt: string;
       updatedAt: string;
+      deletedAt: string | null;
+      profile: UserProfile | null;
     };
-    profile: {
-      id: string;
-      userId: string;
-      firstName: string | null;
-      lastName: string | null;
-      imageUrl: string | null;
-      dateOfBirth: string | null;
-      gender: Gender | null;
-      address: string | null;
-      city: string | null;
-      country: string | null;
-      bio: string | null;
-    } | null;
+    activeSubscription: unknown;
+    selectedBusiness: unknown;
+    businesses: unknown[];
   };
 };
 
@@ -69,6 +85,7 @@ export default function EditProfile() {
   const [form] = Form.useForm<EditProfileFormValues>();
   const queryClient = useQueryClient();
   const swal = useSwal();
+  const setUser = useAuthStore(s=> s.fetchProfile)
 
   const { data: me, isLoading } = useQuery({
     queryKey: ["auth", "me"],
@@ -78,34 +95,33 @@ export default function EditProfile() {
     },
   });
 
-  React.useEffect(() => {
-    if (!me) return;
+  useEffect(() => {
+    if (!me?.user) return;
+
+    const user = me.user;
+    const profile = user.profile;
 
     form.setFieldsValue({
-      name: me.user.name,
-      phone: "",
+      name: user.name || "",
+      phone: user.phone || "",
       profile: {
-        firstName: me.profile?.firstName || "",
-        lastName: me.profile?.lastName || "",
-        imageUrl: me.profile?.imageUrl || "",
-        dateOfBirth: me.profile?.dateOfBirth
-          ? dayjs(me.profile.dateOfBirth)
+        firstName: profile?.firstName || "",
+        lastName: profile?.lastName || "",
+        imageUrl: profile?.imageUrl || "",
+        dateOfBirth: profile?.dateOfBirth
+          ? dayjs(profile.dateOfBirth)
           : undefined,
-        gender: me.profile?.gender || undefined,
-        address: me.profile?.address || "",
-        city: me.profile?.city || "",
-        country: me.profile?.country || "",
-        bio: me.profile?.bio || "",
+        gender: profile?.gender || undefined,
+        address: profile?.address || "",
+        city: profile?.city || "",
+        country: profile?.country || "",
+        bio: profile?.bio || "",
       },
     });
   }, [me, form]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (values: EditProfileFormValues) => {
-      if (!me?.user.id) {
-        throw new Error("User not found");
-      }
-
       const payload = {
         name: values.name,
         phone: values.phone || undefined,
@@ -124,16 +140,21 @@ export default function EditProfile() {
         },
       };
 
-      const response = await api.patch(`/auth/profile/update`, payload);
+      console.log("backend payload", payload);
+
+      const response = await api.patch("/auth/me", payload);
       return response.data;
     },
+
     onSuccess: () => {
       swal.success("Profile updated successfully");
 
       queryClient.invalidateQueries({
         queryKey: ["auth", "me"],
       });
+      setUser();
     },
+
     onError: (error) => {
       swal.error(getApiErrorMessage(error));
     },
@@ -151,7 +172,12 @@ export default function EditProfile() {
             <Form.Item
               name="name"
               label="Name"
-              rules={[{ required: true, message: "Name is required" }]}
+              rules={[
+                {
+                  required: true,
+                  message: "Name is required",
+                },
+              ]}
             >
               <Input placeholder="John Doe" />
             </Form.Item>
@@ -176,8 +202,8 @@ export default function EditProfile() {
           </Col>
 
           <Col xs={24} md={12}>
-            <Form.Item name={["profile", "imageUrl"]} label="Image URL">
-              <Input placeholder="https://example.com/avatar.jpg" />
+            <Form.Item name={["profile", "imageUrl"]} label="Profile Image">
+              <ImageUpload />
             </Form.Item>
           </Col>
 
@@ -196,9 +222,18 @@ export default function EditProfile() {
               <Select
                 placeholder="Select gender"
                 options={[
-                  { label: "Male", value: "MALE" },
-                  { label: "Female", value: "FEMALE" },
-                  { label: "Other", value: "OTHER" },
+                  {
+                    label: "Male",
+                    value: "MALE",
+                  },
+                  {
+                    label: "Female",
+                    value: "FEMALE",
+                  },
+                  {
+                    label: "Other",
+                    value: "OTHER",
+                  },
                 ]}
               />
             </Form.Item>

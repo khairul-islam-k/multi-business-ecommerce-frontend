@@ -87,6 +87,8 @@ export default function SignUpPage() {
     },
   });
 
+  console.log('available', isEmailAvailable);
+
   const emailValue = watch("email");
   const [debouncedEmail] = useDebounce(emailValue, 600);
 
@@ -107,12 +109,12 @@ export default function SignUpPage() {
         setIsEmailChecking(true);
 
         const response = await api.get(
-          `/auth/check-email?email=${encodeURIComponent(
-            email,
-          )}`,
+          `/auth/validate-email?email=${email}`,
         );
 
         const result = response.data as CheckEmailResponse;
+
+        console.log(result);
 
         if (result.data.exists) {
           setError("email", {
@@ -147,6 +149,10 @@ export default function SignUpPage() {
       return;
     }
 
+    // if (!isEmailAvailable) {
+    //   swal.error("Email already exists");
+    // }
+
     const { name, email, password, businessName } = data;
 
     const payload = {
@@ -157,8 +163,8 @@ export default function SignUpPage() {
     };
 
     try {
-<<<<<<< HEAD
       await registerAccount(payload);
+      // swal.success("Registration successfully")
 
       setVerifyEmail(payload.email);
       setOtpOpen(true);
@@ -166,16 +172,6 @@ export default function SignUpPage() {
     } catch (error) {
       swal.error(getApiErrorMessage(error));
       console.log(error);
-=======
-      await registerAccount({
-        ...data,
-        businessName: data.businessName?.trim() || undefined,
-      });
-      swal.success("Account created successfully");
-      router.push("/sign-in");
-    } catch (error: any) {
-      swal.error(getApiErrorMessage(error));
->>>>>>> fefd864e955f7c4d1d908d3bbba8ca9f0df4df52
     }
   };
 
@@ -432,6 +428,7 @@ export default function SignUpPage() {
                 >
                   {isSubmitting ? "Creating account..." : "Create account"}
                 </button>
+
               </form>
 
               <p className="mt-5 text-center text-sm text-muted-foreground">

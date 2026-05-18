@@ -84,6 +84,7 @@ export default function AuthGuard({
   }
 
   if (!permissionAccess.allowed) {
+    
     return <AccessDenied />;
   }
 

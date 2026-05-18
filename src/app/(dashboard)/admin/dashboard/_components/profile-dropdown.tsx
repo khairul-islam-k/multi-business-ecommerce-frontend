@@ -31,6 +31,14 @@ const ProfileDropdown = () => {
   const avatarSeed = getUserAvatarSeed(user);
   const avatarSrc = getUserAvatarUrl(user);
 
+  console.log('user', user);
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+const imageUrl = user?.profile?.imageUrl ?? "";
+
+const imageAvatar = imageUrl ? `${baseUrl}${imageUrl}` : avatarSrc;
+
+
   const handleLogout = async () => {
     const { isConfirmed } = await swal.confirm({
       title: "Log out?",
@@ -102,8 +110,7 @@ const ProfileDropdown = () => {
           <Space size={10}>
             <Avatar
               alt={avatarSeed}
-              src={avatarSrc}
-              style={{ background: token.colorPrimary }}
+              src={imageAvatar}
             />
             <div className="hidden min-w-0 text-left md:block">
               <Text

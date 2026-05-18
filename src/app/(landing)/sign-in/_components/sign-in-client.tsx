@@ -4,7 +4,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm , useWatch} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
@@ -14,6 +14,7 @@ import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { getDashboardPath, isSafeInternalPath } from "@/lib/auth/permissions";
 import ForgerOtpVerify from "./forget-otp";
+import OtpVerifyDialog from "../../_components/otp-verify-dialog";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -37,13 +38,15 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
   const [verifyEmail, setVerifyEmail] = useState("");
   const [verificationId, setVerificationId] = useState<string>("");
 
+  const [forgetOpen, setForgetOpen] = useState(false);
+
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
   const swal = useSwal();
 
   const {
     register,
-    watch,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormValues>({
@@ -54,20 +57,22 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     },
   });
 
-  const emailValue = watch("email");
+  const emailValue = useWatch({name: "email", control});
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
       const result = await login(data.email, data.password);
 
-      swal.success("Signed in successfully!");
+      console.log('result', result);
 
-      const fallbackPath = getDashboardPath(result.user.type);
+        swal.success("Signed in successfully!");
 
-      const redirectPath =
-        redirectTo && isSafeInternalPath(redirectTo)
-          ? redirectTo
-          : fallbackPath;
+        const fallbackPath = getDashboardPath(result.user.type);
+
+        const redirectPath =
+          redirectTo && isSafeInternalPath(redirectTo)
+            ? redirectTo
+            : fallbackPath;
 
       router.push(redirectPath);
     } catch (error) {
@@ -87,11 +92,12 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
       return;
     }
 
+    console.log(email, 'email');
+
     try {
       const res = await api.post('/auth/forgot-password', { email });
-      console.log('res', res);
       setVerifyEmail(email)
-      setOtpOpen(true);
+      setForgetOpen(true);
 
     } catch (error) {
       swal.error(getApiErrorMessage(error));
@@ -262,14 +268,31 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
                   Create account
                 </Link>
               </p>
+
+              <p className="mt-5 text-center text-sm text-muted-foreground">
+                If your email is not verified.?{" "}
+                <span
+                  onClick={() => setOtpOpen(true)}
+                  className="font-semibold text-foreground underline-offset-4 hover:underline cursor-pointer"
+                >
+                  Verify
+                </span>
+              </p>
             </div>
           </section>
         </div>
       </div>
 
       <ForgerOtpVerify
-        open={otpOpen}
+        open={forgetOpen}
         email={verifyEmail}
+        onClose={() => setForgetOpen(false)}
+        onVerified={() => router.push("/sign-in")}
+      />
+
+      <OtpVerifyDialog
+        open={otpOpen}
+        email={''}
         onClose={() => setOtpOpen(false)}
         onVerified={() => router.push("/sign-in")}
       />

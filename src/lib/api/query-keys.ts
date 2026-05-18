@@ -70,8 +70,11 @@ export const apiQueryKeys = {
       ["permissions", businessId, "role", roleId] as const,
   },
   media: {
-    all: (businessId: ApiId) => ["media", businessId] as const,
+    all: (businessId: ApiId) => ["media", "auth", businessId] as const,
     list: (businessId: ApiId, query?: MediaQuery) =>
       ["media", businessId, "list", query] as const,
   },
+  emailVerify: {
+    send: (email: string) => ["sendOtp", email] as const,
+  }
 };

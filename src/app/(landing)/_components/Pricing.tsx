@@ -77,8 +77,10 @@ const tiers: Tier[] = [
 export const Pricing = () => {
   const [yearly, setYearly] = useState(true);
 
+
   return (
     <section id="pricing" className="py-20 sm:py-28">
+
       <div className="container mx-auto">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary">
@@ -152,7 +154,11 @@ export const Pricing = () => {
                     <span className="font-display text-4xl font-extrabold">
                       Custom
                     </span>
-                  ) : (
+                  ) 
+                  
+                  : 
+                  
+                  (
                     <>
                       <span className="font-display text-4xl font-extrabold tabular-nums">
                         ${price}
@@ -193,6 +199,7 @@ export const Pricing = () => {
                   {t.desc}
                 </p>
 
+                {/* start button */}
                 <Button
                   variant={t.featured ? "glass" : "default"}
                   className="mt-6 w-full"
@@ -200,6 +207,7 @@ export const Pricing = () => {
                   {t.cta || (isCustom ? "Contact Sales" : "Start Free Trial")}
                 </Button>
 
+                {/* feature */}
                 <ul className="mt-6 space-y-3">
                   {t.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
@@ -215,6 +223,7 @@ export const Pricing = () => {
                     </li>
                   ))}
                 </ul>
+
               </div>
             );
           })}

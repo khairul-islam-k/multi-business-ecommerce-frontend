@@ -44,6 +44,7 @@ import {
   packageStatusOptions,
   subscriptionStatusOptions,
 } from "./_utils/package-options";
+import { Value } from "@radix-ui/react-select";
 
 const statusColor: Record<string, string> = {
   ACTIVE: "green",
@@ -265,6 +266,7 @@ export default function PackagesPage() {
         });
         swal.success("Package plan updated successfully.");
       } else {
+        console.log('payload', payload);
         await mutations.createPlan.mutateAsync(payload);
         swal.success("Package plan created successfully.");
       }

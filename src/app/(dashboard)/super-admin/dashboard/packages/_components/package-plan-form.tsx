@@ -3,6 +3,7 @@
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
+  Card,
   Checkbox,
   Col,
   Form,
@@ -10,6 +11,7 @@ import {
   InputNumber,
   Row,
   Select,
+  Switch,
 } from "antd";
 import { useEffect } from "react";
 
@@ -46,12 +48,21 @@ export default function PackagePlanForm({
       isDefault: initialValue?.isDefault ?? false,
       status: initialValue?.status ?? "ACTIVE",
       sortOrder: initialValue?.sortOrder ?? 0,
+
       limits:
         initialValue?.limits?.map((limit) => ({
           limitKey: limit.limitKey,
           limitValue: limit.limitValue,
           resetCycle: limit.resetCycle ?? "LIFETIME",
           description: limit.description ?? undefined,
+        })) ?? [],
+
+      features:
+        initialValue?.features?.map((feature) => ({
+          title: feature.title,
+          description: feature.description ?? undefined,
+          sortOrder: feature.sortOrder ?? 0,
+          isActive: feature.isActive ?? true,
         })) ?? [],
     });
   }, [form, initialValue]);
@@ -130,15 +141,38 @@ export default function PackagePlanForm({
 
       <Form.List name="limits">
         {(fields, { add, remove }) => (
-          <div className="space-y-3">
-            {fields.map((field) => (
-              <Row gutter={12} key={field.key} align="middle">
+          <Card
+            title="Plan Limits"
+            extra={
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  add({
+                    limitKey: "",
+                    limitValue: 0,
+                    resetCycle: "LIFETIME",
+                    description: "",
+                  })
+                }
+              >
+                Add Limit
+              </Button>
+            }
+          >
+            {fields.map(({ key, name, ...restField }) => (
+              <Row key={key} gutter={16} align="middle">
                 <Col xs={24} md={6}>
                   <Form.Item
-                    {...field}
-                    name={[field.name, "limitKey"]}
-                    label="Limit"
-                    rules={[{ required: true }]}
+                    {...restField}
+                    name={[name, "limitKey"]}
+                    label="Limit Key"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Limit key is required",
+                      },
+                    ]}
                   >
                     <Select
                       options={limitKeyOptions.map((value) => ({
@@ -151,24 +185,35 @@ export default function PackagePlanForm({
 
                 <Col xs={24} md={5}>
                   <Form.Item
-                    {...field}
-                    name={[field.name, "limitValue"]}
-                    label="Value"
-                    rules={[{ required: true }]}
+                    {...restField}
+                    name={[name, "limitValue"]}
+                    label="Limit Value"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Limit value is required",
+                      },
+                    ]}
                   >
                     <InputNumber
                       min={0}
-                      precision={0}
                       style={{ width: "100%" }}
+                      placeholder="10"
                     />
                   </Form.Item>
                 </Col>
 
                 <Col xs={24} md={5}>
                   <Form.Item
-                    {...field}
-                    name={[field.name, "resetCycle"]}
-                    label="Reset"
+                    {...restField}
+                    name={[name, "resetCycle"]}
+                    label="Reset Cycle"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Reset cycle is required",
+                      },
+                    ]}
                   >
                     <Select
                       options={resetCycleOptions.map((value) => ({
@@ -179,31 +224,105 @@ export default function PackagePlanForm({
                   </Form.Item>
                 </Col>
 
-                <Col xs={20} md={7}>
+                <Col xs={24} md={6}>
                   <Form.Item
-                    {...field}
-                    name={[field.name, "description"]}
+                    {...restField}
+                    name={[name, "description"]}
                     label="Description"
                   >
-                    <Input maxLength={255} />
+                    <Input placeholder="Maximum employees allowed" />
                   </Form.Item>
                 </Col>
 
-                <Col xs={4} md={1}>
-                  <Button
-                    danger
-                    type="text"
-                    icon={<MinusCircleOutlined />}
-                    onClick={() => remove(field.name)}
-                  />
+                <Col xs={24} md={2}>
+                  <Form.Item label=" ">
+                    <Button
+                      danger
+                      type="text"
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => remove(name)}
+                    />
+                  </Form.Item>
                 </Col>
               </Row>
             ))}
+          </Card>
+        )}
+      </Form.List>
 
-            <Button icon={<PlusOutlined />} onClick={() => add()}>
-              Add limit
-            </Button>
-          </div>
+      <Form.List name="features">
+        {(fields, { add, remove }) => (
+          <Card
+            style={{ marginTop: '20px' }}
+            title="Plan Features"
+            extra={
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  add({
+                    title: "",
+                    description: "",
+                    isActive: true,
+                  })
+                }
+              >
+                Add Feature
+              </Button>
+            }
+          >
+            {fields.map(({ key, name, ...restField }) => (
+              <Row key={key} gutter={16} align="middle">
+                <Col xs={24} md={8}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "title"]}
+                    label="Feature Title"
+                    rules={[
+                      {
+                        required: true,
+                        message: "Feature title is required",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Unlimited products" />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={10}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "description"]}
+                    label="Description"
+                  >
+                    <Input placeholder="Create as many products as your catalogue needs" />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={4}>
+                  <Form.Item
+                    {...restField}
+                    name={[name, "isActive"]}
+                    label="Active"
+                    valuePropName="checked"
+                  >
+                    <Switch />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={2}>
+                  <Form.Item label=" ">
+                    <Button
+                      danger
+                      type="text"
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => remove(name)}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            ))}
+          </Card>
         )}
       </Form.List>
 

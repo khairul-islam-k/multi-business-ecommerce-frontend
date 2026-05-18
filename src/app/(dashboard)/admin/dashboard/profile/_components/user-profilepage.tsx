@@ -22,8 +22,6 @@ import {
 } from "@ant-design/icons";
 
 import { useAuthStore } from "@/stores/auth.store";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const { Text, Title } = Typography;
 
@@ -86,11 +84,6 @@ export default function UserProfilePage() {
 
     return (
         <div className="space-y-6">
-            <PageHeader
-                title="User Profile"
-                subtitle="Your account and active business details."
-                breadcrumb={adminBreadcrumb}
-            />
 
             <Card styles={{ body: { padding: 0 } }} style={{ overflow: "hidden" }}>
                 <div

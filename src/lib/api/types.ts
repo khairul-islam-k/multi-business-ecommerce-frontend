@@ -1,5 +1,25 @@
 export type SortOrder = "asc" | "desc" | "ASC" | "DESC";
 export type ApiId = string;
+export type TEmail = string;
+
+export type SendOtpResponse = {
+  data: {
+    verificationId: string;
+    email: string;
+    expiresAt: string;
+  };
+  message: string;
+};
+
+export type VerifyEmailPayload = {
+  email: string;
+  otp: string;
+};
+
+export type VerifiedResponse = {
+  data: unknown;
+  message: string;
+};
 
 export type ApiResponse<T> = {
   data: T;
@@ -49,6 +69,7 @@ export type SystemUser = {
   status?: SystemUserStatus;
   createdAt?: string;
   updatedAt?: string;
+  businessId: string;
 };
 
 export type AuthBusiness = {
@@ -60,6 +81,8 @@ export type AuthBusiness = {
     userId: ApiId;
   }>;
 };
+
+
 
 export type AuthPayload = {
   accessToken: string;
@@ -416,6 +439,17 @@ export type PackagePlanLimit = {
   updatedAt?: string;
 };
 
+export type PackageFeature = {
+  id: string;
+  packageId?: string;
+  title: string;
+  description: string | null;
+  isActive: boolean;
+  sortOrder?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PackagePlan = {
   id: ApiId;
   name: string;
@@ -428,6 +462,7 @@ export type PackagePlan = {
   status: PackageStatus;
   sortOrder: number;
   limits?: PackagePlanLimit[];
+  features?: PackageFeature[];
   _count?: {
     subscriptions?: number;
   };
@@ -467,6 +502,7 @@ export type PackagePlanPayload = {
   status?: PackageStatus;
   sortOrder?: number;
   limits?: PackagePlanLimit[];
+  features: PackageFeature[];
 };
 
 export type PackageAddonPayload = {
@@ -592,10 +628,10 @@ export type PackageUsageSummaryItem = {
 
 export type ConfirmPackagePaymentResult =
   | {
-      payment: PackageMockPayment;
-      subscription: TenantSubscription;
-    }
+    payment: PackageMockPayment;
+    subscription: TenantSubscription;
+  }
   | {
-      payment: PackageMockPayment;
-      subscriptionAddon: PackageSubscriptionAddon;
-    };
+    payment: PackageMockPayment;
+    subscriptionAddon: PackageSubscriptionAddon;
+  };
