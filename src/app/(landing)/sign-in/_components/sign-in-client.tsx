@@ -36,7 +36,7 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
   // verify
   const [otpOpen, setOtpOpen] = useState(false);
   const [verifyEmail, setVerifyEmail] = useState("");
-  const [verificationId, setVerificationId] = useState<string>("");
+  // const [verificationId, setVerificationId] = useState<string>("");
 
   const [forgetOpen, setForgetOpen] = useState(false);
 
@@ -270,12 +270,12 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
               </p>
 
               <p className="mt-5 text-center text-sm text-muted-foreground">
-                If your email is not verified.?{" "}
+                Email not verified?{" "}
                 <span
                   onClick={() => setOtpOpen(true)}
                   className="font-semibold text-foreground underline-offset-4 hover:underline cursor-pointer"
                 >
-                  Verify
+                  Email Verify
                 </span>
               </p>
             </div>

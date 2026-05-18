@@ -90,6 +90,7 @@ export type AuthPayload = {
   user: SystemUser;
   selectedBusiness: AuthBusiness | null;
   businesses?: AuthBusiness[];
+  activeSubscription: unknown | null;
 };
 
 export type RegisterPayload = {

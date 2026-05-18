@@ -88,7 +88,7 @@
     --muted: 234 25% 14%;
     --muted-foreground: 234 14% 65%;
 
-    --accent: 244 50% 18%;
+    --accent: black;
     --accent-foreground: 262 90% 88%;
 
     --destructive: 0 70% 55%;
@@ -298,6 +298,7 @@ body {
   box-shadow: var(--swal-shadow) !important;
   /* border: 1px solid var(--swal-border); */
   padding: 24px;
+  z-index: 1000000;
 }
 
 .antd-swal-title {

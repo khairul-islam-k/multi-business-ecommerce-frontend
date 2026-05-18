@@ -1,20 +1,9 @@
 "use client";
 
 import { theme } from "antd";
-import Swal from "sweetalert2";
+import Swal, { type SweetAlertOptions } from "sweetalert2";
 
-type SwalIcon = "success" | "error" | "warning" | "info" | "question";
-
-type BaseOptions = {
-  title?: string;
-  text?: string;
-  html?: string;
-  icon?: SwalIcon;
-
-  showCancelButton?: boolean;
-  confirmButtonText?: string;
-  cancelButtonText?: string;
-
+type BaseOptions = SweetAlertOptions & {
   onConfirm?: () => void | Promise<void>;
 };
 
@@ -22,8 +11,10 @@ export function useSwal() {
   const { token } = theme.useToken();
 
   const fire = async (options: BaseOptions) => {
+    const { onConfirm, ...swalOptions } = options;
+
     const result = await Swal.fire({
-      ...options,
+      ...swalOptions,
 
       buttonsStyling: false,
 
@@ -47,8 +38,8 @@ export function useSwal() {
       },
     });
 
-    if (result.isConfirmed && options.onConfirm) {
-      await options.onConfirm();
+    if (result.isConfirmed && onConfirm) {
+      await onConfirm();
     }
 
     return result;
@@ -63,11 +54,13 @@ export function useSwal() {
       ...options,
     });
 
-  const success = (text: string) =>
+  const success = (title: string) =>
     fire({
+      position: "top-end",
       icon: "success",
-      text,
-      confirmButtonText: "OK",
+      title,
+      showConfirmButton: false,
+      timer: 1500,
     });
 
   const error = (text: string) =>
@@ -77,5 +70,10 @@ export function useSwal() {
       confirmButtonText: "OK",
     });
 
-  return { fire, confirm, success, error };
+  return {
+    fire,
+    confirm,
+    success,
+    error,
+  };
 }

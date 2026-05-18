@@ -1,18 +1,20 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
 
+import { useTenantPackagePlans } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTenantPackagePlans } from "@/lib/api";
-import { cn } from "@/lib/utils";
 
 type BillingCycle = "MONTHLY" | "YEARLY" | "LIFETIME";
 
 type PackageFeature = {
     id: string;
     title: string;
+    description: string | null;
     sortOrder: number;
     isActive: boolean;
 };
@@ -22,6 +24,7 @@ type PackageLimit = {
     limitKey: string;
     limitValue: number;
     resetCycle: string;
+    description: string | null;
 };
 
 type PackagePlan = {
@@ -35,39 +38,20 @@ type PackagePlan = {
     isDefault: boolean;
     status: "ACTIVE" | "INACTIVE";
     sortOrder: number;
-    features: PackageFeature[];
     limits: PackageLimit[];
+    features: PackageFeature[];
 };
 
-type ApiResponseShape =
-    | PackagePlan[]
-    | {
-        data?: PackagePlan[] | { plans?: PackagePlan[] };
-        plans?: PackagePlan[];
-    };
-
-function getPlans(data: ApiResponseShape | undefined): PackagePlan[] {
-    if (Array.isArray(data)) return data;
-
-    if (Array.isArray(data?.data)) return data.data;
-
-    if (Array.isArray(data?.plans)) return data.plans;
-
-    if (
-        data?.data &&
-        !Array.isArray(data.data) &&
-        Array.isArray(data.data.plans)
-    ) {
-        return data.data.plans;
-    }
-
-    return [];
-}
+type PackagePlansResponse = {
+    items: PackagePlan[];
+};
 
 function formatPrice(price: string, currencyCode: string) {
     const amount = Number(price);
 
-    if (Number.isNaN(amount)) return price;
+    if (Number.isNaN(amount)) {
+        return price;
+    }
 
     return new Intl.NumberFormat("en-BD", {
         style: "currency",
@@ -76,28 +60,48 @@ function formatPrice(price: string, currencyCode: string) {
     }).format(amount);
 }
 
-function formatBillingCycle(cycle: BillingCycle) {
+function getBillingLabel(cycle: BillingCycle) {
     if (cycle === "MONTHLY") return "/mo";
     if (cycle === "YEARLY") return "/yr";
     return "";
 }
 
+function getButtonText(plan: PackagePlan) {
+    if (plan.freeTrialDays > 0) {
+        return `Start ${plan.freeTrialDays}-Day Free Trial`;
+    }
+
+    return "Get Start";
+}
+
 export default function PricingCards() {
+    const [billingCycle, setBillingCycle] = useState<BillingCycle>("YEARLY");
+
     const { data, isLoading, isError, error } = useTenantPackagePlans();
 
-    console.log('pricing', data);
+    const visiblePlans = useMemo(() => {
+        // ✅ Main fix: your API response is { items: [...] }
+        const plans = (data as PackagePlansResponse | undefined)?.items ?? [];
 
-    const plans = getPlans(data as ApiResponseShape | undefined)
-        .filter((plan) => plan.status === "ACTIVE")
-        .sort((a, b) => a.sortOrder - b.sortOrder);
+        return plans
+            .filter((plan) => plan.status === "ACTIVE")
+            .filter((plan) => plan.billingCycle === billingCycle)
+            .sort((a, b) => {
+                if (a.sortOrder !== b.sortOrder) {
+                    return a.sortOrder - b.sortOrder;
+                }
+
+                return Number(a.price) - Number(b.price);
+            });
+    }, [data, billingCycle]);
 
     if (isLoading) {
         return (
-            <section className="py-16">
+            <section className="bg-white py-16">
                 <div className="container mx-auto px-4">
                     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
                         {Array.from({ length: 4 }).map((_, index) => (
-                            <Skeleton key={index} className="h-[520px] rounded-2xl" />
+                            <Skeleton key={index} className="h-[540px] rounded-2xl" />
                         ))}
                     </div>
                 </div>
@@ -107,7 +111,7 @@ export default function PricingCards() {
 
     if (isError) {
         return (
-            <section className="py-16">
+            <section className="bg-white py-16">
                 <div className="container mx-auto px-4">
                     <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-700">
                         Failed to load pricing plans.
@@ -118,153 +122,190 @@ export default function PricingCards() {
         );
     }
 
-    if (!plans.length) {
-        return (
-            <section className="py-16">
-                <div className="container mx-auto px-4">
-                    <div className="rounded-2xl border bg-white p-6 text-center text-slate-600">
-                        No pricing plans found.
-                    </div>
-                </div>
-            </section>
-        );
-    }
-
     return (
-        <section className="bg-white py-16">
+        <section className=" py-16">
+
+            <div className="text-center mb-5">
+                <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary">
+                    Pricing
+                </span>
+                <h2 className="mt-3 font-display text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight">
+                    Simple plans that{" "}
+                    <span className="text-gradient">scale with you.</span>
+                </h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Start free. Upgrade when you grow. Cancel anytime.
+                </p>
+            </div>
+
             <div className="container mx-auto px-4">
-                <div className="mx-auto mb-12 max-w-2xl text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
-                        Simple pricing for every business
-                    </h2>
-                    <p className="mt-3 text-slate-600">
-                        Choose a plan that fits your business size and growth stage.
-                    </p>
-                </div>
+                <div className="mb-12 flex justify-center">
+                    <div className="inline-flex rounded-full border bg-white p-1 shadow-sm">
+                        <button
+                            type="button"
+                            onClick={() => setBillingCycle("MONTHLY")}
+                            className={cn(
+                                "rounded-full px-6 py-3 text-sm font-semibold transition",
+                                billingCycle === "MONTHLY"
+                                    ? "bg-indigo-600 text-white shadow"
+                                    : "text-slate-500 hover:text-slate-900"
+                            )}
+                        >
+                            Monthly
+                        </button>
 
-                <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-                    {plans.map((plan) => {
-                        const isPopular =
-                            plan.name.toLowerCase() === "growth" || plan.isDefault;
-
-                        const activeFeatures = [...(plan.features ?? [])]
-                            .filter((feature) => feature.isActive)
-                            .sort((a, b) => a.sortOrder - b.sortOrder);
-
-                        return (
-                            <article
-                                key={plan.id}
+                        <button
+                            type="button"
+                            onClick={() => setBillingCycle("YEARLY")}
+                            className={cn(
+                                "flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition",
+                                billingCycle === "YEARLY"
+                                    ? "bg-indigo-600 text-white shadow"
+                                    : "text-slate-500 hover:text-slate-900"
+                            )}
+                        >
+                            Yearly
+                            <span
                                 className={cn(
-                                    "relative flex min-h-[520px] flex-col rounded-2xl border bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
-                                    isPopular &&
-                                    "border-transparent bg-gradient-to-b from-indigo-600 to-violet-600 text-white shadow-2xl"
+                                    "rounded-full px-2 py-1 text-[10px] font-bold",
+                                    billingCycle === "YEARLY"
+                                        ? "bg-white/20 text-white"
+                                        : "bg-indigo-50 text-indigo-600"
                                 )}
                             >
-                                {isPopular && (
-                                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-slate-950 px-4 py-1 text-[11px] font-bold uppercase tracking-wide text-white hover:bg-slate-950">
-                                        <Sparkles className="mr-1 h-3 w-3" />
-                                        Most Popular
-                                    </Badge>
-                                )}
+                                SAVE 20%
+                            </span>
+                        </button>
+                    </div>
+                </div>
 
-                                <div>
-                                    <h3
-                                        className={cn(
-                                            "text-xl font-bold text-slate-950",
-                                            isPopular && "text-white"
-                                        )}
-                                    >
-                                        {plan.name}
-                                    </h3>
+                {visiblePlans.length === 0 ? (
+                    <div className="rounded-2xl border bg-white p-8 text-center text-slate-600">
+                        No {billingCycle.toLowerCase()} pricing plans found.
+                    </div>
+                ) : (
+                    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+                        {visiblePlans.map((plan) => {
+                            const isPopular =
+                                plan.name.toLowerCase() === "growth" || plan.isDefault;
 
-                                    <div className="mt-5 flex items-end gap-1">
-                                        <span
+                            const features = [...(plan.features ?? [])]
+                                .filter((feature) => feature.isActive)
+                                .sort((a, b) => a.sortOrder - b.sortOrder);
+
+                            return (
+                                <article
+                                    key={plan.id}
+                                    className={cn(
+                                        "relative flex min-h-[540px] flex-col rounded-2xl border border-slate-200 bg-accent p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
+                                        isPopular &&
+                                        "border-transparent bg-gradient-to-b from-indigo-600 to-violet-600 text-white shadow-2xl"
+                                    )}
+                                >
+                                    {isPopular && (
+                                        <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-slate-950 px-4 py-1 text-[11px] font-bold uppercase tracking-wide text-white hover:bg-slate-950">
+                                            <Sparkles className="mr-1 h-3 w-3" />
+                                            Most Popular
+                                        </Badge>
+                                    )}
+
+                                    <div>
+                                        <h3
                                             className={cn(
-                                                "text-4xl font-extrabold tracking-tight text-slate-950",
+                                                "text-xl font-bold text-slate-950",
                                                 isPopular && "text-white"
                                             )}
                                         >
-                                            {formatPrice(plan.price, plan.currencyCode)}
-                                        </span>
+                                            {plan.name}
+                                        </h3>
 
-                                        <span
+                                        <div className="mt-5 flex items-end gap-1">
+                                            <span
+                                                className={cn(
+                                                    "text-4xl font-extrabold tracking-tight text-slate-950",
+                                                    isPopular && "text-white"
+                                                )}
+                                            >
+                                                {formatPrice(plan.price, plan.currencyCode)}
+                                            </span>
+
+                                            <span
+                                                className={cn(
+                                                    "mb-1 text-sm font-medium text-slate-500",
+                                                    isPopular && "text-indigo-100"
+                                                )}
+                                            >
+                                                {getBillingLabel(plan.billingCycle)}
+                                            </span>
+                                        </div>
+
+                                        <p
                                             className={cn(
-                                                "mb-1 text-sm font-medium text-slate-500",
+                                                "mt-3 text-sm text-slate-500",
                                                 isPopular && "text-indigo-100"
                                             )}
                                         >
-                                            {formatBillingCycle(plan.billingCycle)}
-                                        </span>
-                                    </div>
+                                            billed {plan.billingCycle.toLowerCase()}
+                                        </p>
 
-                                    <p
-                                        className={cn(
-                                            "mt-3 text-sm text-slate-500",
-                                            isPopular && "text-indigo-100"
-                                        )}
-                                    >
-                                        billed {plan.billingCycle.toLowerCase()}
-                                    </p>
-
-                                    {plan.description && (
                                         <p
                                             className={cn(
                                                 "mt-5 min-h-[48px] text-sm leading-6 text-slate-600",
                                                 isPopular && "text-indigo-50"
                                             )}
                                         >
-                                            {plan.description}
+                                            {plan.description || "Perfect plan to start your business."}
                                         </p>
-                                    )}
-                                </div>
+                                    </div>
 
-                                <Button
-                                    className={cn(
-                                        "mt-7 h-11 w-full rounded-xl bg-indigo-600 font-semibold text-white hover:bg-indigo-700",
-                                        isPopular &&
-                                        "bg-white text-slate-950 hover:bg-indigo-50 hover:text-slate-950"
-                                    )}
-                                >
-                                    {plan.freeTrialDays > 0
-                                        ? `Start ${plan.freeTrialDays}-Day Free Trial`
-                                        : "Start Free Trial"}
-                                </Button>
+                                    <Button
+                                        type="button"
+                                        className={cn(
+                                            "mt-7 h-11 w-full rounded-xl bg-indigo-600 font-semibold text-white hover:bg-indigo-700",
+                                            isPopular &&
+                                            "bg-white text-slate-950 hover:bg-indigo-50 hover:text-slate-950"
+                                        )}
+                                    >
+                                        {getButtonText(plan)}
+                                    </Button>
 
-                                <div className="mt-7 flex-1 space-y-4">
-                                    {activeFeatures.length > 0 ? (
-                                        activeFeatures.map((feature) => (
-                                            <div key={feature.id} className="flex items-start gap-3">
-                                                <Check
-                                                    className={cn(
-                                                        "mt-0.5 h-4 w-4 shrink-0 text-indigo-600",
-                                                        isPopular && "text-white"
-                                                    )}
-                                                />
-                                                <span
-                                                    className={cn(
-                                                        "text-sm text-slate-700",
-                                                        isPopular && "font-medium text-white"
-                                                    )}
-                                                >
-                                                    {feature.title}
-                                                </span>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div
-                                            className={cn(
-                                                "text-sm text-slate-500",
-                                                isPopular && "text-indigo-100"
-                                            )}
-                                        >
-                                            Features will be added soon.
-                                        </div>
-                                    )}
-                                </div>
-                            </article>
-                        );
-                    })}
-                </div>
+                                    <div className="mt-7 flex-1 space-y-4">
+                                        {features.length > 0 ? (
+                                            features.map((feature) => (
+                                                <div key={feature.id} className="flex items-start gap-3">
+                                                    <Check
+                                                        className={cn(
+                                                            "mt-0.5 h-4 w-4 shrink-0 text-indigo-600",
+                                                            isPopular && "text-white"
+                                                        )}
+                                                    />
+
+                                                    <span
+                                                        className={cn(
+                                                            "text-sm text-slate-700",
+                                                            isPopular && "font-medium text-white"
+                                                        )}
+                                                    >
+                                                        {feature.title}
+                                                    </span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p
+                                                className={cn(
+                                                    "text-sm text-slate-500",
+                                                    isPopular && "text-indigo-100"
+                                                )}
+                                            >
+                                                Features will be added soon.
+                                            </p>
+                                        )}
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </section>
     );

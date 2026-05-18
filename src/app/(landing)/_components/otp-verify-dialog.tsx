@@ -69,6 +69,7 @@ export default function OtpVerifyDialog({
 
     try {
       await sendOtp.mutateAsync();
+      swal.success('OTP sent');
       setIsOtpSent(true);
     } catch (error) {
       swal.error("Failed to send OTP");

@@ -97,7 +97,6 @@ export default function EditProfile() {
 
   useEffect(() => {
     if (!me?.user) return;
-
     const user = me.user;
     const profile = user.profile;
 

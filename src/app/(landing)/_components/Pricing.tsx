@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PricingCards from "./pricing-cards";
 
 type Tier = {
   name: string;
@@ -98,29 +99,26 @@ export const Pricing = () => {
           <div className="mt-8 inline-flex items-center gap-2 p-1 rounded-full border border-border bg-card shadow-card">
             <button
               onClick={() => setYearly(false)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${
-                !yearly
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${!yearly
                   ? "bg-primary text-primary-foreground shadow-elevated"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               Monthly
             </button>
             <button
               onClick={() => setYearly(true)}
-              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all inline-flex items-center gap-2 ${
-                yearly
+              className={`px-5 py-2 rounded-full text-sm font-semibold transition-all inline-flex items-center gap-2 ${yearly
                   ? "bg-primary text-primary-foreground shadow-elevated"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               Yearly
               <span
-                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                  yearly
+                className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${yearly
                     ? "bg-primary-foreground/20 text-primary-foreground"
                     : "bg-primary/10 text-primary"
-                }`}
+                  }`}
               >
                 Save 20%
               </span>
@@ -129,17 +127,16 @@ export const Pricing = () => {
         </div>
 
         <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto">
-          {tiers.map((t) => {
+          {/* {tiers.map((t) => {
             const price = yearly ? t.yearly : t.monthly;
             const isCustom = price === "custom";
             return (
               <div
                 key={t.name}
-                className={`relative rounded-2xl p-7 transition-all duration-300 ${
-                  t.featured
+                className={`relative rounded-2xl p-7 transition-all duration-300 ${t.featured
                     ? "gradient-primary text-primary-foreground shadow-elevated lg:-translate-y-2"
                     : "border border-border bg-card shadow-card hover:-translate-y-1 hover:shadow-elevated"
-                }`}
+                  }`}
               >
                 {t.featured && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider bg-foreground text-background px-3 py-1 rounded-full">
@@ -154,34 +151,32 @@ export const Pricing = () => {
                     <span className="font-display text-4xl font-extrabold">
                       Custom
                     </span>
-                  ) 
-                  
-                  : 
-                  
-                  (
-                    <>
-                      <span className="font-display text-4xl font-extrabold tabular-nums">
-                        ${price}
-                      </span>
-                      <span
-                        className={`text-sm ${
-                          t.featured
-                            ? "text-primary-foreground/70"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        /mo
-                      </span>
-                    </>
-                  )}
+                  )
+
+                    :
+
+                    (
+                      <>
+                        <span className="font-display text-4xl font-extrabold tabular-nums">
+                          ${price}
+                        </span>
+                        <span
+                          className={`text-sm ${t.featured
+                              ? "text-primary-foreground/70"
+                              : "text-muted-foreground"
+                            }`}
+                        >
+                          /mo
+                        </span>
+                      </>
+                    )}
                 </div>
 
                 <p
-                  className={`text-xs ${
-                    t.featured
+                  className={`text-xs ${t.featured
                       ? "text-primary-foreground/70"
                       : "text-muted-foreground"
-                  } min-h-[1rem]`}
+                    } min-h-[1rem]`}
                 >
                   {!isCustom &&
                     yearly &&
@@ -190,16 +185,15 @@ export const Pricing = () => {
                 </p>
 
                 <p
-                  className={`mt-3 text-sm ${
-                    t.featured
+                  className={`mt-3 text-sm ${t.featured
                       ? "text-primary-foreground/80"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {t.desc}
                 </p>
 
-                {/* start button */}
+
                 <Button
                   variant={t.featured ? "glass" : "default"}
                   className="mt-6 w-full"
@@ -207,16 +201,15 @@ export const Pricing = () => {
                   {t.cta || (isCustom ? "Contact Sales" : "Start Free Trial")}
                 </Button>
 
-                {/* feature */}
+
                 <ul className="mt-6 space-y-3">
                   {t.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm">
                       <Check
-                        className={`h-4 w-4 mt-0.5 shrink-0 ${
-                          t.featured
+                        className={`h-4 w-4 mt-0.5 shrink-0 ${t.featured
                             ? "text-primary-foreground"
                             : "text-primary"
-                        }`}
+                          }`}
                         strokeWidth={3}
                       />
                       <span>{f}</span>
@@ -226,8 +219,10 @@ export const Pricing = () => {
 
               </div>
             );
-          })}
+          })} */}
+
         </div>
+
       </div>
     </section>
   );
