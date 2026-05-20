@@ -4,7 +4,7 @@ import { z } from "zod";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm , useWatch} from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
@@ -57,7 +57,7 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     },
   });
 
-  const emailValue = useWatch({name: "email", control});
+  const emailValue = useWatch({ name: "email", control });
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
@@ -65,16 +65,37 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
 
       console.log('result', result);
 
+      const fallbackPath = getDashboardPath(result.user.type);
+      const redirectPath =
+        redirectTo && isSafeInternalPath(redirectTo)
+          ? redirectTo
+          : fallbackPath;
+
+      if (result?.user?.type === "ADMIN") {
+
         swal.success("Signed in successfully!");
+        router.push(redirectPath);
 
-        const fallbackPath = getDashboardPath(result.user.type);
+      } else if (result?.user?.type === "TENANT") {
 
-        const redirectPath =
-          redirectTo && isSafeInternalPath(redirectTo)
-            ? redirectTo
-            : fallbackPath;
+        if (result.activeSubscription) {
+          swal.success("Signed in successfully!");
+          router.push(redirectPath);
+        } else {
+          swal.success("your subscription has been expire");
+          router.push("/pricing");
+        }
 
-      router.push(redirectPath);
+      } else {
+        if (result.activeSubscription) {
+          swal.success("Signed in successfully!");
+          router.push(redirectPath);
+        } else {
+          swal.success("Your subscription has expired. Please inform your tenant.");
+        }
+      }
+
+      // router.push(redirectPath);
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }

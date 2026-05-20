@@ -198,6 +198,33 @@ export const items: MenuProps["items"] = [
     label: "Products Management",
     children: [
       {
+        key: "categories",
+        icon: <BarcodeOutlined />,
+        label: (
+          <Link href="/admin/dashboard/products-management/categories">
+            Categories
+          </Link>
+        ),
+      },
+      {
+        key: "brands",
+        icon: <BarcodeOutlined />,
+        label: (
+          <Link href="/admin/dashboard/products-management/brands">
+            Brands
+          </Link>
+        ),
+      },
+      {
+        key: "units",
+        icon: <BarcodeOutlined />,
+        label: (
+          <Link href="/admin/dashboard/products-management/units">
+            Units
+          </Link>
+        ),
+      },
+      {
         key: "products",
         icon: <BarcodeOutlined />,
         label: (

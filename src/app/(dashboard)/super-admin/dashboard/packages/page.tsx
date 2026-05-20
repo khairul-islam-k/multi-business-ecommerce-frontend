@@ -36,7 +36,6 @@ import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useSwal } from "@/hooks/use-swal";
 import PackagePlanForm from "./_components/package-plan-form";
-import PackageAddonForm from "./_components/package-addon-form";
 import SubscriptionForm from "./_components/subscription-form";
 import {
   money,
@@ -44,7 +43,6 @@ import {
   packageStatusOptions,
   subscriptionStatusOptions,
 } from "./_utils/package-options";
-import { Value } from "@radix-ui/react-select";
 
 const statusColor: Record<string, string> = {
   ACTIVE: "green",
@@ -63,9 +61,6 @@ export default function PackagesPage() {
   const [planPage, setPlanPage] = useState(1);
   const [planSearch, setPlanSearch] = useState("");
   const [planStatus, setPlanStatus] = useState<PackageStatus | undefined>();
-  const [addonPage, setAddonPage] = useState(1);
-  const [addonSearch, setAddonSearch] = useState("");
-  const [addonStatus, setAddonStatus] = useState<PackageStatus | undefined>();
   const [subscriptionPage, setSubscriptionPage] = useState(1);
   const [subscriptionStatus, setSubscriptionStatus] = useState<
     PackageSubscriptionStatus | undefined
@@ -73,8 +68,6 @@ export default function PackagesPage() {
 
   const [planModalOpen, setPlanModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<PackagePlan | null>(null);
-  const [addonModalOpen, setAddonModalOpen] = useState(false);
-  const [editingAddon, setEditingAddon] = useState<PackageAddon | null>(null);
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const [changingSubscription, setChangingSubscription] =
     useState<TenantSubscription | null>(null);
@@ -88,15 +81,6 @@ export default function PackagesPage() {
     }),
     [planPage, planSearch, planStatus],
   );
-  const addonQuery = useMemo<PackageQuery>(
-    () => ({
-      page: addonPage,
-      limit: 10,
-      search: addonSearch,
-      status: addonStatus,
-    }),
-    [addonPage, addonSearch, addonStatus],
-  );
   const subscriptionQuery = useMemo<TenantSubscriptionQuery>(
     () => ({
       page: subscriptionPage,
@@ -107,7 +91,6 @@ export default function PackagesPage() {
   );
 
   const plans = usePackagePlans(planQuery);
-  const addons = usePackageAddons(addonQuery);
   const subscriptions = useTenantSubscriptions(subscriptionQuery);
   const tenantOptions = useTenants({ page: 1, limit: 100 });
   const planOptions = usePackagePlans({
@@ -182,33 +165,6 @@ export default function PackagesPage() {
     },
   ];
 
-  const addonColumns: Column<PackageAddon>[] = [
-    { key: "name", label: "Add-on", type: "primary" },
-    {
-      key: "price",
-      label: "Price",
-      render: (addon) => money(addon.price, addon.currencyCode),
-    },
-    {
-      key: "limitKey",
-      label: "Limit",
-      render: (addon) => `${optionLabel(addon.limitKey)} +${addon.limitValue}`,
-    },
-    {
-      key: "billingCycle",
-      label: "Billing",
-      render: (addon) => optionLabel(addon.billingCycle),
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "meta",
-      render: (addon) => (
-        <Tag color={statusColor[addon.status]}>{optionLabel(addon.status)}</Tag>
-      ),
-    },
-  ];
-
   const subscriptionColumns: Column<TenantSubscription>[] = [
     {
       key: "tenant",
@@ -252,11 +208,6 @@ export default function PackagesPage() {
     setEditingPlan(null);
   };
 
-  const closeAddonModal = () => {
-    setAddonModalOpen(false);
-    setEditingAddon(null);
-  };
-
   const submitPlan = async (payload: PackagePlanPayload) => {
     try {
       if (editingPlan) {
@@ -276,23 +227,6 @@ export default function PackagesPage() {
     }
   };
 
-  const submitAddon = async (payload: PackageAddonPayload) => {
-    try {
-      if (editingAddon) {
-        await mutations.updateAddon.mutateAsync({
-          addonId: editingAddon.id,
-          payload,
-        });
-        swal.success("Package add-on updated successfully.");
-      } else {
-        await mutations.createAddon.mutateAsync(payload);
-        swal.success("Package add-on created successfully.");
-      }
-      closeAddonModal();
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
-  };
 
   const deletePlan = async (plan: PackagePlan) => {
     const { isConfirmed } = await swal.confirm({
@@ -310,21 +244,6 @@ export default function PackagesPage() {
     }
   };
 
-  const deleteAddon = async (addon: PackageAddon) => {
-    const { isConfirmed } = await swal.confirm({
-      title: "Delete package add-on?",
-      text: `${addon.name} will be archived and removed from active lists.`,
-      confirmButtonText: "Delete add-on",
-    });
-    if (!isConfirmed) return;
-
-    try {
-      await mutations.deleteAddon.mutateAsync(addon.id);
-      swal.success("Package add-on deleted successfully.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
-  };
 
   const createSubscription = async (payload: {
     tenantId?: ApiId;
@@ -438,55 +357,6 @@ export default function PackagesPage() {
             ),
           },
           {
-            key: "addons",
-            label: "Add-ons",
-            children: (
-              <DataTable
-                data={addons.data?.items ?? []}
-                columns={addonColumns}
-                loading={addons.isLoading || addons.isFetching}
-                onSearch={(value) => {
-                  setAddonSearch(value);
-                  setAddonPage(1);
-                }}
-                extra={packageStatusFilter(addonStatus, (value) => {
-                  setAddonStatus(value);
-                  setAddonPage(1);
-                })}
-                toolbarEnd={
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => setAddonModalOpen(true)}
-                  >
-                    Create add-on
-                  </Button>
-                }
-                actions={(addon) => (
-                  <Space>
-                    <Button
-                      icon={<EditOutlined />}
-                      onClick={() => {
-                        setEditingAddon(addon);
-                        setAddonModalOpen(true);
-                      }}
-                    />
-                    <Button
-                      danger
-                      icon={<DeleteOutlined />}
-                      onClick={() => deleteAddon(addon)}
-                    />
-                  </Space>
-                )}
-                pagination={{
-                  currentPage: addonPage,
-                  totalPages: addons.data?.meta.totalPages ?? 1,
-                  onPageChange: setAddonPage,
-                }}
-              />
-            ),
-          },
-          {
             key: "subscriptions",
             label: "Subscriptions",
             children: (
@@ -543,23 +413,6 @@ export default function PackagesPage() {
             mutations.createPlan.isPending || mutations.updatePlan.isPending
           }
           onSubmit={submitPlan}
-        />
-      </Modal>
-
-      <Modal
-        title={editingAddon ? "Edit package add-on" : "Create package add-on"}
-        open={addonModalOpen}
-        onCancel={closeAddonModal}
-        footer={null}
-        width={820}
-        destroyOnHidden
-      >
-        <PackageAddonForm
-          initialValue={editingAddon}
-          loading={
-            mutations.createAddon.isPending || mutations.updateAddon.isPending
-          }
-          onSubmit={submitAddon}
         />
       </Modal>
 

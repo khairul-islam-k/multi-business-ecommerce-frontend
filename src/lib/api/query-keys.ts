@@ -9,6 +9,7 @@ import type {
   RoleQuery,
   TenantQuery,
   TenantSubscriptionQuery,
+  CategoriesQuery,
 } from "@/lib/api/types";
 
 export const apiQueryKeys = {
@@ -73,6 +74,22 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["media", "auth", businessId] as const,
     list: (businessId: ApiId, query?: MediaQuery) =>
       ["media", businessId, "list", query] as const,
+  },
+  ProductCategories: {
+    all: (businessId: ApiId) => ["categories", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["categories", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["categories", businessId, "detail", CategoryId] as const,
+  },
+  ProductBrands: {
+    all: (businessId: ApiId) => ["brands", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["brands", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["brands", businessId, "detail", CategoryId] as const,
   },
   emailVerify: {
     send: (email: string) => ["sendOtp", email] as const,

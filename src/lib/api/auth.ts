@@ -1,4 +1,4 @@
-import api, { publicApi } from "@/lib/axios";
+import api, { getApiErrorMessage, publicApi } from "@/lib/axios";
 import { unwrapApiResponse } from "@/lib/api/response";
 import type {
   ApiResponse,
@@ -27,7 +27,7 @@ export const authApi = {
   refresh(payload: RefreshPayload) {
     return publicApi
       .post<ApiResponse<AuthPayload>>("/auth/refresh", payload)
-      .then((res) => unwrapApiResponse(res.data));
+      .then((res) => unwrapApiResponse(res.data))
   },
 
   selectBusiness(payload: SelectBusinessPayload) {

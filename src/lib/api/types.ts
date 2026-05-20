@@ -182,6 +182,10 @@ export type BusinessQuery = ListQuery & {
   country?: string;
 };
 
+export type CategoriesQuery = ListQuery & {
+  status?: RoleStatus;
+};
+
 export type BusinessPayload = {
   name: string;
   slug?: string;

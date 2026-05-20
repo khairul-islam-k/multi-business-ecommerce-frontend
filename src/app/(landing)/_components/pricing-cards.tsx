@@ -3,11 +3,14 @@
 import { useMemo, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
 
-import { useTenantPackagePlans } from "@/lib/api";
+import { useTenantPackageMutations, useTenantPackagePlans, useTenantPackageUsage } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 type BillingCycle = "MONTHLY" | "YEARLY" | "LIFETIME";
 
@@ -75,7 +78,10 @@ function getButtonText(plan: PackagePlan) {
 }
 
 export default function PricingCards() {
+    const mutations = useTenantPackageMutations();
     const [billingCycle, setBillingCycle] = useState<BillingCycle>("YEARLY");
+    const swal = useSwal();
+    const router = useRouter();
 
     const { data, isLoading, isError, error } = useTenantPackagePlans();
 
@@ -94,6 +100,31 @@ export default function PricingCards() {
                 return Number(a.price) - Number(b.price);
             });
     }, [data, billingCycle]);
+
+    const handleBuyPackage = async (id: string) => {
+        console.log('id', id);
+        try {
+            const payment = await mutations.checkoutPlan.mutateAsync(id);
+            console.log('payment', payment);
+            const confirm = await swal.confirm({
+                title: "Confirm mock payment?",
+                text: `Confirm payment payment`,
+                confirmButtonText: "Confirm payment",
+            });
+
+            if (confirm.isConfirmed) {
+                await mutations.confirmMockPayment.mutateAsync(payment.id);
+                router.push('/admin/dashboard');
+                swal.success("Plan changed successfully.");
+            } else {
+                swal.success("Checkout created. Confirm it before it expires.");
+            }
+        } catch (error) {
+            console.log('error', getApiErrorMessage(error))
+            swal.success("please fist login");
+            router.push('/admin/dashboard');
+        }
+    }
 
     if (isLoading) {
         return (
@@ -260,6 +291,7 @@ export default function PricingCards() {
 
                                     <Button
                                         type="button"
+                                        onClick={() => handleBuyPackage(plan?.id)}
                                         className={cn(
                                             "mt-7 h-11 w-full rounded-xl bg-indigo-600 font-semibold text-white hover:bg-indigo-700",
                                             isPopular &&

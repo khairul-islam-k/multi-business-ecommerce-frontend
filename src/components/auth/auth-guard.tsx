@@ -26,67 +26,67 @@ export default function AuthGuard({
   const pathname = usePathname();
   const { accessToken, initialized, user, loading } = useAuthStore();
 
-  const expectedTypes = useMemo(
-    () =>
-      role === "Admin"
-        ? ["ADMIN"]
-        : role === "Tenant"
-          ? ["TENANT", "EMPLOYEE"]
-          : ["EMPLOYEE"],
-    [role],
-  );
-  const routePermission = useMemo(
-    () => (role === "Tenant" ? getAdminRoutePermission(pathname) : null),
-    [pathname, role],
-  );
-  const permissionAccess = usePermissionAccess(
-    routePermission === "DENY" ? null : routePermission,
-  );
+  // const expectedTypes = useMemo(
+  //   () =>
+  //     role === "Admin"
+  //       ? ["ADMIN"]
+  //       : role === "Tenant"
+  //         ? ["TENANT", "EMPLOYEE"]
+  //         : ["EMPLOYEE"],
+  //   [role],
+  // );
+  // const routePermission = useMemo(
+  //   () => (role === "Tenant" ? getAdminRoutePermission(pathname) : null),
+  //   [pathname, role],
+  // );
+  // const permissionAccess = usePermissionAccess(
+  //   routePermission === "DENY" ? null : routePermission,
+  // );
 
-  useEffect(() => {
-    if (!initialized || loading) return;
+  // useEffect(() => {
+  //   if (!initialized || loading) return;
 
-    if (!accessToken) {
-      const signInPath =
-        isSafeInternalPath(redirectUrl) && redirectUrl !== "/super-admin/sign-in"
-          ? redirectUrl
-          : SIGN_IN_PATH;
-      router.replace(
-        `${signInPath}?redirect=${encodeURIComponent(pathname || getDashboardPath())}`,
-      );
-      return;
-    }
+  //   if (!accessToken) {
+  //     const signInPath =
+  //       isSafeInternalPath(redirectUrl) && redirectUrl !== "/super-admin/sign-in"
+  //         ? redirectUrl
+  //         : SIGN_IN_PATH;
+  //     router.replace(
+  //       `${signInPath}?redirect=${encodeURIComponent(pathname || getDashboardPath())}`,
+  //     );
+  //     return;
+  //   }
 
-    if (!user) return;
+  //   if (!user) return;
 
-    if (!expectedTypes.includes(user.type)) {
-      router.replace(getDashboardPath(user.type));
-    }
-  }, [
-    accessToken,
-    expectedTypes,
-    initialized,
-    loading,
-    pathname,
-    redirectUrl,
-    router,
-    user,
-  ]);
+  //   if (!expectedTypes.includes(user.type)) {
+  //     router.replace(getDashboardPath(user.type));
+  //   }
+  // }, [
+  //   accessToken,
+  //   expectedTypes,
+  //   initialized,
+  //   loading,
+  //   pathname,
+  //   redirectUrl,
+  //   router,
+  //   user,
+  // ]);
 
-  if (!initialized || loading || !accessToken || !user) return null;
+  // if (!initialized || loading || !accessToken || !user) return null;
 
-  if (!expectedTypes.includes(user.type)) return null;
+  // if (!expectedTypes.includes(user.type)) return null;
 
-  if (permissionAccess.loading) return null;
+  // if (permissionAccess.loading) return null;
 
-  if (user.type === "EMPLOYEE" && routePermission === "DENY") {
-    return <AccessDenied />;
-  }
+  // if (user.type === "EMPLOYEE" && routePermission === "DENY") {
+  //   return <AccessDenied />;
+  // }
 
-  if (!permissionAccess.allowed) {
+  // if (!permissionAccess.allowed) {
     
-    return <AccessDenied />;
-  }
+  //   return <AccessDenied />;
+  // }
 
   return <>{children}</>;
 }
