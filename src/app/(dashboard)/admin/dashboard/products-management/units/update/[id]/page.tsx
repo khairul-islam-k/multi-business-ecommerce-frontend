@@ -1,12 +1,24 @@
 "use client";
 
+import { UnitPayload } from "@/types/product/unit";
 import UnitForm from "../../_components/UnitForm";
+import { useParams } from "next/navigation";
+import { useUnit, useUnitMutation } from "@/lib/api/hooks/product-unit";
+import { useAuthStore } from "@/stores/auth.store";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const UpdateUnitPage = () => {
-    const unit = {
-        name: "Piece",
-        status: "ACTIVE" as const,
-    };
+    const { id } = useParams<{ id: string }>();
+    const business = useAuthStore(s => s.selectedBusiness);
+    const businessId = business?.id ? business?.id : '';
+    const swal = useSwal();
+
+    const { data: unit } = useUnit(businessId, id);
+    const { updateUnit } = useUnitMutation(businessId);
+
 
     const handleUpdateUnit = async (values: UnitPayload) => {
         const payload: UnitPayload = {
@@ -14,15 +26,29 @@ const UpdateUnitPage = () => {
             status: values.status,
         };
 
+        try {
+            await updateUnit.mutateAsync({ unitId: id, payload });
+            swal.success('Unit Update Successfully');
+        } catch (error) {
+            swal.error(getApiErrorMessage(error));
+        }
         console.log("Update unit payload:", payload);
     };
 
     return (
-        <UnitForm
-            mode="update"
-            initialValues={unit}
-            onSubmit={handleUpdateUnit}
-        />
+        <div>
+            <div style={{
+                marginBottom: '15px'
+            }}>
+                <PageHeader title="Unit update" breadcrumb={adminBreadcrumb} />
+            </div>
+
+            <UnitForm
+                mode="update"
+                initialValues={unit}
+                onSubmit={handleUpdateUnit}
+            />
+        </div>
     );
 };
 

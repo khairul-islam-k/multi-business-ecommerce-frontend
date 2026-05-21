@@ -5,6 +5,8 @@ import UnitForm, { UnitPayload } from "../_components/UnitForm";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const CreateUnitPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
@@ -23,11 +25,20 @@ const CreateUnitPage = () => {
             swal.success("create unit successfully");
             console.log("Create unit payload:", res);
         } catch (error) {
-            console.log('error', getApiErrorMessage(error));
+            swal.error(getApiErrorMessage(error));
         }
     };
 
-    return <UnitForm mode="create" onSubmit={handleCreateUnit} />;
+    return (
+        <div>
+            <div style={{
+                marginBottom: '15px'
+            }}>
+                <PageHeader title="Create Unit" breadcrumb={adminBreadcrumb} ></PageHeader>
+            </div>
+            <UnitForm mode="create" onSubmit={handleCreateUnit} />
+        </div>
+    );
 };
 
 export default CreateUnitPage;

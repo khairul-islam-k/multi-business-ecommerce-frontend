@@ -1,41 +1,40 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { BrandPayload } from "@/types/product/brands";
 import { productBrandApi } from "../product-brand";
 import { productUnitApi } from "../product-unit";
 import { UnitPayload } from "@/types/product/unit";
 
-// export function useProductBrandQuery(businessId: ApiId, query?: CategoriesQuery) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductBrands.list(businessId, query),
-//     queryFn: () => productBrandApi.list(businessId, query),
-//     enabled: Boolean(businessId),
-//   });
-// }
+export function useProductUnitQuery(businessId: ApiId, query?: CategoriesQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductUnit.list(businessId, query),
+    queryFn: () => productUnitApi.list(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
 
-// export function useBrand(businessId: ApiId, brandId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductCategories.detail(businessId, brandId),
+export function useUnit(businessId: ApiId, unitId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductUnit.detail(businessId, unitId),
 
-//     queryFn: () => {
-//       if (!businessId || !brandId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!businessId || !unitId) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productBrandApi.get(businessId, brandId);
-//     },
+      return productUnitApi.get(businessId, unitId);
+    },
 
-//     enabled: Boolean(businessId && brandId),
-//   });
-// }
+    enabled: Boolean(businessId && unitId),
+  });
+}
 
 export function useUnitMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
 
   const invalidate = () =>
     queryClient.invalidateQueries({
-      queryKey: apiQueryKeys.ProductBrands.all(businessId),
+      queryKey: apiQueryKeys.ProductUnit.all(businessId),
     });
 
   return {
@@ -45,22 +44,22 @@ export function useUnitMutation(businessId: ApiId) {
       onSuccess: invalidate,
     }),
 
-    // updateBrand: useMutation({
-    //   mutationFn: ({
-    //     brandId,
-    //     payload,
-    //   }: {
-    //     brandId: ApiId;
-    //     payload: BrandPayload;
-    //   }) => productBrandApi.update(businessId, brandId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updateUnit: useMutation({
+      mutationFn: ({
+        unitId,
+        payload,
+      }: {
+        unitId: ApiId;
+        payload: UnitPayload;
+      }) => productUnitApi.update(businessId, unitId, payload),
+      onSuccess: invalidate,
+    }),
 
-    // removeBrand: useMutation({
-    //   mutationFn: (brandId: ApiId) =>
-    //     productBrandApi.remove(businessId, brandId),
-    //   onSuccess: invalidate,
-    // }),
+    removeUnit: useMutation({
+      mutationFn: (unitId: ApiId) =>
+        productUnitApi.remove(businessId, unitId),
+      onSuccess: invalidate,
+    }),
 
   };
 }

@@ -225,6 +225,15 @@ export const items: MenuProps["items"] = [
         ),
       },
       {
+        key: "tags",
+        icon: <BarcodeOutlined />,
+        label: (
+          <Link href="/admin/dashboard/products-management/tags">
+            Tags
+          </Link>
+        ),
+      },
+      {
         key: "products",
         icon: <BarcodeOutlined />,
         label: (

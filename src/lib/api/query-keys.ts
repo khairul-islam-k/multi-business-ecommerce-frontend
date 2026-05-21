@@ -91,6 +91,22 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["brands", businessId, "detail", CategoryId] as const,
   },
+  ProductUnit: {
+    all: (businessId: ApiId) => ["units", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["units", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["units", businessId, "detail", CategoryId] as const,
+  },
+  ProductTags: {
+    all: (businessId: ApiId) => ["tags", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["tags", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["tags", businessId, "detail", CategoryId] as const,
+  },
   emailVerify: {
     send: (email: string) => ["sendOtp", email] as const,
   }
