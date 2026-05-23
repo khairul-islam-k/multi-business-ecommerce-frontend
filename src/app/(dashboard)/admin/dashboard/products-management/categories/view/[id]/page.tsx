@@ -7,6 +7,8 @@ import { Button, Card, Empty, Skeleton, Tag } from "antd";
 import type { ReactNode } from "react";
 import NextImage from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const imageUrlSet = (url: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -45,12 +47,17 @@ const ViewCategoryDetails = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
+            <PageHeader
+                title="Product Details"
+                subtitle="View product information, images, category, brand, unit, tags, status, and system details."
+                breadcrumb={adminBreadcrumb}
+            />
             <div className="flex items-center justify-between">
                 <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
                     Back
                 </Button>
 
-                
+
             </div>
 
             {/* Category Details */}

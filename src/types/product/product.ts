@@ -1,3 +1,7 @@
+import { ListQuery } from "@/lib/api";
+import { ResponseBrand } from "./brands";
+import { ResponseUnit } from "./unit";
+
 export type MediaFileType = "IMAGE" | "VIDEO" | "PDF" | "DOCUMENT";
 
 export type MediaStatus = "ACTIVE" | "INACTIVE";
@@ -96,4 +100,97 @@ export type ResponseCategory = {
     children: number;
     products: number;
   };
+};
+
+
+export type ProductStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
+
+export type ProductImagePayload = {
+  imageUrl: string;
+  altText: string;
+};
+
+export type ProductPayload = {
+  images: ProductImagePayload[];
+  name: string;
+  description: string;
+  categoryId: string;
+  brandId: string;
+  unitId: string;
+  status: ProductStatus;
+  tagIds: string[];
+};
+
+export type ProductFormValues = ProductPayload;
+
+type Tag = {
+  id: string;
+  businessId: string;
+  name: string;
+  status: MediaStatus;
+
+  createdBy: string | null;
+  updatedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type ProductTag = {
+  id: string;
+  productId: string;
+  tagId: string;
+  createdAt: string;
+  tag: Tag;
+};
+
+type ProductImage = {
+  id: string;
+  businessId: string;
+  productId: string;
+  variantId: string | null;
+
+  imageUrl: string;
+  altText: string ;
+  isThumbnail: boolean;
+  sortOrder: number;
+
+  createdBy: string | null;
+  updatedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type ResponseProduct = {
+  id: string;
+  businessId: string;
+
+  categoryId: string;
+  brandId: string;
+  unitId: string;
+
+  name: string;
+  slug: string;
+  description: string | null;
+  status: ProductStatus;
+
+  images: ProductImage[];
+  tags: ProductTag[];
+  attributes: unknown;
+  variants: unknown;
+
+  category: ResponseCategory;
+  brand: ResponseBrand;
+  unit: ResponseUnit;
+
+  createdBy: string | null;
+  updatedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type ProductQuery = ListQuery & {
+  status?: ProductStatus;
 };

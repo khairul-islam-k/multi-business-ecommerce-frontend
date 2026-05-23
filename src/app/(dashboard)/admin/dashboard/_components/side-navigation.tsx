@@ -423,7 +423,7 @@ export const items: MenuProps["items"] = [
     label: "Masters / Settings",
     children: [
       {
-        key: "Categories",
+        key: "Categories-settings",
         icon: <AppstoreOutlined />,
         label: (
           <Link href="/admin/dashboard/masters/categories">Categories</Link>
@@ -507,7 +507,7 @@ export const items: MenuProps["items"] = [
         label: <Link href="/admin/dashboard/finance/expenses">Expenses</Link>,
       },
       {
-        key: "categories",
+        key: "categories-finance",
         icon: <TagsOutlined />, // Expense Categories
         label: (
           <Link href="/admin/dashboard/finance/expenses/categories">

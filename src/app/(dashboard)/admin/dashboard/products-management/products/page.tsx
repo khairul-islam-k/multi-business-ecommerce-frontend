@@ -1,23 +1,29 @@
 "use client";
-
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Button, Card, Dropdown, Flex, Grid, Input, Select, Tag } from "antd";
+import { Button, Dropdown, MenuProps, Modal, Popconfirm, Select, Tag } from "antd";
 import {
+  DeleteOutlined,
+  EditOutlined,
   EyeOutlined,
   MoreOutlined,
-  PlusOutlined,
-  SearchOutlined,
+  PlusOutlined
 } from "@ant-design/icons";
 
-import api from "@/lib/axios";
-import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
-import { DataTable } from "@/components/shared/data-table";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
+import { useState } from "react";
+import { useAuthStore } from "@/stores/auth.store";
+import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
+import Image from "next/image";
+import { Column, DataTable } from "@/components/shared/data-table";
+import { ResponseProduct } from "@/types/product/product";
+import { imageUrlSet } from "./_components/image-url";
+import { getApiErrorMessage } from "@/lib/axios";
+import CreateAttributeForm from "./_components/attributes/create-attribute";
+import ViewAttribute from "./_components/attributes/view-attribute";
+import UpdateAttributeName from "./_components/attributes/update-attribute-name";
+import DeleteAttributeName from "./_components/attributes/delete-attribute-name";
 
 /* ================= TYPES ================= */
 export interface TProduct {
@@ -34,195 +40,321 @@ export interface TProduct {
 
 /* ================= COMPONENT ================= */
 const ProductsList = () => {
-  const swal = useSwal();
-  const screens = Grid.useBreakpoint();
   const router = useRouter();
-  const queryClient = useQueryClient();
 
-  /* ===== STATE ===== */
-  const [page, setPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState();
+  const business = useAuthStore(s => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : '';
+  const swal = useSwal();
+
+  // modal 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // ProductId
+  const [productId, setProductId] = useState<string>('');
+  const [productKey, setProductKey] = useState<string>('');
+
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [search, setSearch] = useState('');
   const limit = 5;
 
-  const [searchText, setSearchText] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
-
-  /* ===== DEBOUNCE SEARCH ===== */
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchText);
-      setPage(1); // reset page on search
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchText]);
-
-  /* ===== FETCH DATA ===== */
-  const { data: Products } = useQuery({
-    queryKey: ["products", page, limit, debouncedSearch, statusFilter],
-    queryFn: async () => {
-      if (statusFilter) {
-        return api.get(
-          `/products?search=${debouncedSearch}&status=${statusFilter}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`,
-        );
-      } else {
-        return api.get(
-          `/products?search=${debouncedSearch}&page=${page}&limit=${limit}&sortBy=createdAt&sortOrder=DESC`,
-        );
-      }
-    },
+  const { data: products, isLoading, isFetching } = useProductsQuery(businessId, {
+    page: currentPage,
+    limit,
+    search,
+    status: statusFilter,
+    sortOrder: "desc",
   });
 
-  // delete
-  const deleteProduct = useMutation({
-    mutationFn: async (id: string) => {
-      return api.delete(`/products/${id}`);
-    },
-
-    onSuccess: () => {
-      // refresh product list after delete
-      swal.success("Your file has been deleted.");
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-      });
-    },
-  });
+  const { removeProduct } = useProductMutation(businessId);
 
   // pagination
-  const total = Products?.data?.data?.meta?.total;
+  const total = products?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  const handleDelete = (deleteId: string) => {
-    swal
-      .confirm({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          deleteProduct.mutate(deleteId);
-        }
-      });
-  };
+  const handleDelete = async (id: string) => {
+    try {
+      await removeProduct.mutateAsync(id);
+      swal.success('Product has been deleted');
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  }
 
-  /* ===== TABLE COLUMNS ===== */
-  const productColumns = [
-    { label: "Name", key: "name" },
-    { label: "Cost Price", key: "cost_price" },
-    { label: "Sale Price", key: "sale_price" },
-    { label: "Compare Price", key: "compare_price" },
+  // create attribute
+
+  const columns: Column<ResponseProduct>[] = [
     {
-      label: "Status",
-      key: "status",
-      render: (record: TProduct) => (
-        <Tag color={record.status === "Active" ? "green" : "red"}>
-          {record.status}
-        </Tag>
+      key: "images",
+      label: "Image",
+      render: (row) => {
+        const image = row.images?.[0];
+
+        return image?.imageUrl ? (
+          <Image
+            src={imageUrlSet(image.imageUrl)}
+            alt={image.altText || row.name}
+            width={48}
+            height={48}
+            className="rounded-md object-cover"
+            unoptimized
+          />
+        ) : (
+          "-"
+        );
+      },
+    },
+    {
+      key: "name",
+      label: "Product Name",
+      type: "primary",
+      render: (row) => (
+        <div>
+          <strong>{row.name}</strong>
+          <p className="m-0 text-xs text-gray-500">{row.slug}</p>
+        </div>
       ),
     },
     {
-      label: "Featured",
-      key: "is_featured",
-      render: (record: TProduct) => (record.is_featured ? "Yes" : "No"),
+      key: "category",
+      label: "Category",
+      render: (row) => row.category?.name ?? "-",
     },
-    { label: "Published At", key: "published_at" },
     {
-      label: "",
-      key: "",
-      render: (record: TProduct) => (
-        <Flex>
-          <Link
-            href={`/admin/dashboard/products-management/products/detail/${record.uuid}`}
-          >
-            <Button type="text" icon={<EyeOutlined />} />
-          </Link>
+      key: "brand",
+      label: "Brand",
+      render: (row) => row.brand?.name ?? "-",
+    },
+    {
+      key: "unit",
+      label: "Unit",
+      render: (row) => row.unit?.name ?? "-",
+    },
+    {
+      key: "tags",
+      label: "Tags",
+      render: (row) =>
+        row.tags?.length ? (
+          <div className="flex flex-wrap gap-1">
+            {row.tags.map((item) => (
+              <Tag key={item.id}>{item.tag?.name ?? "-"}</Tag>
+            ))}
+          </div>
+        ) : (
+          "-"
+        ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => {
+        const color =
+          row.status === "ACTIVE"
+            ? "green"
+            : row.status === "DRAFT"
+              ? "blue"
+              : row.status === "ARCHIVED"
+                ? "default"
+                : "red";
 
+        return <Tag color={color}>{row.status}</Tag>;
+      },
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (row) => new Date(row.createdAt).toLocaleDateString(),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => {
+
+        const items: MenuProps["items"] = [
+          {
+            key: "view",
+            icon: <EyeOutlined />,
+            label: "View",
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Edit",
+          },
+          {
+            key: "delete",
+            danger: true,
+            icon: <DeleteOutlined />,
+            label: (
+              <Popconfirm
+                title="Delete product?"
+                description="Are you sure?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() => handleDelete(row.id)}
+              >
+                <span>Delete</span>
+              </Popconfirm>
+            ),
+          },
+          {
+            key: "create-attribute",
+            icon: <EditOutlined />,
+            label: "Add Attribute",
+          },
+          {
+            key: "view-attribute",
+            icon: <EditOutlined />,
+            label: "View Attribute",
+          },
+          {
+            key: "update-attribute-name",
+            icon: <EditOutlined />,
+            label: "Update Attribute Name",
+          },
+          {
+            key: "delete-attribute-name",
+            icon: <EditOutlined />,
+            label: "Delete Attribute Name",
+          },
+        ];
+
+        return (
           <Dropdown
+            // trigger={["click"]}
+            placement="bottomRight"
             menu={{
-              items: [
-                {
-                  key: "edit",
-                  label: "Edit",
-                  onClick: () =>
-                    router.push(
-                      `/admin/dashboard/products-management/products/edit/${record.uuid}`,
-                    ),
-                },
-                {
-                  key: "delete",
-                  danger: true,
-                  label: "Delete",
-                  onClick: () => {
-                    handleDelete(record.uuid);
-                  },
-                },
-              ],
+              items,
+              onClick: ({ key }) => {
+                if (key === "view") {
+                  router.push(
+                    `/admin/dashboard/products-management/products/detail/${row.id}`
+                  );
+                }
+
+                if (key === "edit") {
+                  router.push(
+                    `/admin/dashboard/products-management/products/edit/${row.id}`
+                  );
+                }
+
+                if (key === "create-attribute") {
+                  setProductKey(key);
+                  setProductId(row.id);
+                  setIsModalOpen(true);
+                }
+
+                if (key === "view-attribute") {
+                  setProductKey(key);
+                  setProductId(row.id);
+                  setIsModalOpen(true);
+                }
+
+                if (key === "update-attribute-name") {
+                  setProductKey(key);
+                  setProductId(row.id);
+                  setIsModalOpen(true);
+                }
+
+                if (key === "delete-attribute-name") {
+                  setProductKey(key);
+                  setProductId(row.id);
+                  setIsModalOpen(true);
+                }
+              },
             }}
           >
-            <Button type="text" icon={<MoreOutlined />} />
+            <Button size="small" icon={<MoreOutlined />} />
           </Dropdown>
-        </Flex>
-      ),
+        );
+      },
     },
   ];
 
   /* ================= UI ================= */
   return (
-    <div style={{ padding: 24 }}>
-      <PageHeader title="Products List" breadcrumb={adminBreadcrumb} />
-
-      {/* 🔍 Search + Add Button */}
-
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <div className="flex gap-3">
-          <Input
-            allowClear
-            prefix={<SearchOutlined />}
-            placeholder="Search products..."
-            style={{ width: screens.lg ? 330 : "100%" }}
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-
-          <Select
-            placeholder="Filter by status"
-            allowClear
-            style={{ width: 180 }}
-            onChange={(v) => setStatusFilter(v)}
-            options={[
-              { label: "Active", value: "Active" },
-              { label: "Inactive", value: "Inactive" },
-            ]}
-          />
-        </div>
-
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() =>
-            router.push("/admin/dashboard/products-management/products/create")
-          }
-        >
-          New Product
-        </Button>
-      </div>
+    <div className='space-y-6'>
+      <PageHeader
+        title="Products"
+        subtitle="Manage your product catalog, images, categories, brands, units, tags, and product status."
+        breadcrumb={adminBreadcrumb}
+      />
 
       {/* 🔄 Search / Pagination Loader */}
-      <Card>
-        <DataTable
-          data={Products?.data?.data?.data ?? []}
-          columns={productColumns}
-        />
-      </Card>
+      <DataTable
+        data={products?.items ?? []}
+        toolbarEnd={
+          <div className="flex flex-col gap-3 md:flex-row">
+            <Select
+              placeholder="Filter by status"
+              allowClear
+              style={{ width: 180 }}
+              onChange={(v) => setStatusFilter(v)}
+              options={[
+                { label: "DRAFT", value: "DRAFT" },
+                { label: "Active", value: "ACTIVE" },
+                { label: "Inactive", value: "INACTIVE" },
+                { label: "Inactive", value: "ARCHIVED" },
+              ]}
+            />
 
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() =>
+                router.push("/admin/dashboard/products-management/products/create")
+              }
+            >
+              New Product
+            </Button>
+          </div>
+        }
+        columns={columns}
+        onSearch={(value) => {
+          setSearch(value);
+        }}
+        loading={
+          isLoading ||
+          isFetching
+        }
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages: totalPages,
+        }}
       />
+
+      <Modal
+        title="Basic Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={isModalOpen}
+        onOk={() => setIsModalOpen(false)}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        {
+          productKey === "create-attribute" && <CreateAttributeForm
+        productId={productId}
+        />
+        }
+
+        {
+          productKey === "view-attribute" && <ViewAttribute
+        productId={productId}
+        />
+        }
+
+        {
+          productKey === "update-attribute-name" && <UpdateAttributeName
+        productId={productId}
+        />
+        }
+        {
+          productKey === "delete-attribute-name" && <DeleteAttributeName
+        productId={productId}
+        />
+        }
+      </Modal>
+
     </div>
   );
 };

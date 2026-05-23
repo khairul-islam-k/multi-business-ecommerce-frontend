@@ -31,8 +31,6 @@ const ProfileDropdown = () => {
   const avatarSeed = getUserAvatarSeed(user);
   const avatarSrc = getUserAvatarUrl(user);
 
-  console.log('user', user);
-
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 const imageUrl = user?.profile?.imageUrl ?? "";
 

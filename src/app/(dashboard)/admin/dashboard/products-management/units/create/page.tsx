@@ -30,12 +30,12 @@ const CreateUnitPage = () => {
     };
 
     return (
-        <div>
-            <div style={{
-                marginBottom: '15px'
-            }}>
-                <PageHeader title="Create Unit" breadcrumb={adminBreadcrumb} ></PageHeader>
-            </div>
+        <div className="space-y-6">
+            <PageHeader
+                title="Create Product Unit"
+                subtitle="Add a new product unit with name and status."
+                breadcrumb={adminBreadcrumb}
+            />
             <UnitForm mode="create" onSubmit={handleCreateUnit} />
         </div>
     );

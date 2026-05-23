@@ -29,14 +29,17 @@ const UpdateBrandPage = () => {
     };
 
     const res = await updateBrand.mutateAsync({ brandId: id, payload })
-    console.log('res', res);
     swal.success('Brand update successfully');
 
   };
 
   return (
-    <div>
-      <PageHeader title="Update Brands" breadcrumb={adminBreadcrumb} />
+    <div className="space-y-6">
+      <PageHeader
+        title="Update Product Brand"
+        subtitle="Edit brand name, logo, description, status, and sorting."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <BrandForm
         mode="update"

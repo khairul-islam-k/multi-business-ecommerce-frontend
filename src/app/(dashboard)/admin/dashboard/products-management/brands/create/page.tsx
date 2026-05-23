@@ -29,8 +29,12 @@ const CreateBrandPage = () => {
   };
 
   return (
-    <div>
-      <PageHeader title="Product Brands" breadcrumb={adminBreadcrumb} />
+    <div className="space-y-6">
+      <PageHeader
+        title="Create Product Brand"
+        subtitle="Add a new product brand with logo, description, status, and sorting."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <BrandForm
         mode="create"

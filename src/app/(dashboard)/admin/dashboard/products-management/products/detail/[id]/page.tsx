@@ -1,159 +1,231 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Card, Row, Col, Tag, Typography, Divider, Image } from "antd";
+import { useProduct } from "@/lib/api/hooks/product";
+import { useAuthStore } from "@/stores/auth.store";
+import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 
-import api from "@/lib/axios";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+const imageUrlSet = (url?: string | null) => {
+  if (!url) return "";
 
-export type TProduct = {
-  id: number;
-  name: string;
-  sku: string;
-  barcode?: string;
-
-  short_description?: string;
-  long_description?: string;
-
-  cost_price: number;
-  sale_price: number;
-  compare_price?: number;
-
-  tax_type?: string;
-  tax_amount?: number;
-
-  weight?: number;
-
-  status: "Active" | "Inactive";
-  is_featured: boolean;
-
-  published_at?: string | null;
-
-  brand_id?: number;
-  category_id: number;
-};
-
-const { Title, Text, Paragraph } = Typography;
-
-export default function ProductDetailPage() {
-  const { id } = useParams<{ id: string }>();
-
-  const [productData, setProductData] = useState<TProduct | null>(null);
-
-  useEffect(() => {
-    api.get(`/products/${id}`).then((res) => {
-      setProductData(res?.data?.data);
-    });
-  }, [id]);
-
-  if (!productData) {
-    return <div>loading...</div>;
+  if (url.startsWith("http")) {
+    return url;
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
+  return `${baseUrl}${url}`;
+};
+
+const getProductStatusColor = (status: string) => {
+  if (status === "ACTIVE") return "green";
+  if (status === "DRAFT") return "blue";
+  if (status === "INACTIVE") return "red";
+  if (status === "ARCHIVED") return "default";
+
+  return "default";
+};
+
+export default function ProductDetailPage() {
+  const router = useRouter();
+  const { id } = useParams<{ id: string }>();
+
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const {
+    data: product,
+    isLoading,
+    isFetching,
+  } = useProduct(businessId, id);
+
+  if (isLoading || isFetching) {
+    return (
+      <Card>
+        <Skeleton active paragraph={{ rows: 8 }} />
+      </Card>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Card>
+        <Empty description="Product not found" />
+      </Card>
+    );
+  }
+
+  const thumbnail =
+    product.images?.find((image) => image.isThumbnail) ?? product.images?.[0];
+
   return (
-    <div style={{ padding: 24 }}>
-      <div style={{ marginBottom: 24 }}>
-        <PageHeader title="Product Details" breadcrumb={adminBreadcrumb} />
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+          Back
+        </Button>
+
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          onClick={() =>
+            router.push(
+              `/admin/dashboard/products-management/products/edit/${product.id}`
+            )
+          }
+        >
+          Edit
+        </Button>
       </div>
 
+      {/* Main Product Info */}
       <Card>
-        <Row gutter={24}>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
           {/* Product Image */}
-          <Col xs={24} md={8}>
-            <Image
-              src=""
-              alt={productData.name}
-              width="100%"
-              style={{ borderRadius: 8 }}
-            />
-          </Col>
+          <div className="space-y-4">
+            <div className="h-[320px] w-full overflow-hidden rounded-xl border bg-gray-50">
+              {thumbnail?.imageUrl ? (
+                <Image
+                  src={imageUrlSet(thumbnail.imageUrl)}
+                  alt={thumbnail.altText || product.name}
+                  width={320}
+                  height={320}
+                  className="h-full w-full object-cover"
+                  unoptimized
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-gray-400">
+                  No Image
+                </div>
+              )}
+            </div>
 
-          {/* Product Info */}
-          <Col xs={24} md={16}>
-            <Title level={3}>{productData.name}</Title>
+            {product.images?.length ? (
+              <div className="grid grid-cols-4 gap-3">
+                {product.images.map((image) => (
+                  <div
+                    key={image.id}
+                    className="relative h-20 overflow-hidden rounded-lg border bg-gray-50"
+                  >
+                    <Image
+                      src={imageUrlSet(image.imageUrl)}
+                      alt={image.altText || product.name}
+                      width={80}
+                      height={80}
+                      className="h-full w-full object-cover"
+                      unoptimized
+                    />
 
-            <Paragraph>{productData.short_description}</Paragraph>
+                    {image.isThumbnail ? (
+                      <span className="absolute left-1 top-1 rounded bg-black/70 px-2 py-0.5 text-[10px] text-white">
+                        Main
+                      </span>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
-            <Divider />
+          {/* Product Details */}
+          <div>
+            <div className="mb-3 flex flex-wrap items-center gap-3">
+              <h1 className="m-0 text-2xl font-semibold">{product.name}</h1>
 
-            <Row gutter={[16, 8]}>
-              <Col span={12}>
-                <Text strong>SKU:</Text> <Text>{productData.sku}</Text>
-              </Col>
+              <Tag color={getProductStatusColor(product.status)}>
+                {product.status}
+              </Tag>
+            </div>
 
-              <Col span={12}>
-                <Text strong>Barcode:</Text>{" "}
-                <Text>{productData.barcode || "N/A"}</Text>
-              </Col>
+            <p className="mb-1 text-sm text-gray-500">Slug: {product.slug}</p>
 
-              <Col span={12}>
-                <Text strong>Cost Price:</Text>{" "}
-                <Text>${productData.cost_price}</Text>
-              </Col>
+            <p className="mb-6 text-gray-600">
+              {product.description || "No description available."}
+            </p>
 
-              <Col span={12}>
-                <Text strong>Sale Price:</Text>{" "}
-                <Text>${productData.sale_price}</Text>
-              </Col>
+            <div className="mb-6 flex flex-wrap gap-2">
+              {product.tags?.length ? (
+                product.tags.map((item) => (
+                  <Tag key={item.id}>{item.tag?.name}</Tag>
+                ))
+              ) : (
+                <Tag>No Tags</Tag>
+              )}
+            </div>
 
-              <Col span={12}>
-                <Text strong>Compare Price:</Text>{" "}
-                <Text>
-                  {productData.compare_price
-                    ? `$${productData.compare_price}`
-                    : "N/A"}
-                </Text>
-              </Col>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <InfoItem label="Category" value={product.category?.name ?? "-"} />
 
-              <Col span={12}>
-                <Text strong>Tax:</Text>{" "}
-                <Text>
-                  {productData.tax_type}{" "}
-                  {productData.tax_amount ? `(${productData.tax_amount})` : ""}
-                </Text>
-              </Col>
+              <InfoItem label="Brand" value={product.brand?.name ?? "-"} />
 
-              <Col span={12}>
-                <Text strong>Weight:</Text> <Text>{productData.weight} kg</Text>
-              </Col>
+              <InfoItem label="Unit" value={product.unit?.name ?? "-"} />
 
-              <Col span={12}>
-                <Text strong>Status:</Text>{" "}
-                <Tag color={productData.status === "Active" ? "green" : "red"}>
-                  {productData.status}
-                </Tag>
-              </Col>
+              <InfoItem
+                label="Images"
+                value={product.images?.length ?? 0}
+              />
 
-              <Col span={12}>
-                <Text strong>Featured:</Text>{" "}
-                <Text>{productData.is_featured ? "Yes" : "No"}</Text>
-              </Col>
+              <InfoItem
+                label="Variants"
+                value={
+                  Array.isArray(product.variants)
+                    ? product.variants.length
+                    : 0
+                }
+              />
 
-              <Col span={12}>
-                <Text strong>Published At:</Text>{" "}
-                <Text>{productData.published_at || "Not Published"}</Text>
-              </Col>
+              <InfoItem
+                label="Attributes"
+                value={
+                  Array.isArray(product.attributes)
+                    ? product.attributes.length
+                    : 0
+                }
+              />
 
-              <Col span={12}>
-                <Text strong>Brand ID:</Text>{" "}
-                <Text>{productData.brand_id || "N/A"}</Text>
-              </Col>
+              <InfoItem
+                label="Created At"
+                value={new Date(product.createdAt).toLocaleDateString()}
+              />
 
-              <Col span={12}>
-                <Text strong>Category ID:</Text>{" "}
-                <Text>{productData.category_id}</Text>
-              </Col>
-            </Row>
-
-            <Divider />
-
-            <Title level={5}>Long Description</Title>
-            <Paragraph>{productData.long_description}</Paragraph>
-          </Col>
-        </Row>
+              <InfoItem
+                label="Updated At"
+                value={new Date(product.updatedAt).toLocaleDateString()}
+              />
+            </div>
+          </div>
+        </div>
       </Card>
+
+      {/* IDs */}
+      <Card title="System Information">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InfoItem label="Product ID" value={product.id} />
+          <InfoItem label="Business ID" value={product.businessId} />
+          <InfoItem label="Category ID" value={product.categoryId} />
+          <InfoItem label="Brand ID" value={product.brandId} />
+          <InfoItem label="Unit ID" value={product.unitId} />
+          <InfoItem label="Created By" value={product.createdBy ?? "-"} />
+          <InfoItem label="Updated By" value={product.updatedBy ?? "-"} />
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+type InfoItemProps = {
+  label: string;
+  value: ReactNode;
+};
+
+function InfoItem({ label, value }: InfoItemProps) {
+  return (
+    <div className="rounded-lg border bg-gray-50 p-4">
+      <p className="mb-1 text-sm text-gray-500">{label}</p>
+      <p className="m-0 break-all font-medium">{value}</p>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { Layout, Drawer, theme, Grid } from "antd";
 
 import Sidebar from "./_components/sidebar";
 import TopBar from "./_components/top-bar";
-import AuthGuard from "@/components/auth/auth-guard";
 
 const { Header, Sider, Content } = Layout;
 
@@ -20,7 +19,6 @@ export default function AdminDashboardLayout({
   const { token } = theme.useToken();
 
   return (
-    <AuthGuard redirectUrl="/sign-in" role="Tenant">
       <Layout hasSider style={{ maxHeight: "100vh", overflow: "hidden" }}>
         {/* Desktop Sidebar */}
         {!screens.xs && (
@@ -93,6 +91,5 @@ export default function AdminDashboardLayout({
           }
         `}</style>
       </Layout>
-    </AuthGuard>
   );
 }

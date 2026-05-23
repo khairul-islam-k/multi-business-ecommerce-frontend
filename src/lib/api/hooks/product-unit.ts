@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { productBrandApi } from "../product-brand";
 import { productUnitApi } from "../product-unit";
 import { UnitPayload } from "@/types/product/unit";
 

@@ -46,7 +46,7 @@ const ProductBrands = () => {
     const handleDelete = async (id: string) => {
         await removeBrand.mutateAsync(id);
         swal.success('Delete successfully');
-        
+
     }
 
     const columns: Column<ResponseBrand>[] = [
@@ -138,8 +138,12 @@ const ProductBrands = () => {
     ];
 
     return (
-        <div>
-            <PageHeader title="Product Brands" breadcrumb={adminBreadcrumb} />
+        <div className="space-y-6">
+            <PageHeader
+                title="Product Brands"
+                subtitle="Manage product brands, logos, status, sorting, and product usage."
+                breadcrumb={adminBreadcrumb}
+            />
 
             <DataTable
                 data={brands?.items ?? []}
@@ -151,8 +155,8 @@ const ProductBrands = () => {
                             style={{ width: 180 }}
                             onChange={(v) => setStatusFilter(v)}
                             options={[
-                                { label: "Active", value: "Active" },
-                                { label: "Inactive", value: "Inactive" },
+                                { label: "Active", value: "ACTIVE" },
+                                { label: "Inactive", value: "INACTIVE" },
                             ]}
                         />
 

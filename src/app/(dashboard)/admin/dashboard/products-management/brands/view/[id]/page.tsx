@@ -42,7 +42,11 @@ const BrandDetails = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <PageHeader title="View Brands" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Product Brand Details"
+        subtitle="View brand information, logo, status, sorting, and product usage."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <div className="flex items-center justify-between">
         <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>

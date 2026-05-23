@@ -5,6 +5,8 @@ import ProductCategoryForm, { ProductCategoryFormValues } from "../../_component
 import { useCategory, useProductCategoriesMutation } from "@/lib/api/hooks/product-categories";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSwal } from "@/hooks/use-swal";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const parentCategories = [
   {
@@ -37,7 +39,7 @@ const UpdateProductCategoryPage = () => {
         status: resData.status,
         sortOrder: resData.sortOrder ?? 0
       };
-      await updateCategories.mutateAsync({categoryId: id, payload});
+      await updateCategories.mutateAsync({ categoryId: id, payload });
       swal.success('categories success');
     } else {
       const payload = {
@@ -48,13 +50,18 @@ const UpdateProductCategoryPage = () => {
         sortOrder: values.sortOrder ?? 0,
         parentId: values.parentId ?? "",
       };
-      await updateCategories.mutateAsync({categoryId: id, payload});
+      await updateCategories.mutateAsync({ categoryId: id, payload });
       swal.success('categories success');
     }
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div className="space-y-6">
+      <PageHeader
+        title="Update Product Category"
+        subtitle="Edit category information, image, parent category, status, and sorting."
+        breadcrumb={adminBreadcrumb}
+      />
       <ProductCategoryForm
         initialData={category}
         parentCategories={parentCategories}

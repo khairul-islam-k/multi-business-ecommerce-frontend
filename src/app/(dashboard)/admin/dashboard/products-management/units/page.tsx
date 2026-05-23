@@ -44,8 +44,8 @@ const ProductUnits = () => {
         } catch (error) {
             swal.error(getApiErrorMessage(error))
         }
-        
-        
+
+
         console.log('id', id);
     }
 
@@ -121,12 +121,12 @@ const ProductUnits = () => {
     ];
 
     return (
-        <div>
-            <div style={{
-                marginBottom: '15px'
-            }}>
-                <PageHeader title='Product Unit' breadcrumb={adminBreadcrumb} />
-            </div>
+        <div className="space-y-6">
+            <PageHeader
+                title="Product Units"
+                subtitle="Manage product units, status, and related product usage."
+                breadcrumb={adminBreadcrumb}
+            />
 
             <DataTable
                 data={units?.items ?? []}

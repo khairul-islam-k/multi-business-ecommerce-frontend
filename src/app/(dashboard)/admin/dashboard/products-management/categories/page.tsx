@@ -135,13 +135,17 @@ const Categories = () => {
     ];
 
     return (
-        <div>
-            <PageHeader title="Product Categories" breadcrumb={adminBreadcrumb} />
+        <div className='space-y-6'>
+            <PageHeader
+                title="Product Categories"
+                subtitle="Manage product categories, parent-child hierarchy, images, status, and sorting."
+                breadcrumb={adminBreadcrumb}
+            />
 
             <DataTable
                 data={category?.items ?? []}
                 toolbarEnd={
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-3 mb-4">
                         <div className="flex gap-3">
 
                             <Select
@@ -150,8 +154,8 @@ const Categories = () => {
                                 style={{ width: 180 }}
                                 onChange={(v) => setStatusFilter(v)}
                                 options={[
-                                    { label: "Active", value: "Active" },
-                                    { label: "Inactive", value: "Inactive" },
+                                    { label: "Active", value: "ACTIVE" },
+                                    { label: "Inactive", value: "INACTIVE" },
                                 ]}
                             />
                         </div>

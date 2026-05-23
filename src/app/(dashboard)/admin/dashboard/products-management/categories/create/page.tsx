@@ -4,6 +4,8 @@ import { useProductCategoriesMutation } from "@/lib/api/hooks/product-categories
 import ProductCategoryForm, { ProductCategoryFormValues } from "../_components/ProductCategoryForm";
 import { useAuthStore } from "@/stores/auth.store";
 import { useSwal } from "@/hooks/use-swal";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const parentCategories = [
     {
@@ -51,7 +53,12 @@ const CreateProductCategoryPage = () => {
     };
 
     return (
-        <div style={{ padding: 24 }}>
+        <div className="space-y-6">
+            <PageHeader
+                title="Create Product Category"
+                subtitle="Add a new product category with image, parent category, status, and sorting."
+                breadcrumb={adminBreadcrumb}
+            />
             <ProductCategoryForm
                 parentCategories={parentCategories}
                 onSubmit={handleCreate}

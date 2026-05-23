@@ -15,6 +15,7 @@ import { getApiErrorMessage } from "@/lib/axios";
 import axios from "axios";
 
 const REFRESH_TOKEN_COOKIE = "refreshToken";
+const ACCESS_TOKEN_COOKIE = "accessToken";
 const USER_COOKIE = "user";
 const BUSINESS_COOKIE = "selectedBusiness";
 const COOKIE_OPTIONS = {
@@ -69,7 +70,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   loading: false,
   initialized: false,
 
-  setAccessToken: (token) => set({ accessToken: token }),
+  setAccessToken: (token) => {
+    if (token) {
+      Cookies.set(ACCESS_TOKEN_COOKIE, token, COOKIE_OPTIONS);
+    } else {
+      Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
+    }
+
+    set({ accessToken: token });
+  },
 
   setRefreshToken: (token) => {
     if (token) {
@@ -169,17 +178,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       return payload.accessToken;
     } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //   const status = error.response?.status;
+        if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
 
-    //   console.log("refresh error status:", status);
+        console.log("refresh error status:", status);
 
-    //   if (status === 401) {
-    //     await get().logout();
-    //   }
-    // } else {
-    //   console.log("unknown refresh error:", error);
-    // }
+        if (status === 401) {
+          await get().logout();
+        }
+      } else {
+        console.log("unknown refresh error:", error);
+      }
       return null;
     }
   },
@@ -208,32 +217,33 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   logout: async () => {
-    // const refreshToken =
-    //   get().refreshToken ?? Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
+    const refreshToken =
+      get().refreshToken ?? Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
 
-    // set({ loading: true });
+    set({ loading: true });
 
-    // try {
-    //   if (refreshToken && get().accessToken) {
-    //     await authApi.logout({ refreshToken });
-    //   }
-    // } catch {
-    //   // Local cleanup still needs to happen if the session is already invalid.
-    // } finally {
-    //   Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
-    //   Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
-    //   Cookies.remove(BUSINESS_COOKIE, COOKIE_OPTIONS);
+    try {
+      if (refreshToken && get().accessToken) {
+        await authApi.logout({ refreshToken });
+      }
+    } catch {
+      // Local cleanup still needs to happen if the session is already invalid.
+    } finally {
+      Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(ACCESS_TOKEN_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(BUSINESS_COOKIE, COOKIE_OPTIONS);
 
-    //   set({
-    //     user: null,
-    //     selectedBusiness: null,
-    //     businesses: [],
-    //     accessToken: null,
-    //     refreshToken: null,
-    //     loading: false,
-    //     initialized: true,
-    //   });
-    // }
+      set({
+        user: null,
+        selectedBusiness: null,
+        businesses: [],
+        accessToken: null,
+        refreshToken: null,
+        loading: false,
+        initialized: true,
+      });
+    }
   },
 
   logoutAll: async () => {
@@ -250,11 +260,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   init: async () => {
     const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
+    const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE) ?? null;
     const user = parseCookieJson<SystemUser>(USER_COOKIE);
     const selectedBusiness = parseCookieJson<AuthBusiness>(BUSINESS_COOKIE);
 
     set({
       refreshToken,
+      accessToken,
       user,
       selectedBusiness,
       initialized: false,
@@ -266,10 +278,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
-    const accessToken = await get().refreshAuth(selectedBusiness?.id ?? null);
-    if (accessToken) {
-      await get().fetchProfile();
-    }
     set({ initialized: true, loading: false });
   },
 }));

@@ -2,7 +2,9 @@
 import { Column, DataTable } from '@/components/shared/data-table';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { useProductUnitQuery, useUnitMutation } from '@/lib/api/hooks/product-unit';
+import { useSwal } from '@/hooks/use-swal';
+import { useProductTagQuery, useTagsMutation } from '@/lib/api/hooks/product-tags';
+import { getApiErrorMessage } from '@/lib/axios';
 import { useAuthStore } from '@/stores/auth.store';
 import { ResponseUnit } from '@/types/product/unit';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
@@ -14,6 +16,7 @@ const ProductTags = () => {
     const router = useRouter();
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
+    const swal = useSwal();
 
     const [statusFilter, setStatusFilter] = useState('');
     const [search, setSearch] = useState('');
@@ -21,7 +24,7 @@ const ProductTags = () => {
     const limit = 10;
     console.log('status', statusFilter);
 
-    const { data: units, isLoading, isFetching } = useProductUnitQuery(businessId, {
+    const { data: units, isLoading, isFetching } = useProductTagQuery(businessId, {
         page: currentPage,
         limit,
         search,
@@ -33,10 +36,16 @@ const ProductTags = () => {
     const total = units?.meta?.total || 0;
     const totalPages = Math.ceil(total / limit);
 
-    const { removeUnit } = useUnitMutation(businessId);
+    const { removeTag } = useTagsMutation(businessId);
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         console.log('id', id);
+        try {
+            await removeTag.mutateAsync(id);
+            swal.success("Tag delete successfully");
+        } catch (error) {
+            swal.error(getApiErrorMessage(error))
+        }
     }
 
     const columns: Column<ResponseUnit>[] = [
@@ -81,7 +90,7 @@ const ProductTags = () => {
                         icon={<EyeOutlined />}
                         onClick={() =>
                             router.push(
-                                `/admin/dashboard/products-management/units/view/${row.id}`
+                                `/admin/dashboard/products-management/tags/view/${row.id}`
                             )
                         }
                     />
@@ -91,7 +100,7 @@ const ProductTags = () => {
                         icon={<EditOutlined />}
                         onClick={() =>
                             router.push(
-                                `/admin/dashboard/products-management/units/update/${row.id}`
+                                `/admin/dashboard/products-management/tags/update/${row.id}`
                             )
                         }
                     />
@@ -111,12 +120,13 @@ const ProductTags = () => {
     ];
 
     return (
-        <div>
-            <div style={{
-                marginBottom: '15px'
-            }}>
-                <PageHeader title='Product Tags' breadcrumb={adminBreadcrumb} />
-            </div>
+        <div className='space-y-6'>
+
+            <PageHeader
+                title="Product Tags"
+                subtitle="Manage product tags for organizing, filtering, and grouping products."
+                breadcrumb={adminBreadcrumb}
+            />
 
             <DataTable
                 data={units?.items ?? []}
@@ -137,10 +147,10 @@ const ProductTags = () => {
                             type="primary"
                             icon={<PlusOutlined />}
                             onClick={() =>
-                                router.push("/admin/dashboard/products-management/units/create")
+                                router.push("/admin/dashboard/products-management/tags/create")
                             }
                         >
-                            New Units
+                            New Tags
                         </Button>
                     </div>
                 }

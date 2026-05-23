@@ -127,8 +127,8 @@ const ProductCategoryForm = ({
     <Card
       title={isEditMode ? "Update Product Category" : "Create Product Category"}
       style={{
-        maxWidth: 760,
-        margin: "0 auto",
+        margin: "24px auto",
+
       }}
     >
       <Form<ProductCategoryFormValues>

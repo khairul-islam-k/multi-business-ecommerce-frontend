@@ -1,33 +1,32 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { productBrandApi } from "../product-brand";
-import { productUnitApi } from "../product-unit";
 import { UnitPayload } from "@/types/product/unit";
+import { productTagApi } from "../product-tags";
 
-// export function useProductUnitQuery(businessId: ApiId, query?: CategoriesQuery) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductUnit.list(businessId, query),
-//     queryFn: () => productUnitApi.list(businessId, query),
-//     enabled: Boolean(businessId),
-//   });
-// }
+export function useProductTagQuery(businessId: ApiId, query?: CategoriesQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductTags.list(businessId, query),
+    queryFn: () => productTagApi.list(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
 
-// export function useUnit(businessId: ApiId, unitId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductUnit.detail(businessId, unitId),
+export function useTags(businessId: ApiId, tagsId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductTags.detail(businessId, tagsId),
 
-//     queryFn: () => {
-//       if (!businessId || !unitId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!businessId || !tagsId) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productUnitApi.get(businessId, unitId);
-//     },
+      return productTagApi.get(businessId, tagsId);
+    },
 
-//     enabled: Boolean(businessId && unitId),
-//   });
-// }
+    enabled: Boolean(businessId && tagsId),
+  });
+}
 
 export function useTagsMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
@@ -40,26 +39,26 @@ export function useTagsMutation(businessId: ApiId) {
   return {
     createTags: useMutation({
       mutationFn: (payload: UnitPayload) =>
-        productUnitApi.create(businessId, payload),
+        productTagApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
 
-    // updateUnit: useMutation({
-    //   mutationFn: ({
-    //     unitId,
-    //     payload,
-    //   }: {
-    //     unitId: ApiId;
-    //     payload: UnitPayload;
-    //   }) => productUnitApi.update(businessId, unitId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updateTags: useMutation({
+      mutationFn: ({
+        tagId,
+        payload,
+      }: {
+        tagId: ApiId;
+        payload: UnitPayload;
+      }) => productTagApi.update(businessId, tagId, payload),
+      onSuccess: invalidate,
+    }),
 
-    // removeUnit: useMutation({
-    //   mutationFn: (unitId: ApiId) =>
-    //     productBrandApi.remove(businessId, unitId),
-    //   onSuccess: invalidate,
-    // }),
+    removeTag: useMutation({
+      mutationFn: (tagId: ApiId) =>
+        productTagApi.remove(businessId, tagId),
+      onSuccess: invalidate,
+    }),
 
   };
 }
