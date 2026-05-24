@@ -17,11 +17,11 @@ import {
   User,
 } from "lucide-react";
 
-import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import OtpVerifyDialog from "../_components/otp-verify-dialog";
+import { toast } from "sonner";
 
 const signUpSchema = z
   .object({
@@ -65,7 +65,6 @@ export default function SignUpPage() {
 
   const registerAccount = useAuthStore((state) => state.register);
   const router = useRouter();
-  const swal = useSwal();
 
   const {
     register,
@@ -145,13 +144,10 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: SignUpFormValues) => {
     if (isEmailChecking) {
-      swal.error("Please wait. Email checking is running.");
+      toast.error("Please wait. Email checking is running.");
       return;
     }
 
-    // if (!isEmailAvailable) {
-    //   swal.error("Email already exists");
-    // }
 
     const { name, email, password, businessName } = data;
 
@@ -164,13 +160,13 @@ export default function SignUpPage() {
 
     try {
       await registerAccount(payload);
-      // swal.success("Registration successfully")
+      toast.success("Registration successfully")
 
       setVerifyEmail(payload.email);
       setOtpOpen(true);
 
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
       console.log(error);
     }
   };

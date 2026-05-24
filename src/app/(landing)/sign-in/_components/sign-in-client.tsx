@@ -8,13 +8,13 @@ import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
-import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { getDashboardPath, isSafeInternalPath } from "@/lib/auth/permissions";
 import ForgerOtpVerify from "./forget-otp";
 import OtpVerifyDialog from "../../_components/otp-verify-dialog";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -42,7 +42,6 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
 
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
-  const swal = useSwal();
 
   const {
     register,
@@ -73,31 +72,30 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
 
       if (result?.user?.type === "ADMIN") {
 
-        swal.success("Signed in successfully!");
+        toast.success("Signed in successfully!");
         router.push(redirectPath);
 
       } else if (result?.user?.type === "TENANT") {
 
         if (result.activeSubscription) {
-          swal.success("Signed in successfully!");
+          toast.success("Signed in successfully!");
           router.push(redirectPath);
         } else {
-          swal.success("your subscription has been expire");
+          toast.success("your subscription has been expire");
           router.push("/pricing");
         }
 
       } else {
         if (result.activeSubscription) {
-          swal.success("Signed in successfully!");
+          toast.success("Signed in successfully!");
           router.push(redirectPath);
         } else {
-          swal.success("Your subscription has expired. Please inform your tenant.");
+          toast.success("Your subscription has expired. Please inform your tenant.");
         }
       }
 
-      // router.push(redirectPath);
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     }
   };
 
@@ -109,7 +107,7 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     if (!isValidEmail) {
-      swal.error("Invalid Email");
+      toast.error("Invalid Email");
       return;
     }
 
@@ -121,7 +119,7 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
       setForgetOpen(true);
 
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     }
   }
 

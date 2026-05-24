@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Empty, Form, Input, Select } from "antd";
+import { App, Button, Card, Empty, Form, Input, Select } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import type { PermissionItem } from "@/lib/api";
@@ -24,7 +23,7 @@ export default function EditRole() {
   const [form] = Form.useForm<EditRoleValues>();
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const businessId = useActiveBusinessId();
   const roleId = id;
   const roleQuery = useRole(businessId ?? undefined, roleId);
@@ -57,10 +56,10 @@ export default function EditRole() {
         },
       });
 
-      swal.success("Role updated.");
+      message.success("Role updated.");
       router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

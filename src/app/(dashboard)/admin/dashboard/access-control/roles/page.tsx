@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Empty, Popconfirm, Tag } from "antd";
+import { App, Button, Card, Empty, Popconfirm, Tag } from "antd";
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { useSwal } from "@/hooks/use-swal";
 import type { Role } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
@@ -19,7 +18,7 @@ import { getApiErrorMessage } from "@/lib/axios";
 
 export default function RolesPage() {
   const router = useRouter();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const businessId = useActiveBusinessId();
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -115,9 +114,9 @@ export default function RolesPage() {
                   onConfirm={async () => {
                     try {
                       await removeRole.mutateAsync(row.id);
-                      swal.success("Deleted successfully.");
+                      message.success("Deleted successfully.");
                     } catch (error) {
-                      swal.error(getApiErrorMessage(error));
+                      message.error(getApiErrorMessage(error));
                     }
                   }}
                 >

@@ -7,10 +7,10 @@ import { ResponseVariant, VariantPayload } from "@/types/product/variant";
 
 const basePath = (businessId: ApiId, productId: ApiId) => `/product-catalog/businesses/${businessId}/products/${productId}/variants`;
 export const productVariantApi = {
-    list(businessId: ApiId, productId: ApiId) {
+    list(businessId: ApiId, productId: ApiId, search: string) {
         return api
             .get<ApiResponse<ResponseVariant[]>>(
-                `${basePath(businessId, productId)}`,
+                `${basePath(businessId, productId)}?search=${search}`,
             )
             .then((res) => unwrapApiResponse(res.data));
     },

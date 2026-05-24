@@ -4,10 +4,10 @@ import { ApiId } from "../types";
 import { productVariantApi } from "../product-variant";
 import { VariantPayload } from "@/types/product/variant";
 
-export function useProductVariantQuery(businessId: ApiId, productId: ApiId) {
+export function useProductVariantQuery(businessId: ApiId, productId: ApiId, search: string) {
   return useQuery({
-    queryKey: apiQueryKeys.ProductVariant.list(businessId, productId),
-    queryFn: () => productVariantApi.list(businessId, productId),
+    queryKey: apiQueryKeys.ProductVariant.list(businessId, productId, search),
+    queryFn: () => productVariantApi.list(businessId, productId, search),
     enabled: Boolean(businessId),
   });
 }

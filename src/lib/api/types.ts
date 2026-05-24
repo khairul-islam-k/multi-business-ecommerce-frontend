@@ -411,10 +411,17 @@ export type PackageStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED";
 export type PackageResetCycle = "LIFETIME" | "DAILY" | "MONTHLY" | "YEARLY";
 
 export type PackageLimitKey =
-  | "MAX_ROLES"
-  | "MAX_MEDIAS"
-  | "MAX_EMPLOYEES"
-  | "MAX_BUSINESSES";
+  |"MAX_TAGS" 
+  |"MAX_UNITS" 
+  |"MAX_ROLES" 
+  |"MAX_MEDIAS" 
+  |"MAX_BRANDS" 
+  |"MAX_PRODUCTS" 
+  |"MAX_VARIANTS" 
+  |"MAX_EMPLOYEES" 
+  |"MAX_ATTRIBUTES" 
+  |"MAX_BUSINESSES" 
+  |"MAX_CATEGORIES" ;
 
 export type PackageSubscriptionStatus =
   | "TRIALING"

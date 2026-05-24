@@ -168,11 +168,6 @@ export const items: MenuProps["items"] = [
     label: "Billing",
     children: [
       {
-        key: "addons",
-        icon: <AppstoreAddOutlined />,
-        label: <Link href="/admin/dashboard/billing/addons">Addons</Link>,
-      },
-      {
         key: "history",
         icon: <HistoryOutlined />,
         label: <Link href="/admin/dashboard/billing/history">History</Link>,
@@ -196,15 +191,15 @@ export const items: MenuProps["items"] = [
 
   // Product Management
   {
-    key: "product-management",
+    key: "product-catalog",
     icon: <ShoppingOutlined />,
-    label: "Product Management",
+    label: "Product Catalog",
     children: [
       {
         key: "categories",
         icon: <AppstoreOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/categories">
+          <Link href="/admin/dashboard/product-catalog/categories">
             Categories
           </Link>
         ),
@@ -213,7 +208,7 @@ export const items: MenuProps["items"] = [
         key: "brands",
         icon: <TrademarkCircleOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/brands">
+          <Link href="/admin/dashboard/product-catalog/brands">
             Brands
           </Link>
         ),
@@ -222,7 +217,7 @@ export const items: MenuProps["items"] = [
         key: "units",
         icon: <DeploymentUnitOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/units">
+          <Link href="/admin/dashboard/product-catalog/units">
             Units
           </Link>
         ),
@@ -231,7 +226,7 @@ export const items: MenuProps["items"] = [
         key: "tags",
         icon: <TagsOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/tags">
+          <Link href="/admin/dashboard/product-catalog/tags">
             Tags
           </Link>
         ),
@@ -240,7 +235,7 @@ export const items: MenuProps["items"] = [
         key: "products",
         icon: <ProductOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/products">
+          <Link href="/admin/dashboard/product-catalog/products">
             Products
           </Link>
         ),
@@ -249,7 +244,7 @@ export const items: MenuProps["items"] = [
         key: "variant",
         icon: <ApartmentOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/variant">
+          <Link href="/admin/dashboard/product-catalog/variant">
             Variant Manager
           </Link>
         ),

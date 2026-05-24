@@ -7,22 +7,18 @@ import {
   PlusOutlined,
   RetweetOutlined,
   StopOutlined,
-  SyncOutlined,
 } from "@ant-design/icons";
-import { Button, Modal, Select, Space, Tabs, Tag } from "antd";
+import { App, Button, Modal, Select, Space, Tabs, Tag } from "antd";
 
 import { getApiErrorMessage } from "@/lib/axios";
 import {
   useAdminPackageMutations,
-  usePackageAddons,
   usePackagePlans,
   useTenantSubscriptions,
   useTenants,
 } from "@/lib/api";
 import type {
   ApiId,
-  PackageAddon,
-  PackageAddonPayload,
   PackagePlan,
   PackagePlanPayload,
   PackageQuery,
@@ -56,6 +52,7 @@ const statusColor: Record<string, string> = {
 
 export default function PackagesPage() {
   const swal = useSwal();
+  const { message } = App.useApp();
   const mutations = useAdminPackageMutations();
 
   const [planPage, setPlanPage] = useState(1);
@@ -215,15 +212,15 @@ export default function PackagesPage() {
           planId: editingPlan.id,
           payload,
         });
-        swal.success("Package plan updated successfully.");
+        message.success("Package plan updated successfully.");
       } else {
         console.log('payload', payload);
         await mutations.createPlan.mutateAsync(payload);
-        swal.success("Package plan created successfully.");
+        message.success("Package plan created successfully.");
       }
       closePlanModal();
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -238,9 +235,9 @@ export default function PackagesPage() {
 
     try {
       await mutations.deletePlan.mutateAsync(plan.id);
-      swal.success("Package plan deleted successfully.");
+      message.success("Package plan deleted successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -257,9 +254,9 @@ export default function PackagesPage() {
         planId: payload.planId,
       });
       setSubscriptionModalOpen(false);
-      swal.success("Tenant subscription created successfully.");
+      message.success("Tenant subscription created successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -272,9 +269,9 @@ export default function PackagesPage() {
         payload,
       });
       setChangingSubscription(null);
-      swal.success("Subscription plan changed successfully.");
+      message.success("Subscription plan changed successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -291,9 +288,9 @@ export default function PackagesPage() {
         subscriptionId: subscription.id,
         payload: {},
       });
-      swal.success("Subscription cancelled successfully.");
+      message.success("Subscription cancelled successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

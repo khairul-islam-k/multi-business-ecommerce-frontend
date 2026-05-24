@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "antd";
+import { App, Button } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 
-import { useSwal } from "@/hooks/use-swal";
 import { mockAiGenerations } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -45,7 +44,7 @@ export default function AiContentPage({
   description: string;
   moduleType: string;
 }) {
-  const swal = useSwal();
+  const { message } = App.useApp();
 
   return (
     <div className="space-y-6 ">
@@ -60,7 +59,7 @@ export default function AiContentPage({
             icon={<CopyOutlined />}
             onClick={() => {
               navigator.clipboard.writeText(row.generated_text);
-              swal.success("Copied");
+              message.success("Copied");
             }}
           />
         )}

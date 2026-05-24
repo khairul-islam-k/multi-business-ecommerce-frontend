@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
+import { App, Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
@@ -33,7 +32,7 @@ const { TextArea } = Input;
 
 export default function CreateUserPage() {
   const [form] = Form.useForm<CreateEmployeeValues>();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const router = useRouter();
   const businessId = useActiveBusinessId();
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
@@ -43,7 +42,7 @@ export default function CreateUserPage() {
     if (!businessId) return;
 
     if (values.password !== values.confirmPassword) {
-      swal.error("Passwords do not match.");
+      message.error("Passwords do not match.");
       return;
     }
 
@@ -67,11 +66,11 @@ export default function CreateUserPage() {
         },
       });
 
-      swal.success("Employee created successfully.");
+      message.success("Employee created successfully.");
       form.resetFields();
       router.push("/admin/dashboard/access-control/employees");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

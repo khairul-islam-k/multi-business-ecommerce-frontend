@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Card, Empty, Form, Input, Select } from "antd";
+import { App, Button, Card, Empty, Form, Input, Select } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import type { PermissionItem } from "@/lib/api";
@@ -22,7 +21,7 @@ type CreateRoleValues = {
 export default function CreateRole() {
   const [form] = Form.useForm<CreateRoleValues>();
   const router = useRouter();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const businessId = useActiveBusinessId();
   const { createRole } = useRoleMutations(businessId ?? "");
 
@@ -39,10 +38,10 @@ export default function CreateRole() {
         permissions,
       });
 
-      swal.success("Role created.");
+      message.success("Role created.");
       router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

@@ -4,6 +4,7 @@ import { Reveal } from "@/components/ui/reveal";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import { ShadcnThemeProvider } from "@/providers/shadcn-theme-provider";
+import { Toaster } from "sonner";
 
 export default function MarketingDashboard({
   children,
@@ -19,6 +20,7 @@ export default function MarketingDashboard({
           </h1>
           <Navbar />
           {children}
+          <Toaster position="top-right" richColors closeButton />
           <ScrollToTop />
           <Reveal>
             <Footer />

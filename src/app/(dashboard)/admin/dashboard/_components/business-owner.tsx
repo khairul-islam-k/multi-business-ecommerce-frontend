@@ -10,6 +10,7 @@ import {
   ShopOutlined,
 } from "@ant-design/icons";
 import {
+  App,
   Avatar,
   Button,
   Col,
@@ -26,7 +27,6 @@ import {
   theme,
 } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { useBusinessMutations } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
 import type { AuthBusiness, BusinessPayload } from "@/lib/api";
@@ -57,7 +57,7 @@ export default function BusinessDropdown() {
   const [form] = Form.useForm<BusinessFormValues>();
   const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const { token } = theme.useToken();
 
   const userType = useAuthStore((state) => state.user?.type);
@@ -85,9 +85,9 @@ export default function BusinessDropdown() {
     try {
       await selectBusiness(businessId);
       await queryClient.invalidateQueries();
-      swal.success("Business switched.");
+      message.success("Business switched.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -137,9 +137,9 @@ export default function BusinessDropdown() {
       await queryClient.invalidateQueries();
       form.resetFields();
       setOpen(false);
-      swal.success("Business created and selected.");
+      message.success("Business created and selected.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
