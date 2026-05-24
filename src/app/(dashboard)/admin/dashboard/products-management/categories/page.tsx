@@ -167,7 +167,7 @@ const Categories = () => {
                                 router.push("/admin/dashboard/products-management/categories/create")
                             }
                         >
-                            New Categories
+                            New Category
                         </Button>
                     </div>
                 }

@@ -1,13 +1,35 @@
 "use client";
 
 import { useProductsQuery } from "@/lib/api/hooks/product";
+import { useProductVariantQuery, useVariantMutation } from "@/lib/api/hooks/product-variant";
 import { useAuthStore } from "@/stores/auth.store";
-import { Empty, Skeleton, Tabs, type TabsProps } from "antd";
-import { useMemo, useState } from "react";
+import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Empty, Popconfirm, Select, Skeleton, Tabs, Tag, type TabsProps } from "antd";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { imageUrlSet } from "../products/_components/image-url";
+import { Column, DataTable } from "@/components/shared/data-table";
+import { ResponseVariant } from "@/types/product/variant";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+
+type ProductStatusFilter = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
 const VariantManagement = () => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
+  const swal = useSwal();
+
+  const router = useRouter();
+
+  const [statusFilter, setStatusFilter] = useState<
+    ProductStatusFilter | undefined
+  >(undefined);
+
+  const [selectedProductId, setSelectedProductId] = useState<string>("");
 
   const {
     data: products,
@@ -15,29 +37,153 @@ const VariantManagement = () => {
     isFetching,
   } = useProductsQuery(businessId);
 
-  const [selectedProductId, setSelectedProductId] = useState<string>("");
+  // variants
+  const [search, setSearch] = useState<string>('');
+
+  const { data: variants, isLoading: variantLoading, isFetching: variantFetching } = useProductVariantQuery(businessId, selectedProductId);
+  console.log('variants', variants);
+
+  const { removeVariant } = useVariantMutation(businessId);
+
+  const handleDelete = async (variantId: string) => {
+    console.log("id", variantId);
+    try {
+      await removeVariant.mutateAsync({
+        productId: selectedProductId,
+        variantId
+      })
+      swal.success('Variant has been deleted');
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  }
+
+  const columns: Column<ResponseVariant>[] = [
+    {
+      key: "images",
+      label: "Image",
+      render: (row) => {
+        const image = row.images?.[0];
+
+        return image?.imageUrl ? (
+          <Image
+            src={imageUrlSet(image.imageUrl)}
+            alt={image.altText || row.title}
+            width={48}
+            height={48}
+            className="rounded-md object-cover"
+            unoptimized
+          />
+        ) : (
+          "-"
+        );
+      },
+    },
+    {
+      key: "title",
+      label: "Variant Title",
+      type: "primary",
+      render: (row) => (
+        <div>
+          <strong>{row.title}</strong>
+          <p className="m-0 text-xs text-gray-500">{row.sku}</p>
+        </div>
+      ),
+    },
+    {
+      key: "barcode",
+      label: "Barcode",
+      render: (row) => row.barcode || "-",
+    },
+    {
+      key: "price",
+      label: "Price",
+      render: (row) => Number(row.price).toLocaleString(),
+    },
+    {
+      key: "weight",
+      label: "Weight",
+      render: (row) => row.weight || "-",
+    },
+    {
+      key: "attributes",
+      label: "Attributes",
+      render: (row) => row.attributes?.length ?? 0,
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={row.status === "ACTIVE" ? "green" : "red"}>
+          {row.status}
+        </Tag>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (row) => new Date(row.createdAt).toLocaleDateString(),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() =>
+              router.push(
+                `/admin/dashboard/products-management/products/${row.productId}/variants/${row.id}`
+              )
+            }
+          />
+
+          <Button
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() =>
+              router.push(
+                `/admin/dashboard/products-management/variant/update/${row.productId}/variants/${row.id}`
+              )
+            }
+          />
+
+          <Popconfirm
+            title="Delete variant?"
+            description="Are you sure?"
+            okText="Yes"
+            cancelText="No"
+            onConfirm={() => handleDelete(row.id)}
+          >
+            <Button danger size="small" icon={<DeleteOutlined />} />
+          </Popconfirm>
+        </div>
+      ),
+    },
+  ];
+
+  // ✅ set first product id as initial value
+  useEffect(() => {
+    if (!products?.items?.length) return;
+    const handleSetId = () => {
+      setSelectedProductId((prev) => prev || products.items[0].id);
+    }
+
+    handleSetId()
+  }, [products]);
 
   const items: TabsProps["items"] = useMemo(() => {
     return (
       products?.items?.map((product) => ({
-        key: product.id, // ✅ this is product id
-        label: product.name, // ✅ show product name
-        children: (
-          <div>
-            <h3>{product.name}</h3>
-            <p>Product ID: {product.id}</p>
-
-            {/* here you can pass product id */}
-            {/* <VariantList productId={product.id} /> */}
-          </div>
-        ),
+        key: product.id,
+        label: product.name,
       })) ?? []
     );
   }, [products]);
 
   const onChange = (productId: string) => {
-    console.log("Selected product id:", productId);
-
     setSelectedProductId(productId);
   };
 
@@ -50,16 +196,44 @@ const VariantManagement = () => {
   }
 
   return (
-    <div>
-      <Tabs
-        defaultActiveKey={products.items[0]?.id}
-        items={items}
-        onChange={onChange}
+    <div className="space-y-6">
+
+      <PageHeader
+        title="Product Variants"
+        subtitle="Manage product variants with SKU, barcode, price, weight, images, attributes, and status."
+        breadcrumb={adminBreadcrumb}
       />
 
-      <div style={{ marginTop: 16 }}>
-        Selected Product ID: <strong>{selectedProductId || products.items[0]?.id}</strong>
-      </div>
+      <Tabs activeKey={selectedProductId} items={items} onChange={onChange} />
+
+      <DataTable
+        data={variants ?? []}
+        toolbarEnd={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            disabled={!selectedProductId}
+            onClick={() => {
+              if (selectedProductId) {
+                router.push(
+                  `/admin/dashboard/products-management/variant/create/${selectedProductId}`
+                )
+              }
+            }
+            }
+          >
+            New Variant
+          </Button>
+        }
+        columns={columns}
+        onSearch={(value) => {
+          setSearch(value);
+        }}
+        loading={
+          variantLoading ||
+          variantFetching
+        }
+      />
     </div>
   );
 };

@@ -17,6 +17,7 @@ import {
   CopyOutlined,
   CreditCardOutlined,
   DashboardOutlined,
+  DeploymentUnitOutlined,
   DollarOutlined,
   EditOutlined,
   EnvironmentOutlined,
@@ -35,6 +36,7 @@ import {
   PictureOutlined,
   PlusCircleOutlined,
   PlusSquareOutlined,
+  ProductOutlined,
   ProfileOutlined,
   QuestionCircleOutlined,
   ReadOutlined,
@@ -55,6 +57,7 @@ import {
   TeamOutlined,
   ThunderboltOutlined,
   ToolOutlined,
+  TrademarkCircleOutlined,
   TrophyOutlined,
   TruckOutlined,
   UnorderedListOutlined,
@@ -193,13 +196,13 @@ export const items: MenuProps["items"] = [
 
   // Product Management
   {
-    key: "products-management",
+    key: "product-management",
     icon: <ShoppingOutlined />,
-    label: "Products Management",
+    label: "Product Management",
     children: [
       {
         key: "categories",
-        icon: <BarcodeOutlined />,
+        icon: <AppstoreOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/categories">
             Categories
@@ -208,7 +211,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "brands",
-        icon: <BarcodeOutlined />,
+        icon: <TrademarkCircleOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/brands">
             Brands
@@ -217,7 +220,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "units",
-        icon: <BarcodeOutlined />,
+        icon: <DeploymentUnitOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/units">
             Units
@@ -226,7 +229,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "tags",
-        icon: <BarcodeOutlined />,
+        icon: <TagsOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/tags">
             Tags
@@ -235,7 +238,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "products",
-        icon: <BarcodeOutlined />,
+        icon: <ProductOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/products">
             Products
@@ -244,46 +247,10 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "variant",
-        icon: <ProfileOutlined />,
+        icon: <ApartmentOutlined />,
         label: (
           <Link href="/admin/dashboard/products-management/variant">
             Variant Manager
-          </Link>
-        ),
-      },
-      {
-        key: "status-history",
-        icon: <FileTextOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/status-history">
-            Status History
-          </Link>
-        ),
-      },
-      {
-        key: "top-selling",
-        icon: <BarChartOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/top-selling">
-            Top Selling
-          </Link>
-        ),
-      },
-      {
-        key: "bulk-import",
-        icon: <UploadOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/bulk-import">
-            Bulk Import
-          </Link>
-        ),
-      },
-      {
-        key: "bulk-export",
-        icon: <UploadOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/bulk-export">
-            Bulk Export
           </Link>
         ),
       },

@@ -37,7 +37,7 @@ const navItems: MenuProps["items"] = [
       {
         key: "/packages",
         icon: <AppstoreOutlined />,
-        label: "Packages & Add-ons",
+        label: "Packages",
       },
     ],
   },

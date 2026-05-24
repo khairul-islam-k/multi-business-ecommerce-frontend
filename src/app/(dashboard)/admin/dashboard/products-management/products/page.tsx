@@ -5,7 +5,10 @@ import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
+  FileTextOutlined,
+  FontSizeOutlined,
   MoreOutlined,
+  PlusCircleOutlined,
   PlusOutlined
 } from "@ant-design/icons";
 
@@ -199,22 +202,23 @@ const ProductsList = () => {
           },
           {
             key: "create-attribute",
-            icon: <EditOutlined />,
+            icon: <PlusCircleOutlined />,
             label: "Add Attribute",
           },
           {
             key: "view-attribute",
-            icon: <EditOutlined />,
+            icon: <FileTextOutlined />,
             label: "View Attribute",
           },
           {
             key: "update-attribute-name",
-            icon: <EditOutlined />,
+            icon: <FontSizeOutlined />,
             label: "Update Attribute Name",
           },
           {
             key: "delete-attribute-name",
-            icon: <EditOutlined />,
+            danger: true,
+            icon: <DeleteOutlined />,
             label: "Delete Attribute Name",
           },
         ];
@@ -333,25 +337,25 @@ const ProductsList = () => {
       >
         {
           productKey === "create-attribute" && <CreateAttributeForm
-        productId={productId}
-        />
+            productId={productId}
+          />
         }
 
         {
           productKey === "view-attribute" && <ViewAttribute
-        productId={productId}
-        />
+            productId={productId}
+          />
         }
 
         {
           productKey === "update-attribute-name" && <UpdateAttributeName
-        productId={productId}
-        />
+            productId={productId}
+          />
         }
         {
           productKey === "delete-attribute-name" && <DeleteAttributeName
-        productId={productId}
-        />
+            productId={productId}
+          />
         }
       </Modal>
 

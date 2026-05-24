@@ -115,6 +115,14 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["products", businessId, "detail", CategoryId] as const,
   },
+  ProductVariant: {
+    all: (businessId: ApiId) => ["variant", businessId] as const,
+    list: (businessId: ApiId, productId: ApiId, query?: CategoriesQuery) =>
+      ["variant", businessId, productId, "list", query] as const,
+
+    detail: (businessId: ApiId, productId: ApiId, variantId: ApiId) =>
+      ["variant", businessId, "detail", productId, variantId] as const,
+  },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
