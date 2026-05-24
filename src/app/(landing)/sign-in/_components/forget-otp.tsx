@@ -133,7 +133,7 @@ const ForgerOtpVerify = ({
     },
 
     onSuccess: (data) => {
-      toast.success(data?.message || "Password reset successfully");
+      toast.success("Password reset successfully");
 
       resetDialogState();
       onVerified?.();

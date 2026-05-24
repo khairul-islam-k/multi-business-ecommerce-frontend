@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/input-otp";
 
 import { Input } from "@/components/ui/input";
-import { useSwal } from "@/hooks/use-swal";
 import { useVerifyEmail } from "@/lib/api/hooks/verify-email";
 
 type OtpVerifyDialogProps = {
@@ -42,8 +41,6 @@ export default function OtpVerifyDialog({
   const [isOtpSent, setIsOtpSent] = React.useState(Boolean(email));
   const { sendOtp, emailVerify } = useVerifyEmail(verifyEmail);
 
-  const swal = useSwal();
-
   React.useEffect(() => {
     if (open) {
       setOtp("");
@@ -56,7 +53,7 @@ export default function OtpVerifyDialog({
     const emailValue = verifyEmail.trim();
 
     if (!emailValue) {
-      swal.error("Please enter your email");
+      toast.error("Please enter your email");
       return;
     }
 
@@ -69,10 +66,10 @@ export default function OtpVerifyDialog({
 
     try {
       await sendOtp.mutateAsync();
-      swal.success('OTP sent');
+      toast.success('OTP sent');
       setIsOtpSent(true);
     } catch (error) {
-      swal.error("Failed to send OTP");
+      toast.error("Failed to send OTP");
     }
 
     // sendOtpMutation.mutate();
@@ -89,7 +86,7 @@ export default function OtpVerifyDialog({
         otp
       })
 
-      swal.success("Email verified successfully");
+      toast.success("Email verified successfully");
 
       setOtp("");
       setVerifyEmail("");
@@ -99,7 +96,7 @@ export default function OtpVerifyDialog({
       onVerified?.();
 
     } catch (error) {
-      swal.error("Failed to verify OTP");
+      toast.error("Failed to verify OTP");
     }
 
   };

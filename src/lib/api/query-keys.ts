@@ -71,9 +71,13 @@ export const apiQueryKeys = {
       ["permissions", businessId, "role", roleId] as const,
   },
   media: {
-    all: (businessId: ApiId) => ["media", "auth", businessId] as const,
+    all: (businessId: ApiId) => ["media", businessId] as const,
+
+    lists: (businessId: ApiId) =>
+      [...apiQueryKeys.media.all(businessId), "list"] as const,
+
     list: (businessId: ApiId, query?: MediaQuery) =>
-      ["media", businessId, "list", query] as const,
+      [...apiQueryKeys.media.lists(businessId), query ?? {}] as const,
   },
   ProductCategories: {
     all: (businessId: ApiId) => ["categories", businessId] as const,

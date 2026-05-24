@@ -5,6 +5,7 @@ import { Modal, Card, Row, Col, Button, Empty, Typography } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/auth.store";
 import { MediaAsset, useMediaAssets } from "@/lib/api";
+import { imageUrlSet } from "../product-catalog/products/_components/image-url";
 
 const { Text } = Typography;
 
@@ -30,11 +31,10 @@ const ImageSelectModal = ({
     // const images = [];
     const [currentUrl, setCurrentUrl] = useState<string | undefined>(selectedUrl);
     const business = useAuthStore(s => s.selectedBusiness);
-    const {data, isLoading} = useMediaAssets(business?.id);
+    const businessId = business?.id ? business?.id : '';
+    const {data, isLoading} = useMediaAssets(businessId);
 
     const images: MediaAsset[] = data?.items ?? [];
-
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
 
     useEffect(() => {
         if (open) {
@@ -78,7 +78,7 @@ const ImageSelectModal = ({
                 <Row gutter={[16, 16]}>
                     {images.map((image) => {
                         const isSelected = currentUrl === image.fileUrl;
-                        const showUrl = image.fileUrl ?`${baseUrl}${image?.fileUrl}` : '';
+                        const showUrl = image.fileUrl ?`${imageUrlSet(image?.fileUrl)}` : '';
 
                         return (
                             <Col xs={24} sm={12} md={8} key={image.id}>
