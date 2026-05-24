@@ -32,7 +32,7 @@ export type ResponseProductAttribute = {
   name: string;
   status: AttributeStatus;
 
-  values: ResponseAttributeValue[];
+  values?: ResponseAttributeValue[];
 
   createdBy: string | null;
   updatedBy: string | null;

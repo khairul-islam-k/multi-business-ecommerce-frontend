@@ -41,12 +41,10 @@ const VariantManagement = () => {
   const [search, setSearch] = useState<string>('');
 
   const { data: variants, isLoading: variantLoading, isFetching: variantFetching } = useProductVariantQuery(businessId, selectedProductId);
-  console.log('variants', variants);
 
   const { removeVariant } = useVariantMutation(businessId);
 
   const handleDelete = async (variantId: string) => {
-    console.log("id", variantId);
     try {
       await removeVariant.mutateAsync({
         productId: selectedProductId,
@@ -135,7 +133,7 @@ const VariantManagement = () => {
             icon={<EyeOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/products-management/products/${row.productId}/variants/${row.id}`
+                `/admin/dashboard/products-management/variant/details/${row.productId}/variant/${row.id}`
               )
             }
           />

@@ -1,3 +1,5 @@
+import { ResponseAttributeValue, ResponseProductAttribute } from "./attribute";
+
 export type VariantStatus = "ACTIVE" | "INACTIVE";
 
 export type VariantImagePayload = {
@@ -45,8 +47,15 @@ export type ResponseVariantAttribute = {
   attributeId: string;
   attributeValueId: string;
 
+  attribute: ResponseProductAttribute;
+  attributeValue: ResponseAttributeValue;
+
   createdAt: string;
 };
+
+type products = {
+  name: string;
+}
 
 export type ResponseVariant = {
   id: string;
@@ -62,6 +71,8 @@ export type ResponseVariant = {
   weight: string | number;
 
   status: VariantStatus;
+
+  product?: products;
 
   images: ResponseVariantImage[];
   attributes: ResponseVariantAttribute[];
