@@ -4,16 +4,17 @@ import { z } from "zod";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 
-import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { getDashboardPath, isSafeInternalPath } from "@/lib/auth/permissions";
 import ForgerOtpVerify from "./forget-otp";
+import OtpVerifyDialog from "../../_components/otp-verify-dialog";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -35,15 +36,16 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
   // verify
   const [otpOpen, setOtpOpen] = useState(false);
   const [verifyEmail, setVerifyEmail] = useState("");
-  const [verificationId, setVerificationId] = useState<string>("");
+  // const [verificationId, setVerificationId] = useState<string>("");
+
+  const [forgetOpen, setForgetOpen] = useState(false);
 
   const login = useAuthStore((state) => state.login);
   const router = useRouter();
-  const swal = useSwal();
 
   const {
     register,
-    watch,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<SignInFormValues>({
@@ -54,24 +56,46 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     },
   });
 
-  const emailValue = watch("email");
+  const emailValue = useWatch({ name: "email", control });
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
       const result = await login(data.email, data.password);
 
-      swal.success("Signed in successfully!");
+      console.log('result', result);
 
       const fallbackPath = getDashboardPath(result.user.type);
-
       const redirectPath =
         redirectTo && isSafeInternalPath(redirectTo)
           ? redirectTo
           : fallbackPath;
 
-      router.push(redirectPath);
+      if (result?.user?.type === "ADMIN") {
+
+        toast.success("Signed in successfully!");
+        router.push(redirectPath);
+
+      } else if (result?.user?.type === "TENANT") {
+
+        if (result.activeSubscription) {
+          toast.success("Signed in successfully!");
+          router.push(redirectPath);
+        } else {
+          toast.success("your subscription has been expire");
+          router.push("/pricing");
+        }
+
+      } else {
+        if (result.activeSubscription) {
+          toast.success("Signed in successfully!");
+          router.push(redirectPath);
+        } else {
+          toast.success("Your subscription has expired. Please inform your tenant.");
+        }
+      }
+
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     }
   };
 
@@ -83,18 +107,19 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     if (!isValidEmail) {
-      swal.error("Invalid Email");
+      toast.error("Invalid Email");
       return;
     }
 
+    console.log(email, 'email');
+
     try {
       const res = await api.post('/auth/forgot-password', { email });
-      console.log('res', res);
       setVerifyEmail(email)
-      setOtpOpen(true);
+      setForgetOpen(true);
 
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     }
   }
 
@@ -262,14 +287,31 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
                   Create account
                 </Link>
               </p>
+
+              <p className="mt-5 text-center text-sm text-muted-foreground">
+                Email not verified?{" "}
+                <span
+                  onClick={() => setOtpOpen(true)}
+                  className="font-semibold text-foreground underline-offset-4 hover:underline cursor-pointer"
+                >
+                  Email Verify
+                </span>
+              </p>
             </div>
           </section>
         </div>
       </div>
 
       <ForgerOtpVerify
-        open={otpOpen}
+        open={forgetOpen}
         email={verifyEmail}
+        onClose={() => setForgetOpen(false)}
+        onVerified={() => router.push("/sign-in")}
+      />
+
+      <OtpVerifyDialog
+        open={otpOpen}
+        email={''}
         onClose={() => setOtpOpen(false)}
         onVerified={() => router.push("/sign-in")}
       />

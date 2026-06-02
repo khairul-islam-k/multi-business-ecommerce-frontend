@@ -5,6 +5,8 @@ import { Tabs, TabsProps } from 'antd';
 import EditProfile from './_components/edit-profile';
 import ResetPassword from './_components/reset-password';
 import ChangeEmailForm from './_components/change-email-form';
+import PageHeader from '@/components/shared/page-header';
+import { adminBreadcrumb } from '@/config/breadcrumb.config';
 
 const Profile = () => {
 
@@ -37,6 +39,11 @@ const Profile = () => {
 
   return (
     <div>
+      <PageHeader
+        title="User Profile"
+        subtitle="Your account and active business details."
+        breadcrumb={adminBreadcrumb}
+      />
       <Tabs defaultActiveKey="profile" items={items} onChange={onChange} />
     </div>
   );

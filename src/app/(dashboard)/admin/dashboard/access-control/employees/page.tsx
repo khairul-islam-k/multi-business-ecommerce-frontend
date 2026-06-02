@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
+import { App, Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
 import {
   EyeOutlined,
   MoreOutlined,
@@ -11,7 +11,6 @@ import {
   UserSwitchOutlined,
 } from "@ant-design/icons";
 
-import { useSwal } from "@/hooks/use-swal";
 import type { Employee } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -28,7 +27,7 @@ const getEmployeeRoles = (employee: Employee) =>
 
 export default function Users() {
   const router = useRouter();
-  const swal = useSwal();
+  const { message, modal } = App.useApp();
   const businessId = useActiveBusinessId();
 
   const [search, setSearch] = useState("");
@@ -75,12 +74,12 @@ export default function Users() {
         employeeId: selectedUser.id,
         payload: { roleIds: selectedRoles },
       });
-      swal.success("Roles applied successfully.");
+      message.success("Roles applied successfully.");
       setIsRoleModalOpen(false);
       setSelectedUser(null);
       setSelectedRoles([]);
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
@@ -199,37 +198,46 @@ export default function Users() {
                 <Dropdown
                   menu={{
                     items: [
-                      updateAccess.allowed
-                        ? {
+                      ...(updateAccess.allowed
+                        ? [
+                          {
                             key: "edit",
                             label: "Edit",
                             onClick: () =>
                               router.push(
-                                `/admin/dashboard/access-control/employees/edit/${row.id}`,
+                                `/admin/dashboard/access-control/employees/edit/${row.id}`
                               ),
-                          }
-                        : null,
-                      deleteAccess.allowed
-                        ? {
+                          },
+                        ]
+                        : []),
+
+                      ...(deleteAccess.allowed
+                        ? [
+                          {
                             key: "delete",
                             label: "Delete",
                             danger: true,
-                            onClick: async () => {
-                              const { isConfirmed } = await swal.confirm({
+                            onClick: () => {
+                              modal.confirm({
                                 title: "Confirm Deletion",
-                                text: "Are you sure you want to delete this employee?",
+                                content: "Are you sure you want to delete this employee?",
+                                okText: "Delete",
+                                cancelText: "Cancel",
+                                centered: true,
+                                okButtonProps: {
+                                  danger: true,
+                                },
+                                async onOk() {
+                                  await employeeMutations.removeEmployee.mutateAsync(row.id);
+
+                                  message.success("Deleted successfully.");
+                                },
                               });
-
-                              if (!isConfirmed) return;
-
-                              await employeeMutations.removeEmployee.mutateAsync(
-                                row.id,
-                              );
-                              swal.success("Deleted successfully.");
                             },
-                          }
-                        : null,
-                    ].filter(Boolean),
+                          },
+                        ]
+                        : []),
+                    ],
                   }}
                 >
                   <Button type="text" icon={<MoreOutlined />} />

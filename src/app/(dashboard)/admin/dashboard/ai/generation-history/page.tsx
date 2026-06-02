@@ -1,9 +1,8 @@
 "use client";
 
-import { Tag, Button } from "antd";
+import { Tag, Button, App } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
 
-import { useSwal } from "@/hooks/use-swal";
 import { mockAiGenerations } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -46,7 +45,7 @@ const columns: Column<any>[] = [
 ];
 
 export default function AiGenerationHistory() {
-  const swal = useSwal();
+  const { message } = App.useApp();
 
   return (
     <div className="space-y-6">
@@ -61,7 +60,7 @@ export default function AiGenerationHistory() {
             icon={<CopyOutlined />}
             onClick={() => {
               navigator.clipboard.writeText(row.generated_text);
-              swal.success("Copied!");
+              message.success("Copied!");
             }}
           />
         )}

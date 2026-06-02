@@ -1,13 +1,11 @@
 import {
   AlertOutlined,
   ApartmentOutlined,
-  AppstoreAddOutlined,
   AppstoreOutlined,
   ArrowUpOutlined,
   AuditOutlined,
   BankOutlined,
   BarChartOutlined,
-  BarcodeOutlined,
   BellOutlined,
   BulbOutlined,
   CalendarOutlined,
@@ -17,6 +15,7 @@ import {
   CopyOutlined,
   CreditCardOutlined,
   DashboardOutlined,
+  DeploymentUnitOutlined,
   DollarOutlined,
   EditOutlined,
   EnvironmentOutlined,
@@ -35,6 +34,7 @@ import {
   PictureOutlined,
   PlusCircleOutlined,
   PlusSquareOutlined,
+  ProductOutlined,
   ProfileOutlined,
   QuestionCircleOutlined,
   ReadOutlined,
@@ -55,10 +55,10 @@ import {
   TeamOutlined,
   ThunderboltOutlined,
   ToolOutlined,
+  TrademarkCircleOutlined,
   TrophyOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UploadOutlined,
   UserOutlined,
   WalletOutlined,
   WarningOutlined,
@@ -165,11 +165,6 @@ export const items: MenuProps["items"] = [
     label: "Billing",
     children: [
       {
-        key: "addons",
-        icon: <AppstoreAddOutlined />,
-        label: <Link href="/admin/dashboard/billing/addons">Addons</Link>,
-      },
-      {
         key: "history",
         icon: <HistoryOutlined />,
         label: <Link href="/admin/dashboard/billing/history">History</Link>,
@@ -193,61 +188,70 @@ export const items: MenuProps["items"] = [
 
   // Product Management
   {
-    key: "products-management",
+    key: "product-catalog",
     icon: <ShoppingOutlined />,
-    label: "Products Management",
+    label: "Product",
     children: [
       {
-        key: "products",
-        icon: <BarcodeOutlined />,
+        key: "categories",
+        icon: <AppstoreOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/products">
+          <Link href="/admin/dashboard/product-catalog/categories">
+            Categories
+          </Link>
+        ),
+      },
+      {
+        key: "brands",
+        icon: <TrademarkCircleOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/brands">
+            Brands
+          </Link>
+        ),
+      },
+      {
+        key: "units",
+        icon: <DeploymentUnitOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/units">
+            Units
+          </Link>
+        ),
+      },
+      {
+        key: "tags",
+        icon: <TagsOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/tags">
+            Tags
+          </Link>
+        ),
+      },
+      {
+        key: "products",
+        icon: <ProductOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/products">
             Products
           </Link>
         ),
       },
       {
         key: "variant",
-        icon: <ProfileOutlined />,
+        icon: <DeploymentUnitOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/variant">
+          <Link href="/admin/dashboard/product-catalog/variant">
             Variant Manager
           </Link>
         ),
       },
       {
-        key: "status-history",
-        icon: <FileTextOutlined />,
+        key: "warehouses",
+        icon: <ShopOutlined />,
         label: (
-          <Link href="/admin/dashboard/products-management/status-history">
-            Status History
-          </Link>
-        ),
-      },
-      {
-        key: "top-selling",
-        icon: <BarChartOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/top-selling">
-            Top Selling
-          </Link>
-        ),
-      },
-      {
-        key: "bulk-import",
-        icon: <UploadOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/bulk-import">
-            Bulk Import
-          </Link>
-        ),
-      },
-      {
-        key: "bulk-export",
-        icon: <UploadOutlined />,
-        label: (
-          <Link href="/admin/dashboard/products-management/bulk-export">
-            Bulk Export
+          <Link href="/admin/dashboard/product-catalog/warehouses">
+            Warehouses
           </Link>
         ),
       },
@@ -380,44 +384,6 @@ export const items: MenuProps["items"] = [
     ],
   },
 
-  // Product Catalogue
-  {
-    key: "masters-settings",
-    icon: <ShopOutlined />, // Orders / Store
-    label: "Masters / Settings",
-    children: [
-      {
-        key: "Categories",
-        icon: <AppstoreOutlined />,
-        label: (
-          <Link href="/admin/dashboard/masters/categories">Categories</Link>
-        ),
-      },
-      {
-        key: "Brand-list",
-        icon: <TagsOutlined />,
-        label: <Link href="/admin/dashboard/masters/brands">Brands</Link>,
-      },
-      {
-        key: "Warehouse-list",
-        icon: <HomeOutlined />,
-        label: (
-          <Link href="/admin/dashboard/masters/warehouses">Warehouses</Link>
-        ),
-      },
-      {
-        key: "Showrooms",
-        icon: <ShopOutlined />,
-        label: <Link href="/admin/dashboard/masters/showrooms">Showrooms</Link>,
-      },
-      {
-        key: "Supplier-list",
-        icon: <TeamOutlined />,
-        label: <Link href="/admin/dashboard/masters/suppliers">Suppliers</Link>,
-      },
-    ],
-  },
-
   // Finance
   {
     key: "finance-account",
@@ -471,7 +437,7 @@ export const items: MenuProps["items"] = [
         label: <Link href="/admin/dashboard/finance/expenses">Expenses</Link>,
       },
       {
-        key: "categories",
+        key: "categories-finance",
         icon: <TagsOutlined />, // Expense Categories
         label: (
           <Link href="/admin/dashboard/finance/expenses/categories">
@@ -617,6 +583,15 @@ export const items: MenuProps["items"] = [
     icon: <ShopOutlined />,
     label: "Suppliers & Procurement",
     children: [
+      {
+        key: "supplier",
+        icon: <InboxOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/supplier">
+            Supplier
+          </Link>
+        ),
+      },
       {
         key: "supplier-products",
         icon: <InboxOutlined />,

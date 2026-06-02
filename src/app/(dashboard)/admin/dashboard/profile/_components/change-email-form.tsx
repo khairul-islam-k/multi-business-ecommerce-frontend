@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, Button, Form, Input, message } from "antd";
+import { Alert, Button, Card, Form, Input, message } from "antd";
 import OtpVerifyDialog from "./otp-verify-dialog";
 import { useState } from "react";
 import api, { getApiErrorMessage } from "@/lib/axios";
@@ -21,7 +21,7 @@ export default function ChangeEmailForm() {
 
     const handleSubmit = async (values: ChangeEmailFormValues) => {
         const payload = {
-            newEmail: values.newEmail,
+            email: values.newEmail,
         };
 
         try {
@@ -36,7 +36,7 @@ export default function ChangeEmailForm() {
     };
 
     return (
-        <div className="mx-auto max-w-md rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <Card className="mx-auto rounded-xl border border-slate-200 shadow-sm">
             <h2 className="mb-2 text-xl font-semibold text-slate-900">
                 Change Email
             </h2>
@@ -125,6 +125,6 @@ export default function ChangeEmailForm() {
                     message.success("Your email has been changed successfully");
                 }}
             />
-        </div>
+        </Card>
     );
 }

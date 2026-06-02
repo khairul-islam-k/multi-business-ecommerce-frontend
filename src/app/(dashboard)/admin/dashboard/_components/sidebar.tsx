@@ -33,6 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const mediaAccess = usePermissionAccess(PERMISSIONS.mediaRead);
   const packageAccess = usePermissionAccess(PERMISSIONS.packageRead);
   const roleAccess = usePermissionAccess(PERMISSIONS.roleRead);
+  const productCatalogAccess = usePermissionAccess(PERMISSIONS.productCatalogRead)
 
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -69,6 +70,10 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
             ...(item as MenuItemWithChildren),
             children,
           };
+        }
+
+        if (key === "product-catalog") {
+          return productCatalogAccess.allowed ? item : null;
         }
 
         return null;

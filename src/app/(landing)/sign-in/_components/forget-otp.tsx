@@ -9,7 +9,6 @@ import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import api, { getApiErrorMessage } from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,7 +63,6 @@ const ForgerOtpVerify = ({
   onClose,
   onVerified,
 }: OtpVerifyDialogProps) => {
-  const swal = useSwal();
 
   const [otp, setOtp] = useState("");
   const [verificationId, setVerificationId] = useState("");
@@ -92,7 +90,7 @@ const ForgerOtpVerify = ({
 
   const verifyMutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post("/auth/forgot-password/verify-otp", {
+      const response = await api.post("/auth/reset-password/verify-otp", {
         email,
         otp,
       });
@@ -128,15 +126,14 @@ const ForgerOtpVerify = ({
       const response = await api.post("/auth/forgot-password/reset", {
         verificationId,
         email,
-        newPassword: payload.newPassword,
-        confirmPassword: payload.confirmPassword,
+        password: payload.newPassword,
       });
 
       return response.data;
     },
 
     onSuccess: (data) => {
-      swal.success(data?.message || "Password reset successfully");
+      toast.success("Password reset successfully");
 
       resetDialogState();
       onVerified?.();
@@ -144,7 +141,7 @@ const ForgerOtpVerify = ({
     },
 
     onError: (error) => {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 
@@ -160,7 +157,7 @@ const ForgerOtpVerify = ({
 
   const onSubmit = (values: ResetPasswordFormValues) => {
     if (!verificationId) {
-      swal.error("Verification id is missing");
+      toast.error("Verification id is missing");
       return;
     }
 

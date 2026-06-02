@@ -11,12 +11,10 @@ import type {
   UploadMediaPayload,
 } from "@/lib/api/types";
 
-export function useMediaAssets(businessId?: ApiId | null, query?: MediaQuery) {
+export function useMediaAssets(businessId: ApiId, query?: MediaQuery) {
   return useQuery({
-    queryKey: businessId
-      ? apiQueryKeys.media.list(businessId, query)
-      : ["media", "idle", query],
-    queryFn: () => mediaApi.list(businessId as ApiId, query),
+    queryKey: apiQueryKeys.media.list(businessId, query),
+    queryFn: () => mediaApi.list(businessId, query),
     enabled: Boolean(businessId),
   });
 }

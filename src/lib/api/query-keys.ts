@@ -9,6 +9,7 @@ import type {
   RoleQuery,
   TenantQuery,
   TenantSubscriptionQuery,
+  CategoriesQuery,
 } from "@/lib/api/types";
 
 export const apiQueryKeys = {
@@ -71,7 +72,86 @@ export const apiQueryKeys = {
   },
   media: {
     all: (businessId: ApiId) => ["media", businessId] as const,
+
+    lists: (businessId: ApiId) =>
+      [...apiQueryKeys.media.all(businessId), "list"] as const,
+
     list: (businessId: ApiId, query?: MediaQuery) =>
-      ["media", businessId, "list", query] as const,
+      [...apiQueryKeys.media.lists(businessId), query ?? {}] as const,
   },
+  ProductCategories: {
+    all: (businessId: ApiId) => ["categories", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["categories", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["categories", businessId, "detail", CategoryId] as const,
+  },
+  ProductBrands: {
+    all: (businessId: ApiId) => ["brands", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["brands", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["brands", businessId, "detail", CategoryId] as const,
+  },
+  ProductUnit: {
+    all: (businessId: ApiId) => ["units", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["units", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["units", businessId, "detail", CategoryId] as const,
+  },
+  ProductTags: {
+    all: (businessId: ApiId) => ["tags", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["tags", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["tags", businessId, "detail", CategoryId] as const,
+  },
+  Product: {
+    all: (businessId: ApiId) => ["products", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["products", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["products", businessId, "detail", CategoryId] as const,
+  },
+  ProductVariant: {
+    all: (businessId: ApiId) => ["variant", businessId] as const,
+    list: (businessId: ApiId, productId: ApiId, search?: string) =>
+      ["variant", businessId, productId, "list", search] as const,
+
+    detail: (businessId: ApiId, productId: ApiId, variantId: ApiId) =>
+      ["variant", businessId, "detail", productId, variantId] as const,
+  },
+  ProductAttribute: {
+    all: (businessId: ApiId) => ["attribute", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["attribute", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["attribute", businessId, "detail", CategoryId] as const,
+  },
+  supplier: {
+    all: (businessId: ApiId) => ["suppliers", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["suppliers", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["suppliers", businessId, "detail", CategoryId] as const,
+  },
+  warehouse: {
+    all: (businessId: ApiId) => ["warehouse", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["warehouse", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["warehouse", businessId, "detail", CategoryId] as const,
+  },
+  emailVerify: {
+    send: (email: string) => ["sendOtp", email] as const,
+  }
 };

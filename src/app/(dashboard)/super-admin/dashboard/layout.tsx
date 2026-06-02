@@ -5,7 +5,6 @@ import { ReactNode, useState } from "react";
 
 import Topbar from "./_components/topbar";
 import Sidebar from "./_components/sidebar";
-import AuthGuard from "@/components/auth/auth-guard";
 
 const { Header, Content } = Layout;
 
@@ -19,7 +18,7 @@ export default function SuperAdminDashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <AuthGuard redirectUrl="/sign-in" role="Admin">
+    
       <Layout
         hasSider
         style={{
@@ -71,6 +70,5 @@ export default function SuperAdminDashboardLayout({
           </Content>
         </Layout>
       </Layout>
-    </AuthGuard>
   );
 }

@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 import { ReloadOutlined } from "@ant-design/icons";
-import { Button, Card, Empty, Form, theme } from "antd";
+import { App, Button, Card, Empty, Form, theme } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
 import { getApiErrorMessage } from "@/lib/axios";
@@ -14,7 +14,6 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
 import Pagination from "@/components/shared/pagination";
-import { useSwal } from "@/hooks/use-swal";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
 import MediaGrid from "./_components/media-grid";
@@ -24,7 +23,7 @@ import { fileName } from "./_utils/media";
 
 export default function MediaLibraryPage() {
   const [form] = Form.useForm();
-  const swal = useSwal();
+  const { message, modal } = App.useApp();
   const businessId = useActiveBusinessId();
   const { token } = theme.useToken();
 
@@ -71,7 +70,7 @@ export default function MediaLibraryPage() {
       .filter(Boolean) as File[];
 
     if (!files.length) {
-      swal.error("Choose at least one image to upload.");
+      message.error("Choose at least one image to upload.");
       return;
     }
 
@@ -92,51 +91,63 @@ export default function MediaLibraryPage() {
 
       setFileList([]);
       form.resetFields();
-      swal.success("Media uploaded successfully.");
+      message.success("Media uploaded successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 
   const handleDelete = async (asset: MediaAsset) => {
     if (!businessId || !deleteAccess.allowed) return;
 
-    const { isConfirmed } = await swal.confirm({
+    modal.confirm({
       title: "Delete media asset?",
-      text: `${fileName(asset)} will be removed from this business library.`,
-      confirmButtonText: "Delete image",
+      content: `${fileName(asset)} will be removed from this business library.`,
+      okText: "Delete image",
+      cancelText: "Cancel",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await removeMedia.mutateAsync(asset.id);
+
+          setSelectedIds((ids) => ids.filter((id) => id !== asset.id));
+
+          message.success("Media asset deleted successfully.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
     });
-
-    if (!isConfirmed) return;
-
-    try {
-      await removeMedia.mutateAsync(asset.id);
-      setSelectedIds((ids) => ids.filter((id) => id !== asset.id));
-      swal.success("Media asset deleted successfully.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
   };
 
-  const handleBulkDelete = async () => {
-    if (!businessId || !selectedIds.length || !deleteAccess.allowed) return;
+  const handleBulkDelete = () => {
+  if (!businessId || !selectedIds.length || !deleteAccess.allowed) return;
 
-    const { isConfirmed } = await swal.confirm({
-      title: "Delete selected media?",
-      text: `${selectedIds.length} image(s) will be removed from this business library.`,
-      confirmButtonText: "Delete selected",
-    });
+  modal.confirm({
+    title: "Delete selected media?",
+    content: `${selectedIds.length} image(s) will be removed from this business library.`,
+    okText: "Delete selected",
+    cancelText: "Cancel",
+    centered: true,
+    okButtonProps: {
+      danger: true,
+    },
+    async onOk() {
+      try {
+        await removeMediaBulk.mutateAsync(selectedIds);
 
-    if (!isConfirmed) return;
+        setSelectedIds([]);
 
-    try {
-      await removeMediaBulk.mutateAsync(selectedIds);
-      setSelectedIds([]);
-      swal.success("Selected media deleted successfully.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
-  };
+        message.success("Selected media deleted successfully.");
+      } catch (error) {
+        message.error(getApiErrorMessage(error));
+      }
+    },
+  });
+};
 
   const toggleSelection = (assetId: ApiId, checked: boolean) => {
     setSelectedIds((ids) =>
@@ -148,7 +159,7 @@ export default function MediaLibraryPage() {
 
   const handleCopyUrl = (url: string) => {
     navigator.clipboard?.writeText(url);
-    swal.success("Media URL copied.");
+    message.success("Media URL copied.");
   };
 
   const mediaThemeStyle = {

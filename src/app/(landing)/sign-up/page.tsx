@@ -17,11 +17,11 @@ import {
   User,
 } from "lucide-react";
 
-import { useSwal } from "@/hooks/use-swal";
 import Logo from "@/components/shared/logo";
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import OtpVerifyDialog from "../_components/otp-verify-dialog";
+import { toast } from "sonner";
 
 const signUpSchema = z
   .object({
@@ -65,7 +65,6 @@ export default function SignUpPage() {
 
   const registerAccount = useAuthStore((state) => state.register);
   const router = useRouter();
-  const swal = useSwal();
 
   const {
     register,
@@ -87,6 +86,8 @@ export default function SignUpPage() {
     },
   });
 
+  console.log('available', isEmailAvailable);
+
   const emailValue = watch("email");
   const [debouncedEmail] = useDebounce(emailValue, 600);
 
@@ -107,12 +108,12 @@ export default function SignUpPage() {
         setIsEmailChecking(true);
 
         const response = await api.get(
-          `/auth/check-email?email=${encodeURIComponent(
-            email,
-          )}`,
+          `/auth/validate-email?email=${email}`,
         );
 
         const result = response.data as CheckEmailResponse;
+
+        console.log(result);
 
         if (result.data.exists) {
           setError("email", {
@@ -143,9 +144,10 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: SignUpFormValues) => {
     if (isEmailChecking) {
-      swal.error("Please wait. Email checking is running.");
+      toast.error("Please wait. Email checking is running.");
       return;
     }
+
 
     const { name, email, password, businessName } = data;
 
@@ -157,25 +159,15 @@ export default function SignUpPage() {
     };
 
     try {
-<<<<<<< HEAD
       await registerAccount(payload);
+      toast.success("Registration successfully")
 
       setVerifyEmail(payload.email);
       setOtpOpen(true);
 
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
       console.log(error);
-=======
-      await registerAccount({
-        ...data,
-        businessName: data.businessName?.trim() || undefined,
-      });
-      swal.success("Account created successfully");
-      router.push("/sign-in");
-    } catch (error: any) {
-      swal.error(getApiErrorMessage(error));
->>>>>>> fefd864e955f7c4d1d908d3bbba8ca9f0df4df52
     }
   };
 
@@ -432,6 +424,7 @@ export default function SignUpPage() {
                 >
                   {isSubmitting ? "Creating account..." : "Create account"}
                 </button>
+
               </form>
 
               <p className="mt-5 text-center text-sm text-muted-foreground">

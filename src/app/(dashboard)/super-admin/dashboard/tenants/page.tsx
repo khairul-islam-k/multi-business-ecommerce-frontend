@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button, Dropdown, Flex, Tag } from "antd";
+import { App, Button, Dropdown, Flex, Tag } from "antd";
 import { EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
@@ -27,6 +27,7 @@ const statusColor: Record<string, string> = {
 
 export default function TenantListPage() {
   const swal = useSwal();
+  const { message } = App.useApp();
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -104,9 +105,9 @@ export default function TenantListPage() {
         tenantId: tenant.id,
         payload: { status },
       });
-      swal.success("Tenant status updated successfully.");
+      message.success("Tenant status updated successfully.");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

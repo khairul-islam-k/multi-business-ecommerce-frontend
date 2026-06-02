@@ -7,9 +7,9 @@ import { HowItWorks } from "./_components/HowItWorks";
 import { Marketing } from "./_components/Marketing";
 import { Partners } from "./_components/Partners";
 import { Analytics } from "./_components/Analytics";
-import { Pricing } from "./_components/Pricing";
 import { Testimonials } from "./_components/Testimonials";
 import { FAQ } from "./_components/FAQ";
+import PricingCards from "./_components/pricing-cards";
 
 const sections = [
   SocialProof,
@@ -19,7 +19,7 @@ const sections = [
   Marketing,
   Partners,
   Analytics,
-  Pricing,
+  PricingCards,
   Testimonials,
   FAQ,
 ];

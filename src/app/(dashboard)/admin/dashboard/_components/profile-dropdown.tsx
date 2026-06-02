@@ -6,6 +6,7 @@ import {
   SettingOutlined,
 } from "@ant-design/icons";
 import {
+  App,
   Avatar,
   Button,
   Dropdown,
@@ -16,7 +17,6 @@ import {
   theme,
 } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
 import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
 
@@ -26,24 +26,37 @@ const ProfileDropdown = () => {
   const logout = useAuthStore((s) => s.logout);
   const user = useAuthStore((s) => s.user);
   const router = useRouter();
-  const swal = useSwal();
+  const { message, modal } = App.useApp();
   const { token } = theme.useToken();
   const avatarSeed = getUserAvatarSeed(user);
   const avatarSrc = getUserAvatarUrl(user);
 
-  const handleLogout = async () => {
-    const { isConfirmed } = await swal.confirm({
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+  const imageUrl = user?.profile?.imageUrl ?? "";
+
+  const imageAvatar = imageUrl ? `${baseUrl}${imageUrl}` : avatarSrc;
+
+
+  const handleLogout = () => {
+    modal.confirm({
       title: "Log out?",
-      text: "You will need to sign in again to continue.",
-      confirmButtonText: "Log out",
+      content: "You will need to sign in again to continue.",
+      okText: "Log out",
+      cancelText: "Cancel",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        await logout();
+
+        message.success("Logged out successfully.");
+
+        router.push("/sign-in");
+      },
     });
-
-    if (!isConfirmed) return;
-
-    await logout();
-    swal.success("Logged out successfully.");
-    router.push("/sign-in");
   };
+
 
   return (
     <div className="cursor-pointer">
@@ -102,8 +115,7 @@ const ProfileDropdown = () => {
           <Space size={10}>
             <Avatar
               alt={avatarSeed}
-              src={avatarSrc}
-              style={{ background: token.colorPrimary }}
+              src={imageAvatar}
             />
             <div className="hidden min-w-0 text-left md:block">
               <Text

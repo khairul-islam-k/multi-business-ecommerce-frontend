@@ -1,5 +1,25 @@
 export type SortOrder = "asc" | "desc" | "ASC" | "DESC";
 export type ApiId = string;
+export type TEmail = string;
+
+export type SendOtpResponse = {
+  data: {
+    verificationId: string;
+    email: string;
+    expiresAt: string;
+  };
+  message: string;
+};
+
+export type VerifyEmailPayload = {
+  email: string;
+  otp: string;
+};
+
+export type VerifiedResponse = {
+  data: unknown;
+  message: string;
+};
 
 export type ApiResponse<T> = {
   data: T;
@@ -49,6 +69,7 @@ export type SystemUser = {
   status?: SystemUserStatus;
   createdAt?: string;
   updatedAt?: string;
+  businessId: string;
 };
 
 export type AuthBusiness = {
@@ -61,12 +82,15 @@ export type AuthBusiness = {
   }>;
 };
 
+
+
 export type AuthPayload = {
   accessToken: string;
   refreshToken: string;
   user: SystemUser;
   selectedBusiness: AuthBusiness | null;
   businesses?: AuthBusiness[];
+  activeSubscription: unknown | null;
 };
 
 export type RegisterPayload = {
@@ -156,6 +180,10 @@ export type BusinessQuery = ListQuery & {
   status?: BusinessStatus;
   currencyCode?: string;
   country?: string;
+};
+
+export type CategoriesQuery = ListQuery & {
+  status?: RoleStatus;
 };
 
 export type BusinessPayload = {
@@ -383,10 +411,17 @@ export type PackageStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED";
 export type PackageResetCycle = "LIFETIME" | "DAILY" | "MONTHLY" | "YEARLY";
 
 export type PackageLimitKey =
-  | "MAX_ROLES"
-  | "MAX_MEDIAS"
-  | "MAX_EMPLOYEES"
-  | "MAX_BUSINESSES";
+  |"MAX_TAGS" 
+  |"MAX_UNITS" 
+  |"MAX_ROLES" 
+  |"MAX_MEDIAS" 
+  |"MAX_BRANDS" 
+  |"MAX_PRODUCTS" 
+  |"MAX_VARIANTS" 
+  |"MAX_EMPLOYEES" 
+  |"MAX_ATTRIBUTES" 
+  |"MAX_BUSINESSES" 
+  |"MAX_CATEGORIES" ;
 
 export type PackageSubscriptionStatus =
   | "TRIALING"
@@ -416,6 +451,17 @@ export type PackagePlanLimit = {
   updatedAt?: string;
 };
 
+export type PackageFeature = {
+  id: string;
+  packageId?: string;
+  title: string;
+  description: string | null;
+  isActive: boolean;
+  sortOrder?: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PackagePlan = {
   id: ApiId;
   name: string;
@@ -428,6 +474,7 @@ export type PackagePlan = {
   status: PackageStatus;
   sortOrder: number;
   limits?: PackagePlanLimit[];
+  features?: PackageFeature[];
   _count?: {
     subscriptions?: number;
   };
@@ -467,6 +514,7 @@ export type PackagePlanPayload = {
   status?: PackageStatus;
   sortOrder?: number;
   limits?: PackagePlanLimit[];
+  features: PackageFeature[];
 };
 
 export type PackageAddonPayload = {
@@ -592,10 +640,10 @@ export type PackageUsageSummaryItem = {
 
 export type ConfirmPackagePaymentResult =
   | {
-      payment: PackageMockPayment;
-      subscription: TenantSubscription;
-    }
+    payment: PackageMockPayment;
+    subscription: TenantSubscription;
+  }
   | {
-      payment: PackageMockPayment;
-      subscriptionAddon: PackageSubscriptionAddon;
-    };
+    payment: PackageMockPayment;
+    subscriptionAddon: PackageSubscriptionAddon;
+  };

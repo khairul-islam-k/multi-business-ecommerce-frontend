@@ -1,10 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button, Card, Col, Form, Input, Row } from "antd";
+import { App, Button, Card, Col, Form, Input, Row } from "antd";
 
 import { authApi } from "@/lib/api";
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
@@ -18,13 +17,13 @@ type CreateTenantValues = {
 };
 
 export default function CreateTenantForm() {
-  const swal = useSwal();
+  const { message } = App.useApp();
   const [form] = Form.useForm<CreateTenantValues>();
   const router = useRouter();
 
   const handleSubmit = async (values: CreateTenantValues) => {
     if (values.password !== values.confirmPassword) {
-      swal.error("Passwords do not match.");
+      message.error("Passwords do not match.");
       return;
     }
 
@@ -36,11 +35,11 @@ export default function CreateTenantForm() {
         businessName: values.businessName,
       });
 
-      swal.success("Tenant account created successfully.");
+      message.success("Tenant account created successfully.");
       form.resetFields();
       router.push("/super-admin/dashboard/tenants");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

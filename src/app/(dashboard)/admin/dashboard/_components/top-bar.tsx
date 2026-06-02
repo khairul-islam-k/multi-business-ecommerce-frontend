@@ -80,7 +80,9 @@ const TopBar: React.FC<TopbarProps> = ({
 
             {/* Mobile menu button */}
             <Button
-              className="menu-btn"
+              style={{
+                display: screens.md ? "none" : "inline-flex"
+              }}
               type="text"
               icon={<MenuOutlined style={{ fontSize: 20 }} />}
               onClick={toggle}
@@ -88,14 +90,6 @@ const TopBar: React.FC<TopbarProps> = ({
           </Space>
         </Space>
       </div>
-
-      <style jsx>{`
-        @media (min-width: 768px) {
-          :global(.menu-btn) {
-            display: none;
-          }
-        }
-      `}</style>
     </>
   );
 };

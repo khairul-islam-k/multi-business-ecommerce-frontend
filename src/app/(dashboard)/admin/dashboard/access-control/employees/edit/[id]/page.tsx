@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
+import { App, Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
@@ -42,11 +41,12 @@ const getEmployeeRoles = (employee?: Employee) =>
 
 export default function EditUserPage() {
   const [form] = Form.useForm<EditEmployeeValues>();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const businessId = useActiveBusinessId();
   const employeeId = id;
+
 
   const employeeQuery = useEmployee(businessId ?? undefined, employeeId);
   const rolesQuery = useRoles(businessId ?? undefined, { limit: 100 });
@@ -123,10 +123,10 @@ export default function EditUserPage() {
         payload: { roleIds: values.roleIds ?? [] },
       });
 
-      swal.success("Employee updated successfully.");
+      message.success("Employee updated successfully.");
       router.push("/admin/dashboard/access-control/employees");
     } catch (error) {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     }
   };
 

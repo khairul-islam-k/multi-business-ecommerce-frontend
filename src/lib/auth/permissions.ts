@@ -9,7 +9,8 @@ export type RbacFeature =
   | "EMPLOYEE_MANAGEMENT"
   | "MEDIA_MANAGEMENT"
   | "PACKAGE_MANAGEMENT"
-  | "ROLE_PERMISSION_MANAGEMENT";
+  | "ROLE_PERMISSION_MANAGEMENT"
+  | "PRODUCT_CATALOG_MANAGEMENT";
 
 export type PermissionAction = "CREATE" | "READ" | "UPDATE" | "DELETE";
 
@@ -41,6 +42,10 @@ export const PERMISSIONS = {
   roleRead: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "READ" },
   roleUpdate: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "UPDATE" },
   roleDelete: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "DELETE" },
+  productCatalogCreate: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "CREATE" },
+  productCatalogRead: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "READ" },
+  productCatalogUpdate: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "UPDATE" },
+  productCatalogDelete: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "DELETE" },
 } satisfies Record<string, PermissionRequirement>;
 
 export function getDashboardPath(userType?: SystemUserType | null) {

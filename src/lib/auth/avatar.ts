@@ -5,7 +5,7 @@ export const getUserAvatarSeed = (
   fallback = "user",
 ) => user?.name || user?.email || fallback;
 
-export const getDicebearAvatarUrl = (seed: string) =>
+export const getDicebearAvatarUrl = (seed: string) => 
   `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(seed)}`;
 
 export const getUserAvatarUrl = (
