@@ -10,6 +10,7 @@ import { useBrandMutation, useProductBrandQuery } from '@/lib/api/hooks/product-
 import { useAuthStore } from '@/stores/auth.store';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
+import { getApiErrorMessage } from '@/lib/axios';
 
 const imageUrlSet = (url: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -43,8 +44,12 @@ const ProductBrands = () => {
     const totalPages = Math.ceil(total / limit);
 
     const handleDelete = async (id: string) => {
-        await removeBrand.mutateAsync(id);
-        message.success('Delete successfully');
+        try {
+            await removeBrand.mutateAsync(id);
+            message.success('Deleted successfully');
+        } catch (error) {
+            message.error(getApiErrorMessage(error));
+        }
 
     }
 

@@ -40,13 +40,10 @@ const ProductUnits = () => {
     const handleDelete = async (id: string) => {
         try {
             await removeUnit.mutateAsync(id);
-            swal.success("unit delete successfully");
+            swal.success("unit deleted successfully");
         } catch (error) {
             swal.error(getApiErrorMessage(error))
         }
-
-
-        console.log('id', id);
     }
 
     const columns: Column<ResponseUnit>[] = [

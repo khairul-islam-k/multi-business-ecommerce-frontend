@@ -36,7 +36,7 @@ const CreateProductPage = () => {
 
     try {
       const res = await createProduct.mutateAsync(payload)
-      message.success('create product successfully');
+      message.success('product created successfully');
       router.push("/admin/dashboard/product-catalog/products");
       setIsSubmitting(false)
     } catch (error) {

@@ -1,34 +1,46 @@
 "use client";
 
+import { Column, DataTable } from "@/components/shared/data-table";
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useProductsQuery } from "@/lib/api/hooks/product";
-import { useProductVariantQuery, useVariantMutation } from "@/lib/api/hooks/product-variant";
+import {
+  useProductVariantQuery,
+  useVariantMutation,
+} from "@/lib/api/hooks/product-variant";
+import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { App, Button, Empty, Popconfirm, Select, Skeleton, Tabs, Tag, type TabsProps } from "antd";
+import { ResponseVariant } from "@/types/product/variant";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import {
+  App,
+  Button,
+  Card,
+  Empty,
+  Popconfirm,
+  Select,
+  Tag,
+} from "antd";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { imageUrlSet } from "../products/_components/image-url";
-import { Column, DataTable } from "@/components/shared/data-table";
-import { ResponseVariant } from "@/types/product/variant";
-import { getApiErrorMessage } from "@/lib/axios";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-type ProductStatusFilter = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
 const VariantManagement = () => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
-  const { message } = App.useApp();
 
+  const { message } = App.useApp();
   const router = useRouter();
 
-  const [statusFilter, setStatusFilter] = useState<
-    ProductStatusFilter | undefined
-  >(undefined);
-
   const [selectedProductId, setSelectedProductId] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
 
   const {
     data: products,
@@ -36,24 +48,54 @@ const VariantManagement = () => {
     isFetching,
   } = useProductsQuery(businessId);
 
-  // variants
-  const [search, setSearch] = useState<string>('');
-
-  const { data: variants, isLoading: variantLoading, isFetching: variantFetching } = useProductVariantQuery(businessId, selectedProductId, search);
+  const {
+    data: variants,
+    isLoading: variantLoading,
+    isFetching: variantFetching,
+  } = useProductVariantQuery(businessId, selectedProductId, search);
 
   const { removeVariant } = useVariantMutation(businessId);
+
+  const productOptions = useMemo(() => {
+    return (
+      products?.items?.map((product) => ({
+        label: product.name,
+        value: product.id,
+      })) ?? []
+    );
+  }, [products]);
+
+  useEffect(() => {
+    if (!products?.items?.length) return;
+
+    setSelectedProductId((prev) => {
+      if (prev) return prev;
+
+      return products.items[0].id;
+    });
+  }, [products]);
+
+  const selectedProduct = useMemo(() => {
+    return products?.items?.find((product) => product.id === selectedProductId);
+  }, [products, selectedProductId]);
+
+  const handleProductChange = (productId: string) => {
+    setSelectedProductId(productId);
+    setSearch("");
+  };
 
   const handleDelete = async (variantId: string) => {
     try {
       await removeVariant.mutateAsync({
         productId: selectedProductId,
-        variantId
-      })
-      message.success('Variant has been deleted');
+        variantId,
+      });
+
+      message.success("Variant deleted successfully.");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
-  }
+  };
 
   const columns: Column<ResponseVariant>[] = [
     {
@@ -149,7 +191,7 @@ const VariantManagement = () => {
 
           <Popconfirm
             title="Delete variant?"
-            description="Are you sure?"
+            description="Are you sure you want to delete this variant?"
             okText="Yes"
             cancelText="No"
             onConfirm={() => handleDelete(row.id)}
@@ -161,31 +203,8 @@ const VariantManagement = () => {
     },
   ];
 
-  // ✅ set first product id as initial value
-  useEffect(() => {
-    if (!products?.items?.length) return;
-    const handleSetId = () => {
-      setSelectedProductId((prev) => prev || products.items[0].id);
-    }
-
-    handleSetId()
-  }, [products]);
-
-  const items: TabsProps["items"] = useMemo(() => {
-    return (
-      products?.items?.map((product) => ({
-        key: product.id,
-        label: product.name,
-      })) ?? []
-    );
-  }, [products]);
-
-  const onChange = (productId: string) => {
-    setSelectedProductId(productId);
-  };
-
   if (isLoading || isFetching) {
-    return <Skeleton active paragraph={{ rows: 4 }} />;
+    return <Loader />;
   }
 
   if (!products?.items?.length) {
@@ -194,42 +213,63 @@ const VariantManagement = () => {
 
   return (
     <div className="space-y-6">
-
       <PageHeader
         title="Product Variants"
         subtitle="Manage product variants with SKU, barcode, price, weight, images, attributes, and status."
         breadcrumb={adminBreadcrumb}
       />
 
-      <Tabs activeKey={selectedProductId} items={items} onChange={onChange} />
+      <Card>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="w-full md:max-w-md">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Select Product
+            </label>
+
+            <Select
+              value={selectedProductId || undefined}
+              options={productOptions}
+              onChange={handleProductChange}
+              placeholder="Select product"
+              showSearch
+              optionFilterProp="label"
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              disabled={!selectedProductId}
+              onClick={() => {
+                router.push(
+                  `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`
+                );
+              }}
+            >
+              New Variant
+            </Button>
+          </div>
+        </div>
+
+        {selectedProduct ? (
+          <p className="mb-0 mt-4 text-sm text-gray-500">
+            Showing variants for{" "}
+            <span className="font-medium text-gray-700">
+              {selectedProduct.name}
+            </span>
+          </p>
+        ) : null}
+      </Card>
 
       <DataTable
         data={variants ?? []}
-        toolbarEnd={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            disabled={!selectedProductId}
-            onClick={() => {
-              if (selectedProductId) {
-                router.push(
-                  `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`
-                )
-              }
-            }
-            }
-          >
-            New Variant
-          </Button>
-        }
         columns={columns}
         onSearch={(value) => {
           setSearch(value);
         }}
-        loading={
-          variantLoading ||
-          variantFetching
-        }
+        loading={variantLoading || variantFetching}
       />
     </div>
   );

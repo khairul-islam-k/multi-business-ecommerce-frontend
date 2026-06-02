@@ -36,7 +36,7 @@ const UpdateProductPage = () => {
         productId: id,
         payload,
       });
-      message.success('Update Product successfully');
+      message.success('Product updated successfully');
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }

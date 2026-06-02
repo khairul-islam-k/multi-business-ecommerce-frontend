@@ -3,10 +3,11 @@ import { Column, DataTable } from '@/components/shared/data-table';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
 import { useProductCategoriesMutation, useProductCategoriesQuery } from '@/lib/api/hooks/product-categories';
+import { getApiErrorMessage } from '@/lib/axios';
 import { useAuthStore } from '@/stores/auth.store';
 import { ResponseCategory } from '@/types/product/product';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Select, Tag } from 'antd';
+import { App, Button, Popconfirm, Select, Tag } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -25,6 +26,7 @@ const Categories = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : "";
     const [search, setSearch] = useState<string>('');
+    const { message } = App.useApp();
 
     const [currentPage, setCurrentPage] = useState<number>(1)
 
@@ -48,8 +50,12 @@ const Categories = () => {
     const totalPages = Math.ceil(total / limit);
 
     const handleDelete = async (id: string) => {
-        console.log('id0', id);
-        await removeCategories.mutateAsync(id);
+        try {
+            await removeCategories.mutateAsync(id);
+            message.success("Category deleted successfully");
+        } catch (error) {
+            message.error(getApiErrorMessage(error));
+        }
     }
 
     const columns: Column<ResponseCategory>[] = [

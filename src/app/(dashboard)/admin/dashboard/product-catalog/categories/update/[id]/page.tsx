@@ -40,7 +40,7 @@ const UpdateProductCategoryPage = () => {
         sortOrder: resData.sortOrder ?? 0
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
-      message.success('categories success');
+      message.success("Category updated successfully");
     } else {
       const payload = {
         name: values.name,
@@ -51,7 +51,7 @@ const UpdateProductCategoryPage = () => {
         parentId: values.parentId ?? "",
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
-      message.success('categories success');
+      message.success("Category updated successfully");
     }
   };
 

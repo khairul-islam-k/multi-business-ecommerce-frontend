@@ -6,28 +6,19 @@ import { useAuthStore } from "@/stores/auth.store";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { App } from "antd";
+import { getApiErrorMessage } from "@/lib/axios";
 
-const parentCategories = [
-    {
-        label: "Shoes",
-        value: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
-    },
-    {
-        label: "Clothing",
-        value: "1a7d0f8f-95aa-4f23-a2fd-0ca6f5f8a999",
-    },
-];
 
 const CreateProductCategoryPage = () => {
     const { message } = App.useApp();
     const business = useAuthStore(s => s.selectedBusiness);
-    console.log(business, 'business');
     const businessId = business?.id ? business?.id : '';
     const { createCategories } = useProductCategoriesMutation(businessId);
 
     const handleCreate = async (values: ProductCategoryFormValues) => {
         const { parentId, ...resData } = values;
-        if (!parentId) {
+        try {
+            if (!parentId) {
             console.log(resData, 'data');
             const payload = {
                 name: resData.name,
@@ -37,7 +28,7 @@ const CreateProductCategoryPage = () => {
                 sortOrder: resData.sortOrder ?? 0
             };
             await createCategories.mutateAsync(payload);
-            message.success('categories success');
+            message.success('Category has been created');
         } else {
             const payload = {
                 name: values.name,
@@ -45,10 +36,13 @@ const CreateProductCategoryPage = () => {
                 imageUrl: values.imageUrl || "",
                 status: values.status,
                 sortOrder: values.sortOrder ?? 0,
-                parentId: values.parentId ?? "",
+                parentId: values.parentId,
             };
             await createCategories.mutateAsync(payload);
-            message.success('categories success');
+            message.success('Category has been created');
+        }
+        } catch (error) {
+            message.error(getApiErrorMessage(error))
         }
     };
 
@@ -60,7 +54,6 @@ const CreateProductCategoryPage = () => {
                 breadcrumb={adminBreadcrumb}
             />
             <ProductCategoryForm
-                parentCategories={parentCategories}
                 onSubmit={handleCreate}
             />
         </div>

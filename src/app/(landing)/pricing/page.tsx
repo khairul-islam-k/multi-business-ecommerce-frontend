@@ -1,5 +1,4 @@
 import { Reveal } from "@/components/ui/reveal";
-import { Pricing } from "../_components/Pricing";
 import { FinalCTA } from "../_components/FinalCTA";
 import { PricingCompare } from "../_components/PricingCompare";
 import PricingCards from "../_components/pricing-cards";

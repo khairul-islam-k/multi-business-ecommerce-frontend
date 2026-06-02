@@ -31,7 +31,7 @@ const UpdateTagPage = () => {
                 tagId: id,
                 payload,
             });
-            message.success('Tag Update successfully');
+            message.success('Tag Updated successfully');
         } catch (error) {
             message.error(getApiErrorMessage(error))
         }

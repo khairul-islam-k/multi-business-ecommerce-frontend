@@ -1,8 +1,12 @@
 "use client";
 
-import { useAttributeMutation, useProductAttribute } from "@/lib/api/hooks/product-attribute";
+import {
+  useAttributeMutation,
+  useProductAttribute,
+} from "@/lib/api/hooks/product-attribute";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { contentQuotesLinter } from "@ant-design/cssinjs/lib/linters";
 import {
   CloseOutlined,
   EditOutlined,
@@ -10,11 +14,11 @@ import {
 } from "@ant-design/icons";
 import {
   App,
+  AutoComplete,
   Button,
   Card,
   Empty,
   Form,
-  Input,
   Modal,
   Popconfirm,
   Skeleton,
@@ -22,7 +26,7 @@ import {
   Tag,
   Tooltip,
 } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type AttributeValue = {
   id: string;
@@ -47,6 +51,7 @@ interface ViewAttributeProps {
 const ViewAttribute = ({ productId }: ViewAttributeProps) => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
+
   const { message } = App.useApp();
 
   const [form] = Form.useForm<ValueFormValues>();
@@ -57,6 +62,7 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
   const [selectedAttributeId, setSelectedAttributeId] = useState<string | null>(
     null
   );
+
   const [selectedValueId, setSelectedValueId] = useState<string | null>(null);
 
   const {
@@ -65,18 +71,45 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
     isFetching,
   } = useProductAttribute(businessId, productId);
 
-  // mutation
   const {
     createAttributeValue,
     updateAttributeValue,
-    removeAttributeValue
+    removeAttributeValue,
   } = useAttributeMutation(businessId);
+
+  const attributeList = (attributes ?? []) as ProductAttribute[];
+
+  const attributeValueOptions = useMemo(() => {
+    const uniqueValues = new Map<string, string>();
+
+    attributeList.forEach((attribute) => {
+      attribute.values?.forEach((item) => {
+        const value = item.value?.trim();
+
+        if (!value) return;
+
+        const key = value.toLowerCase();
+
+        if (!uniqueValues.has(key)) {
+          uniqueValues.set(key, value);
+        }
+      });
+    });
+
+    console.log('memo', uniqueValues);
+
+    return Array.from(uniqueValues.values()).map((value) => ({
+      label: value,
+      value,
+    }));
+  }, [attributeList]);
 
   const handleOpenAddValue = (attributeId: string) => {
     setValueMode("add");
     setSelectedAttributeId(attributeId);
     setSelectedValueId(null);
 
+    form.resetFields();
     form.setFieldsValue({
       value: "",
     });
@@ -92,6 +125,7 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
     setSelectedAttributeId(attributeId);
     setSelectedValueId(valueItem.id);
 
+    form.resetFields();
     form.setFieldsValue({
       value: valueItem.value,
     });
@@ -99,65 +133,73 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
     setValueModalOpen(true);
   };
 
-  const handleSubmitValue = async (values: ValueFormValues) => {
-    const payload = {
-      value: values.value.trim(),
-    };
-
-    if (valueMode === "add") {
-
-      try {
-        const res = await createAttributeValue.mutateAsync({
-          productId,
-          attributeId: selectedAttributeId!,
-          payload
-        })
-        message.success('Add value successfully');
-      } catch (error) {
-        message.error(getApiErrorMessage(error));
-      }
-    }
-
-    if (valueMode === "update") {
-      try {
-        const res = await updateAttributeValue.mutateAsync({
-          productId,
-          attributeId: selectedAttributeId!,
-          valueId: selectedValueId!,
-          payload
-        })
-        message.success('Update Attribute value Successfully');
-      } catch (error) {
-        message.error(getApiErrorMessage(error));
-      }
-    }
-
-    form.resetFields();
-    setValueModalOpen(false);
-    setSelectedAttributeId(null);
-    setSelectedValueId(null);
-  };
-
-  const handleDeleteValue = async (attributeId: string, valueId: string) => {
-
-    try {
-      const res = await removeAttributeValue.mutateAsync({
-        productId,
-        attributeId,
-        valueId
-      })
-      console.log('res', res);
-      message.success('Attribute Value has been deleted')
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    }
-  };
-
   const handleCloseModal = () => {
     form.resetFields();
     setValueModalOpen(false);
     setSelectedAttributeId(null);
     setSelectedValueId(null);
+  };
+
+  const handleSubmitValue = async (values: ValueFormValues) => {
+    if (!selectedAttributeId) {
+      message.error("Attribute is required.");
+      return;
+    }
+
+    const payload = {
+      value: values.value.trim(),
+    };
+
+    if (!payload.value) {
+      message.error("Value is required.");
+      return;
+    }
+
+    try {
+      if (valueMode === "add") {
+        await createAttributeValue.mutateAsync({
+          productId,
+          attributeId: selectedAttributeId,
+          payload,
+        });
+
+        message.success("Attribute value added successfully.");
+      }
+
+      if (valueMode === "update") {
+        if (!selectedValueId) {
+          message.error("Attribute value is required.");
+          return;
+        }
+
+        await updateAttributeValue.mutateAsync({
+          productId,
+          attributeId: selectedAttributeId,
+          valueId: selectedValueId,
+          payload,
+        });
+
+        message.success("Attribute value updated successfully.");
+      }
+
+      handleCloseModal();
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    }
+  };
+
+  const handleDeleteValue = async (attributeId: string, valueId: string) => {
+    try {
+      await removeAttributeValue.mutateAsync({
+        productId,
+        attributeId,
+        valueId,
+      });
+
+      message.success("Attribute value deleted successfully.");
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    }
   };
 
   if (isLoading || isFetching) {
@@ -168,7 +210,7 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
     );
   }
 
-  if (!attributes?.length) {
+  if (!attributeList.length) {
     return (
       <Card title="Attributes">
         <Empty description="No attributes found" />
@@ -180,7 +222,7 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
     <>
       <Card title="Attributes">
         <div className="space-y-3">
-          {(attributes as ProductAttribute[]).map((attribute) => (
+          {attributeList.map((attribute) => (
             <div key={attribute.id} className="rounded-lg border p-4">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
@@ -245,7 +287,9 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
                     </div>
                   ))
                 ) : (
-                  <span className="text-gray-400">No value</span>
+                  <span className="text-sm text-gray-500">
+                    No values added
+                  </span>
                 )}
               </div>
             </div>
@@ -254,17 +298,17 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
       </Card>
 
       <Modal
-        open={valueModalOpen}
         title={valueMode === "add" ? "Add Attribute Value" : "Update Attribute Value"}
+        open={valueModalOpen}
         onCancel={handleCloseModal}
         footer={null}
+        centered
         destroyOnHidden
       >
         <Form<ValueFormValues>
           form={form}
           layout="vertical"
           onFinish={handleSubmitValue}
-
         >
           <Form.Item
             label="Value"
@@ -276,13 +320,29 @@ const ViewAttribute = ({ productId }: ViewAttributeProps) => {
               },
             ]}
           >
-            <Input placeholder="Red" />
+            <AutoComplete
+              options={attributeValueOptions}
+              placeholder="Red"
+              allowClear
+              filterOption={(inputValue, option) =>
+                String(option?.value ?? "")
+                  .toLowerCase()
+                  .includes(inputValue.toLowerCase())
+              }
+            />
           </Form.Item>
 
           <Space className="flex justify-end">
             <Button onClick={handleCloseModal}>Cancel</Button>
 
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={
+                createAttributeValue.isPending ||
+                updateAttributeValue.isPending
+              }
+            >
               {valueMode === "add" ? "Add Value" : "Update Value"}
             </Button>
           </Space>

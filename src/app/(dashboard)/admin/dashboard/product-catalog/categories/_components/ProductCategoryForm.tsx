@@ -51,7 +51,6 @@ type ProductCategoryFormProps = {
 
 const ProductCategoryForm = ({
   initialData,
-  parentCategories = [],
   onSubmit,
 }: ProductCategoryFormProps) => {
   const [form] = Form.useForm<ProductCategoryFormValues>();

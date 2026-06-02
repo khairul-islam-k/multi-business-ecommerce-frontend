@@ -26,7 +26,7 @@ const CreateVariantPage = () => {
                 productId: id,
                 payload
             })
-            message.success('Variant Create successfully');
+            message.success("Variant created successfully.");
             SetIsSubmitting(false);
         } catch (error) {
             SetIsSubmitting(false);

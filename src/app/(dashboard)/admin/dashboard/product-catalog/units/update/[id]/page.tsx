@@ -28,7 +28,7 @@ const UpdateUnitPage = () => {
 
         try {
             await updateUnit.mutateAsync({ unitId: id, payload });
-            message.success('Unit Update Successfully');
+            message.success('Unit Updated Successfully');
         } catch (error) {
             message.error(getApiErrorMessage(error));
         }

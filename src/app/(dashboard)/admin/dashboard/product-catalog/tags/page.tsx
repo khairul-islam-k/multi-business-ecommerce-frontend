@@ -42,7 +42,7 @@ const ProductTags = () => {
         console.log('id', id);
         try {
             await removeTag.mutateAsync(id);
-            swal.success("Tag delete successfully");
+            swal.success("Tag deleted successfully");
         } catch (error) {
             swal.error(getApiErrorMessage(error))
         }

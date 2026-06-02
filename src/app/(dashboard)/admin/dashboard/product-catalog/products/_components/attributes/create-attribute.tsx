@@ -48,10 +48,9 @@ const CreateAttributeForm = ({
                     })) ?? [],
         };
 
-        console.log('payload', payload);
         try {
             const res = await createAttribute.mutateAsync({productId, payload});
-            message.success("create attribute successfully");
+            message.success("Attribute Created successfully");
             console.log(res);
         } catch (error) {
             message.error(getApiErrorMessage(error));

@@ -22,8 +22,7 @@ const CreateUnitPage = () => {
 
         try {
             const res = await createUnit.mutateAsync(payload);
-            message.success("create unit successfully");
-            console.log("Create unit payload:", res);
+            message.success("Unit Created successfully");
         } catch (error) {
             message.error(getApiErrorMessage(error));
         }

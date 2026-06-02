@@ -1,12 +1,11 @@
 import { unwrapApiResponse } from "./response";
 import { ApiId, ApiResponse } from "./types";
 import api from "../axios";
-import { buildQueryString } from "./params";
-import { ResponseUnit } from "@/types/product/unit";
 import { ResponseVariant, VariantPayload } from "@/types/product/variant";
 
 const basePath = (businessId: ApiId, productId: ApiId) => `/product-catalog/businesses/${businessId}/products/${productId}/variants`;
 export const productVariantApi = {
+    
     list(businessId: ApiId, productId: ApiId, search: string) {
         return api
             .get<ApiResponse<ResponseVariant[]>>(

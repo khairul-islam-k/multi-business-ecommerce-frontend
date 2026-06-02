@@ -22,7 +22,7 @@ const CreateTagPage = () => {
 
         try {
             const res = await createTags.mutateAsync(payload);
-            message.success('Tags Create successfully');
+            message.success('Tag Created successfully');
         } catch (error) {
             message.success(getApiErrorMessage(error));
         }

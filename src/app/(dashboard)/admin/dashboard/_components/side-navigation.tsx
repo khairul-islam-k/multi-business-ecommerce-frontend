@@ -1,13 +1,11 @@
 import {
   AlertOutlined,
   ApartmentOutlined,
-  AppstoreAddOutlined,
   AppstoreOutlined,
   ArrowUpOutlined,
   AuditOutlined,
   BankOutlined,
   BarChartOutlined,
-  BarcodeOutlined,
   BellOutlined,
   BulbOutlined,
   CalendarOutlined,
@@ -61,7 +59,6 @@ import {
   TrophyOutlined,
   TruckOutlined,
   UnorderedListOutlined,
-  UploadOutlined,
   UserOutlined,
   WalletOutlined,
   WarningOutlined,
@@ -193,7 +190,7 @@ export const items: MenuProps["items"] = [
   {
     key: "product-catalog",
     icon: <ShoppingOutlined />,
-    label: "Product Catalog",
+    label: "Product",
     children: [
       {
         key: "categories",
@@ -242,10 +239,19 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "variant",
-        icon: <ApartmentOutlined />,
+        icon: <DeploymentUnitOutlined />,
         label: (
           <Link href="/admin/dashboard/product-catalog/variant">
             Variant Manager
+          </Link>
+        ),
+      },
+      {
+        key: "warehouses",
+        icon: <ShopOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/warehouses">
+            Warehouses
           </Link>
         ),
       },
@@ -374,44 +380,6 @@ export const items: MenuProps["items"] = [
         key: "analytics",
         icon: <LineChartOutlined />,
         label: <Link href="/admin/dashboard/orders/analytics">Analytics</Link>,
-      },
-    ],
-  },
-
-  // Product Catalogue
-  {
-    key: "masters-settings",
-    icon: <ShopOutlined />, // Orders / Store
-    label: "Masters / Settings",
-    children: [
-      {
-        key: "Categories-settings",
-        icon: <AppstoreOutlined />,
-        label: (
-          <Link href="/admin/dashboard/masters/categories">Categories</Link>
-        ),
-      },
-      {
-        key: "Brand-list",
-        icon: <TagsOutlined />,
-        label: <Link href="/admin/dashboard/masters/brands">Brands</Link>,
-      },
-      {
-        key: "Warehouse-list",
-        icon: <HomeOutlined />,
-        label: (
-          <Link href="/admin/dashboard/masters/warehouses">Warehouses</Link>
-        ),
-      },
-      {
-        key: "Showrooms",
-        icon: <ShopOutlined />,
-        label: <Link href="/admin/dashboard/masters/showrooms">Showrooms</Link>,
-      },
-      {
-        key: "Supplier-list",
-        icon: <TeamOutlined />,
-        label: <Link href="/admin/dashboard/masters/suppliers">Suppliers</Link>,
       },
     ],
   },
@@ -615,6 +583,15 @@ export const items: MenuProps["items"] = [
     icon: <ShopOutlined />,
     label: "Suppliers & Procurement",
     children: [
+      {
+        key: "supplier",
+        icon: <InboxOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/supplier">
+            Supplier
+          </Link>
+        ),
+      },
       {
         key: "supplier-products",
         icon: <InboxOutlined />,

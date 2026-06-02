@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import VariantForm from '../../../../_components/variant-form';
 import { VariantPayload } from '@/types/product/variant';
@@ -8,7 +8,8 @@ import { useAuthStore } from '@/stores/auth.store';
 import { getApiErrorMessage } from '@/lib/axios';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
-import { App } from 'antd';
+import { App, Empty } from 'antd';
+import Loader from '@/components/shared/loader';
 
 const UpdateVariant = () => {
     const business = useAuthStore((s) => s.selectedBusiness);
@@ -18,10 +19,11 @@ const UpdateVariant = () => {
         productId: string;
         variantId: string;
     }>();
+    const router = useRouter();
 
     const [isSubmitting, SetIsSubmitting] = useState<boolean>(false);
 
-    const { data: variant } = useVariant(businessId, productId, variantId);
+    const { data: variant, isLoading, isFetching } = useVariant(businessId, productId, variantId);
     const { updateVariant } = useVariantMutation(businessId);
 
     const handleCreateVariant = async (payload: VariantPayload) => {
@@ -32,13 +34,22 @@ const UpdateVariant = () => {
                 variantId,
                 payload
             })
-            message.success("Variant Update Successfully");
+            message.success("Variant updated successfully.");
+            router.push('/admin/dashboard/product-catalog/variant');
             SetIsSubmitting(false);
         } catch (error) {
             message.error(getApiErrorMessage(error));
             SetIsSubmitting(false);
         }
     };
+
+    if (isLoading || isFetching) {
+        return <Loader />;
+      }
+    
+      if (!variant) {
+        return <Empty description="No products found" />;
+      }
 
     return (
         <div className='space-y-6'>

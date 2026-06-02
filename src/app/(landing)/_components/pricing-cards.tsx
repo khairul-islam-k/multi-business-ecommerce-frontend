@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type BillingCycle = "MONTHLY" | "YEARLY" | "LIFETIME";
 
@@ -102,7 +103,6 @@ export default function PricingCards() {
     }, [data, billingCycle]);
 
     const handleBuyPackage = async (id: string) => {
-        console.log('id', id);
         try {
             const payment = await mutations.checkoutPlan.mutateAsync(id);
             console.log('payment', payment);
@@ -115,14 +115,13 @@ export default function PricingCards() {
             if (confirm.isConfirmed) {
                 await mutations.confirmMockPayment.mutateAsync(payment.id);
                 router.push('/admin/dashboard');
-                swal.success("Plan changed successfully.");
+                toast.success("Plan changed successfully.");
             } else {
-                swal.success("Checkout created. Confirm it before it expires.");
+                toast.success("Checkout created. Confirm it before it expires.");
             }
         } catch (error) {
-            console.log('error', getApiErrorMessage(error))
-            swal.success("please fist login");
-            router.push('/admin/dashboard');
+            toast.error('Please log in first.');
+            router.push('/sign-in');
         }
     }
 
@@ -243,7 +242,7 @@ export default function PricingCards() {
                                     <div>
                                         <h3
                                             className={cn(
-                                                "text-xl font-bold text-slate-950",
+                                                "text-xl font-bold",
                                                 isPopular && "text-white"
                                             )}
                                         >
@@ -253,7 +252,7 @@ export default function PricingCards() {
                                         <div className="mt-5 flex items-end gap-1">
                                             <span
                                                 className={cn(
-                                                    "text-4xl font-extrabold tracking-tight text-slate-950",
+                                                    "text-4xl font-extrabold tracking-tight ",
                                                     isPopular && "text-white"
                                                 )}
                                             >

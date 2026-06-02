@@ -6,9 +6,10 @@ import { useVariant } from "@/lib/api/hooks/product-variant";
 import { useAuthStore } from "@/stores/auth.store";
 import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import JsBarcode from "jsbarcode";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -45,8 +46,6 @@ const VariantDetail = () => {
     isFetching,
   } = useVariant(businessId, productId, variantId);
 
-  console.log('data', variant);
-
   if (isLoading || isFetching) {
     return (
       <Card>
@@ -68,7 +67,6 @@ const VariantDetail = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header Actions */}
       <PageHeader
         title="Product Variant Details"
         subtitle="View variant information, SKU, barcode, price, weight, images, attributes, and status."
@@ -85,7 +83,7 @@ const VariantDetail = () => {
           icon={<EditOutlined />}
           onClick={() =>
             router.push(
-              `/admin/dashboard/product-catalog/products/${productId}/variants/${variantId}/edit`
+              `/admin/dashboard/product-catalog/variant/update/${productId}/variants/${variantId}`
             )
           }
         >
@@ -93,10 +91,8 @@ const VariantDetail = () => {
         </Button>
       </div>
 
-      {/* Main Details */}
       <Card>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-          {/* Images */}
           <div className="space-y-4">
             <div className="h-[320px] w-full overflow-hidden rounded-xl border bg-gray-50">
               {thumbnail?.imageUrl ? (
@@ -142,7 +138,6 @@ const VariantDetail = () => {
             ) : null}
           </div>
 
-          {/* Info */}
           <div>
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <h1 className="m-0 text-2xl font-semibold">{variant.title}</h1>
@@ -159,7 +154,7 @@ const VariantDetail = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <InfoItem label="SKU" value={variant.sku || "-"} />
 
-              <InfoItem label="Barcode" value={variant.barcode || "-"} />
+              <BarcodeInfoItem value={variant.barcode || ""} />
 
               <InfoItem
                 label="Price"
@@ -168,10 +163,7 @@ const VariantDetail = () => {
 
               <InfoItem label="Weight" value={variant.weight || "-"} />
 
-              <InfoItem
-                label="Images"
-                value={variant.images?.length ?? 0}
-              />
+              <InfoItem label="Images" value={variant.images?.length ?? 0} />
 
               <InfoItem
                 label="Attributes"
@@ -192,20 +184,19 @@ const VariantDetail = () => {
         </div>
       </Card>
 
-      {/* Attributes */}
       <Card title="Variant Attributes">
         {variant.attributes?.length ? (
           <div className="space-y-3">
-            {variant?.attributes?.map((a) => (
+            {variant.attributes.map((a) => (
               <div
                 key={a.id}
                 className="grid grid-cols-1 gap-3 rounded-lg border p-4 md:grid-cols-2"
               >
-                <InfoItem label="Attribute" value={a?.attribute?.name} />
+                <InfoItem label="Attribute" value={a.attribute?.name ?? "-"} />
 
                 <InfoItem
                   label="Attribute Value"
-                  value={a.attributeValue?.value}
+                  value={a.attributeValue?.value ?? "-"}
                 />
               </div>
             ))}
@@ -215,11 +206,12 @@ const VariantDetail = () => {
         )}
       </Card>
 
-      {/* System Info */}
       <Card title="System Information">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <InfoItem label="Product ID" value={variant?.product?.name} />
+          <InfoItem label="Product" value={variant.product?.name ?? "-"} />
+          <InfoItem label="Product ID" value={variant.productId} />
           <InfoItem label="Variant ID" value={variant.id} />
+          <InfoItem label="Business ID" value={variant.businessId} />
         </div>
       </Card>
     </div>
@@ -238,6 +230,48 @@ function InfoItem({ label, value }: InfoItemProps) {
     <div className="rounded-lg border bg-gray-50 p-4">
       <p className="mb-1 text-sm text-gray-500">{label}</p>
       <p className="m-0 break-all font-medium">{value}</p>
+    </div>
+  );
+}
+
+function BarcodeInfoItem({ value }: { value: string }) {
+  return (
+    <div className="rounded-lg border bg-gray-50 p-4 sm:col-span-2">
+      <p className="mb-2 text-sm text-gray-500">Barcode</p>
+
+      {value ? (
+        <div className="rounded-md border bg-white p-3">
+          <Barcode value={value} />
+
+          <p className="m-0 mt-2 break-all text-center text-sm font-medium">
+            {value}
+          </p>
+        </div>
+      ) : (
+        <p className="m-0 font-medium">-</p>
+      )}
+    </div>
+  );
+}
+
+function Barcode({ value }: { value: string }) {
+  const barcodeRef = useRef<SVGSVGElement | null>(null);
+
+  useEffect(() => {
+    if (!barcodeRef.current || !value) return;
+
+    JsBarcode(barcodeRef.current, value, {
+      format: "CODE128",
+      width: 2,
+      height: 72,
+      displayValue: false,
+      margin: 8,
+    });
+  }, [value]);
+
+  return (
+    <div className="w-full overflow-x-auto">
+      <svg ref={barcodeRef} className="mx-auto max-w-full" />
     </div>
   );
 }

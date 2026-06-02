@@ -8,6 +8,7 @@ import { BrandPayload } from "@/types/product/brands";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { App } from "antd";
+import { getApiErrorMessage } from "@/lib/axios";
 
 const UpdateBrandPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,8 +29,12 @@ const UpdateBrandPage = () => {
       sortOrder: values.sortOrder ?? 0,
     };
 
-    const res = await updateBrand.mutateAsync({ brandId: id, payload })
-    message.success('Brand update successfully');
+    try {
+      const res = await updateBrand.mutateAsync({ brandId: id, payload })
+      message.success('Brand update successfully');
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    }
 
   };
 
