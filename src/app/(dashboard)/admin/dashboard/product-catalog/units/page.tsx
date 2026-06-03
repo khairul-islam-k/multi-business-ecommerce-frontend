@@ -147,7 +147,7 @@ const ProductUnits = () => {
                                 router.push("/admin/dashboard/product-catalog/units/create")
                             }
                         >
-                            New Units
+                            New Unit
                         </Button>
                     </div>
                 }

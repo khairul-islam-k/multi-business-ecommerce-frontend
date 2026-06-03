@@ -396,6 +396,11 @@ export const items: MenuProps["items"] = [
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
       },
       {
+        key: "tax",
+        icon: <WalletOutlined />, // Accounts
+        label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
+      },
+      {
         key: "overview",
         icon: <DashboardOutlined />, // Overview
         label: (
@@ -608,13 +613,6 @@ export const items: MenuProps["items"] = [
           <Link href="/admin/dashboard/suppliers/purchase-order">
             Purchase Orders
           </Link>
-        ),
-      },
-      {
-        key: "create-po",
-        icon: <FileTextOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/create-po">Create PO</Link>
         ),
       },
       {

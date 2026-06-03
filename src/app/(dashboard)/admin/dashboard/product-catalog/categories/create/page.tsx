@@ -7,6 +7,7 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { App } from "antd";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useRouter } from "next/navigation";
 
 
 const CreateProductCategoryPage = () => {
@@ -14,6 +15,7 @@ const CreateProductCategoryPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
     const { createCategories } = useProductCategoriesMutation(businessId);
+    const router = useRouter();
 
     const handleCreate = async (values: ProductCategoryFormValues) => {
         const { parentId, ...resData } = values;
@@ -29,6 +31,7 @@ const CreateProductCategoryPage = () => {
             };
             await createCategories.mutateAsync(payload);
             message.success('Category has been created');
+            router.push('/admin/dashboard/product-catalog/categories')
         } else {
             const payload = {
                 name: values.name,
@@ -40,6 +43,7 @@ const CreateProductCategoryPage = () => {
             };
             await createCategories.mutateAsync(payload);
             message.success('Category has been created');
+            router.push('/admin/dashboard/product-catalog/categories')
         }
         } catch (error) {
             message.error(getApiErrorMessage(error))

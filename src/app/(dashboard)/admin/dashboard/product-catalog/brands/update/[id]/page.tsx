@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import BrandForm, { BrandFormValues } from "../../_components/BrandForm";
 import { useBrand, useBrandMutation } from "@/lib/api/hooks/product-brand";
 import { useAuthStore } from "@/stores/auth.store";
@@ -15,6 +15,7 @@ const UpdateBrandPage = () => {
   const business = useAuthStore(s => s.selectedBusiness);
   const businessId = business?.id ? business?.id : '';
   const { message } = App.useApp();
+  const router = useRouter();
 
   const { data: brands } = useBrand(businessId, id);
 
@@ -32,6 +33,7 @@ const UpdateBrandPage = () => {
     try {
       const res = await updateBrand.mutateAsync({ brandId: id, payload })
       message.success('Brand update successfully');
+      router.push('/admin/dashboard/product-catalog/brands')
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }

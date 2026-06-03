@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import VariantForm from "../../_components/variant-form";
 import { VariantPayload } from "@/types/product/variant";
 import { useVariantMutation } from "@/lib/api/hooks/product-variant";
@@ -18,6 +18,7 @@ const CreateVariantPage = () => {
     const { createVariant } = useVariantMutation(businessId);
     const { message } = App.useApp();
     const [isSubmitting, SetIsSubmitting] = useState<boolean>(false);
+    const router = useRouter();
 
     const handleCreateVariant = async (payload: VariantPayload) => {
         SetIsSubmitting(true);
@@ -28,6 +29,7 @@ const CreateVariantPage = () => {
             })
             message.success("Variant created successfully.");
             SetIsSubmitting(false);
+            router.push('/admin/dashboard/product-catalog/variant');
         } catch (error) {
             SetIsSubmitting(false);
             message.error(getApiErrorMessage(error));

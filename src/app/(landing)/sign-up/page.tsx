@@ -86,7 +86,6 @@ export default function SignUpPage() {
     },
   });
 
-  console.log('available', isEmailAvailable);
 
   const emailValue = watch("email");
   const [debouncedEmail] = useDebounce(emailValue, 600);
@@ -112,8 +111,6 @@ export default function SignUpPage() {
         );
 
         const result = response.data as CheckEmailResponse;
-
-        console.log(result);
 
         if (result.data.exists) {
           setError("email", {
@@ -167,7 +164,6 @@ export default function SignUpPage() {
 
     } catch (error) {
       toast.error(getApiErrorMessage(error));
-      console.log(error);
     }
   };
 

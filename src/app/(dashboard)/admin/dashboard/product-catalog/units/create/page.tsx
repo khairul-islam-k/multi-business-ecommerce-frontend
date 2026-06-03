@@ -7,12 +7,14 @@ import { getApiErrorMessage } from "@/lib/axios";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { App } from "antd";
+import { useRouter } from "next/navigation";
 
 const CreateUnitPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
     const { createUnit } = useUnitMutation(businessId);
     const { message } = App.useApp();
+    const router = useRouter();
 
     const handleCreateUnit = async (values: UnitPayload) => {
         const payload: UnitPayload = {
@@ -23,6 +25,7 @@ const CreateUnitPage = () => {
         try {
             const res = await createUnit.mutateAsync(payload);
             message.success("Unit Created successfully");
+            router.push("/admin/dashboard/product-catalog/units");
         } catch (error) {
             message.error(getApiErrorMessage(error));
         }

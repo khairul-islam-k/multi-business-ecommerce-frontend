@@ -150,7 +150,7 @@ const ProductTags = () => {
                                 router.push("/admin/dashboard/product-catalog/tags/create")
                             }
                         >
-                            New Tags
+                            New Tag
                         </Button>
                     </div>
                 }

@@ -7,12 +7,14 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useTagsMutation } from "@/lib/api/hooks/product-tags";
 import { getApiErrorMessage } from "@/lib/axios";
 import { App } from "antd";
+import { useRouter } from "next/navigation";
 
 const CreateTagPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
     const { createTags } = useTagsMutation(businessId);
     const { message } = App.useApp();
+    const router = useRouter();
 
     const handleCreateTag = async (values: TagPayload) => {
         const payload: TagPayload = {
@@ -23,6 +25,7 @@ const CreateTagPage = () => {
         try {
             const res = await createTags.mutateAsync(payload);
             message.success('Tag Created successfully');
+            router.push("/admin/dashboard/product-catalog/tags");
         } catch (error) {
             message.success(getApiErrorMessage(error));
         }
