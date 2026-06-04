@@ -6,7 +6,7 @@ import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Empty, Skeleton, Tag } from "antd";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -31,6 +31,7 @@ const getProductStatusColor = (status: string) => {
 export default function ProductDetailPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -40,6 +41,8 @@ export default function ProductDetailPage() {
     isLoading,
     isFetching,
   } = useProduct(businessId, id);
+
+  console.log('product', product);
 
   if (isLoading || isFetching) {
     return (
@@ -60,9 +63,11 @@ export default function ProductDetailPage() {
   const thumbnail =
     product.images?.find((image) => image.isThumbnail) ?? product.images?.[0];
 
+  const selectedImage =
+    product.images?.find((image) => image.id === selectedImageId) ?? thumbnail;
+
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
           Back
@@ -81,16 +86,16 @@ export default function ProductDetailPage() {
         </Button>
       </div>
 
-      {/* Main Product Info */}
       <Card>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-          {/* Product Image */}
+
+          {/* Images */}
           <div className="space-y-4">
             <div className="h-[320px] w-full overflow-hidden rounded-xl border bg-gray-50">
-              {thumbnail?.imageUrl ? (
+              {selectedImage?.imageUrl ? (
                 <Image
-                  src={imageUrlSet(thumbnail.imageUrl)}
-                  alt={thumbnail.altText || product.name}
+                  src={imageUrlSet(selectedImage.imageUrl)}
+                  alt={selectedImage.altText || product.name}
                   width={320}
                   height={320}
                   className="h-full w-full object-cover"
@@ -105,32 +110,39 @@ export default function ProductDetailPage() {
 
             {product.images?.length ? (
               <div className="grid grid-cols-4 gap-3">
-                {product.images.map((image) => (
-                  <div
-                    key={image.id}
-                    className="relative h-20 overflow-hidden rounded-lg border bg-gray-50"
-                  >
-                    <Image
-                      src={imageUrlSet(image.imageUrl)}
-                      alt={image.altText || product.name}
-                      width={80}
-                      height={80}
-                      className="h-full w-full object-cover"
-                      unoptimized
-                    />
+                {product.images.map((image) => {
+                  const isSelected = selectedImage?.id === image.id;
 
-                    {image.isThumbnail ? (
-                      <span className="absolute left-1 top-1 rounded bg-black/70 px-2 py-0.5 text-[10px] text-white">
-                        Main
-                      </span>
-                    ) : null}
-                  </div>
-                ))}
+                  return (
+                    <button
+                      key={image.id}
+                      type="button"
+                      onClick={() => setSelectedImageId(image.id)}
+                      className={`relative h-20 overflow-hidden rounded-lg border bg-gray-50 ${
+                        isSelected ? "border-blue-500 ring-2 ring-blue-200" : ""
+                      }`}
+                    >
+                      <Image
+                        src={imageUrlSet(image.imageUrl)}
+                        alt={image.altText || product.name}
+                        width={80}
+                        height={80}
+                        className="h-full w-full object-cover"
+                        unoptimized
+                      />
+
+                      {image.isThumbnail ? (
+                        <span className="absolute left-1 top-1 rounded bg-black/70 px-2 py-0.5 text-[10px] text-white">
+                          Main
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
             ) : null}
           </div>
 
-          {/* Product Details */}
           <div>
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <h1 className="m-0 text-2xl font-semibold">{product.name}</h1>
@@ -163,17 +175,12 @@ export default function ProductDetailPage() {
 
               <InfoItem label="Unit" value={product.unit?.name ?? "-"} />
 
-              <InfoItem
-                label="Images"
-                value={product.images?.length ?? 0}
-              />
+              <InfoItem label="Images" value={product.images?.length ?? 0} />
 
               <InfoItem
                 label="Variants"
                 value={
-                  Array.isArray(product.variants)
-                    ? product.variants.length
-                    : 0
+                  Array.isArray(product.variants) ? product.variants.length : 0
                 }
               />
 
@@ -200,7 +207,6 @@ export default function ProductDetailPage() {
         </div>
       </Card>
 
-      {/* IDs */}
       <Card title="System Information">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <InfoItem label="Product ID" value={product.id} />

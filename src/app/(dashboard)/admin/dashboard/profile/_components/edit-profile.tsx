@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import dayjs, { type Dayjs } from "dayjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  App,
   Button,
   Card,
   Col,
@@ -15,7 +16,6 @@ import {
 } from "antd";
 
 import api, { getApiErrorMessage } from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
 import ImageUpload from "./image-upload";
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -84,7 +84,7 @@ type EditProfileFormValues = {
 export default function EditProfile() {
   const [form] = Form.useForm<EditProfileFormValues>();
   const queryClient = useQueryClient();
-  const swal = useSwal();
+  const { message } = App.useApp();
   const setUser = useAuthStore(s=> s.fetchProfile)
 
   const { data: me, isLoading } = useQuery({
@@ -146,7 +146,7 @@ export default function EditProfile() {
     },
 
     onSuccess: () => {
-      swal.success("Profile updated successfully");
+      message.success("Profile updated successfully");
 
       queryClient.invalidateQueries({
         queryKey: ["auth", "me"],
@@ -155,7 +155,7 @@ export default function EditProfile() {
     },
 
     onError: (error) => {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     },
   });
 

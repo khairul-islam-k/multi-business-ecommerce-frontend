@@ -78,14 +78,6 @@ export const tenantPackagesApi = {
       )
       .then((res) => unwrapApiResponse(res.data));
   },
-  cancelSubscription(payload: CancelPackageSubscriptionPayload) {
-    return api
-      .patch<ApiResponse<TenantSubscription>>(
-        `${basePath}/subscription/cancel`,
-        payload,
-      )
-      .then((res) => unwrapApiResponse(res.data));
-  },
   removeAddon(subscriptionAddonId: ApiId) {
     return api
       .delete<

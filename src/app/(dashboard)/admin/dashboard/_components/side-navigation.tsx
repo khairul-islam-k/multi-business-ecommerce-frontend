@@ -3,7 +3,6 @@ import {
   ApartmentOutlined,
   AppstoreOutlined,
   ArrowUpOutlined,
-  AuditOutlined,
   BankOutlined,
   BarChartOutlined,
   BellOutlined,
@@ -129,25 +128,7 @@ export const items: MenuProps["items"] = [
             Permissions
           </Link>
         ),
-      },
-      {
-        key: "login-history",
-        icon: <HistoryOutlined />,
-        label: (
-          <Link href="/admin/dashboard/access-control/login-history">
-            Login History
-          </Link>
-        ),
-      },
-      {
-        key: "activity-logs",
-        icon: <AuditOutlined />,
-        label: (
-          <Link href="/admin/dashboard/access-control/activity-logs">
-            Activity Logs
-          </Link>
-        ),
-      },
+      }
     ],
   },
 

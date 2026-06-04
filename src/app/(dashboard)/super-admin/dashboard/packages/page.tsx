@@ -52,7 +52,7 @@ const statusColor: Record<string, string> = {
 
 export default function PackagesPage() {
   const swal = useSwal();
-  const { message } = App.useApp();
+  const { message, modal } = App.useApp();
   const mutations = useAdminPackageMutations();
 
   const [planPage, setPlanPage] = useState(1);
@@ -225,20 +225,24 @@ export default function PackagesPage() {
   };
 
 
-  const deletePlan = async (plan: PackagePlan) => {
-    const { isConfirmed } = await swal.confirm({
+  const deletePlan = (plan: PackagePlan) => {
+    modal.confirm({
       title: "Delete package plan?",
-      text: `${plan.name} will be archived and removed from active lists.`,
-      confirmButtonText: "Delete plan",
+      content: `${plan.name} will be archived and removed from active lists.`,
+      okText: "Delete plan",
+      cancelText: "Cancel",
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await mutations.deletePlan.mutateAsync(plan.id);
+          message.success("Package plan deleted successfully.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
     });
-    if (!isConfirmed) return;
-
-    try {
-      await mutations.deletePlan.mutateAsync(plan.id);
-      message.success("Package plan deleted successfully.");
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    }
   };
 
 

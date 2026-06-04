@@ -8,17 +8,17 @@ const basePath = (businessId: ApiId) => `/suppliers/businesses/${businessId}/pur
 export const purchaseOrderApi = {
   list(businessId: ApiId, query?: CategoriesQuery) {
     return api
-      .get<ApiPaginatedResponse<unknown>>(
+      .get<ApiPaginatedResponse<PurchaseOrderResponse>>(
         `${basePath(businessId)}${buildQueryString(query)}`,
       )
       .then((res) => normalizePaginatedResponse(res.data));
   },
 
-//   get(businessId: ApiId, brandId: ApiId) {
-//     return api
-//       .get<ApiResponse<ResponseBrand>>(`${basePath(businessId)}/${brandId}`)
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
+  get(businessId: ApiId, brandId: ApiId) {
+    return api
+      .get<ApiResponse<PurchaseOrderResponse>>(`${basePath(businessId)}/${brandId}`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
   create(businessId: ApiId, payload: PurchaseOrderPayload) {
     return api

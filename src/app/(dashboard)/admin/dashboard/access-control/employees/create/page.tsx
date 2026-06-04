@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { App, Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
+import { allCountries } from "country-telephone-data";
 
 import { getApiErrorMessage } from "@/lib/axios";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
@@ -13,6 +14,7 @@ import type { ApiId } from "@/lib/api";
 type CreateEmployeeValues = {
   name: string;
   email: string;
+  countryCode?: string;
   phone?: string;
   password: string;
   confirmPassword: string;
@@ -30,6 +32,19 @@ type CreateEmployeeValues = {
 
 const { TextArea } = Input;
 
+const phoneCodeOptions = [
+  {
+    label: "Bangladesh (+880)",
+    value: "BD|880",
+  },
+  ...allCountries
+    .map((country) => ({
+      label: `${country.name} (+${country.dialCode})`,
+      value: `${country.iso2.toUpperCase()}|${country.dialCode}`,
+    }))
+    .filter((country) => country.value !== "BD|880"),
+];
+
 export default function CreateUserPage() {
   const [form] = Form.useForm<CreateEmployeeValues>();
   const { message } = App.useApp();
@@ -46,25 +61,39 @@ export default function CreateUserPage() {
       return;
     }
 
+    const phoneNumber = values.phone?.trim().replace(/\s+/g, "");
+    const dialCode = values.countryCode?.split("|")[1] ?? "880";
+
+    const fullPhoneNumber = phoneNumber
+      ? phoneNumber.startsWith("+")
+        ? phoneNumber
+        : `+${dialCode}${phoneNumber.replace(/^0+/, "")}`
+      : undefined;
+
+    console.log(fullPhoneNumber, 'phone');
+    const payload = {
+      name: values.name,
+      email: values.email,
+      phone: fullPhoneNumber,
+      password: values.password,
+      status: values.status,
+      roleIds: values.roleIds ?? [],
+      profile: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        gender: values.gender,
+        dateOfBirth: values.dateOfBirth,
+        address: values.address,
+        city: values.city,
+        country: values.country,
+        bio: values.bio,
+      },
+    }
+
+    console.log('payload', payload);
+
     try {
-      await createEmployee.mutateAsync({
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        password: values.password,
-        status: values.status,
-        roleIds: values.roleIds ?? [],
-        profile: {
-          firstName: values.firstName,
-          lastName: values.lastName,
-          gender: values.gender,
-          dateOfBirth: values.dateOfBirth,
-          address: values.address,
-          city: values.city,
-          country: values.country,
-          bio: values.bio,
-        },
-      });
+      await createEmployee.mutateAsync(payload);
 
       message.success("Employee created successfully.");
       form.resetFields();
@@ -90,7 +119,10 @@ export default function CreateUserPage() {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        initialValues={{ status: "ACTIVE" }}
+        initialValues={{
+          status: "ACTIVE",
+          countryCode: "BD|880",
+        }}
       >
         <Row gutter={16}>
           <Col xs={24} md={12}>
@@ -107,9 +139,29 @@ export default function CreateUserPage() {
                 <Input />
               </Form.Item>
 
-              <Form.Item name="phone" label="Phone">
-                <Input />
-              </Form.Item>
+              <Row gutter={12}>
+                <Col xs={24} md={10}>
+                  <Form.Item name="countryCode" label="Country Code">
+                    <Select
+                      showSearch
+                      placeholder="Code"
+                      optionFilterProp="label"
+                      options={phoneCodeOptions}
+                      filterOption={(input, option) =>
+                        String(option?.label ?? "")
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+
+                <Col xs={24} md={14}>
+                  <Form.Item name="phone" label="Phone">
+                    <Input placeholder="1712345678" />
+                  </Form.Item>
+                </Col>
+              </Row>
 
               <Form.Item
                 name="password"
@@ -132,7 +184,7 @@ export default function CreateUserPage() {
                       }
 
                       return Promise.reject(
-                        new Error("Passwords do not match"),
+                        new Error("Passwords do not match")
                       );
                     },
                   }),
@@ -174,6 +226,7 @@ export default function CreateUserPage() {
                     <Input />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} md={12}>
                   <Form.Item name="lastName" label="Last Name">
                     <Input />
@@ -206,6 +259,7 @@ export default function CreateUserPage() {
                     <Input />
                   </Form.Item>
                 </Col>
+
                 <Col xs={24} md={12}>
                   <Form.Item name="country" label="Country">
                     <Input />
@@ -228,6 +282,7 @@ export default function CreateUserPage() {
           >
             Create Employee
           </Button>
+
           <Button
             onClick={() =>
               router.push("/admin/dashboard/access-control/employees")

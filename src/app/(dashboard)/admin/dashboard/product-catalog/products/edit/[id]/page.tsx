@@ -35,6 +35,9 @@ const UpdateProductPage = () => {
       tagIds: values.tagIds ?? [],
     };
 
+    console.log('payload', payload);
+
+
     try {
       await updateProduct.mutateAsync({
         productId: id,

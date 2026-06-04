@@ -1,10 +1,9 @@
 "use client";
 
-import { Alert, Button, Card, Form, Input, message } from "antd";
+import { Alert, App, Button, Card, Form, Input } from "antd";
 import OtpVerifyDialog from "./otp-verify-dialog";
 import { useState } from "react";
 import api, { getApiErrorMessage } from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
 
 type ChangeEmailFormValues = {
     newEmail: string;
@@ -13,7 +12,7 @@ type ChangeEmailFormValues = {
 
 export default function ChangeEmailForm() {
     const [form] = Form.useForm<ChangeEmailFormValues>();
-    const swal = useSwal();
+    const { message } = App.useApp();
 
     // otp state
     const [otpDialogOpen, setOtpDialogOpen] = useState<boolean>(false);
@@ -29,7 +28,7 @@ export default function ChangeEmailForm() {
             setEmailForOtp(values.newEmail);
             setOtpDialogOpen(true);
         } catch (error) {
-            swal.error(getApiErrorMessage(error))
+            message.error(getApiErrorMessage(error))
         }
 
 

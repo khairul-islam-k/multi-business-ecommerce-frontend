@@ -1,10 +1,9 @@
 "use client";
 
-import { Button, Card, Col, Form, Input, Row } from "antd";
+import { App, Button, Card, Col, Form, Input, Row } from "antd";
 import { useMutation } from "@tanstack/react-query";
 
 import api, { getApiErrorMessage } from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
 
 type ResetPasswordFormValues = {
   oldPassword: string;
@@ -19,7 +18,7 @@ type ResetPasswordPayload = {
 
 export default function ResetPassword() {
   const [form] = Form.useForm<ResetPasswordFormValues>();
-  const swal = useSwal();
+  const { message } = App.useApp();
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (payload: ResetPasswordPayload) => {
@@ -28,12 +27,12 @@ export default function ResetPassword() {
     },
 
     onSuccess: () => {
-      swal.success("Password reset successfully");
+      message.success("Password reset successfully");
       form.resetFields();
     },
 
     onError: (error) => {
-      swal.error(getApiErrorMessage(error));
+      message.error(getApiErrorMessage(error));
     },
   });
 
