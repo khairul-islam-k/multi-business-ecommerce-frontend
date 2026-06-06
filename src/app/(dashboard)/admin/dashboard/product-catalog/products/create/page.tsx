@@ -26,6 +26,8 @@ const CreateProductPage = () => {
     const payload: ProductPayload = {
       images: values.images,
       name: values.name.trim(),
+      price: values.price,
+      weight: values.weight,
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,
@@ -39,6 +41,7 @@ const CreateProductPage = () => {
       message.success('product created successfully');
       router.push("/admin/dashboard/product-catalog/products");
       setIsSubmitting(false)
+      console.log('res', res)
     } catch (error) {
       message.error(getApiErrorMessage(error));
       setIsSubmitting(false);

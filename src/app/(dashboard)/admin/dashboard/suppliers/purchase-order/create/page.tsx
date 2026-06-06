@@ -112,7 +112,6 @@ const PurchaseOrderItem = ({
         <Form.Item
           label="Variant"
           name={[fieldName, "variantId"]}
-          rules={[{ required: true, message: "Variant is required" }]}
         >
           <Select
             showSearch

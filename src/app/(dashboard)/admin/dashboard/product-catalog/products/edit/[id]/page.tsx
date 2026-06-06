@@ -27,6 +27,8 @@ const UpdateProductPage = () => {
     const payload: ProductPayload = {
       images: values.images,
       name: values.name.trim(),
+      price: values.price,
+      weight: values.weight,
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,

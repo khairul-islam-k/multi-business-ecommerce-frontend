@@ -14,9 +14,9 @@ export const purchaseOrderApi = {
       .then((res) => normalizePaginatedResponse(res.data));
   },
 
-  get(businessId: ApiId, brandId: ApiId) {
+  get(businessId: ApiId, purchaseOrderId: ApiId) {
     return api
-      .get<ApiResponse<PurchaseOrderResponse>>(`${basePath(businessId)}/${brandId}`)
+      .get<ApiResponse<PurchaseOrderResponse>>(`${basePath(businessId)}/${purchaseOrderId}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 
@@ -38,12 +38,12 @@ export const purchaseOrderApi = {
 //       .then((res) => unwrapApiResponse(res.data));
 //   },
 
-//   remove(businessId: ApiId, brandId: ApiId) {
-//     return api
-//       .delete<ApiResponse<null>>(`${basePath(businessId)}/${brandId}`)
-//       .then((res) => ({
-//         message: res.data.message ?? "Employee deleted successfully",
-//       }));
-//   },
+  remove(businessId: ApiId, purchaseId: ApiId) {
+    return api
+      .delete<ApiResponse<null>>(`${basePath(businessId)}/${purchaseId}`)
+      .then((res) => ({
+        message: res.data.message ?? "Employee deleted successfully",
+      }));
+  },
 
 };

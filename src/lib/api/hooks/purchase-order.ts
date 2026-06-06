@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { BrandPayload } from "@/types/product/brands";
 import { purchaseOrderApi } from "../purchase-order";
 import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
 
@@ -13,21 +12,21 @@ export function usePurchaseOrderQuery(businessId: ApiId, query?: CategoriesQuery
   });
 }
 
-// export function useBrand(businessId: ApiId, brandId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductCategories.detail(businessId, brandId),
+export function usePurchaseOrder(businessId: ApiId, purchaseOrderId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.purchaseOrder.detail(businessId, purchaseOrderId),
 
-//     queryFn: () => {
-//       if (!businessId || !brandId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!businessId || !purchaseOrderId) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productBrandApi.get(businessId, brandId);
-//     },
+      return purchaseOrderApi.get(businessId, purchaseOrderId);
+    },
 
-//     enabled: Boolean(businessId && brandId),
-//   });
-// }
+    enabled: Boolean(businessId && purchaseOrderId),
+  });
+}
 
 export function usePurchaseOrderMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
@@ -55,11 +54,11 @@ export function usePurchaseOrderMutation(businessId: ApiId) {
     //   onSuccess: invalidate,
     // }),
 
-    // removeBrand: useMutation({
-    //   mutationFn: (brandId: ApiId) =>
-    //     productBrandApi.remove(businessId, brandId),
-    //   onSuccess: invalidate,
-    // }),
+    removePurchaseOrder: useMutation({
+      mutationFn: (purchaseId: ApiId) =>
+        purchaseOrderApi.remove(businessId, purchaseId),
+      onSuccess: invalidate,
+    }),
 
   };
 }

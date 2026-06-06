@@ -21,12 +21,14 @@ const CreateVariantPage = () => {
     const router = useRouter();
 
     const handleCreateVariant = async (payload: VariantPayload) => {
+        console.log('payload', payload);
         SetIsSubmitting(true);
         try {
             const res = await createVariant.mutateAsync({
                 productId: id,
                 payload
             })
+            console.log('res', res);
             message.success("Variant created successfully.");
             SetIsSubmitting(false);
             router.push('/admin/dashboard/product-catalog/variant');
@@ -46,8 +48,8 @@ const CreateVariantPage = () => {
 
             <VariantForm
                 mode="create"
-                isSubmitting={isSubmitting}
                 productId={id}
+                isSubmitting={isSubmitting}
                 onSubmit={handleCreateVariant}
             />
         </div>

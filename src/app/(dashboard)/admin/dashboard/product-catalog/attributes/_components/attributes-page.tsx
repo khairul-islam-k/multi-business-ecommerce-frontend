@@ -5,7 +5,7 @@ import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Button, Card, Form, Input, Select, Space } from "antd";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 
 export type AttributeStatus = "ACTIVE" | "INACTIVE";
 
@@ -19,13 +19,11 @@ export type AttributePayload = {
     values: AttributeValuePayload[];
 };
 
-type CreateAttributeFormProps = {
-    productId: string;
+type CreateAttributesPageProps = {
+    setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const CreateAttributeForm = ({
-    productId
-}: CreateAttributeFormProps) => {
+const CreateAttributesPage = ({ setIsModalOpen }: CreateAttributesPageProps) => {
     const [form] = Form.useForm<AttributePayload>();
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const { message } = App.useApp();
@@ -33,7 +31,7 @@ const CreateAttributeForm = ({
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
 
-    const {createAttribute} = useAttributeMutation(businessId);
+    const { createAttribute } = useAttributeMutation(businessId);
 
     const handleSubmit = async (values: AttributePayload) => {
         setIsSubmitting(true)
@@ -49,14 +47,16 @@ const CreateAttributeForm = ({
         };
 
         try {
-            const res = await createAttribute.mutateAsync({productId, payload});
+            await createAttribute.mutateAsync(payload);
             message.success("Attribute Created successfully");
-            console.log(res);
+            setIsModalOpen(false);
         } catch (error) {
             message.error(getApiErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+            form.resetFields();
         }
-        setIsSubmitting(false);
-        form.resetFields();
+
     };
 
     return (
@@ -173,4 +173,4 @@ const CreateAttributeForm = ({
     );
 };
 
-export default CreateAttributeForm;
+export default CreateAttributesPage;

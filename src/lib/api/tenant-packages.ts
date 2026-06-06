@@ -8,7 +8,6 @@ import type {
   ApiId,
   ApiPaginatedResponse,
   ApiResponse,
-  CancelPackageSubscriptionPayload,
   CheckoutPackageAddonPayload,
   ConfirmPackagePaymentResult,
   PackageAddon,

@@ -126,7 +126,7 @@ const PurchaseOrder = () => {
             icon={<EyeOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/suppliers/purchase-order/view/${row.id}`
+                `/admin/dashboard/suppliers/purchase-order/detail/${row.id}`
               )
             }
           />

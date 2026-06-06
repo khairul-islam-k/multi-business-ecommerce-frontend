@@ -26,6 +26,8 @@ export default function PlanCard({
   const [loadingId, setLoadingId] = useState<string>('');
   console.log('loading', loadingId);
 
+  const cardLoading = (loadingId === plan.id) && loading;
+
   return (
     <Card
       className="h-full"
@@ -72,8 +74,11 @@ export default function PlanCard({
           block
           type={isCurrent ? "default" : "primary"}
           disabled={isCurrent}
-          loading={loading}
-          onClick={() => onCheckout(plan)}
+          loading={cardLoading}
+          onClick={() => {
+            onCheckout(plan)
+            setLoadingId(plan.id)
+          }}
         >
           {isCurrent ? "Current plan" : "Choose plan"}
         </Button>

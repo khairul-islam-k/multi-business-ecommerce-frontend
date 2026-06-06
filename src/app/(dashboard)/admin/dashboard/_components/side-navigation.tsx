@@ -219,6 +219,15 @@ export const items: MenuProps["items"] = [
         ),
       },
       {
+        key: "attributes",
+        icon: <TagsOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/attributes">
+            Attributes
+          </Link>
+        ),
+      },
+      {
         key: "variant",
         icon: <DeploymentUnitOutlined />,
         label: (

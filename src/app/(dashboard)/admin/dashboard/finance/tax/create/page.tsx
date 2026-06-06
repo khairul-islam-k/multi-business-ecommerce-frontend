@@ -37,9 +37,8 @@ export default function CreateTaxPage() {
 
      const res = await createTax.mutateAsync(payload);
 
-      console.log('res', res);
       message.success("Tax created successfully");
-    //   router.push("/admin/dashboard/product-catalog/taxes");
+      router.push("/admin/dashboard/finance/tax");
     } catch (error) {
       message.error(getApiErrorMessage(error));
       console.log(getApiErrorMessage(error))

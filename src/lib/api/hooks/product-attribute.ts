@@ -4,19 +4,27 @@ import { ApiId, CategoriesQuery } from "../types";
 import { productAttributeApi } from "../product-attribute";
 import { AttributePayload, AttributeUpdatePayload, AttributeValuePayload } from "@/types/product/attribute";
 
-export function useProductAttribute(businessId: ApiId, productId: ApiId) {
+export function useProductAttributeQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
-    queryKey: apiQueryKeys.ProductAttribute.detail(businessId, productId),
+    queryKey: apiQueryKeys.ProductAttribute.list(businessId, query),
+    queryFn: () => productAttributeApi.list(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
+
+export function useAttribute(businessId: ApiId, attributeId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductAttribute.detail(businessId, attributeId),
 
     queryFn: () => {
-      if (!businessId || !productId) {
+      if (!businessId || !attributeId) {
         throw new Error("Business ID and Category ID are required");
       }
 
-      return productAttributeApi.get(businessId, productId);
+      return productAttributeApi.get(businessId, attributeId);
     },
 
-    enabled: Boolean(businessId && productId),
+    enabled: Boolean(businessId && attributeId),
   });
 }
 
@@ -30,79 +38,59 @@ export function useAttributeMutation(businessId: ApiId) {
 
   return {
     createAttribute: useMutation({
-      mutationFn: ({
-        productId,
-        payload
-      }: {
-        productId: ApiId,
-        payload: AttributePayload
-      }) =>
-        productAttributeApi.create(businessId, productId, payload),
+      mutationFn: (payload: AttributePayload) =>
+        productAttributeApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
     createAttributeValue: useMutation({
       mutationFn: ({
-        productId,
         attributeId,
         payload
       }: {
-        productId: ApiId,
         attributeId: ApiId,
         payload: AttributeValuePayload
       }) =>
-        productAttributeApi.createValue(businessId, productId, attributeId, payload),
+        productAttributeApi.createValue(businessId, attributeId, payload),
       onSuccess: invalidate,
     }),
 
     updateAttributeName: useMutation({
       mutationFn: ({
-        productId,
         attributeId,
         payload,
       }: {
-        productId: ApiId;
         attributeId: ApiId;
         payload: AttributeUpdatePayload;
-      }) => productAttributeApi.update(businessId, productId, attributeId, payload),
+      }) => productAttributeApi.update(businessId, attributeId, payload),
       onSuccess: invalidate,
     }),
     updateAttributeValue: useMutation({
       mutationFn: ({
-        productId,
         attributeId,
         valueId,
         payload,
       }: {
-        productId: ApiId;
         attributeId: ApiId;
         valueId: ApiId;
         payload: AttributeValuePayload;
-      }) => productAttributeApi.updateValue(businessId, productId, attributeId, valueId, payload),
+      }) => productAttributeApi.updateValue(businessId, attributeId, valueId, payload),
       onSuccess: invalidate,
     }),
 
     removeAttributeName: useMutation({
-      mutationFn: ({
-        productId,
-        attributeId
-      }: {
-        productId: ApiId;
-        attributeId: ApiId;
-      }) =>
-        productAttributeApi.removeName(businessId, productId, attributeId),
+      mutationFn: (attributeId: ApiId) =>
+        productAttributeApi.removeName(businessId, attributeId),
       onSuccess: invalidate,
     }),
     removeAttributeValue: useMutation({
       mutationFn: ({
-        productId,
         attributeId,
         valueId,
       }: {
-        productId: ApiId;
         attributeId: ApiId;
         valueId: ApiId;
       }) =>
-        productAttributeApi.removeValue(businessId, productId, attributeId, valueId),
+        productAttributeApi.removeValue(businessId, attributeId, valueId),
       onSuccess: invalidate,
     }),
 
