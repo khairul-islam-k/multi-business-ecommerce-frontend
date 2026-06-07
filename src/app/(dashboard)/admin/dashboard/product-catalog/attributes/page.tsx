@@ -1,6 +1,6 @@
 "use client";
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { App, Button, Modal, Popconfirm, Tag } from 'antd';
+import { App, Button, Card, Modal, Popconfirm, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import CreateAttributesPage from './_components/attributes-page';
@@ -149,34 +149,36 @@ const AttributesPage = () => {
     return (
         <div>
 
-            <DataTable
-                data={attributes?.items ?? []}
-                toolbarEnd={
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                            setIsModalOpen(true);
-                            setProductKey('createAttribute');
-                        }}
-                    >
-                        New Attribute
-                    </Button>
-                }
-                columns={columns}
-                onSearch={(value) => {
-                    setSearch(value);
-                }}
-                loading={
-                    isLoading ||
-                    isFetching
-                }
-            pagination={{
-                currentPage,
-                onPageChange: setCurrentPage,
-                totalPages: totalPages,
-            }}
-            />
+            <Card>
+                <DataTable
+                    data={attributes?.items ?? []}
+                    toolbarEnd={
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => {
+                                setIsModalOpen(true);
+                                setProductKey('createAttribute');
+                            }}
+                        >
+                            New Attribute
+                        </Button>
+                    }
+                    columns={columns}
+                    onSearch={(value) => {
+                        setSearch(value);
+                    }}
+                    loading={
+                        isLoading ||
+                        isFetching
+                    }
+                    pagination={{
+                        currentPage,
+                        onPageChange: setCurrentPage,
+                        totalPages: totalPages,
+                    }}
+                />
+            </Card>
 
             <Modal
                 title="Basic Modal"

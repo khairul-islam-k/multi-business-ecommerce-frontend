@@ -167,5 +167,15 @@ export const apiQueryKeys = {
   },
   emailVerify: {
     send: (email: string) => ["sendOtp", email] as const,
-  }
+  },
+  productStock: {
+    all: (businessId: ApiId) => ["stocks", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["stocks", businessId, "list", query] as const,
+    movementList: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["stocks", businessId, "movementList", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["stocks", businessId, "detail", CategoryId] as const,
+  },
 };

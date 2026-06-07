@@ -16,7 +16,7 @@ import {
   EyeOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { App, Button, Popconfirm, Select, Tag } from "antd";
+import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -163,43 +163,45 @@ const PurchaseOrder = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <DataTable
-        data={purchaseOrder?.items ?? []}
-        toolbarEnd={
-          <div className="flex flex-col gap-3 md:flex-row">
-            <Select
-              placeholder="Filter by status"
-              allowClear
-              style={{ width: 180 }}
-              onChange={(value) => setStatusFilter(value)}
-              options={[
-                { label: "Draft", value: "DRAFT" },
-                { label: "Ordered", value: "ORDERED" },
-                { label: "Received", value: "RECEIVED" },
-                { label: "Cancelled", value: "CANCELLED" },
-              ]}
-            />
+      <Card>
+        <DataTable
+          data={purchaseOrder?.items ?? []}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                onChange={(value) => setStatusFilter(value)}
+                options={[
+                  { label: "Draft", value: "DRAFT" },
+                  { label: "Ordered", value: "ORDERED" },
+                  { label: "Received", value: "RECEIVED" },
+                  { label: "Cancelled", value: "CANCELLED" },
+                ]}
+              />
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push("/admin/dashboard/suppliers/purchase-order/create")
-              }
-            >
-              Create PO
-            </Button>
-          </div>
-        }
-        columns={columns}
-        onSearch={(value) => setSearch(value)}
-        loading={isLoading || isFetching}
-        pagination={{
-          currentPage,
-          onPageChange: setCurrentPage,
-          totalPages,
-        }}
-      />
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/suppliers/purchase-order/create")
+                }
+              >
+                Create PO
+              </Button>
+            </div>
+          }
+          columns={columns}
+          onSearch={(value) => setSearch(value)}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
+        />
+      </Card>
     </div>
   );
 };

@@ -606,13 +606,6 @@ export const items: MenuProps["items"] = [
         ),
       },
       {
-        key: "receive-po",
-        icon: <InboxOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/receive-po">Receive PO</Link>
-        ),
-      },
-      {
         key: "supplier-payment",
         icon: <DollarOutlined />,
         label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,

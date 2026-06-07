@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { purchaseOrderApi } from "../purchase-order";
-import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
+import { Note, PurchaseOrderPayload, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
 
 export function usePurchaseOrderQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -43,16 +43,38 @@ export function usePurchaseOrderMutation(businessId: ApiId) {
       onSuccess: invalidate,
     }),
 
-    // updateBrand: useMutation({
-    //   mutationFn: ({
-    //     brandId,
-    //     payload,
-    //   }: {
-    //     brandId: ApiId;
-    //     payload: BrandPayload;
-    //   }) => productBrandApi.update(businessId, brandId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updatePurchase: useMutation({
+      mutationFn: ({
+        purchaseId,
+        payload,
+      }: {
+        purchaseId: ApiId;
+        payload: UpdatePurchaseOrderPayload;
+      }) => purchaseOrderApi.update(businessId, purchaseId, payload),
+      onSuccess: invalidate,
+    }),
+
+    updateReceivePO: useMutation({
+      mutationFn: ({
+        purchaseId,
+        payload,
+      }: {
+        purchaseId: ApiId;
+        payload: Note;
+      }) => purchaseOrderApi.receivePO(businessId, purchaseId, payload),
+      onSuccess: invalidate,
+    }),
+
+    updateCancelPO: useMutation({
+      mutationFn: ({
+        purchaseId,
+        payload,
+      }: {
+        purchaseId: ApiId;
+        payload: Note;
+      }) => purchaseOrderApi.cancelPO(businessId, purchaseId, payload),
+      onSuccess: invalidate,
+    }),
 
     removePurchaseOrder: useMutation({
       mutationFn: (purchaseId: ApiId) =>

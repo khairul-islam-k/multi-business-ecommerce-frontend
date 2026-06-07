@@ -1,97 +1,203 @@
 "use client";
 
-import { useState } from "react";
-import { useDebounce } from "use-debounce";
-import { ColumnsType } from "antd/es/table";
-import { useQuery } from "@tanstack/react-query";
-import { SearchOutlined } from "@ant-design/icons";
-import { Card, Col, Grid, Input, Row, Table, Typography } from "antd";
+import { App, Button, Card, Col, Form, InputNumber, Modal, Row, Select, Tag } from "antd";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import api from "@/lib/axios";
 import { mockStats } from "./data";
 import StatCard from "@/components/shared/stat-card";
-import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useAuthStore } from "@/stores/auth.store";
+import { useProductStockMutation, useProductStockQuery } from "@/lib/api/hooks/stock";
+import { Column, DataTable } from "@/components/shared/data-table";
+import { InventoryStockResponse } from "@/types/stock/stock";
+import { getApiErrorMessage } from "@/lib/axios";
 
-const { Title, Text } = Typography;
+type LowStockAlertFormValues = {
+  lowStockAlertQty: number;
+};
+
+type StockItem = InventoryStockResponse;
+
+type StockTableRow = StockItem & {
+  serial: number;
+};
 
 export default function StockOverviewPage() {
-  const screens = Grid.useBreakpoint();
-  const [searchText, setSearchText] = useState<string>("");
-  const [value] = useDebounce(searchText, 1000);
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
 
-  const tenantId = 1;
+  const router = useRouter();
+  const { message } = App.useApp();
 
-  // pagination
-  const [page, setPage] = useState(1);
+  // modal
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [form] = Form.useForm<LowStockAlertFormValues>();
+  const [stockId, setStockId] = useState<string>('');
+  const [LowStock, setLowStock] = useState<string>('');
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
   const limit = 5;
 
-  const { data: inventories } = useQuery({
-    queryKey: ["inventory", value, tenantId, limit, page],
-    queryFn: async () =>
-      await api.get(
-        `/overview?search=${value}&tenantId=${tenantId}&page=${page}&limit=${limit}&sortBy=created_at&sortOrder=DESC`,
-      ),
+  const {
+    data: stocks,
+    isLoading,
+    isFetching,
+  } = useProductStockQuery(businessId, {
+    page: currentPage,
+    limit,
+    search,
+    status: statusFilter,
   });
 
-  console.log("inventories", inventories?.data?.data?.data);
+  const { updateLowAlert } = useProductStockMutation(businessId);
 
-  // pagination
-  const total = inventories?.data?.data?.meta?.total;
+  const total = stocks?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const inventoryColumns: ColumnsType<any> = [
+  // low alert
+  const handleUpdateLowStockAlert = async (values: LowStockAlertFormValues) => {
+    try {
+      setIsSubmitting(true);
+
+      const payload = {
+        lowStockAlertQty: Number(values.lowStockAlertQty),
+      };
+
+      console.log("payload", payload, 'id', stockId);
+      const res = await updateLowAlert.mutateAsync({
+        stockId,
+        payload
+      });
+
+      console.log('res', res);
+      message.success("Low stock alert updated successfully");
+      setIsModalOpen(false);
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const tableData: StockTableRow[] =
+    stocks?.items?.map((item, index) => ({
+      ...item,
+      serial: (currentPage - 1) * limit + index + 1,
+    })) ?? [];
+
+  useEffect(() => {
+    if (stocks) {
+      form.setFieldsValue({
+        lowStockAlertQty: Number(LowStock ?? 0)
+      });
+    }
+  }, [stocks, form, LowStock])
+
+  const columns: Column<StockTableRow>[] = [
     {
-      title: "Product",
-      key: "product",
-      render: (_, record) => <Text strong>{record.product?.name ?? "-"}</Text>,
+      key: "serial",
+      label: "SL",
+      render: (row) => row.serial,
     },
     {
-      title: "SKU",
-      key: "sku",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render: (_: string, record: any) => (
-        <Text type="secondary">{record.product?.sku ?? "-"}</Text>
+      key: "product",
+      label: "Product",
+      type: "primary",
+      render: (row) => (
+        <div>
+          <strong>{row.product?.name ?? "-"}</strong>
+        </div>
       ),
     },
     {
-      title: "Warehouse",
-      key: "warehouse",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render: (_: string, record: any) => record.warehouse?.name ?? "-",
+      key: "variant",
+      label: "Variant",
+      render: (row) => (
+        <div>
+          <span>{row.variant?.title ?? "-"}</span>
+        </div>
+      ),
     },
     {
-      title: "Available",
-      dataIndex: "availableQty",
-      key: "availableQty",
-      align: "right",
+      key: "warehouseStocks",
+      label: "Warehouse",
+      render: (row) =>
+        row.warehouseStocks?.length ? (
+          <div className="space-y-1">
+            {row.warehouseStocks.map((item) => (
+              <Tag key={item.id}>{item.warehouse?.name ?? "-"}</Tag>
+            ))}
+          </div>
+        ) : (
+          "-"
+        ),
     },
     {
-      title: "Reserved",
-      dataIndex: "reservedQty",
-      key: "reservedQty",
-      align: "right",
+      key: "totalQuantity",
+      label: "Total Qty",
+      render: (row) => Number(row.totalQuantity ?? 0),
     },
     {
-      title: "Damaged",
-      dataIndex: "damagedQty",
-      key: "damagedQty",
-      align: "right",
+      key: "quantityReserved",
+      label: "Reserved",
+      render: (row) => Number(row.quantityReserved ?? 0),
     },
     {
-      title: "Lost",
-      dataIndex: "lostQty",
-      key: "lostQty",
-      align: "right",
+      key: "availableQuantity",
+      label: "Available",
+      render: (row) => {
+        const totalQuantity = Number(row.totalQuantity ?? 0);
+        const reservedQuantity = Number(row.quantityReserved ?? 0);
+
+        return totalQuantity - reservedQuantity;
+      },
     },
     {
-      title: "Avg Cost",
-      dataIndex: "avgCost",
-      key: "avgCost",
-      align: "right",
-      render: (value: string) => `৳ ${Number(value).toFixed(2)}`,
+      key: "lowStockAlertQty",
+      label: "Low Stock",
+      render: (row) => Number(row.lowStockAlertQty ?? 0),
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={row.product?.status === "ACTIVE" ? "green" : "red"}>
+          {row.product?.status ?? "-"}
+        </Tag>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() =>
+              router.push(`/admin/dashboard/inventory/stock-overview/details/${row.id}`)
+            }
+          />
+
+          <Button
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => {
+              setIsModalOpen(true);
+              setStockId(row.id);
+              setLowStock(row.lowStockAlertQty);
+            }}
+          >Low stock</Button>
+        </div>
+      ),
     },
   ];
 
@@ -99,7 +205,6 @@ export default function StockOverviewPage() {
     <div className="space-y-6">
       <PageHeader title="Stock Overview" breadcrumb={adminBreadcrumb} />
 
-      {/* Stats */}
       <Row gutter={[16, 16]}>
         {mockStats.map((stat) => (
           <Col xs={24} sm={12} lg={6} key={stat.label}>
@@ -108,41 +213,80 @@ export default function StockOverviewPage() {
         ))}
       </Row>
 
-      {/* Table */}
-
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-        <Input
-          allowClear
-          prefix={<SearchOutlined />}
-          placeholder="Search products..."
-          style={{ width: screens.lg ? 330 : "100%" }}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+      <Card>
+        <DataTable
+          data={tableData}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                onChange={(value) => {
+                  setCurrentPage(1);
+                  setStatusFilter(value ?? "");
+                }}
+                options={[
+                  { label: "Active", value: "ACTIVE" },
+                  { label: "Inactive", value: "INACTIVE" },
+                ]}
+              />
+            </div>
+          }
+          columns={columns}
+          onSearch={(value) => {
+            setCurrentPage(1);
+            setSearch(value);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
         />
-      </div>
+      </Card>
 
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>All Stock</Title>
-
-            <Table
-              columns={inventoryColumns}
-              dataSource={inventories?.data?.data?.data} // <-- your API data array
-              rowKey="id"
-              size="small"
-              pagination={false}
-              scroll={{ x: "max-content" }}
+      {/* modal */}
+      <Modal
+        title="Update Low Stock Alert"
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <Form<LowStockAlertFormValues>
+          form={form}
+          layout="vertical"
+          onFinish={handleUpdateLowStockAlert}
+        >
+          <Form.Item
+            label="Low Stock Alert Quantity"
+            name="lowStockAlertQty"
+            rules={[
+              {
+                required: true,
+                message: "Low stock alert quantity is required",
+              },
+            ]}
+          >
+            <InputNumber
+              min={0}
+              className="w-full"
+              placeholder="Enter low stock alert quantity"
             />
-          </Card>
+          </Form.Item>
 
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </Col>
-      </Row>
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setIsModalOpen(false)}>Cancel</Button>
+
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              Update
+            </Button>
+          </div>
+        </Form>
+      </Modal>
+
     </div>
   );
 }

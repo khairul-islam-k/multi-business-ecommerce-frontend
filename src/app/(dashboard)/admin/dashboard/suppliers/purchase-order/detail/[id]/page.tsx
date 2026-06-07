@@ -3,7 +3,8 @@
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { usePurchaseOrder } from "@/lib/api/hooks/purchase-order";
+import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
+import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   App,
@@ -12,15 +13,23 @@ import {
   Col,
   Empty,
   Flex,
+  Modal,
   Row,
   Table,
   Tag,
 } from "antd";
+import TextArea from "antd/es/input/TextArea";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 
 const PurchaseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { message, modal } = App.useApp();
+
+  // modal 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [note, setNote] = useState<string>('');
+  const [mode, setMode] = useState<string>('');
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -30,7 +39,49 @@ const PurchaseDetail = () => {
     id
   );
 
-  console.log('purchase', purchase);
+  console.log('status', purchase?.status);
+  const cancelOrReceiveStatus = !((purchase?.status === "CANCELLED") || (purchase?.status === "RECEIVED"));
+
+  const receiveStatus = purchase?.status === "RECEIVED"
+
+  console.log('can', cancelOrReceiveStatus);
+
+  const { updateReceivePO, updateCancelPO } = usePurchaseOrderMutation(businessId);
+
+
+  const handleReceivePO = async (id: string) => {
+    const payload = { note };
+    try {
+      const res = await updateReceivePO.mutateAsync({
+        purchaseId: id,
+        payload
+      })
+      console.log('res', res);
+      message.success("Purchase order have been received");
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsModalOpen(false);
+    }
+  }
+
+  const handleCancel = async (id: string) => {
+    const payload = { note };
+    console.log('can', payload, id);
+    try {
+      const res = await updateCancelPO.mutateAsync({
+        purchaseId: id,
+        payload
+      })
+      console.log('res', res);
+      message.success("Purchase order have been cancel");;
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsModalOpen(false);
+    }
+  };
+
 
   if (isLoading || isFetching) {
     return <Loader />;
@@ -52,31 +103,6 @@ const PurchaseDetail = () => {
     });
   };
 
-  const handleComplete = () => {
-    modal.confirm({
-      title: "Complete purchase order?",
-      content: "Are you sure you want to complete this purchase order?",
-      okText: "Complete",
-      cancelText: "Cancel",
-      onOk: async () => {
-        message.success("Complete action here.");
-      },
-    });
-  };
-
-  const handleCancel = () => {
-    modal.confirm({
-      title: "Cancel purchase order?",
-      content: "Are you sure you want to cancel this purchase order?",
-      okText: "Cancel Order",
-      cancelText: "Close",
-      okButtonProps: { danger: true },
-      onOk: async () => {
-        message.success("Cancel action here.");
-      },
-    });
-  };
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -86,15 +112,30 @@ const PurchaseDetail = () => {
       />
 
       <Flex justify="end" gap={10} wrap>
-        <Button onClick={handleReturnRequest}>Return Request</Button>
+        {
+          receiveStatus && 
+          <Button onClick={handleReturnRequest}>Return Request</Button>
+        }
 
-        <Button type="primary" onClick={handleComplete}>
-          Complete
-        </Button>
+        {
+          cancelOrReceiveStatus &&
+          <Button type="primary" onClick={() => {
+            setIsModalOpen(true);
+            setMode("receive");
+          }}>
+            Receive PO
+          </Button>
+        }
 
-        <Button danger onClick={handleCancel}>
-          Cancel
-        </Button>
+        {
+          cancelOrReceiveStatus &&
+          <Button danger onClick={() => {
+            setIsModalOpen(true);
+            setMode("cancel");
+          }}>
+            Cancel PO
+          </Button>
+        }
       </Flex>
 
       <Card>
@@ -244,7 +285,69 @@ const PurchaseDetail = () => {
           </Col>
         </Row>
       </Card>
-    </div>
+
+      <Modal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}>
+        {
+          mode === "receive" && <>
+            <Card
+              title="Receive Purchase Order"
+            >
+              <TextArea
+                rows={4}
+                placeholder="Write purchase order note..."
+                showCount
+                maxLength={500}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+              />
+
+              <Button type="primary"
+                style={{
+                  marginTop: '8px'
+                }}
+                onClick={() => {
+                  handleReceivePO(purchase.id);
+                }}>
+                Receive PO
+              </Button>
+            </Card>
+          </>
+        }
+
+        {/* cancel */}
+        {
+          mode === "cancel" && <>
+            <Card
+              title="Cancel Purchase Order"
+            >
+              <TextArea
+                rows={4}
+                placeholder="Write purchase order note..."
+                showCount
+                maxLength={500}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+              />
+
+              <Button type="primary"
+                style={{
+                  marginTop: '8px'
+                }}
+                onClick={() => {
+                  handleCancel(purchase.id);
+                }}>
+                Cancel PO
+              </Button>
+            </Card>
+          </>
+        }
+      </Modal>
+    </div >
   );
 };
 

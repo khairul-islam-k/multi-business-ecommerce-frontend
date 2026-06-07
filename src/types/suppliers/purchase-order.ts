@@ -75,3 +75,14 @@ export type PurchaseOrderItemResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type UpdatePurchaseOrderPayload = {
+  expectedDeliveryDate: string;
+  status: PurchaseOrderStatus;
+  shippingCost: number;
+  note: string;
+};
+
+export type Note = {
+  note: string;
+}

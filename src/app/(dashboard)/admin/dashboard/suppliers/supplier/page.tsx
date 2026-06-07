@@ -7,7 +7,7 @@ import {
   EditOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { App, Button, Popconfirm, Select, Tag } from "antd";
+import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
@@ -143,48 +143,50 @@ const SupplierInfo = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <DataTable
-        data={suppliers?.items ?? []}
-        columns={columns}
-        toolbarEnd={
-          <div className="flex flex-col gap-3 md:flex-row">
-            <Select
-              placeholder="Filter by status"
-              allowClear
-              style={{ width: 180 }}
-              value={statusFilter}
-              onChange={(value) => {
-                setStatusFilter(value);
-                setCurrentPage(1);
-              }}
-              options={[
-                { label: "Active", value: "ACTIVE" },
-                { label: "Inactive", value: "INACTIVE" },
-              ]}
-            />
+      <Card>
+        <DataTable
+          data={suppliers?.items ?? []}
+          columns={columns}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+                options={[
+                  { label: "Active", value: "ACTIVE" },
+                  { label: "Inactive", value: "INACTIVE" },
+                ]}
+              />
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push("/admin/dashboard/suppliers/supplier/create")
-              }
-            >
-              New Supplier
-            </Button>
-          </div>
-        }
-        onSearch={(value) => {
-          setSearch(value);
-          setCurrentPage(1);
-        }}
-        loading={isLoading || isFetching}
-        pagination={{
-          currentPage,
-          onPageChange: setCurrentPage,
-          totalPages,
-        }}
-      />
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/suppliers/supplier/create")
+                }
+              >
+                New Supplier
+              </Button>
+            </div>
+          }
+          onSearch={(value) => {
+            setSearch(value);
+            setCurrentPage(1);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
+        />
+      </Card>
     </div>
   );
 };

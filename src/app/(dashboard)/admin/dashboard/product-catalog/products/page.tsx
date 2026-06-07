@@ -1,6 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button, Dropdown, MenuProps, Popconfirm, Select, Tag } from "antd";
+import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
@@ -227,48 +227,50 @@ const ProductsList = () => {
       />
 
       {/* 🔄 Search / Pagination Loader */}
-      <DataTable
-        data={products?.items ?? []}
-        toolbarEnd={
-          <div className="flex flex-col gap-3 md:flex-row">
-            <Select
-              placeholder="Filter by status"
-              allowClear
-              style={{ width: 180 }}
-              onChange={(v) => setStatusFilter(v)}
-              options={[
-                { label: "DRAFT", value: "DRAFT" },
-                { label: "Active", value: "ACTIVE" },
-                { label: "Inactive", value: "INACTIVE" },
-                { label: "Inactive", value: "ARCHIVED" },
-              ]}
-            />
+      <Card>
+        <DataTable
+          data={products?.items ?? []}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                onChange={(v) => setStatusFilter(v)}
+                options={[
+                  { label: "DRAFT", value: "DRAFT" },
+                  { label: "Active", value: "ACTIVE" },
+                  { label: "Inactive", value: "INACTIVE" },
+                  { label: "Inactive", value: "ARCHIVED" },
+                ]}
+              />
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push("/admin/dashboard/product-catalog/products/create")
-              }
-            >
-              New Product
-            </Button>
-          </div>
-        }
-        columns={columns}
-        onSearch={(value) => {
-          setSearch(value);
-        }}
-        loading={
-          isLoading ||
-          isFetching
-        }
-        pagination={{
-          currentPage,
-          onPageChange: setCurrentPage,
-          totalPages: totalPages,
-        }}
-      />
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/product-catalog/products/create")
+                }
+              >
+                New Product
+              </Button>
+            </div>
+          }
+          columns={columns}
+          onSearch={(value) => {
+            setSearch(value);
+          }}
+          loading={
+            isLoading ||
+            isFetching
+          }
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages: totalPages,
+          }}
+        />
+      </Card>
 
     </div>
   );

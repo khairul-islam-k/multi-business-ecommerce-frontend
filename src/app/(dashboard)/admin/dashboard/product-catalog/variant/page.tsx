@@ -263,14 +263,16 @@ const VariantManagement = () => {
         ) : null}
       </Card>
 
-      <DataTable
-        data={variants ?? []}
-        columns={columns}
-        onSearch={(value) => {
-          setSearch(value);
-        }}
-        loading={variantLoading || variantFetching}
-      />
+      <Card>
+        <DataTable
+          data={variants ?? []}
+          columns={columns}
+          onSearch={(value) => {
+            setSearch(value);
+          }}
+          loading={variantLoading || variantFetching}
+        />
+      </Card>
     </div>
   );
 };
