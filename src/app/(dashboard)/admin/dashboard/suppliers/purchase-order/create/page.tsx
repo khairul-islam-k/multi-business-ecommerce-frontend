@@ -1,635 +1,413 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import { useProductsQuery } from "@/lib/api/hooks/product";
+import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
+import { usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
+import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
+import { useTaxQuery } from "@/lib/api/hooks/tax";
+import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   App,
   Button,
   Card,
-  Col,
   DatePicker,
-  Divider,
-  Flex,
   Form,
   Input,
   InputNumber,
-  Row,
   Select,
   Space,
 } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import type { Dayjs } from "dayjs";
-
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useProductsQuery } from "@/lib/api/hooks/product";
-import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
-import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
-import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
-import { useAuthStore } from "@/stores/auth.store";
-import { ResponseVariant } from "@/types/product/variant";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const { TextArea } = Input;
 
 type PurchaseOrderStatus = "DRAFT" | "ORDERED" | "RECEIVED" | "CANCELLED";
 
 type PurchaseOrderItemFormValue = {
-  productId: string;
-  variantId: string;
+  productId?: string;
+  variantId?: string;
   quantityOrdered: number;
   unitCost: number;
   discountAmount: number;
-  taxAmount: number;
 };
 
 type PurchaseOrderFormValues = {
-  supplierId: string;
-  warehouseId: string;
-  orderDate: Dayjs;
-  expectedDeliveryDate: Dayjs;
-  status: PurchaseOrderStatus;
-  shippingCost: number;
-  note?: string;
-  items: PurchaseOrderItemFormValue[];
-};
-
-type PurchaseOrderPayload = {
-  supplierId: string;
-  warehouseId: string;
-  orderDate: string;
-  expectedDeliveryDate: string;
+  supplierId?: string;
+  warehouseId?: string;
+  taxId?: string;
+  expectedDeliveryDate?: Dayjs;
   status: PurchaseOrderStatus;
   shippingCost: number;
   note: string;
   items: PurchaseOrderItemFormValue[];
 };
 
-const toNumber = (value: string | number | null | undefined) => {
-  const numberValue = Number(value ?? 0);
-  return Number.isFinite(numberValue) ? numberValue : 0;
+
+type PurchaseOrderItemProps = {
+  fieldName: number;
+  remove: (index: number | number[]) => void;
+  canRemove: boolean;
+  businessId: string;
+  form: ReturnType<typeof Form.useForm<PurchaseOrderFormValues>>[0];
+  productOptions: {
+    label: string;
+    value: string;
+  }[];
+  productLoading: boolean;
 };
 
-const PurchaseOrder = () => {
-  const [form] = Form.useForm<PurchaseOrderFormValues>();
-  const { message } = App.useApp();
+const PurchaseOrderItem = ({
+  fieldName,
+  remove,
+  canRemove,
+  businessId,
+  form,
+  productOptions,
+  productLoading,
+}: PurchaseOrderItemProps) => {
+  const productId = Form.useWatch(["items", fieldName, "productId"], form);
 
+  const { data: variants = [], isLoading: variantLoading } =
+    useProductVariantQuery(businessId, productId || "", "");
+
+  return (
+    <Card
+      size="small"
+      title={`Item ${fieldName + 1}`}
+      extra={
+        canRemove && (
+          <Button
+            danger
+            size="small"
+            icon={<DeleteOutlined />}
+            onClick={() => remove(fieldName)}
+          />
+        )
+      }
+    >
+      <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
+        <Form.Item
+          label="Product"
+          name={[fieldName, "productId"]}
+          rules={[{ required: true, message: "Product is required" }]}
+        >
+          <Select
+            showSearch
+            placeholder="Select product"
+            loading={productLoading}
+            optionFilterProp="label"
+            options={productOptions}
+            onChange={() => {
+              form.setFieldValue(["items", fieldName, "variantId"], undefined);
+            }}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Variant"
+          name={[fieldName, "variantId"]}
+        >
+          <Select
+            showSearch
+            disabled={!productId}
+            placeholder="Select variant"
+            loading={variantLoading}
+            optionFilterProp="label"
+            options={variants.map((variant) => ({
+              label: variant.title,
+              value: variant.id,
+            }))}
+          />
+        </Form.Item>
+
+        <Form.Item
+          label="Quantity Ordered"
+          name={[fieldName, "quantityOrdered"]}
+          rules={[{ required: true, message: "Quantity is required" }]}
+        >
+          <InputNumber
+            style={{
+              width: '100%'
+            }}
+            min={1} />
+        </Form.Item>
+
+        <Form.Item
+          label="Unit Cost"
+          name={[fieldName, "unitCost"]}
+          rules={[{ required: true, message: "Unit cost is required" }]}
+        >
+          <InputNumber min={0} 
+          style={{
+              width: '100%'
+            }} />
+        </Form.Item>
+
+        <Form.Item
+          label="Discount Amount"
+          name={[fieldName, "discountAmount"]}
+          rules={[{ required: true, message: "Discount amount is required" }]}
+          className="md:col-span-2"
+        >
+          <InputNumber min={0} 
+          style={{
+              width: '100%'
+            }} />
+        </Form.Item>
+      </div>
+    </Card>
+  );
+};
+
+const PurchaseOrderForm = () => {
+  const [form] = Form.useForm<PurchaseOrderFormValues>();
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { message } = App.useApp();
+  const router = useRouter();
 
-  const [variantSearch, setVariantSearch] = useState("");
-  const [selectedProductId, setSelectedProductId] = useState("");
-
-  const [variantMap, setVariantMap] = useState<
-    Record<string, ResponseVariant[]>
-  >({});
+  const {createPurchaseOrder} = usePurchaseOrderMutation(businessId);
 
   const { data: suppliers, isLoading: supplierLoading } = useSuppliersQuery(
     businessId,
     {
-      page: 1,
-      limit: 50,
-      search: "",
       status: "ACTIVE",
       sortOrder: "desc",
-    },
+    }
   );
 
   const { data: warehouses, isLoading: warehouseLoading } = useWarehousesQuery(
     businessId,
     {
-      page: 1,
-      limit: 50,
-      search: "",
       status: "ACTIVE",
       sortOrder: "desc",
-    },
+    }
   );
 
-  const {
-    data: products,
-    isLoading: productLoading,
-    isFetching: productFetching,
-  } = useProductsQuery(businessId, {
+  const { data: taxes, isLoading: taxLoading } = useTaxQuery(businessId, {
     status: "ACTIVE",
-    sortOrder: "desc",
   });
 
-  const {
-    data: variants = [],
-    isLoading: variantLoading,
-    isFetching: variantFetching,
-  } = useProductVariantQuery(businessId, selectedProductId, variantSearch);
+  const { data: products, isLoading: productLoading } = useProductsQuery(
+    businessId,
+    {
+      status: "ACTIVE",
+      sortOrder: "desc",
+    }
+  );
 
-  useEffect(() => {
-    if (!selectedProductId) return;
+  const handleFinish = async (values: PurchaseOrderFormValues) => {
+    if (
+      !values.supplierId ||
+      !values.warehouseId ||
+      !values.taxId ||
+      !values.expectedDeliveryDate
+    ) {
+      return;
+    }
 
-    setVariantMap((prev) => ({
-      ...prev,
-      [selectedProductId]: variants,
-    }));
-  }, [selectedProductId, variants]);
-
-  const formItems = Form.useWatch("items", form) ?? [];
-  const shippingCost = Form.useWatch("shippingCost", form) ?? 0;
-
-  const supplierOptions = useMemo(() => {
-    return (suppliers?.items ?? []).map((supplier) => ({
-      label: supplier.name,
-      value: supplier.id,
-    }));
-  }, [suppliers]);
-
-  const warehouseOptions = useMemo(() => {
-    return (warehouses?.items ?? []).map((warehouse) => ({
-      label: warehouse.name,
-      value: warehouse.id,
-    }));
-  }, [warehouses]);
-
-  const productOptions = useMemo(() => {
-    return (products?.items ?? []).map((product) => ({
-      label: product.name,
-      value: product.id,
-    }));
-  }, [products]);
-
-  const subtotal = formItems.reduce((sum, item) => {
-    return (
-      sum +
-      toNumber(item?.quantityOrdered) * toNumber(item?.unitCost)
-    );
-  }, 0);
-
-  const totalDiscount = formItems.reduce((sum, item) => {
-    return sum + toNumber(item?.discountAmount);
-  }, 0);
-
-  const totalTax = formItems.reduce((sum, item) => {
-    return sum + toNumber(item?.taxAmount);
-  }, 0);
-
-  const grandTotal = subtotal - totalDiscount + totalTax + toNumber(shippingCost);
-
-  const handleProductChange = (index: number, productId: string) => {
-    form.setFieldValue(["items", index, "productId"], productId);
-    form.setFieldValue(["items", index, "variantId"], undefined);
-    form.setFieldValue(["items", index, "unitCost"], 0);
-
-    setSelectedProductId(productId);
-    setVariantSearch("");
-  };
-
-  const handleVariantChange = (
-    index: number,
-    variantId: string,
-    rowVariants: ResponseVariant[],
-  ) => {
-    const selectedVariant = rowVariants.find(
-      (variant) => variant.id === variantId,
-    );
-
-    form.setFieldValue(["items", index, "variantId"], variantId);
-    form.setFieldValue(
-      ["items", index, "unitCost"],
-      toNumber(selectedVariant?.price),
-    );
-  };
-
-  const onFinish = async (values: PurchaseOrderFormValues) => {
+    setIsSubmitting(true);
     const payload: PurchaseOrderPayload = {
       supplierId: values.supplierId,
       warehouseId: values.warehouseId,
-      orderDate: values.orderDate.toDate().toISOString(),
+      taxId: values.taxId,
       expectedDeliveryDate: values.expectedDeliveryDate.toDate().toISOString(),
       status: values.status,
-      shippingCost: toNumber(values.shippingCost),
+      shippingCost: Number(values.shippingCost),
       note: values.note?.trim() || "",
       items: values.items.map((item) => ({
-        productId: item.productId,
-        variantId: item.variantId,
-        quantityOrdered: toNumber(item.quantityOrdered),
-        unitCost: toNumber(item.unitCost),
-        discountAmount: toNumber(item.discountAmount),
-        taxAmount: toNumber(item.taxAmount),
+        productId: item.productId as string,
+        variantId: item.variantId as string,
+        quantityOrdered: Number(item.quantityOrdered),
+        unitCost: Number(item.unitCost),
+        discountAmount: Number(item.discountAmount),
       })),
     };
 
-    console.log("Purchase order payload:", payload);
-    message.success("Payload is ready. Check console.");
+    try {
+      const res = await createPurchaseOrder.mutateAsync(payload);
+      router.push("/admin/dashboard/suppliers/purchase-order")
+      message.success("Purchase Order created successfully");
+      
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
 
-    /**
-     * API example:
-     *
-     * await createPurchaseOrder.mutateAsync(payload);
-     * message.success("Purchase order created successfully");
-     * router.push("/admin/dashboard/purchase-orders");
-     */
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: "24px" }}>
-        <PageHeader
-          title="Create Purchase Order"
-          subtitle="Create purchase order with supplier, warehouse, products, and variants."
-          breadcrumb={adminBreadcrumb}
-        />
-      </div>
-
+    <Card title="Create Purchase Order">
       <Form<PurchaseOrderFormValues>
         form={form}
         layout="vertical"
-        onFinish={onFinish}
-        requiredMark={true}
+        onFinish={handleFinish}
         initialValues={{
           status: "DRAFT",
           shippingCost: 0,
+          note: "",
           items: [
             {
-              productId: "",
-              variantId: "",
+              productId: undefined,
+              variantId: undefined,
               quantityOrdered: 1,
               unitCost: 0,
               discountAmount: 0,
-              taxAmount: 0,
             },
           ],
         }}
       >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={16}>
-            <Card style={{ marginBottom: "16px" }}>
-              <Row gutter={16}>
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="supplierId"
-                    label="Supplier"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select supplier",
-                      },
-                    ]}
-                  >
-                    <Select
-                      showSearch
-                      placeholder="Select supplier"
-                      loading={supplierLoading}
-                      optionFilterProp="label"
-                      options={supplierOptions}
-                    />
-                  </Form.Item>
-                </Col>
+        <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
+          <Form.Item
+            label="Supplier"
+            name="supplierId"
+            rules={[{ required: true, message: "Supplier is required" }]}
+          >
+            <Select
+              showSearch
+              placeholder="Select supplier"
+              loading={supplierLoading}
+              optionFilterProp="label"
+              options={(suppliers?.items ?? []).map((supplier) => ({
+                label: supplier.name,
+                value: supplier.id,
+              }))}
+            />
+          </Form.Item>
 
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="warehouseId"
-                    label="Warehouse"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select warehouse",
-                      },
-                    ]}
-                  >
-                    <Select
-                      showSearch
-                      placeholder="Select warehouse"
-                      loading={warehouseLoading}
-                      optionFilterProp="label"
-                      options={warehouseOptions}
-                    />
-                  </Form.Item>
-                </Col>
+          <Form.Item
+            label="Warehouse"
+            name="warehouseId"
+            rules={[{ required: true, message: "Warehouse is required" }]}
+          >
+            <Select
+              showSearch
+              placeholder="Select warehouse"
+              loading={warehouseLoading}
+              optionFilterProp="label"
+              options={(warehouses?.items ?? []).map((warehouse) => ({
+                label: warehouse.name,
+                value: warehouse.id,
+              }))}
+            />
+          </Form.Item>
 
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="orderDate"
-                    label="Order Date"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select order date",
-                      },
-                    ]}
-                  >
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
+          <Form.Item
+            label="Tax"
+            name="taxId"
+            rules={[{ required: true, message: "Tax is required" }]}
+          >
+            <Select
+              showSearch
+              placeholder="Select tax"
+              loading={taxLoading}
+              optionFilterProp="label"
+              options={(taxes?.items ?? []).map((tax) => ({
+                label: tax.name,
+                value: tax.id,
+              }))}
+            />
+          </Form.Item>
 
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="expectedDeliveryDate"
-                    label="Expected Delivery Date"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select expected delivery date",
-                      },
-                    ]}
-                  >
-                    <DatePicker style={{ width: "100%" }} />
-                  </Form.Item>
-                </Col>
+          <Form.Item
+            label="Expected Delivery Date"
+            name="expectedDeliveryDate"
+            rules={[
+              {
+                required: true,
+                message: "Expected delivery date is required",
+              },
+            ]}
+          >
+            <DatePicker className="w-full" />
+          </Form.Item>
 
-                <Col xs={24} md={12}>
-                  <Form.Item
-                    name="status"
-                    label="Status"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select status",
-                      },
-                    ]}
-                  >
-                    <Select
-                      placeholder="Select status"
-                      options={[
-                        { label: "Draft", value: "DRAFT" },
-                        { label: "Ordered", value: "ORDERED" },
-                        { label: "Received", value: "RECEIVED" },
-                        { label: "Cancelled", value: "CANCELLED" },
-                      ]}
-                    />
-                  </Form.Item>
-                </Col>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[{ required: true, message: "Status is required" }]}
+          >
+            <Select
+              placeholder="Select status"
+              options={[
+                { label: "Draft", value: "DRAFT" },
+                { label: "Ordered", value: "ORDERED" },
+              ]}
+            />
+          </Form.Item>
 
-                <Col xs={24} md={12}>
-                  <Form.Item name="shippingCost" label="Shipping Cost">
-                    <InputNumber
-                      min={0}
-                      style={{ width: "100%" }}
-                      placeholder="0"
-                    />
-                  </Form.Item>
-                </Col>
+          <Form.Item
+            label="Shipping Cost"
+            name="shippingCost"
+            rules={[{ required: true, message: "Shipping cost is required" }]}
+          >
+            <InputNumber min={0}
+              style={{
+                width: '100%'
+              }}
+            />
+          </Form.Item>
 
-                <Col xs={24}>
-                  <Form.Item name="note" label="Note">
-                    <TextArea rows={4} placeholder="Urgent purchase" />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
+          <Form.Item label="Note" name="note" className="md:col-span-2">
+            <TextArea rows={3} placeholder="Urgent purchase" />
+          </Form.Item>
+        </div>
 
-            <Card title="Line Items">
-              <Form.List name="items">
-                {(fields, { add, remove }) => (
-                  <>
-                    <Space direction="vertical" size={16} className="w-full">
-                      {fields.map((field, index) => {
-                        const currentItem = formItems?.[index];
-                        const currentProductId = currentItem?.productId;
+        <Form.List name="items">
+          {(fields, { add, remove }) => (
+            <div className="space-y-4">
+              {fields.map((field) => (
+                <PurchaseOrderItem
+                  key={field.key}
+                  fieldName={field.name}
+                  remove={remove}
+                  canRemove={fields.length > 1}
+                  businessId={businessId}
+                  form={form}
+                  productLoading={productLoading}
+                  productOptions={(products?.items ?? []).map((product) => ({
+                    label: product.name,
+                    value: product.id,
+                  }))}
+                />
+              ))}
 
-                        const rowVariants =
-                          currentProductId === selectedProductId
-                            ? variants
-                            : variantMap[currentProductId] ?? [];
+              <Button
+                type="dashed"
+                icon={<PlusOutlined />}
+                block
+                onClick={() =>
+                  add({
+                    productId: undefined,
+                    variantId: undefined,
+                    quantityOrdered: 1,
+                    unitCost: 0,
+                    discountAmount: 0,
+                  })
+                }
+              >
+                Add Item
+              </Button>
+            </div>
+          )}
+        </Form.List>
 
-                        const variantOptions = rowVariants.map((variant) => ({
-                          label: variant.title,
-                          value: variant.id,
-                        }));
-
-                        const lineTotal =
-                          toNumber(currentItem?.quantityOrdered) *
-                            toNumber(currentItem?.unitCost) -
-                          toNumber(currentItem?.discountAmount) +
-                          toNumber(currentItem?.taxAmount);
-
-                        return (
-                          <Card
-                            key={field.key}
-                            size="small"
-                            title={`Item ${index + 1}`}
-                            extra={
-                              <Button
-                                danger
-                                type="text"
-                                disabled={fields.length === 1}
-                                icon={<DeleteOutlined />}
-                                onClick={() => remove(field.name)}
-                              />
-                            }
-                          >
-                            <Row gutter={12}>
-                              <Col xs={24} md={12}>
-                                <Form.Item
-                                  name={[field.name, "productId"]}
-                                  label="Product"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please select product",
-                                    },
-                                  ]}
-                                >
-                                  <Select
-                                    showSearch
-                                    placeholder="Select product"
-                                    loading={productLoading || productFetching}
-                                    optionFilterProp="label"
-                                    filterOption={false}
-                                    options={productOptions}
-                                    onChange={(productId) =>
-                                      handleProductChange(index, productId)
-                                    }
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={12}>
-                                <Form.Item
-                                  name={[field.name, "variantId"]}
-                                  label="Variant"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Please select variant",
-                                    },
-                                  ]}
-                                >
-                                  <Select
-                                    showSearch
-                                    placeholder={
-                                      currentProductId
-                                        ? "Select variant"
-                                        : "Select product first"
-                                    }
-                                    disabled={!currentProductId}
-                                    loading={
-                                      currentProductId === selectedProductId &&
-                                      (variantLoading || variantFetching)
-                                    }
-                                    optionFilterProp="label"
-                                    filterOption={false}
-                                    options={variantOptions}
-                                    onDropdownVisibleChange={(open) => {
-                                      if (open && currentProductId) {
-                                        setSelectedProductId(currentProductId);
-                                        setVariantSearch("");
-                                      }
-                                    }}
-                                    onSearch={(value) => {
-                                      if (!currentProductId) return;
-
-                                      setSelectedProductId(currentProductId);
-                                      setVariantSearch(value);
-                                    }}
-                                    onChange={(variantId) =>
-                                      handleVariantChange(
-                                        index,
-                                        variantId,
-                                        rowVariants,
-                                      )
-                                    }
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={8}>
-                                <Form.Item
-                                  name={[field.name, "quantityOrdered"]}
-                                  label="Quantity"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Quantity is required",
-                                    },
-                                  ]}
-                                >
-                                  <InputNumber
-                                    min={1}
-                                    style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={8}>
-                                <Form.Item
-                                  name={[field.name, "unitCost"]}
-                                  label="Unit Cost"
-                                  rules={[
-                                    {
-                                      required: true,
-                                      message: "Unit cost is required",
-                                    },
-                                  ]}
-                                >
-                                  <InputNumber
-                                    min={0}
-                                    style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={8}>
-                                <Form.Item
-                                  name={[field.name, "discountAmount"]}
-                                  label="Discount"
-                                >
-                                  <InputNumber
-                                    min={0}
-                                    style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={8}>
-                                <Form.Item
-                                  name={[field.name, "taxAmount"]}
-                                  label="Tax"
-                                >
-                                  <InputNumber
-                                    min={0}
-                                    style={{ width: "100%" }}
-                                  />
-                                </Form.Item>
-                              </Col>
-
-                              <Col xs={24} md={16}>
-                                <Flex
-                                  align="center"
-                                  justify="end"
-                                  style={{ height: "100%" }}
-                                >
-                                  <strong>Line Total: ৳ {lineTotal}</strong>
-                                </Flex>
-                              </Col>
-                            </Row>
-                          </Card>
-                        );
-                      })}
-                    </Space>
-
-                    <Button
-                      style={{ marginTop: 16 }}
-                      icon={<PlusOutlined />}
-                      onClick={() =>
-                        add({
-                          productId: "",
-                          variantId: "",
-                          quantityOrdered: 1,
-                          unitCost: 0,
-                          discountAmount: 0,
-                          taxAmount: 0,
-                        })
-                      }
-                    >
-                      Add Item
-                    </Button>
-                  </>
-                )}
-              </Form.List>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={8}>
-            <Card title="Summary">
-              <Flex justify="space-between">
-                <span>Subtotal</span>
-                <strong>৳ {subtotal}</strong>
-              </Flex>
-
-              <Divider style={{ margin: "12px 0" }} />
-
-              <Flex justify="space-between">
-                <span>Discount</span>
-                <strong>৳ {totalDiscount}</strong>
-              </Flex>
-
-              <Divider style={{ margin: "12px 0" }} />
-
-              <Flex justify="space-between">
-                <span>Tax</span>
-                <strong>৳ {totalTax}</strong>
-              </Flex>
-
-              <Divider style={{ margin: "12px 0" }} />
-
-              <Flex justify="space-between">
-                <span>Shipping Cost</span>
-                <strong>৳ {toNumber(shippingCost)}</strong>
-              </Flex>
-
-              <Divider style={{ margin: "12px 0" }} />
-
-              <Flex justify="space-between">
-                <strong>Total</strong>
-                <strong>৳ {grandTotal}</strong>
-              </Flex>
-
-              <Form.Item style={{ marginTop: 24, marginBottom: 0 }}>
-                <Button type="primary" htmlType="submit" block>
-                  Create Purchase Order
-                </Button>
-              </Form.Item>
-            </Card>
-          </Col>
-        </Row>
+        <Space className="mt-6">
+          <Button type="primary" htmlType="submit" loading={isSubmitting}>
+            Create Purchase Order
+          </Button>
+        </Space>
       </Form>
-    </div>
+    </Card>
   );
 };
 
-export default PurchaseOrder;
+export default PurchaseOrderForm;

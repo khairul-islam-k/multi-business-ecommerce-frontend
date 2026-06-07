@@ -2,10 +2,9 @@
 
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Input, Modal, Typography } from "antd";
+import { App, Button, Input, Modal, Typography } from "antd";
 
 import api from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
 
 const { Text, Title } = Typography;
 
@@ -31,7 +30,7 @@ export default function OtpVerifyDialog({
     onVerified,
 }: OtpVerifyDialogProps) {
     const [otp, setOtp] = React.useState("");
-    const swal = useSwal();
+    const { message } = App.useApp();
 
     const verifyMutation = useMutation({
         mutationFn: async () => {
@@ -44,7 +43,7 @@ export default function OtpVerifyDialog({
         },
 
         onSuccess: () => {
-            swal.success("Email verified successfully");
+            message.success("Email verified successfully");
 
             setOtp("");
             onClose();
@@ -52,7 +51,7 @@ export default function OtpVerifyDialog({
         },
 
         onError: (error) => {
-            swal.error(getApiErrorMessage(error));
+            message.error(getApiErrorMessage(error));
         },
     });
 
@@ -65,7 +64,7 @@ export default function OtpVerifyDialog({
 
     const handleVerify = () => {
         if (otp.length !== 6) {
-            swal.error("Please enter 6 digit OTP");
+            message.error("Please enter 6 digit OTP");
             return;
         }
 

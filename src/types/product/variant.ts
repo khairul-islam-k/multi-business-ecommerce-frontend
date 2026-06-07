@@ -16,7 +16,7 @@ export type VariantAttributePayload = {
 export type VariantPayload = {
   images: VariantImagePayload[];
   title: string;
-  price: number;
+  priceOverride: number;
   weight: number;
   status: VariantStatus;
   attributes: VariantAttributePayload[];
@@ -29,8 +29,8 @@ export type ResponseVariantImage = {
   productId: string;
   variantId: string | null;
 
-  imageUrl: string;
-  altText: string | null;
+  imageUrl: string | undefined;
+  altText: string | undefined;
   isThumbnail: boolean;
   sortOrder: number;
 
@@ -67,7 +67,7 @@ export type ResponseVariant = {
   barcode: string;
 
   // Your API returns string: "15", "55"
-  price: string | number;
+  priceOverride: string | number;
   weight: string | number;
 
   status: VariantStatus;

@@ -1,14 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Button, Dropdown, MenuProps, Modal, Popconfirm, Select, Tag } from "antd";
+import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag } from "antd";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
-  FileTextOutlined,
-  FontSizeOutlined,
   MoreOutlined,
-  PlusCircleOutlined,
   PlusOutlined
 } from "@ant-design/icons";
 
@@ -23,10 +20,6 @@ import { Column, DataTable } from "@/components/shared/data-table";
 import { ResponseProduct } from "@/types/product/product";
 import { imageUrlSet } from "./_components/image-url";
 import { getApiErrorMessage } from "@/lib/axios";
-import CreateAttributeForm from "./_components/attributes/create-attribute";
-import ViewAttribute from "./_components/attributes/view-attribute";
-import UpdateAttributeName from "./_components/attributes/update-attribute-name";
-import DeleteAttributeName from "./_components/attributes/delete-attribute-name";
 
 /* ================= TYPES ================= */
 export interface TProduct {
@@ -49,12 +42,6 @@ const ProductsList = () => {
   const business = useAuthStore(s => s.selectedBusiness);
   const businessId = business?.id ? business?.id : '';
   const swal = useSwal();
-
-  // modal 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // ProductId
-  const [productId, setProductId] = useState<string>('');
-  const [productKey, setProductKey] = useState<string>('');
 
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [search, setSearch] = useState('');
@@ -200,27 +187,6 @@ const ProductsList = () => {
               </Popconfirm>
             ),
           },
-          {
-            key: "create-attribute",
-            icon: <PlusCircleOutlined />,
-            label: "Add Attribute",
-          },
-          {
-            key: "view-attribute",
-            icon: <FileTextOutlined />,
-            label: "View Attribute",
-          },
-          {
-            key: "update-attribute-name",
-            icon: <FontSizeOutlined />,
-            label: "Update Attribute Name",
-          },
-          {
-            key: "delete-attribute-name",
-            danger: true,
-            icon: <DeleteOutlined />,
-            label: "Delete Attribute Name",
-          },
         ];
 
         return (
@@ -240,30 +206,6 @@ const ProductsList = () => {
                   router.push(
                     `/admin/dashboard/product-catalog/products/edit/${row.id}`
                   );
-                }
-
-                if (key === "create-attribute") {
-                  setProductKey(key);
-                  setProductId(row.id);
-                  setIsModalOpen(true);
-                }
-
-                if (key === "view-attribute") {
-                  setProductKey(key);
-                  setProductId(row.id);
-                  setIsModalOpen(true);
-                }
-
-                if (key === "update-attribute-name") {
-                  setProductKey(key);
-                  setProductId(row.id);
-                  setIsModalOpen(true);
-                }
-
-                if (key === "delete-attribute-name") {
-                  setProductKey(key);
-                  setProductId(row.id);
-                  setIsModalOpen(true);
                 }
               },
             }}
@@ -285,79 +227,50 @@ const ProductsList = () => {
       />
 
       {/* 🔄 Search / Pagination Loader */}
-      <DataTable
-        data={products?.items ?? []}
-        toolbarEnd={
-          <div className="flex flex-col gap-3 md:flex-row">
-            <Select
-              placeholder="Filter by status"
-              allowClear
-              style={{ width: 180 }}
-              onChange={(v) => setStatusFilter(v)}
-              options={[
-                { label: "DRAFT", value: "DRAFT" },
-                { label: "Active", value: "ACTIVE" },
-                { label: "Inactive", value: "INACTIVE" },
-                { label: "Inactive", value: "ARCHIVED" },
-              ]}
-            />
+      <Card>
+        <DataTable
+          data={products?.items ?? []}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                onChange={(v) => setStatusFilter(v)}
+                options={[
+                  { label: "DRAFT", value: "DRAFT" },
+                  { label: "Active", value: "ACTIVE" },
+                  { label: "Inactive", value: "INACTIVE" },
+                  { label: "Inactive", value: "ARCHIVED" },
+                ]}
+              />
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push("/admin/dashboard/product-catalog/products/create")
-              }
-            >
-              New Product
-            </Button>
-          </div>
-        }
-        columns={columns}
-        onSearch={(value) => {
-          setSearch(value);
-        }}
-        loading={
-          isLoading ||
-          isFetching
-        }
-        pagination={{
-          currentPage,
-          onPageChange: setCurrentPage,
-          totalPages: totalPages,
-        }}
-      />
-
-      <Modal
-        title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isModalOpen}
-        onOk={() => setIsModalOpen(false)}
-        onCancel={() => setIsModalOpen(false)}
-      >
-        {
-          productKey === "create-attribute" && <CreateAttributeForm
-            productId={productId}
-          />
-        }
-
-        {
-          productKey === "view-attribute" && <ViewAttribute
-            productId={productId}
-          />
-        }
-
-        {
-          productKey === "update-attribute-name" && <UpdateAttributeName
-            productId={productId}
-          />
-        }
-        {
-          productKey === "delete-attribute-name" && <DeleteAttributeName
-            productId={productId}
-          />
-        }
-      </Modal>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/product-catalog/products/create")
+                }
+              >
+                New Product
+              </Button>
+            </div>
+          }
+          columns={columns}
+          onSearch={(value) => {
+            setSearch(value);
+          }}
+          loading={
+            isLoading ||
+            isFetching
+          }
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages: totalPages,
+          }}
+        />
+      </Card>
 
     </div>
   );

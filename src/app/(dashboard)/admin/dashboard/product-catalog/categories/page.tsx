@@ -7,7 +7,7 @@ import { getApiErrorMessage } from '@/lib/axios';
 import { useAuthStore } from '@/stores/auth.store';
 import { ResponseCategory } from '@/types/product/product';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { App, Button, Popconfirm, Select, Tag } from 'antd';
+import { App, Button, Card, Popconfirm, Select, Tag } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -148,49 +148,51 @@ const Categories = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <DataTable
-                data={category?.items ?? []}
-                toolbarEnd={
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-3 mb-4">
-                        <div className="flex gap-3">
+            <Card>
+                <DataTable
+                    data={category?.items ?? []}
+                    toolbarEnd={
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-3 mb-4">
+                            <div className="flex gap-3">
 
-                            <Select
-                                placeholder="Filter by status"
-                                allowClear
-                                style={{ width: 180 }}
-                                onChange={(v) => setStatusFilter(v)}
-                                options={[
-                                    { label: "Active", value: "ACTIVE" },
-                                    { label: "Inactive", value: "INACTIVE" },
-                                ]}
-                            />
+                                <Select
+                                    placeholder="Filter by status"
+                                    allowClear
+                                    style={{ width: 180 }}
+                                    onChange={(v) => setStatusFilter(v)}
+                                    options={[
+                                        { label: "Active", value: "ACTIVE" },
+                                        { label: "Inactive", value: "INACTIVE" },
+                                    ]}
+                                />
+                            </div>
+
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() =>
+                                    router.push("/admin/dashboard/product-catalog/categories/create")
+                                }
+                            >
+                                New Category
+                            </Button>
                         </div>
-
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() =>
-                                router.push("/admin/dashboard/product-catalog/categories/create")
-                            }
-                        >
-                            New Category
-                        </Button>
-                    </div>
-                }
-                columns={columns}
-                onSearch={(value) => {
-                    setSearch(value);
-                }}
-                loading={
-                    isLoading ||
-                    isFetching
-                }
-                pagination={{
-                    currentPage,
-                    onPageChange: setCurrentPage,
-                    totalPages: totalPages,
-                }}
-            />
+                    }
+                    columns={columns}
+                    onSearch={(value) => {
+                        setSearch(value);
+                    }}
+                    loading={
+                        isLoading ||
+                        isFetching
+                    }
+                    pagination={{
+                        currentPage,
+                        onPageChange: setCurrentPage,
+                        totalPages: totalPages,
+                    }}
+                />
+            </Card>
         </div>
     );
 };

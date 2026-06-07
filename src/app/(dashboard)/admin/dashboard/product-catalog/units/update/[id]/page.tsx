@@ -2,7 +2,7 @@
 
 import { UnitPayload } from "@/types/product/unit";
 import UnitForm from "../../_components/UnitForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useUnit, useUnitMutation } from "@/lib/api/hooks/product-unit";
 import { useAuthStore } from "@/stores/auth.store";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -15,6 +15,7 @@ const UpdateUnitPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
     const { message } = App.useApp();
+    const router = useRouter();
 
     const { data: unit } = useUnit(businessId, id);
     const { updateUnit } = useUnitMutation(businessId);
@@ -29,6 +30,7 @@ const UpdateUnitPage = () => {
         try {
             await updateUnit.mutateAsync({ unitId: id, payload });
             message.success('Unit Updated Successfully');
+            router.push("/admin/dashboard/product-catalog/units");
         } catch (error) {
             message.error(getApiErrorMessage(error));
         }

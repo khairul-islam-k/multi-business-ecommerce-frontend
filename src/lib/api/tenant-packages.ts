@@ -8,7 +8,6 @@ import type {
   ApiId,
   ApiPaginatedResponse,
   ApiResponse,
-  CancelPackageSubscriptionPayload,
   CheckoutPackageAddonPayload,
   ConfirmPackagePaymentResult,
   PackageAddon,
@@ -75,14 +74,6 @@ export const tenantPackagesApi = {
     return api
       .post<ApiResponse<ConfirmPackagePaymentResult>>(
         `${basePath}/mock-payments/${paymentId}/confirm`,
-      )
-      .then((res) => unwrapApiResponse(res.data));
-  },
-  cancelSubscription(payload: CancelPackageSubscriptionPayload) {
-    return api
-      .patch<ApiResponse<TenantSubscription>>(
-        `${basePath}/subscription/cancel`,
-        payload,
       )
       .then((res) => unwrapApiResponse(res.data));
   },

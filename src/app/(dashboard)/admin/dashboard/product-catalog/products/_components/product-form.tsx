@@ -6,6 +6,7 @@ import {
     Divider,
     Form,
     Input,
+    InputNumber,
     Select,
     Space,
 } from "antd";
@@ -117,6 +118,8 @@ const ProductForm = ({
                         },
                     ],
                 name: initialValues.name ?? "",
+                price: Number(initialValues.price) ?? 0,
+                weight: Number(initialValues.weight) ?? 0,
                 description: initialValues.description ?? "",
                 categoryId: initialValues.categoryId,
                 brandId: initialValues.brandId,
@@ -152,6 +155,8 @@ const ProductForm = ({
                     })) ?? [],
 
             name: values.name.trim(),
+            price: values.price,
+            weight: values.weight,
             description: values.description?.trim() || "",
             categoryId: values.categoryId,
             brandId: values.brandId,
@@ -204,6 +209,33 @@ const ProductForm = ({
                     >
                         <Input placeholder="Classic sneaker" />
                     </Form.Item>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <Form.Item
+                        label="Price"
+                        name="price"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Product price is required",
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                        style={{width: '100%'}}
+                        placeholder="Price" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Weight"
+                        name="weight"
+                    >
+                        <InputNumber
+                        style={{width: '100%'}}
+                        placeholder="Weight" />
+                    </Form.Item>
+
+                    </div>
 
                     <Form.Item label="Description" name="description">
                         <Input.TextArea

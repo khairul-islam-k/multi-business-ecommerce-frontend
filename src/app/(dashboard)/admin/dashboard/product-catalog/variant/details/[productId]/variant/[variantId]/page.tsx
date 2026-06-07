@@ -158,7 +158,7 @@ const VariantDetail = () => {
 
               <InfoItem
                 label="Price"
-                value={Number(variant.price).toLocaleString()}
+                value={Number(variant.priceOverride).toLocaleString()}
               />
 
               <InfoItem label="Weight" value={variant.weight || "-"} />

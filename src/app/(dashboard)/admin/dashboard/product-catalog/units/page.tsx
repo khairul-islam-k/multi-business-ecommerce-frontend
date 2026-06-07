@@ -8,7 +8,7 @@ import { getApiErrorMessage } from '@/lib/axios';
 import { useAuthStore } from '@/stores/auth.store';
 import { ResponseUnit } from '@/types/product/unit';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Popconfirm, Select, Tag } from 'antd';
+import { Button, Card, Popconfirm, Select, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
@@ -125,46 +125,48 @@ const ProductUnits = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <DataTable
-                data={units?.items ?? []}
-                toolbarEnd={
-                    <div className="flex flex-col gap-3 md:flex-row">
-                        <Select
-                            placeholder="Filter by status"
-                            allowClear
-                            style={{ width: 180 }}
-                            onChange={(v) => setStatusFilter(v)}
-                            options={[
-                                { label: "Active", value: "ACTIVE" },
-                                { label: "Inactive", value: "INACTIVE" },
-                            ]}
-                        />
+            <Card>
+                <DataTable
+                    data={units?.items ?? []}
+                    toolbarEnd={
+                        <div className="flex flex-col gap-3 md:flex-row">
+                            <Select
+                                placeholder="Filter by status"
+                                allowClear
+                                style={{ width: 180 }}
+                                onChange={(v) => setStatusFilter(v)}
+                                options={[
+                                    { label: "Active", value: "ACTIVE" },
+                                    { label: "Inactive", value: "INACTIVE" },
+                                ]}
+                            />
 
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() =>
-                                router.push("/admin/dashboard/product-catalog/units/create")
-                            }
-                        >
-                            New Units
-                        </Button>
-                    </div>
-                }
-                columns={columns}
-                onSearch={(value) => {
-                    setSearch(value);
-                }}
-                loading={
-                    isLoading ||
-                    isFetching
-                }
-                pagination={{
-                    currentPage,
-                    onPageChange: setCurrentPage,
-                    totalPages: totalPages,
-                }}
-            />
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() =>
+                                    router.push("/admin/dashboard/product-catalog/units/create")
+                                }
+                            >
+                                New Unit
+                            </Button>
+                        </div>
+                    }
+                    columns={columns}
+                    onSearch={(value) => {
+                        setSearch(value);
+                    }}
+                    loading={
+                        isLoading ||
+                        isFetching
+                    }
+                    pagination={{
+                        currentPage,
+                        onPageChange: setCurrentPage,
+                        totalPages: totalPages,
+                    }}
+                />
+            </Card>
         </div>
     );
 };

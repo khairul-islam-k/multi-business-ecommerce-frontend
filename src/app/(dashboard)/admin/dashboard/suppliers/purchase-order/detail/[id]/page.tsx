@@ -1,138 +1,380 @@
-import { Card, Col, Flex, Row, Table } from "antd";
+"use client";
+
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  App,
+  Button,
+  Card,
+  Col,
+  Empty,
+  Flex,
+  Modal,
+  Row,
+  Table,
+  Tag,
+} from "antd";
+import TextArea from "antd/es/input/TextArea";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
 const PurchaseDetail = () => {
-  const purchaseOrder = {
-    id: 2,
-    "PO #": "PO-2026-002",
-    Supplier: "BlueWear Ltd",
-    Warehouse: "Central Warehouse",
-    Date: "2026-03-03",
-    Expected: "2026-03-12",
-    Total: "Rs 85,500",
-    Status: "pending",
-    variant: "-",
-    Qty: 150,
-    product: "cotton-T-shirt",
-    "Unit Cost": "RS 1200",
-    createBy: "admin",
+  const { id } = useParams<{ id: string }>();
+  const { message, modal } = App.useApp();
+
+  // modal 
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [note, setNote] = useState<string>('');
+  const [mode, setMode] = useState<string>('');
+
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const { data: purchase, isLoading, isFetching } = usePurchaseOrder(
+    businessId,
+    id
+  );
+
+  console.log('status', purchase?.status);
+  const cancelOrReceiveStatus = !((purchase?.status === "CANCELLED") || (purchase?.status === "RECEIVED"));
+
+  const receiveStatus = purchase?.status === "RECEIVED"
+
+  console.log('can', cancelOrReceiveStatus);
+
+  const { updateReceivePO, updateCancelPO } = usePurchaseOrderMutation(businessId);
+
+
+  const handleReceivePO = async (id: string) => {
+    const payload = { note };
+    try {
+      const res = await updateReceivePO.mutateAsync({
+        purchaseId: id,
+        payload
+      })
+      console.log('res', res);
+      message.success("Purchase order have been received");
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsModalOpen(false);
+    }
+  }
+
+  const handleCancel = async (id: string) => {
+    const payload = { note };
+    console.log('can', payload, id);
+    try {
+      const res = await updateCancelPO.mutateAsync({
+        purchaseId: id,
+        payload
+      })
+      console.log('res', res);
+      message.success("Purchase order have been cancel");;
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsModalOpen(false);
+    }
   };
 
-  const dataSource = [purchaseOrder];
-  const columns = [
-    {
-      title: "Product",
-      dataIndex: "product",
-      key: "product",
-    },
-    {
-      title: "variant",
-      dataIndex: "variant",
-      key: "variant",
-    },
-    {
-      title: "QTY",
-      dataIndex: "Qty",
-      key: "Qty",
-    },
-    {
-      title: "Unit Cost",
-      dataIndex: "Unit Cost",
-      key: "Unit Cost",
-    },
-    {
-      title: "Total",
-      dataIndex: "Total",
-      key: "Total",
-    },
-  ];
+
+  if (isLoading || isFetching) {
+    return <Loader />;
+  }
+
+  if (!purchase) {
+    return <Empty description="Purchase order not found" />;
+  }
+
+  const handleReturnRequest = () => {
+    modal.confirm({
+      title: "Return request?",
+      content: "Are you sure you want to create return request?",
+      okText: "Return Request",
+      cancelText: "Cancel",
+      onOk: async () => {
+        message.success("Return request action here.");
+      },
+    });
+  };
 
   return (
-    <div>
-      <Row gutter={[15, 15]}>
-        <Col xs={24} md={15}>
-          <Card
-            title="Line Items"
-            style={{
-              overflowX: "auto",
-            }}
-          >
-            <Table
-              columns={columns}
-              dataSource={dataSource}
-              rowKey="id"
-              pagination={false}
-              bordered
+    <div className="space-y-6">
+      <PageHeader
+        title="Purchase Order Details"
+        subtitle="View purchase order, supplier, items, tax, and payment summary."
+        breadcrumb={adminBreadcrumb}
+      />
+
+      <Flex justify="end" gap={10} wrap>
+        {
+          receiveStatus && 
+          <Button onClick={handleReturnRequest}>Return Request</Button>
+        }
+
+        {
+          cancelOrReceiveStatus &&
+          <Button type="primary" onClick={() => {
+            setIsModalOpen(true);
+            setMode("receive");
+          }}>
+            Receive PO
+          </Button>
+        }
+
+        {
+          cancelOrReceiveStatus &&
+          <Button danger onClick={() => {
+            setIsModalOpen(true);
+            setMode("cancel");
+          }}>
+            Cancel PO
+          </Button>
+        }
+      </Flex>
+
+      <Card>
+        <Flex justify="space-between" align="center" wrap gap={12}>
+          <div>
+            <h2 className="m-0 text-xl font-semibold">
+              {purchase.purchaseOrderNo}
+            </h2>
+            <p className="m-0 text-gray-500">{purchase.note || "No note"}</p>
+          </div>
+
+          <Tag color={purchase.status === "CANCELLED" ? "red" : "green"}>
+            {purchase.status}
+          </Tag>
+        </Flex>
+      </Card>
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
+          <Card title="Order Information">
+            <InfoItem label="Order Date" value={formatDate(purchase.orderDate)} />
+            <InfoItem
+              label="Expected Delivery"
+              value={formatDate(purchase.expectedDeliveryDate)}
+            />
+            <InfoItem label="Warehouse ID" value={purchase.warehouseId} />
+            <InfoItem label="Tax Rate" value={`${purchase.taxRate}%`} />
+          </Card>
+        </Col>
+
+        <Col xs={24} lg={12}>
+          <Card title="Supplier Information">
+            <InfoItem label="Name" value={purchase.supplier?.name ?? "-"} />
+            <InfoItem
+              label="Company"
+              value={purchase.supplier?.companyName ?? "-"}
+            />
+            <InfoItem label="Email" value={purchase.supplier?.email ?? "-"} />
+            <InfoItem label="Phone" value={purchase.supplier?.phone ?? "-"} />
+            <InfoItem
+              label="Address"
+              value={
+                purchase.supplier
+                  ? `${purchase.supplier.address}, ${purchase.supplier.city}, ${purchase.supplier.country}`
+                  : "-"
+              }
             />
           </Card>
         </Col>
-
-        <Col xs={24} md={9}>
-          {/* card 1 */}
-          <Card title="Order Info" style={{ marginBottom: "15px" }}>
-            <Flex justify="space-between">
-              <p>Supplier</p>
-              <p>{purchaseOrder.Supplier}</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Warehouse</p>
-              <p>{purchaseOrder.Warehouse}</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Order Date</p>
-              <p>{purchaseOrder.Date}</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Expected</p>
-              <p>{purchaseOrder.Expected}</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Create by</p>
-              <p>{purchaseOrder.createBy}</p>
-            </Flex>
-
-            <div>
-              <p className="mb-0!">Note</p>
-              <p>Urgent order for spring collection</p>
-            </div>
-          </Card>
-
-          {/* summary card */}
-          <Card title="Summary">
-            <Flex justify="space-between">
-              <p>Subtotal</p>
-              <p>Rs 52,500</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Discount</p>
-              <p>Rs 500</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Tax</p>
-              <p>Rs 52,00</p>
-            </Flex>
-
-            <Flex justify="space-between">
-              <p>Shipping</p>
-              <p>Rs 52,00</p>
-            </Flex>
-
-            <div style={{ borderTop: "1px solid gray" }}>
-              <Flex justify="space-between">
-                <p>Total</p>
-                <p>Rs 60,000</p>
-              </Flex>
-            </div>
-          </Card>
-        </Col>
       </Row>
-    </div>
+
+      <Card title="Purchase Items">
+        <Table
+          rowKey="id"
+          pagination={false}
+          dataSource={purchase.items ?? []}
+          columns={[
+            {
+              title: "Product ID",
+              dataIndex: "productId",
+            },
+            {
+              title: "Variant ID",
+              dataIndex: "variantId",
+              render: (value) => value || "-",
+            },
+            {
+              title: "Qty Ordered",
+              dataIndex: "quantityOrdered",
+            },
+            {
+              title: "Qty Received",
+              dataIndex: "quantityReceived",
+            },
+            {
+              title: "Unit Cost",
+              dataIndex: "unitCost",
+              render: (value) => money(value),
+            },
+            {
+              title: "Discount",
+              dataIndex: "discountAmount",
+              render: (value) => money(value),
+            },
+            {
+              title: "Tax",
+              dataIndex: "taxAmount",
+              render: (value) => money(value),
+            },
+            {
+              title: "Line Total",
+              dataIndex: "lineTotal",
+              render: (value) => money(value),
+            },
+          ]}
+        />
+      </Card>
+
+      <Card title="Payment Summary">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={8} lg={4}>
+            <InfoItem label="Subtotal" value={money(purchase.subtotal)} />
+          </Col>
+
+          <Col xs={24} md={8} lg={4}>
+            <InfoItem
+              label="Discount"
+              value={money(purchase.discountTotal)}
+            />
+          </Col>
+
+          <Col xs={24} md={8} lg={4}>
+            <InfoItem label="Tax" value={money(purchase.taxTotal)} />
+          </Col>
+
+          <Col xs={24} md={8} lg={4}>
+            <InfoItem
+              label="Shipping"
+              value={money(purchase.shippingCost)}
+            />
+          </Col>
+
+          <Col xs={24} md={8} lg={4}>
+            <InfoItem label="Total" value={money(purchase.totalAmount)} />
+          </Col>
+        </Row>
+      </Card>
+
+      <Card title="Tax Information">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} md={12}>
+            <InfoItem label="Tax Name" value={purchase.tax?.name ?? "-"} />
+          </Col>
+
+          <Col xs={24} md={12}>
+            <InfoItem
+              label="Tax Rate"
+              value={purchase.tax?.rate ? `${purchase.tax.rate}%` : "-"}
+            />
+          </Col>
+
+          <Col xs={24}>
+            <InfoItem
+              label="Description"
+              value={purchase.tax?.description ?? "-"}
+            />
+          </Col>
+        </Row>
+      </Card>
+
+      <Modal
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}>
+        {
+          mode === "receive" && <>
+            <Card
+              title="Receive Purchase Order"
+            >
+              <TextArea
+                rows={4}
+                placeholder="Write purchase order note..."
+                showCount
+                maxLength={500}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+              />
+
+              <Button type="primary"
+                style={{
+                  marginTop: '8px'
+                }}
+                onClick={() => {
+                  handleReceivePO(purchase.id);
+                }}>
+                Receive PO
+              </Button>
+            </Card>
+          </>
+        }
+
+        {/* cancel */}
+        {
+          mode === "cancel" && <>
+            <Card
+              title="Cancel Purchase Order"
+            >
+              <TextArea
+                rows={4}
+                placeholder="Write purchase order note..."
+                showCount
+                maxLength={500}
+                onChange={(e) => {
+                  setNote(e.target.value);
+                }}
+              />
+
+              <Button type="primary"
+                style={{
+                  marginTop: '8px'
+                }}
+                onClick={() => {
+                  handleCancel(purchase.id);
+                }}>
+                Cancel PO
+              </Button>
+            </Card>
+          </>
+        }
+      </Modal>
+    </div >
   );
 };
 
 export default PurchaseDetail;
+
+type InfoItemProps = {
+  label: string;
+  value: React.ReactNode;
+};
+
+const InfoItem = ({ label, value }: InfoItemProps) => {
+  return (
+    <div className="mb-3 rounded-lg border bg-gray-50 p-4">
+      <p className="mb-1 text-sm text-gray-500">{label}</p>
+      <div className="break-all font-medium">{value}</div>
+    </div>
+  );
+};
+
+const formatDate = (date?: string | null) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString();
+};
+
+const money = (value?: string | number | null) => {
+  if (value === null || value === undefined) return "0";
+
+  return Number(value).toLocaleString();
+};

@@ -3,7 +3,6 @@ import {
   ApartmentOutlined,
   AppstoreOutlined,
   ArrowUpOutlined,
-  AuditOutlined,
   BankOutlined,
   BarChartOutlined,
   BellOutlined,
@@ -129,25 +128,7 @@ export const items: MenuProps["items"] = [
             Permissions
           </Link>
         ),
-      },
-      {
-        key: "login-history",
-        icon: <HistoryOutlined />,
-        label: (
-          <Link href="/admin/dashboard/access-control/login-history">
-            Login History
-          </Link>
-        ),
-      },
-      {
-        key: "activity-logs",
-        icon: <AuditOutlined />,
-        label: (
-          <Link href="/admin/dashboard/access-control/activity-logs">
-            Activity Logs
-          </Link>
-        ),
-      },
+      }
     ],
   },
 
@@ -234,6 +215,15 @@ export const items: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/product-catalog/products">
             Products
+          </Link>
+        ),
+      },
+      {
+        key: "attributes",
+        icon: <TagsOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/attributes">
+            Attributes
           </Link>
         ),
       },
@@ -394,6 +384,11 @@ export const items: MenuProps["items"] = [
         key: "accounts",
         icon: <WalletOutlined />, // Accounts
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
+      },
+      {
+        key: "tax",
+        icon: <WalletOutlined />, // Accounts
+        label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
       },
       {
         key: "overview",
@@ -608,20 +603,6 @@ export const items: MenuProps["items"] = [
           <Link href="/admin/dashboard/suppliers/purchase-order">
             Purchase Orders
           </Link>
-        ),
-      },
-      {
-        key: "create-po",
-        icon: <FileTextOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/create-po">Create PO</Link>
-        ),
-      },
-      {
-        key: "receive-po",
-        icon: <InboxOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/receive-po">Receive PO</Link>
         ),
       },
       {

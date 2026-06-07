@@ -4,6 +4,7 @@ import { Button, Card, Flex, Tag, Typography, theme } from "antd";
 
 import type { PackagePlan } from "@/lib/api";
 import { money, optionLabel } from "../_utils/package-display";
+import { useState } from "react";
 
 const { Text, Title } = Typography;
 
@@ -22,6 +23,10 @@ export default function PlanCard({
 }: PlanCardProps) {
   const { token } = theme.useToken();
   const isCurrent = plan.id === currentPlanId;
+  const [loadingId, setLoadingId] = useState<string>('');
+  console.log('loading', loadingId);
+
+  const cardLoading = (loadingId === plan.id) && loading;
 
   return (
     <Card
@@ -69,8 +74,11 @@ export default function PlanCard({
           block
           type={isCurrent ? "default" : "primary"}
           disabled={isCurrent}
-          loading={loading}
-          onClick={() => onCheckout(plan)}
+          loading={cardLoading}
+          onClick={() => {
+            onCheckout(plan)
+            setLoadingId(plan.id)
+          }}
         >
           {isCurrent ? "Current plan" : "Choose plan"}
         </Button>

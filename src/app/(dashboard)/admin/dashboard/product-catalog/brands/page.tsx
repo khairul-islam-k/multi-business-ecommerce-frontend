@@ -1,7 +1,7 @@
 'use client';
 import { ResponseBrand } from '@/types/product/brands';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { App, Button, Popconfirm, Select, Tag } from 'antd';
+import { App, Button, Card, Popconfirm, Select, Tag } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Column, DataTable } from '@/components/shared/data-table';
@@ -149,46 +149,48 @@ const ProductBrands = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <DataTable
-                data={brands?.items ?? []}
-                toolbarEnd={
-                    <div className="flex flex-col gap-3 md:flex-row">
-                        <Select
-                            placeholder="Filter by status"
-                            allowClear
-                            style={{ width: 180 }}
-                            onChange={(v) => setStatusFilter(v)}
-                            options={[
-                                { label: "Active", value: "ACTIVE" },
-                                { label: "Inactive", value: "INACTIVE" },
-                            ]}
-                        />
+            <Card>
+                <DataTable
+                    data={brands?.items ?? []}
+                    toolbarEnd={
+                        <div className="flex flex-col gap-3 md:flex-row">
+                            <Select
+                                placeholder="Filter by status"
+                                allowClear
+                                style={{ width: 180 }}
+                                onChange={(v) => setStatusFilter(v)}
+                                options={[
+                                    { label: "Active", value: "ACTIVE" },
+                                    { label: "Inactive", value: "INACTIVE" },
+                                ]}
+                            />
 
-                        <Button
-                            type="primary"
-                            icon={<PlusOutlined />}
-                            onClick={() =>
-                                router.push("/admin/dashboard/product-catalog/brands/create")
-                            }
-                        >
-                            New Brand
-                        </Button>
-                    </div>
-                }
-                columns={columns}
-                onSearch={(value) => {
-                    setSearch(value);
-                }}
-                loading={
-                    isLoading ||
-                    isFetching
-                }
-                pagination={{
-                    currentPage,
-                    onPageChange: setCurrentPage,
-                    totalPages: totalPages,
-                }}
-            />
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() =>
+                                    router.push("/admin/dashboard/product-catalog/brands/create")
+                                }
+                            >
+                                New Brand
+                            </Button>
+                        </div>
+                    }
+                    columns={columns}
+                    onSearch={(value) => {
+                        setSearch(value);
+                    }}
+                    loading={
+                        isLoading ||
+                        isFetching
+                    }
+                    pagination={{
+                        currentPage,
+                        onPageChange: setCurrentPage,
+                        totalPages: totalPages,
+                    }}
+                />
+            </Card>
 
         </div >
     );

@@ -113,6 +113,8 @@ export type ProductImagePayload = {
 export type ProductPayload = {
   images: ProductImagePayload[];
   name: string;
+  price: number;
+  weight?: number;
   description: string;
   categoryId: string;
   brandId: string;
@@ -171,6 +173,8 @@ export type ResponseProduct = {
   unitId: string;
 
   name: string;
+  price: string;
+  weight: string;
   slug: string;
   description: string | null;
   status: ProductStatus;

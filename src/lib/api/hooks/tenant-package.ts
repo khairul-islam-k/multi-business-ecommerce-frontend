@@ -75,11 +75,6 @@ export function useTenantPackageMutations() {
       mutationFn: tenantPackagesApi.confirmMockPayment,
       onSuccess: invalidate,
     }),
-    cancelSubscription: useMutation({
-      mutationFn: (payload: CancelPackageSubscriptionPayload) =>
-        tenantPackagesApi.cancelSubscription(payload),
-      onSuccess: invalidate,
-    }),
     removeAddon: useMutation({
       mutationFn: tenantPackagesApi.removeAddon,
       onSuccess: invalidate,

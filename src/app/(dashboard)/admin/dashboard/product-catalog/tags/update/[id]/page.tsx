@@ -2,7 +2,7 @@
 
 import { UnitPayload } from "@/types/product/unit";
 import TagForm from "../../_components/TagForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { useTags, useTagsMutation } from "@/lib/api/hooks/product-tags";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -16,6 +16,7 @@ const UpdateTagPage = () => {
     const business = useAuthStore(s => s.selectedBusiness);
     const businessId = business?.id ? business?.id : '';
     const { message } = App.useApp();
+    const router = useRouter();
 
     const { data: tag } = useTags(businessId, id);
     const { updateTags } = useTagsMutation(businessId);
@@ -32,6 +33,7 @@ const UpdateTagPage = () => {
                 payload,
             });
             message.success('Tag Updated successfully');
+            router.push("/admin/dashboard/product-catalog/tags");
         } catch (error) {
             message.error(getApiErrorMessage(error))
         }

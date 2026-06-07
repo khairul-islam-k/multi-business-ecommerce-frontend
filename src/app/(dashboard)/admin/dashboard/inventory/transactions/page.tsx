@@ -1,191 +1,250 @@
 "use client";
 
+import { Button, Card, Tag } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, Col, Row, Typography, Input, Select, Tag } from "antd";
+import { useRouter } from "next/navigation";
 
-import api from "@/lib/axios";
-import { useDebounce } from "use-debounce";
-import Pagination from "@/components/shared/pagination";
 import PageHeader from "@/components/shared/page-header";
-import { DataTable } from "@/components/shared/data-table";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useAuthStore } from "@/stores/auth.store";
+import { useProductStockMovementQuery } from "@/lib/api/hooks/stock";
+import { Column, DataTable } from "@/components/shared/data-table";
+import { StockMovementResponse, StockMovementType } from "@/types/stock/movement";
 
-const { Search } = Input;
-const { Title } = Typography;
+type StockMovementTableRow = StockMovementResponse & {
+  serial: number;
+};
 
-export type InventoryTransaction = {
-  id: string;
-  uuid: string;
-  createdAt: string;
-  transactionType: string;
-  referenceType: string;
-  referenceId: string;
-  qty: number;
-  unitCost: string;
-  note: string;
+const formatDate = (date?: string | null) => {
+  if (!date) return "-";
 
-  product?: {
-    id: string;
-    sku: string;
-    name: string;
-  };
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
 
-  warehouse?: {
-    id: string;
-    name: string;
-  };
+const formatLabel = (value?: string | null) => {
+  if (!value) return "-";
+
+  return value.replaceAll("_", " ");
+};
+
+const getMovementColor = (movementType: StockMovementType) => {
+  switch (movementType) {
+    case "PURCHASE_IN":
+    case "SALE_RETURN_IN":
+    case "ADJUSTMENT_IN":
+    case "TRANSFER_IN":
+    case "RESERVATION_RELEASED":
+      return "green";
+
+    case "PURCHASE_RETURN_OUT":
+    case "SALE_OUT":
+    case "ADJUSTMENT_OUT":
+    case "TRANSFER_OUT":
+    case "RESERVED":
+      return "red";
+
+    default:
+      return "default";
+  }
+};
+
+const getQuantitySign = (movementType: StockMovementType) => {
+  switch (movementType) {
+    case "PURCHASE_IN":
+    case "SALE_RETURN_IN":
+    case "ADJUSTMENT_IN":
+    case "TRANSFER_IN":
+    case "RESERVATION_RELEASED":
+      return "+";
+
+    case "PURCHASE_RETURN_OUT":
+    case "SALE_OUT":
+    case "ADJUSTMENT_OUT":
+    case "TRANSFER_OUT":
+    case "RESERVED":
+      return "-";
+
+    default:
+      return "";
+  }
 };
 
 export default function InventoryTransactionsPage() {
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  const [value] = useDebounce(search, 1000);
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
 
-  // pagination
-  const [page, setPage] = useState<number>(1);
+  const router = useRouter();
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+
   const limit = 5;
 
-  const { data: transaction } = useQuery({
-    queryKey: ["transaction", value, page, limit, typeFilter],
-    queryFn: async () => {
-      if (typeFilter) {
-        return api.get(
-          `/transactions?search=${value}&transactionType=${typeFilter}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`,
-        );
-      } else {
-        return api.get(
-          `/transactions?search=${value}&tenantId=1&page=${page}&limit=${limit}&sortOrder=DESC`,
-        );
-      }
-    },
-  });
+  const {
+    data: movements,
+    isLoading,
+    isFetching,
+  } = useProductStockMovementQuery(businessId
+    , {
+    page: currentPage,
+    limit,
+    search
+  }
+);
 
-  // pagination
-  const total = transaction?.data?.data?.meta?.total;
+  console.log('data', movements);
+
+  const total = movements?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  const columns = [
+  const tableData: StockMovementTableRow[] =
+    movements?.items?.map((item, index) => ({
+      ...item,
+      serial: (currentPage - 1) * limit + index + 1,
+    })) ?? [];
+
+  const columns: Column<StockMovementTableRow>[] = [
     {
-      label: "Product",
-      key: "product",
-      render: (record: InventoryTransaction) => (
+      key: "serial",
+      label: "SL",
+      render: (row) => row.serial,
+    },
+    {
+      key: "movementType",
+      label: "Movement Type",
+      type: "primary",
+      render: (row) => (
+        <Tag color={getMovementColor(row.movementType)}>
+          {formatLabel(row.movementType)}
+        </Tag>
+      ),
+    },
+    {
+      key: "quantity",
+      label: "Quantity",
+      render: (row) => (
+        <strong>
+          {getQuantitySign(row.movementType)}
+          {Number(row.quantity ?? 0)}
+        </strong>
+      ),
+    },
+    {
+      key: "warehouse",
+      label: "Warehouse",
+      render: (row) => (
         <div>
-          <div>{record.product?.name}</div>
-          <small style={{ color: "#888" }}>{record.product?.sku}</small>
+          <strong>{row.warehouse?.name ?? "-"}</strong>
+          <div className="text-xs text-gray-500">
+            {row.warehouse?.phone ?? "-"}
+          </div>
         </div>
       ),
     },
     {
-      label: "Warehouse",
-      key: "warehouse",
-      render: (record: InventoryTransaction) => record.warehouse?.name,
-    },
-    {
-      label: "Type",
-      key: "transactionType",
-      render: (record: InventoryTransaction) => {
-        const color =
-          record.transactionType === "IN"
-            ? "green"
-            : record.transactionType === "OUT"
-              ? "red"
-              : record.transactionType === "DAMAGE"
-                ? "orange"
-                : "blue";
+      key: "stock",
+      label: "Stock",
+      render: (row) => {
+        const totalQuantity = Number(row.stock?.totalQuantity ?? 0);
+        const reservedQuantity = Number(row.stock?.quantityReserved ?? 0);
+        const availableQuantity = totalQuantity - reservedQuantity;
 
-        return <Tag color={color}>{record.transactionType}</Tag>;
+        return (
+          <div>
+            <div>Total: {totalQuantity}</div>
+            <div className="text-xs text-gray-500">
+              Available: {availableQuantity}
+            </div>
+          </div>
+        );
       },
     },
     {
+      key: "referenceType",
       label: "Reference",
-      key: "Reference",
-      render: (record: InventoryTransaction) => (
-        <div>
-          <div>{record.referenceType}</div>
-          <small>#{record.referenceId}</small>
+      render: (row) =>
+        row.referenceType ? <Tag>{formatLabel(row.referenceType)}</Tag> : "-",
+    },
+    {
+      key: "createdAt",
+      label: "Date",
+      render: (row) => formatDate(row.createdAt),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() =>
+              router.push(
+                `/admin/dashboard/inventory/stock-overview/details/${row.stockId}`
+              )
+            }
+          />
         </div>
       ),
-    },
-    {
-      label: "Qty",
-      key: "qty",
-    },
-    {
-      label: "Unit Cost",
-      key: "unitCost",
-      render: (record: InventoryTransaction) => `$${record.unitCost}`,
-    },
-    {
-      label: "Total",
-      key: "total",
-      render: (record: InventoryTransaction) =>
-        `$${(Number(record.qty) * Number(record.unitCost)).toFixed(2)}`,
-    },
-    {
-      label: "Note",
-      key: "note",
-      ellipsis: true,
-    },
-    {
-      label: "Date",
-      key: "createdAt",
-      render: (record: InventoryTransaction) =>
-        new Date(record.createdAt).toLocaleString(),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Inventory Transactions" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Inventory Movements"
+        subtitle="View stock movement history, purchases, sales, adjustments, transfers, and reservations."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      {/* Search & Filter */}
-      <Row gutter={[16, 16]} className="mb-4">
-        <Col xs={24} sm={12} md={8}>
-          <Search
-            placeholder="Search product..."
-            allowClear
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </Col>
-        <Col xs={24} sm={12} md={8}>
-          <Select
-            placeholder="Filter type"
-            allowClear
-            style={{ width: "100%", maxWidth: 156 }}
-            value={typeFilter}
-            onChange={setTypeFilter}
-            options={[
-              { label: "IN", value: "IN" },
-              { label: "OUT", value: "OUT" },
-              { label: "ADJUSTMENT", value: "ADJUSTMENT" },
-              { label: "DAMAGE", value: "DAMAGE" },
-              { label: "LOSS", value: "LOSS" },
-            ]}
-          />
-        </Col>
-      </Row>
+      <Card>
+        <DataTable
+          data={tableData}
+          // toolbarEnd={
+          //   <div className="flex flex-col gap-3 md:flex-row">
+          //     <Select
+          //       placeholder="Movement type"
+          //       allowClear
+          //       style={{ width: 220 }}
+          //       options={movementTypeOptions}
+          //       onChange={(value) => {
+          //         setCurrentPage(1);
+          //         setMovementTypeFilter((value ?? "") as StockMovementType | "");
+          //       }}
+          //     />
 
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>Transactions</Title>
-
-            <DataTable
-              data={transaction?.data?.data?.data ?? []}
-              columns={columns}
-            />
-          </Card>
-
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
-        </Col>
-      </Row>
+          //     <Select
+          //       placeholder="Reference type"
+          //       allowClear
+          //       style={{ width: 220 }}
+          //       options={referenceTypeOptions}
+          //       onChange={(value) => {
+          //         setCurrentPage(1);
+          //         setReferenceTypeFilter(
+          //           (value ?? "") as StockReferenceType | ""
+          //         );
+          //       }}
+          //     />
+          //   </div>
+          // }
+          columns={columns}
+          onSearch={(value) => {
+            setCurrentPage(1);
+            setSearch(value);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
+        />
+      </Card>
     </div>
   );
 }

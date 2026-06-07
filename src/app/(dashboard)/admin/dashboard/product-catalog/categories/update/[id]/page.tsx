@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import ProductCategoryForm, { ProductCategoryFormValues } from "../../_components/ProductCategoryForm";
 import { useCategory, useProductCategoriesMutation } from "@/lib/api/hooks/product-categories";
 import { useAuthStore } from "@/stores/auth.store";
@@ -26,6 +26,7 @@ const UpdateProductCategoryPage = () => {
   const { id } = useParams<{ id: string }>();
   const { data: category } = useCategory(businessId, id);
   const { updateCategories } = useProductCategoriesMutation(businessId);
+  const router = useRouter();
 
 
   const handleUpdate = async (values: ProductCategoryFormValues) => {
@@ -41,6 +42,7 @@ const UpdateProductCategoryPage = () => {
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
       message.success("Category updated successfully");
+      router.push('/admin/dashboard/product-catalog/categories')
     } else {
       const payload = {
         name: values.name,
@@ -52,6 +54,7 @@ const UpdateProductCategoryPage = () => {
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
       message.success("Category updated successfully");
+      router.push('/admin/dashboard/product-catalog/categories')
     }
   };
 

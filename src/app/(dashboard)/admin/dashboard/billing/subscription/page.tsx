@@ -1,17 +1,13 @@
 "use client";
 
 import { Button, Card, Col, Empty, Flex, Row, Tag, Typography } from "antd";
-
-import { getApiErrorMessage } from "@/lib/axios";
 import {
   useTenantCurrentSubscription,
-  useTenantPackageMutations,
   useTenantPackageUsage,
 } from "@/lib/api";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
-import { useSwal } from "@/hooks/use-swal";
 import UsageCard from "../_components/usage-card";
 import {
   dateText,
@@ -23,27 +19,8 @@ import {
 const { Text, Title } = Typography;
 
 export default function SubscriptionPage() {
-  const swal = useSwal();
   const subscription = useTenantCurrentSubscription();
   const usage = useTenantPackageUsage();
-  const mutations = useTenantPackageMutations();
-
-  const cancelSubscription = async () => {
-    const { isConfirmed } = await swal.confirm({
-      title: "Cancel subscription?",
-      text: "Your access continues only according to the backend subscription rules.",
-      confirmButtonText: "Cancel subscription",
-    });
-
-    if (!isConfirmed) return;
-
-    try {
-      await mutations.cancelSubscription.mutateAsync({});
-      swal.success("Subscription cancelled successfully.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
-  };
 
   if (subscription.isLoading) {
     return (
@@ -120,22 +97,17 @@ export default function SubscriptionPage() {
           <Card>
             <Flex vertical gap={10}>
               <Title level={5}>Subscription actions</Title>
+              <Button>
+                <span className="font-semibold">
+                  {money(current.price, current.currencyCode)} /{" "}
+                  {optionLabel(current.billingCycle)}
+                </span>
+              </Button>
               <Button
                 href="/admin/dashboard/billing/upgrade-plan"
                 type="primary"
               >
                 Change plan
-              </Button>
-              <Button href="/admin/dashboard/billing/addons">
-                Manage add-ons
-              </Button>
-              <Button
-                danger
-                loading={mutations.cancelSubscription.isPending}
-                disabled={current.status === "CANCELLED"}
-                onClick={cancelSubscription}
-              >
-                Cancel subscription
               </Button>
             </Flex>
           </Card>
@@ -163,32 +135,6 @@ export default function SubscriptionPage() {
         )}
       </Row>
 
-      <Card title="Active add-ons">
-        {current.addons?.length ? (
-          <Row gutter={[12, 12]}>
-            {current.addons.map((item) => (
-              <Col xs={24} md={12} key={item.id}>
-                <Card size="small">
-                  <Flex justify="space-between" gap={12}>
-                    <div>
-                      <Text strong>{item.addon?.name ?? item.addonId}</Text>
-                      <div>
-                        <Text type="secondary">
-                          Quantity {item.quantity} |{" "}
-                          {money(item.price, item.currencyCode)}
-                        </Text>
-                      </div>
-                    </div>
-                    <Tag>{optionLabel(item.status)}</Tag>
-                  </Flex>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        ) : (
-          <Empty description="No add-ons are active for this subscription." />
-        )}
-      </Card>
     </div>
   );
 }

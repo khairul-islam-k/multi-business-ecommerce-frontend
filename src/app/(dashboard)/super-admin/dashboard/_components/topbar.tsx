@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  App,
   Avatar,
-  Badge,
   Button,
   Dropdown,
   Flex,
@@ -15,7 +15,6 @@ import {
   theme,
 } from "antd";
 import {
-  BellOutlined,
   MenuOutlined,
   SearchOutlined,
   CloseOutlined,
@@ -26,7 +25,6 @@ import {
   MenuFoldOutlined,
 } from "@ant-design/icons";
 
-import { useSwal } from "@/hooks/use-swal";
 import { useAuthStore } from "@/stores/auth.store";
 import ThemeToggle from "@/components/shared/antd-theme-toggle";
 import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
@@ -46,7 +44,7 @@ export default function Topbar({
   onSidebarToggle,
 }: TopbarProps) {
   const router = useRouter();
-  const swal = useSwal();
+  const { message, modal } = App.useApp();
   const { token } = useToken();
   const screens = Grid.useBreakpoint();
   const logout = useAuthStore((s) => s.logout);
@@ -58,18 +56,21 @@ export default function Topbar({
   const avatarSeed = getUserAvatarSeed(user, "super-admin");
   const avatarSrc = getUserAvatarUrl(user, "super-admin");
 
-  const handleLogout = async () => {
-    const { isConfirmed } = await swal.confirm({
+  const handleLogout = () => {
+    modal.confirm({
       title: "Log out?",
-      text: "You will need to sign in again to continue.",
-      confirmButtonText: "Log out",
+      content: "You will need to sign in again to continue.",
+      okText: "Log out",
+      cancelText: "Cancel",
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        await logout();
+        message.success("Logged out successfully.");
+        router.push("/sign-in");
+      },
     });
-
-    if (!isConfirmed) return;
-
-    await logout();
-    swal.success("Logged out successfully.");
-    router.push("/sign-in");
   };
 
   const items: MenuProps["items"] = [

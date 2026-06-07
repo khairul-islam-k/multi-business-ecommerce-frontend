@@ -137,7 +137,7 @@ const VariantManagement = () => {
     {
       key: "price",
       label: "Price",
-      render: (row) => Number(row.price).toLocaleString(),
+      render: (row) => Number(row.priceOverride).toLocaleString(),
     },
     {
       key: "weight",
@@ -207,9 +207,9 @@ const VariantManagement = () => {
     return <Loader />;
   }
 
-  if (!products?.items?.length) {
-    return <Empty description="No products found" />;
-  }
+  // if (!products?.items?.length) {
+  //   return <Empty description="No products found" />;
+  // }
 
   return (
     <div className="space-y-6">
@@ -263,14 +263,16 @@ const VariantManagement = () => {
         ) : null}
       </Card>
 
-      <DataTable
-        data={variants ?? []}
-        columns={columns}
-        onSearch={(value) => {
-          setSearch(value);
-        }}
-        loading={variantLoading || variantFetching}
-      />
+      <Card>
+        <DataTable
+          data={variants ?? []}
+          columns={columns}
+          onSearch={(value) => {
+            setSearch(value);
+          }}
+          loading={variantLoading || variantFetching}
+        />
+      </Card>
     </div>
   );
 };
