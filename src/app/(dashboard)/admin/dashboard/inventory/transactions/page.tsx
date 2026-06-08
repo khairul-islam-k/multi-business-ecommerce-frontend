@@ -115,6 +115,14 @@ export default function InventoryTransactionsPage() {
       render: (row) => row.serial,
     },
     {
+      key: "Product",
+      label: "Product",
+      type: "primary",
+      render: (row) => (
+        <strong>{row?.product?.name}</strong>
+      ),
+    },
+    {
       key: "movementType",
       label: "Movement Type",
       type: "primary",

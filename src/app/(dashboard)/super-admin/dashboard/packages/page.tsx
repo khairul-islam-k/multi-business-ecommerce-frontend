@@ -377,10 +377,10 @@ export default function PackagesPage() {
                 }
                 actions={(subscription) => (
                   <Space>
-                    <Button
+                    {/* <Button
                       icon={<RetweetOutlined />}
                       onClick={() => setChangingSubscription(subscription)}
-                    />
+                    /> */}
                     <Button
                       danger
                       icon={<StopOutlined />}

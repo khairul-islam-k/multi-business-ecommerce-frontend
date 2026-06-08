@@ -47,8 +47,6 @@ const PurchaseOrder = () => {
     // sortOrder: "desc",
   });
 
-  console.log('data', purchaseOrder);
-
   const { removePurchaseOrder } = usePurchaseOrderMutation(businessId);
 
   const total = purchaseOrder?.meta?.total || 0;

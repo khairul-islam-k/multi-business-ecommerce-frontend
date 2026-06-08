@@ -2,32 +2,33 @@ import { ApiId } from "@/lib/api";
 import { SupplierResponse } from "./supplier";
 import { TaxResponse } from "../finance/tax";
 import { WarehouseResponse } from "../product/warehouse";
+import { Product } from "../stock/stock";
 
 export type PurchaseOrderStatus =
-    | "DRAFT"
-    | "ORDERED"
-    | "PARTIALLY_RECEIVED"
-    | "RECEIVED"
-    | "CANCELLED";
+  | "DRAFT"
+  | "ORDERED"
+  | "PARTIALLY_RECEIVED"
+  | "RECEIVED"
+  | "CANCELLED";
 
 export type PurchaseOrderItemPayload = {
-    productId: string;
-    variantId: string;
-    quantityOrdered: number;
-    unitCost: number;
-    discountAmount: number;
+  productId: string;
+  variantId: string;
+  quantityOrdered: number;
+  unitCost: number;
+  discountAmount: number;
 };
 
 
 export type PurchaseOrderPayload = {
-    supplierId: string;
-    warehouseId: string;
-    taxId: string;
-    expectedDeliveryDate: string;
-    status: PurchaseOrderStatus;
-    shippingCost: number;
-    note: string;
-    items: PurchaseOrderItemPayload[]
+  supplierId: string;
+  warehouseId: string;
+  taxId: string;
+  expectedDeliveryDate: string;
+  status: PurchaseOrderStatus;
+  shippingCost: number;
+  note: string;
+  items: PurchaseOrderItemPayload[]
 };
 
 export type PurchaseOrderResponse = {
@@ -61,11 +62,30 @@ export type PurchaseOrderResponse = {
   invoices: unknown[];
 };
 
+export type ProductVariant = {
+  id: string;
+  businessId: string;
+  productId: string;
+  title: string;
+  sku: string;
+  barcode: string;
+  priceOverride: string;
+  weight: string;
+  status: "ACTIVE" | "INACTIVE";
+  createdAt: string;
+  updatedAt: string;
+  createdBy: string;
+  updatedBy: string;
+  deletedAt: string | null;
+};
+
 export type PurchaseOrderItemResponse = {
   id: string;
   purchaseOrderId: string;
   productId: string;
+  product: Product;
   variantId: string;
+  variant: ProductVariant | null;
   quantityOrdered: string;
   quantityReceived: string;
   unitCost: string;
@@ -86,3 +106,16 @@ export type UpdatePurchaseOrderPayload = {
 export type Note = {
   note: string;
 }
+
+// return
+export type PurchaseReturnItemPayload = {
+  productId: string;
+  variantId?: string | null;
+  quantity: number;
+  reason: string;
+};
+
+export type PurchaseReturnPayload = {
+  reason: string;
+  items: PurchaseReturnItemPayload[];
+};
