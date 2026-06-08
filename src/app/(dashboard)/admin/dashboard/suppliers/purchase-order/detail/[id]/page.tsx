@@ -19,12 +19,13 @@ import {
   Tag,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 const PurchaseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { message, modal } = App.useApp();
+  const router = useRouter();
 
   // modal 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -43,8 +44,6 @@ const PurchaseDetail = () => {
   const cancelOrReceiveStatus = !((purchase?.status === "CANCELLED") || (purchase?.status === "RECEIVED"));
 
   const receiveStatus = purchase?.status === "RECEIVED"
-
-  console.log('can', cancelOrReceiveStatus);
 
   const { updateReceivePO, updateCancelPO } = usePurchaseOrderMutation(businessId);
 
@@ -91,18 +90,6 @@ const PurchaseDetail = () => {
     return <Empty description="Purchase order not found" />;
   }
 
-  const handleReturnRequest = () => {
-    modal.confirm({
-      title: "Return request?",
-      content: "Are you sure you want to create return request?",
-      okText: "Return Request",
-      cancelText: "Cancel",
-      onOk: async () => {
-        message.success("Return request action here.");
-      },
-    });
-  };
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -112,10 +99,13 @@ const PurchaseDetail = () => {
       />
 
       <Flex justify="end" gap={10} wrap>
-        {
-          receiveStatus && 
-          <Button onClick={handleReturnRequest}>Return Request</Button>
-        }
+        {receiveStatus && (
+          <Button
+            type="primary"
+            danger onClick={()=> router.push(`/admin/dashboard/suppliers/purchase-order/return-request/${purchase.id}`)}>
+            Return Request
+          </Button>
+        )}
 
         {
           cancelOrReceiveStatus &&

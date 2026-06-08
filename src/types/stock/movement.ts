@@ -1,3 +1,5 @@
+import { Product } from "./stock";
+
 export type StockMovementType =
     | "PURCHASE_IN"
     | "PURCHASE_RETURN_OUT"
@@ -56,6 +58,7 @@ export type StockMovementResponse = {
     businessId: string;
     stockId: string;
     productId: string;
+    product: Product;
     variantId: string | null;
     warehouseId: string;
     stockItemKey: string;

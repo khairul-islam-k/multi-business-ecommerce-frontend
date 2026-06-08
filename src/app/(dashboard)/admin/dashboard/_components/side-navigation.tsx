@@ -1,6 +1,7 @@
 import {
   AlertOutlined,
   ApartmentOutlined,
+  AppstoreAddOutlined,
   AppstoreOutlined,
   ArrowUpOutlined,
   BankOutlined,
@@ -19,6 +20,7 @@ import {
   EditOutlined,
   EnvironmentOutlined,
   ExportOutlined,
+  FileDoneOutlined,
   FileTextOutlined,
   GlobalOutlined,
   HistoryOutlined,
@@ -576,11 +578,11 @@ export const items: MenuProps["items"] = [
   {
     key: "suppliers-procurement",
     icon: <ShopOutlined />,
-    label: "Suppliers & Procurement",
+    label: "Suppliers",
     children: [
       {
         key: "supplier",
-        icon: <InboxOutlined />,
+        icon: <ShopOutlined />,
         label: (
           <Link href="/admin/dashboard/suppliers/supplier">
             Supplier
@@ -589,7 +591,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "supplier-products",
-        icon: <InboxOutlined />,
+        icon: <AppstoreAddOutlined />,
         label: (
           <Link href="/admin/dashboard/suppliers/supplier-products">
             Supplier Products
@@ -598,7 +600,7 @@ export const items: MenuProps["items"] = [
       },
       {
         key: "purchase-order",
-        icon: <FileTextOutlined />,
+        icon: <FileDoneOutlined />,
         label: (
           <Link href="/admin/dashboard/suppliers/purchase-order">
             Purchase Orders
@@ -606,17 +608,26 @@ export const items: MenuProps["items"] = [
         ),
       },
       {
-        key: "supplier-payment",
-        icon: <DollarOutlined />,
-        label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
-      },
-      {
-        key: "supplier-performance",
-        icon: <BarChartOutlined />,
+        key: "purchase-returns",
+        icon: <RollbackOutlined />,
         label: (
-          <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
+          <Link href="/admin/dashboard/suppliers/returns">
+            Returns
+          </Link>
         ),
       },
+      // {
+      //   key: "supplier-payment",
+      //   icon: <DollarOutlined />,
+      //   label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
+      // },
+      // {
+      //   key: "supplier-performance",
+      //   icon: <BarChartOutlined />,
+      //   label: (
+      //     <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
+      //   ),
+      // },
     ],
   },
 

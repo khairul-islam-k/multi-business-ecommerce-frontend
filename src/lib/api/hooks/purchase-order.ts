@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { purchaseOrderApi } from "../purchase-order";
-import { Note, PurchaseOrderPayload, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
+import { Note, PurchaseOrderPayload, PurchaseReturnPayload, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
 
 export function usePurchaseOrderQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -40,6 +40,15 @@ export function usePurchaseOrderMutation(businessId: ApiId) {
     createPurchaseOrder: useMutation({
       mutationFn: (payload: PurchaseOrderPayload) =>
         purchaseOrderApi.create(businessId, payload),
+      onSuccess: invalidate,
+    }),
+
+    purchaseOrderReturnRequest: useMutation({
+      mutationFn: ({purchaseId, payload} : {
+        purchaseId: ApiId,
+        payload: PurchaseReturnPayload
+      }) =>
+        purchaseOrderApi.purchaseOrderRequest(businessId,purchaseId, payload),
       onSuccess: invalidate,
     }),
 

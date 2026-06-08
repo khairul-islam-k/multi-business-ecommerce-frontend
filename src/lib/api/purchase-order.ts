@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { Note, PurchaseOrderPayload, PurchaseOrderResponse, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
+import { Note, PurchaseOrderPayload, PurchaseOrderResponse, PurchaseReturnPayload, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
 
 const basePath = (businessId: ApiId) => `/suppliers/businesses/${businessId}/purchase-orders`;
 export const purchaseOrderApi = {
@@ -25,6 +25,13 @@ export const purchaseOrderApi = {
       .post<ApiResponse<PurchaseOrderResponse>>(basePath(businessId), payload)
       .then((res) => unwrapApiResponse(res.data));
   },
+
+  purchaseOrderRequest(businessId: ApiId, purchaseId: ApiId, payload: PurchaseReturnPayload) {
+    return api
+      .post<ApiResponse<unknown>>(`${basePath(businessId)}/${purchaseId}/returns`, payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
   update(
     businessId: ApiId,
     purchaseId: ApiId,
