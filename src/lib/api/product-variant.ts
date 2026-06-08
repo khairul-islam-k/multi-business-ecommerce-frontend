@@ -1,7 +1,7 @@
 import { unwrapApiResponse } from "./response";
 import { ApiId, ApiResponse } from "./types";
 import api from "../axios";
-import { ResponseVariant, VariantPayload } from "@/types/product/variant";
+import { BulkVariantPayload, ResponseVariant, VariantPayload } from "@/types/product/variant";
 
 const basePath = (businessId: ApiId, productId: ApiId) => `/product-catalog/businesses/${businessId}/products/${productId}/variants`;
 export const productVariantApi = {
@@ -23,6 +23,12 @@ export const productVariantApi = {
     create(businessId: ApiId, productId: ApiId, payload: VariantPayload) {
         return api
             .post<ApiResponse<ResponseVariant>>(basePath(businessId, productId), payload)
+            .then((res) => unwrapApiResponse(res.data));
+    },
+
+    bulkCreate(businessId: ApiId, productId: ApiId, payload: BulkVariantPayload) {
+        return api
+            .post<ApiResponse<ResponseVariant[]>>(`${basePath(businessId, productId)}/bulk`, payload)
             .then((res) => unwrapApiResponse(res.data));
     },
 

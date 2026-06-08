@@ -22,6 +22,10 @@ export type VariantPayload = {
   attributes: VariantAttributePayload[];
 };
 
+export type BulkVariantPayload = {
+  variants: VariantPayload[];
+};
+
 
 export type ResponseVariantImage = {
   id: string;

@@ -3,6 +3,7 @@
 import { useAuthStore } from "@/stores/auth.store";
 import ProductForm from "../_components/product-form";
 import { useProductMutation } from "@/lib/api/hooks/product";
+import { useVariantMutation } from "@/lib/api/hooks/product-variant";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/components/shared/page-header";
@@ -10,18 +11,22 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { ProductPayload } from "@/types/product/product";
 import { App } from "antd";
 import { useState } from "react";
-
+import { VariantPayload } from "@/types/product/variant";
 
 const CreateProductPage = () => {
   const router = useRouter();
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const { message } = App.useApp();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const { createProduct } = useProductMutation(businessId);
+  const { bulkCreateVariants } = useVariantMutation(businessId);
 
-  const handleCreateProduct = async (values: ProductPayload) => {
+  const handleCreateProduct = async (
+    values: ProductPayload,
+    variants: VariantPayload[],
+  ) => {
     setIsSubmitting(true);
     const payload: ProductPayload = {
       images: values.images,
@@ -37,16 +42,28 @@ const CreateProductPage = () => {
     };
 
     try {
-      const res = await createProduct.mutateAsync(payload)
-      message.success('product created successfully');
+      const product = await createProduct.mutateAsync(payload);
+
+      if (variants.length) {
+        await bulkCreateVariants.mutateAsync({
+          productId: product.id,
+          payload: {
+            variants,
+          },
+        });
+      }
+
+      message.success(
+        variants.length
+          ? "Product and variants created successfully"
+          : "Product created successfully",
+      );
       router.push("/admin/dashboard/product-catalog/products");
-      setIsSubmitting(false)
-      console.log('res', res)
     } catch (error) {
       message.error(getApiErrorMessage(error));
+    } finally {
       setIsSubmitting(false);
     }
-
   };
 
   return (
