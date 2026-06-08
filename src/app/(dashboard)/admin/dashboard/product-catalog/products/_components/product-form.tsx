@@ -27,20 +27,20 @@ import { imageUrlSet } from "./image-url";
 import { ProductPayload, ResponseProduct } from "@/types/product/product";
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { ResponseProductAttribute } from "@/types/product/attribute";
-import { VariantPayload } from "@/types/product/variant";
+import {
+  BulkUpdateVariantItemPayload,
+  ResponseVariant,
+  VariantPayload,
+} from "@/types/product/variant";
 
 type SelectOption = {
   label: string;
   value: string;
 };
 
-type ProductFormProps = {
-  mode: "create" | "update";
-  initialValues?: Partial<ResponseProduct>;
-  isSubmitting?: boolean;
-
-  onSubmit: (values: ProductPayload, variants: VariantPayload[]) => void;
-  onCancel?: () => void;
+type ProductFormVariant = VariantPayload & {
+  variantId?: string;
+  variantKey?: string;
 };
 
 type ProductVariantOption = {
@@ -51,10 +51,22 @@ type ProductVariantOption = {
 type ProductFormValues = ProductPayload & {
   enableVariants?: boolean;
   variantOptions?: ProductVariantOption[];
-  generatedVariants?: VariantPayload[];
+  variants?: ProductFormVariant[];
+};
+
+type ProductFormProps = {
+  mode: "create" | "update";
+  initialValues?: Partial<ResponseProduct>;
+  isSubmitting?: boolean;
+  onSubmit: (
+    values: ProductPayload,
+    variants: BulkUpdateVariantItemPayload[],
+  ) => void;
+  onCancel?: () => void;
 };
 
 type VariantPreviewItem = {
+  variantKey: string;
   title: string;
   attributes: {
     attributeId: string;
@@ -64,8 +76,8 @@ type VariantPreviewItem = {
 };
 
 type VariantBuilderProps = {
-  businessId: string;
   form: FormInstance<ProductFormValues>;
+  businessId: string;
 };
 
 type VariantOptionRowProps = {
@@ -76,6 +88,93 @@ type VariantOptionRowProps = {
   selectedOptions: ProductVariantOption[];
   attributes: ResponseProductAttribute[];
 };
+
+const getVariantKey = (
+  attributes:
+    | {
+        attributeId: string;
+        attributeValueId: string;
+      }[]
+    | undefined,
+) => {
+  const valueIds = attributes
+    ?.map((attribute) => attribute.attributeValueId)
+    .filter(Boolean)
+    .sort();
+
+  return valueIds?.length ? valueIds.join("|") : "";
+};
+
+const normalizeVariantImages = (images: VariantPayload["images"] | undefined) =>
+  images
+    ?.filter((image) => image.imageUrl?.trim())
+    .map((image) => ({
+      imageUrl: image.imageUrl.trim(),
+      altText: image.altText?.trim() || "",
+    })) ?? [];
+
+const getProductVariants = (
+  variants: Partial<ResponseProduct>["variants"],
+): ResponseVariant[] => (Array.isArray(variants) ? variants : []);
+
+const getInitialVariantOptions = (
+  variants: ResponseVariant[],
+): ProductVariantOption[] => {
+  const grouped = new Map<string, Set<string>>();
+
+  variants.forEach((variant) => {
+    variant.attributes?.forEach((attribute) => {
+      if (!grouped.has(attribute.attributeId)) {
+        grouped.set(attribute.attributeId, new Set());
+      }
+
+      grouped.get(attribute.attributeId)?.add(attribute.attributeValueId);
+    });
+  });
+
+  const options = Array.from(grouped.entries()).map(
+    ([attributeId, valueIds]) => ({
+      attributeId,
+      attributeValueIds: Array.from(valueIds),
+    }),
+  );
+
+  return options.length
+    ? options
+    : [
+        {
+          attributeId: undefined,
+          attributeValueIds: [],
+        },
+      ];
+};
+
+const getInitialVariants = (
+  variants: ResponseVariant[],
+): ProductFormVariant[] =>
+  variants.map((variant) => {
+    const attributes =
+      variant.attributes?.map((attribute) => ({
+        attributeId: attribute.attributeId,
+        attributeValueId: attribute.attributeValueId,
+      })) ?? [];
+
+    return {
+      variantId: variant.id,
+      variantKey: getVariantKey(attributes) || variant.id,
+      images: normalizeVariantImages(
+        variant.images?.map((image) => ({
+          imageUrl: image.imageUrl ?? "",
+          altText: image.altText ?? "",
+        })),
+      ),
+      title: variant.title ?? "",
+      priceOverride: Number(variant.priceOverride ?? 0),
+      weight: Number(variant.weight ?? 0),
+      status: variant.status ?? "ACTIVE",
+      attributes,
+    };
+  });
 
 const getVariantPreviews = (
   variantOptions: ProductVariantOption[] | undefined,
@@ -120,6 +219,7 @@ const getVariantPreviews = (
   );
 
   return combinations.map((items) => ({
+    variantKey: getVariantKey(items),
     title: items.map((item) => item.label).join(" "),
     attributes: items,
   }));
@@ -221,39 +321,88 @@ const VariantOptionRow = ({
   );
 };
 
-const VariantBuilder = ({ businessId, form }: VariantBuilderProps) => {
-    const { data: attributes, isLoading } = useProductAttributeQuery(businessId);
-    const watchedOptions = Form.useWatch("variantOptions", form);
-    const attributeItems = useMemo(() => attributes?.items ?? [], [attributes]);
-    const selectedOptions = useMemo(
-        () => watchedOptions ?? [],
-        [watchedOptions],
-    );
-    const price = Form.useWatch("price", form);
-    const weight = Form.useWatch("weight", form);
+const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
+  const { data: attributes, isLoading } = useProductAttributeQuery(businessId);
+  const watchedOptions = Form.useWatch("variantOptions", form);
+  const watchedVariants = Form.useWatch("variants", form);
+  const price = Form.useWatch("price", form);
+  const weight = Form.useWatch("weight", form);
+
+  const attributeItems = useMemo(() => attributes?.items ?? [], [attributes]);
+  const selectedOptions = useMemo(
+    () => watchedOptions ?? [],
+    [watchedOptions],
+  );
+  const variantRows = useMemo(
+    () => watchedVariants ?? [],
+    [watchedVariants],
+  );
   const previews = useMemo(
     () => getVariantPreviews(selectedOptions, attributeItems),
     [attributeItems, selectedOptions],
   );
-  const generatedVariants = useMemo<VariantPayload[]>(
-    () =>
-      previews.map((preview) => ({
-        images: [],
-        title: preview.title,
-        priceOverride: Number(price ?? 0),
-        weight: Number(weight ?? 0),
-        status: "ACTIVE",
-        attributes: preview.attributes.map((attribute) => ({
-          attributeId: attribute.attributeId,
-          attributeValueId: attribute.attributeValueId,
-        })),
-      })),
-    [previews, price, weight],
-  );
 
   useEffect(() => {
-    form.setFieldValue("generatedVariants", generatedVariants);
-  }, [form, generatedVariants]);
+    if (!attributeItems.length) return;
+
+    if (!previews.length) {
+      form.setFieldValue("variants", []);
+      return;
+    }
+
+    const currentVariants = form.getFieldValue("variants") ?? [];
+    const variantsByKey = new Map(
+      currentVariants.map((variant: ProductFormVariant) => [
+        variant.variantKey || getVariantKey(variant.attributes),
+        variant,
+      ]),
+    );
+
+    form.setFieldValue(
+      "variants",
+      previews.map((preview) => {
+        const existing = variantsByKey.get(preview.variantKey);
+
+        if (existing) {
+          return {
+            ...existing,
+            variantKey: preview.variantKey,
+            attributes: preview.attributes.map((attribute) => ({
+              attributeId: attribute.attributeId,
+              attributeValueId: attribute.attributeValueId,
+            })),
+          };
+        }
+
+        return {
+          variantKey: preview.variantKey,
+          images: [],
+          title: preview.title,
+          priceOverride: Number(form.getFieldValue("price") ?? 0),
+          weight: Number(form.getFieldValue("weight") ?? 0),
+          status: "ACTIVE",
+          attributes: preview.attributes.map((attribute) => ({
+            attributeId: attribute.attributeId,
+            attributeValueId: attribute.attributeValueId,
+          })),
+        };
+      }),
+    );
+  }, [attributeItems.length, form, previews]);
+
+  const getAttributeLabels = (variant: ProductFormVariant | undefined) =>
+    variant?.attributes
+      ?.map((item) => {
+        const attribute = attributeItems.find(
+          (attributeItem) => attributeItem.id === item.attributeId,
+        );
+        const value = attribute?.values?.find(
+          (attributeValue) => attributeValue.id === item.attributeValueId,
+        );
+
+        return value?.value ?? item.attributeValueId;
+      })
+      .filter(Boolean) ?? [];
 
   return (
     <div className="space-y-4">
@@ -293,26 +442,113 @@ const VariantBuilder = ({ businessId, form }: VariantBuilderProps) => {
       <div className="rounded-lg border p-4">
         <div className="mb-3 flex flex-col gap-1 md:flex-row md:items-center md:justify-between">
           <h4 className="m-0 font-medium">Generated Variants</h4>
-          <Tag color="blue">{previews.length} variants</Tag>
+          <Tag color="blue">{variantRows.length} variants</Tag>
         </div>
 
-        {previews.length ? (
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-            {previews.map((preview) => (
-              <div
-                key={preview.title}
-                className="flex items-center justify-between rounded-md border bg-white px-3 py-2"
-              >
-                <span className="font-medium">{preview.title}</span>
-                <span className="text-sm text-gray-500">
-                  BDT {Number(price ?? 0).toLocaleString()}
-                </span>
+        <Form.List name="variants">
+          {(fields, { remove }) =>
+            fields.length ? (
+              <div className="space-y-3">
+                {fields.map((field) => {
+                  const row = variantRows[field.name];
+
+                  return (
+                    <div
+                      key={field.key}
+                      className="rounded-md border bg-white p-3"
+                    >
+                      <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <div className="flex flex-wrap gap-2">
+                          {getAttributeLabels(row).map((label) => (
+                            <Tag key={label}>{label}</Tag>
+                          ))}
+                        </div>
+
+                        <Button
+                          danger
+                          size="small"
+                          icon={<DeleteOutlined />}
+                          onClick={() => remove(field.name)}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <Form.Item name={[field.name, "variantId"]} hidden>
+                          <Input />
+                        </Form.Item>
+
+                        <Form.Item name={[field.name, "variantKey"]} hidden>
+                          <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Title"
+                          name={[field.name, "title"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Variant title is required",
+                            },
+                          ]}
+                        >
+                          <Input placeholder="Black XL" />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Price"
+                          name={[field.name, "priceOverride"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Variant price is required",
+                            },
+                          ]}
+                        >
+                          <InputNumber
+                            min={0}
+                            style={{ width: "100%" }}
+                            placeholder={String(price ?? 0)}
+                          />
+                        </Form.Item>
+
+                        <Form.Item label="Weight" name={[field.name, "weight"]}>
+                          <InputNumber
+                            min={0}
+                            step={0.1}
+                            style={{ width: "100%" }}
+                            placeholder={String(weight ?? 0)}
+                          />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Status"
+                          name={[field.name, "status"]}
+                          rules={[
+                            {
+                              required: true,
+                              message: "Variant status is required",
+                            },
+                          ]}
+                        >
+                          <Select
+                            options={[
+                              { label: "Active", value: "ACTIVE" },
+                              { label: "Inactive", value: "INACTIVE" },
+                            ]}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        ) : (
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-        )}
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            )
+          }
+        </Form.List>
       </div>
     </div>
   );
@@ -336,14 +572,11 @@ const ProductForm = ({
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ? business?.id : "";
 
-  // tagId
   const arrayTagId = useMemo(() => {
     return initialValues?.tags?.map((tag) => tag.tagId);
   }, [initialValues]);
 
-  // categories
   const { data: categories } = useProductCategoriesQuery(businessId);
-
   const categoryOptions: SelectOption[] = useMemo(() => {
     return (
       categories?.items?.map((category) => ({
@@ -353,70 +586,63 @@ const ProductForm = ({
     );
   }, [categories]);
 
-  // brands
   const { data: brands } = useProductBrandQuery(businessId);
-
   const brandOptions: SelectOption[] = useMemo(() => {
     return (
-      brands?.items?.map((category) => ({
-        label: category.name,
-        value: category.id,
+      brands?.items?.map((brand) => ({
+        label: brand.name,
+        value: brand.id,
       })) ?? []
     );
   }, [brands]);
 
-  // units
   const { data: units } = useProductUnitQuery(businessId);
   const unitOptions: SelectOption[] = useMemo(() => {
     return (
-      units?.items?.map((category) => ({
-        label: category.name,
-        value: category.id,
+      units?.items?.map((unit) => ({
+        label: unit.name,
+        value: unit.id,
       })) ?? []
     );
   }, [units]);
 
-  // tagOptions
   const { data: tags } = useProductTagQuery(businessId);
   const tagOptions: SelectOption[] = useMemo(() => {
     return (
-      tags?.items?.map((category) => ({
-        label: category.name,
-        value: category.id,
+      tags?.items?.map((tag) => ({
+        label: tag.name,
+        value: tag.id,
       })) ?? []
     );
   }, [tags]);
 
   useEffect(() => {
-    if (initialValues) {
-      form.setFieldsValue({
-        images: initialValues.images?.length
-          ? initialValues.images
-          : [
-              {
-                imageUrl: "",
-                altText: "",
-              },
-            ],
-        name: initialValues.name ?? "",
-        price: Number(initialValues.price) ?? 0,
-        weight: Number(initialValues.weight) ?? 0,
-        description: initialValues.description ?? "",
-        categoryId: initialValues.categoryId,
-        brandId: initialValues.brandId,
-        unitId: initialValues.unitId,
-        status: initialValues.status ?? "DRAFT",
-        tagIds: arrayTagId ?? [],
-        enableVariants: false,
-        variantOptions: [
-          {
-            attributeId: undefined,
-            attributeValueIds: [],
-          },
-        ],
-        generatedVariants: [],
-      });
-    }
+    if (!initialValues) return;
+
+    const initialVariants = getProductVariants(initialValues.variants);
+
+    form.setFieldsValue({
+      images: initialValues.images?.length
+        ? initialValues.images
+        : [
+            {
+              imageUrl: "",
+              altText: "",
+            },
+          ],
+      name: initialValues.name ?? "",
+      price: Number(initialValues.price) ?? 0,
+      weight: Number(initialValues.weight) ?? 0,
+      description: initialValues.description ?? "",
+      categoryId: initialValues.categoryId,
+      brandId: initialValues.brandId,
+      unitId: initialValues.unitId,
+      status: initialValues.status ?? "DRAFT",
+      tagIds: arrayTagId ?? [],
+      enableVariants: initialVariants.length > 0,
+      variantOptions: getInitialVariantOptions(initialVariants),
+      variants: getInitialVariants(initialVariants),
+    });
   }, [form, initialValues, arrayTagId]);
 
   const openImageModal = (index: number) => {
@@ -442,7 +668,6 @@ const ProductForm = ({
             imageUrl: image.imageUrl.trim(),
             altText: image.altText?.trim() || values.name.trim(),
           })) ?? [],
-
       name: values.name.trim(),
       price: values.price,
       weight: values.weight,
@@ -454,8 +679,21 @@ const ProductForm = ({
       tagIds: values.tagIds ?? [],
     };
 
-    const variants: VariantPayload[] = values.enableVariants
-      ? (values.generatedVariants ?? [])
+    const formVariants = form.getFieldValue("variants") ?? [];
+    const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
+      ? formVariants.map((variant: ProductFormVariant) => ({
+          variantId: variant.variantId,
+          images: normalizeVariantImages(variant.images),
+          title: variant.title.trim(),
+          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+          weight: Number(variant.weight ?? values.weight ?? 0),
+          status: variant.status ?? "ACTIVE",
+          attributes:
+            variant.attributes?.map((attribute) => ({
+              attributeId: attribute.attributeId,
+              attributeValueId: attribute.attributeValueId,
+            })) ?? [],
+        }))
       : [];
 
     onSubmit(payload, variants);
@@ -491,7 +729,7 @@ const ProductForm = ({
                 attributeValueIds: [],
               },
             ],
-            generatedVariants: [],
+            variants: [],
           }}
         >
           <Form.Item
@@ -739,30 +977,34 @@ const ProductForm = ({
             />
           </Form.Item>
 
-          {mode === "create" ? (
-            <>
-              <Divider titlePlacement="left">Variants</Divider>
+          <Divider titlePlacement="left">Variants</Divider>
 
-              <Form.Item
-                label="Create Variants"
-                name="enableVariants"
-                valuePropName="checked"
-              >
-                <Switch
-                  checkedChildren="Enabled"
-                  unCheckedChildren="Disabled"
-                  onChange={(checked) => {
-                    if (!checked) {
-                      form.setFieldValue("generatedVariants", []);
-                    }
-                  }}
-                />
-              </Form.Item>
+          <Form.Item
+            label="Manage Variants"
+            name="enableVariants"
+            valuePropName="checked"
+          >
+            <Switch
+              checkedChildren="Enabled"
+              unCheckedChildren="Disabled"
+              onChange={(checked) => {
+                if (!checked) {
+                  form.setFieldsValue({
+                    variantOptions: [
+                      {
+                        attributeId: undefined,
+                        attributeValueIds: [],
+                      },
+                    ],
+                    variants: [],
+                  });
+                }
+              }}
+            />
+          </Form.Item>
 
-              {enableVariants ? (
-                <VariantBuilder businessId={businessId} form={form} />
-              ) : null}
-            </>
+          {enableVariants ? (
+            <VariantBuilder form={form} businessId={businessId} />
           ) : null}
 
           <Space>

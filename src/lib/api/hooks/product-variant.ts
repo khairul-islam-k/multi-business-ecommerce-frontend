@@ -2,7 +2,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId } from "../types";
 import { productVariantApi } from "../product-variant";
-import { BulkVariantPayload, VariantPayload } from "@/types/product/variant";
+import {
+  BulkUpdateVariantPayload,
+  BulkVariantPayload,
+  VariantPayload,
+} from "@/types/product/variant";
 
 export function useProductVariantQuery(businessId: ApiId, productId: ApiId, search: string) {
   return useQuery({
@@ -58,6 +62,18 @@ export function useVariantMutation(businessId: ApiId) {
         payload: BulkVariantPayload
       }) =>
         productVariantApi.bulkCreate(businessId, productId, payload),
+      onSuccess: invalidate,
+    }),
+
+    bulkUpdateVariants: useMutation({
+      mutationFn: ({
+        productId,
+        payload
+      }: {
+        productId: ApiId,
+        payload: BulkUpdateVariantPayload
+      }) =>
+        productVariantApi.bulkUpdate(businessId, productId, payload),
       onSuccess: invalidate,
     }),
 

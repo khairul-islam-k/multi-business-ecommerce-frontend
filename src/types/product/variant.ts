@@ -26,6 +26,14 @@ export type BulkVariantPayload = {
   variants: VariantPayload[];
 };
 
+export type BulkUpdateVariantItemPayload = Partial<VariantPayload> & {
+  variantId?: string;
+};
+
+export type BulkUpdateVariantPayload = {
+  variants: BulkUpdateVariantItemPayload[];
+};
+
 
 export type ResponseVariantImage = {
   id: string;

@@ -1,6 +1,7 @@
 import { ListQuery } from "@/lib/api";
 import { ResponseBrand } from "./brands";
 import { ResponseUnit } from "./unit";
+import { ResponseVariant } from "./variant";
 
 export type MediaFileType = "IMAGE" | "VIDEO" | "PDF" | "DOCUMENT";
 
@@ -182,7 +183,7 @@ export type ResponseProduct = {
   images: ProductImage[];
   tags: ProductTag[];
   attributes: unknown;
-  variants: unknown;
+  variants: ResponseVariant[];
 
   category: ResponseCategory;
   brand: ResponseBrand;

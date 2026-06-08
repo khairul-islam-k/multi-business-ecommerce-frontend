@@ -4,12 +4,17 @@ import { useParams, useRouter } from "next/navigation";
 import ProductForm from "../../_components/product-form";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProduct, useProductMutation } from "@/lib/api/hooks/product";
+import { useVariantMutation } from "@/lib/api/hooks/product-variant";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { getApiErrorMessage } from "@/lib/axios";
 import { ProductPayload } from "@/types/product/product";
 import { App } from "antd";
 import { useState } from "react";
+import {
+  BulkUpdateVariantItemPayload,
+  VariantPayload,
+} from "@/types/product/variant";
 
 const UpdateProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,8 +26,16 @@ const UpdateProductPage = () => {
 
   const { data: product } = useProduct(businessId, id);
   const { updateProduct } = useProductMutation(businessId);
+  const {
+    bulkCreateVariants,
+    bulkUpdateVariants,
+    removeVariant,
+  } = useVariantMutation(businessId);
 
-  const handleUpdateProduct = async (values: ProductPayload) => {
+  const handleUpdateProduct = async (
+    values: ProductPayload,
+    variants: BulkUpdateVariantItemPayload[],
+  ) => {
     setIsSubmitting(true);
     const payload: ProductPayload = {
       images: values.images,
@@ -37,19 +50,68 @@ const UpdateProductPage = () => {
       tagIds: values.tagIds ?? [],
     };
 
-    console.log('payload', payload);
-
-
     try {
       await updateProduct.mutateAsync({
         productId: id,
         payload,
       });
+
+      const submittedVariantIds = variants
+        .map((variant) => variant.variantId)
+        .filter(Boolean);
+      const removedVariantIds =
+        product?.variants
+          ?.map((variant) => variant.id)
+          .filter((variantId) => !submittedVariantIds.includes(variantId)) ?? [];
+      const existingVariants = variants.filter(
+        (variant): variant is BulkUpdateVariantItemPayload & { variantId: string } =>
+          Boolean(variant.variantId),
+      );
+      const newVariants: VariantPayload[] = variants
+        .filter((variant) => !variant.variantId)
+        .map((variant) => ({
+          images: variant.images ?? [],
+          title: variant.title?.trim() ?? "",
+          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+          weight: Number(variant.weight ?? values.weight ?? 0),
+          status: variant.status ?? "ACTIVE",
+          attributes: variant.attributes ?? [],
+        }));
+
+      if (removedVariantIds.length) {
+        await Promise.all(
+          removedVariantIds.map((variantId) =>
+            removeVariant.mutateAsync({
+              productId: id,
+              variantId,
+            }),
+          ),
+        );
+      }
+
+      if (existingVariants.length) {
+        await bulkUpdateVariants.mutateAsync({
+          productId: id,
+          payload: {
+            variants: existingVariants,
+          },
+        });
+      }
+
+      if (newVariants.length) {
+        await bulkCreateVariants.mutateAsync({
+          productId: id,
+          payload: {
+            variants: newVariants,
+          },
+        });
+      }
+
       message.success('Product updated successfully');
       router.push("/admin/dashboard/product-catalog/products");
-      setIsSubmitting(false)
     } catch (error) {
       message.error(getApiErrorMessage(error));
+    } finally {
       setIsSubmitting(false);
     }
   };

@@ -11,7 +11,10 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { ProductPayload } from "@/types/product/product";
 import { App } from "antd";
 import { useState } from "react";
-import { VariantPayload } from "@/types/product/variant";
+import {
+  BulkUpdateVariantItemPayload,
+  VariantPayload,
+} from "@/types/product/variant";
 
 const CreateProductPage = () => {
   const router = useRouter();
@@ -25,7 +28,7 @@ const CreateProductPage = () => {
 
   const handleCreateProduct = async (
     values: ProductPayload,
-    variants: VariantPayload[],
+    variants: BulkUpdateVariantItemPayload[],
   ) => {
     setIsSubmitting(true);
     const payload: ProductPayload = {
@@ -45,10 +48,19 @@ const CreateProductPage = () => {
       const product = await createProduct.mutateAsync(payload);
 
       if (variants.length) {
+        const createVariants: VariantPayload[] = variants.map((variant) => ({
+          images: variant.images ?? [],
+          title: variant.title?.trim() ?? "",
+          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+          weight: Number(variant.weight ?? values.weight ?? 0),
+          status: variant.status ?? "ACTIVE",
+          attributes: variant.attributes ?? [],
+        }));
+
         await bulkCreateVariants.mutateAsync({
           productId: product.id,
           payload: {
-            variants,
+            variants: createVariants,
           },
         });
       }
