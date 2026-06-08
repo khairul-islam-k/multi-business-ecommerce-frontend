@@ -19,6 +19,7 @@ import {
 
 import { useAuthStore } from "@/stores/auth.store";
 import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
+import { imageUrlSet } from "../product-catalog/products/_components/image-url";
 
 const { Text } = Typography;
 
@@ -31,10 +32,9 @@ const ProfileDropdown = () => {
   const avatarSeed = getUserAvatarSeed(user);
   const avatarSrc = getUserAvatarUrl(user);
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
   const imageUrl = user?.profile?.imageUrl ?? "";
 
-  const imageAvatar = imageUrl ? `${baseUrl}${imageUrl}` : avatarSrc;
+  const imageAvatar = imageUrlSet(imageUrl);
 
 
   const handleLogout = () => {
@@ -113,10 +113,15 @@ const ProfileDropdown = () => {
       >
         <Button type="text" style={{ height: 44, paddingInline: 8 }}>
           <Space size={10}>
-            <Avatar
-              alt={avatarSeed}
+           {
+            imageAvatar ? <Avatar
+              alt={user?.name}
               src={imageAvatar}
+            /> : <Avatar
+              alt={avatarSeed}
+              src={avatarSrc}
             />
+           }
             <div className="hidden min-w-0 text-left md:block">
               <Text
                 strong

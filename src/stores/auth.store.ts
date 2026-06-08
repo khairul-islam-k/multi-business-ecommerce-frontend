@@ -13,6 +13,8 @@ import type {
 } from "@/lib/api/types";
 import { getApiErrorMessage } from "@/lib/axios";
 import axios from "axios";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { businessesApi } from "@/lib/api";
 
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 const ACCESS_TOKEN_COOKIE = "accessToken";
@@ -91,8 +93,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   setUser: (user) => {
+    const cookiePayload = {
+      id: user?.id,
+      type: user?.type
+    }
     if (user) {
-      Cookies.set(USER_COOKIE, JSON.stringify(user), COOKIE_OPTIONS);
+      Cookies.set(USER_COOKIE, JSON.stringify(cookiePayload), COOKIE_OPTIONS);
     } else {
       Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
     }
@@ -178,7 +184,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       return payload.accessToken;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
+      if (axios.isAxiosError(error)) {
         const status = error.response?.status;
 
         console.log("refresh error status:", status);
@@ -261,17 +267,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   init: async () => {
     const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
     const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE) ?? null;
-    const user = parseCookieJson<SystemUser>(USER_COOKIE);
     const selectedBusiness = parseCookieJson<AuthBusiness>(BUSINESS_COOKIE);
+
+    // business 
 
     set({
       refreshToken,
       accessToken,
-      user,
       selectedBusiness,
       initialized: false,
       loading: Boolean(refreshToken),
     });
+
+    const profile = await authApi.me();
+    const { businesses, user } = profile;
+
+
+    if (businesses !== undefined) get().setBusinesses(businesses);
+
+    if (businesses !== undefined) {
+      set({
+        user
+      });
+    };
 
     if (!refreshToken) {
       set({ initialized: true, loading: false });

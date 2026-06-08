@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 type CookieUser = {
   id: number;
-  name: string;
-  email: string;
-  phone: string | null;
-  type: "ADMIN" | "TENANT" | "EMPLOYEE" | string;
+  type: "ADMIN" | "TENANT" | "EMPLOYEE";
 };
 
 export function proxy(req: NextRequest) {

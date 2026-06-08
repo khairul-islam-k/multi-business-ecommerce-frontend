@@ -75,7 +75,7 @@ export type SystemUser = {
 export type AuthBusiness = {
   id: ApiId;
   name: string;
-  ownerUserId: ApiId;
+  ownerUserId: ApiId | undefined;
   members?: Array<{
     id: ApiId;
     userId: ApiId;
