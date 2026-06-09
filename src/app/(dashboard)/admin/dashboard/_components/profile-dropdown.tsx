@@ -75,19 +75,6 @@ const ProfileDropdown = () => {
               ),
             },
             {
-              key: "account",
-              label: (
-                <Link href="/admin/dashboard/profile">
-                  <Flex align="center" gap={8} style={{ color: token.colorText }}>
-                    <SettingOutlined />
-                    <Text style={{ color: token.colorText }}>
-                      Account Settings
-                    </Text>
-                  </Flex>
-                </Link>
-              ),
-            },
-            {
               type: "divider" as const,
             },
             {

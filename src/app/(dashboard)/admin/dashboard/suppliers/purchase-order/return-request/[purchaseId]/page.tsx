@@ -1,8 +1,12 @@
 "use client";
 
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { StockItem } from "@/types/stock/stock";
+import { PurchaseOrderItemResponse } from "@/types/suppliers/purchase-order";
 import { Button, Card, Checkbox, Empty, Form, Input, InputNumber, Spin, Typography, App } from "antd";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -45,19 +49,42 @@ const PurchaseOrderReturn = () => {
 
   const { purchaseOrderReturnRequest } = usePurchaseOrderMutation(businessId);
 
+  console.log('data', purchase);
+
+  // Available Quantity
+  const sumTotalQuantity = (stocks?: StockItem[]) => {
+    return (
+      stocks?.reduce((total, stock) => {
+        return total + Number(stock.totalQuantity ?? 0);
+      }, 0) ?? 0
+    );
+  };
+
+  const getAvailableStockQuantity = (item: PurchaseOrderItemResponse) => {
+    if (item.variant) {
+      return sumTotalQuantity(item?.variant.variantStocks);
+    }
+
+    return sumTotalQuantity(item.product?.productStocks);
+  };
+
 
   useEffect(() => {
     if (!purchase?.items?.length) return;
 
     form.setFieldsValue({
-      reason: "Supplier agreed to take these back",
-      items: purchase.items.map((item) => ({
-        checked: false,
-        quantity: Number(item.quantityReceived),
-        reason: "Damaged item",
-      })),
+      items: purchase.items.map((item) => {
+        const availableStockQty = getAvailableStockQuantity(item);
+
+        return {
+          checked: false,
+          quantity: availableStockQty,
+        };
+      }),
     });
   }, [purchase, form]);
+
+  // available 
 
   const handleSubmit = async (values: ReturnFormValues) => {
     if (!purchase?.items?.length) {
@@ -95,18 +122,18 @@ const PurchaseOrderReturn = () => {
     };
 
     try {
-          const res = await purchaseOrderReturnRequest.mutateAsync({
-            purchaseId,
-            payload
-          });
-          router.push("/admin/dashboard/suppliers/purchase-order");
-          message.success("Purchase Order returned successfully");
-          console.log('res', res)
-        } catch (error) {
-          message.error(getApiErrorMessage(error));
-        } finally {
-          setIsSubmitting(false);
-        }
+      const res = await purchaseOrderReturnRequest.mutateAsync({
+        purchaseId,
+        payload
+      });
+      router.push("/admin/dashboard/suppliers/purchase-order");
+      message.success("Purchase Order returned successfully");
+      console.log('res', res)
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading || isFetching) {
@@ -123,9 +150,11 @@ const PurchaseOrderReturn = () => {
 
   return (
     <div className="space-y-4">
-      <Typography.Title level={4} className="!mb-0">
-        Purchase Return Request
-      </Typography.Title>
+      <PageHeader
+        title="Purchase Return Request"
+        subtitle="Create and manage return requests for purchased items."
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
@@ -190,7 +219,7 @@ const PurchaseOrderReturn = () => {
                           >
                             <InputNumber
                               min={1}
-                              max={maxQuantity}
+                              // max={maxQuantity}
                               className="w-full"
                               disabled={!checked}
                             />

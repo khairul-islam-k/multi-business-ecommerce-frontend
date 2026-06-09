@@ -89,16 +89,7 @@ export const items: MenuProps["items"] = [
         key: "branding",
         icon: <AppstoreOutlined />,
         label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
-      },
-      {
-        key: "usage-limit",
-        icon: <FileTextOutlined />,
-        label: (
-          <Link href="/admin/dashboard/business/usage-limit">
-            Usage & Limit
-          </Link>
-        ),
-      },
+      }
     ],
   },
 
@@ -247,6 +238,63 @@ export const items: MenuProps["items"] = [
           </Link>
         ),
       },
+    ],
+  },
+
+  // suppliers-procurement
+  {
+    key: "suppliers-procurement",
+    icon: <ShopOutlined />,
+    label: "Suppliers",
+    children: [
+      {
+        key: "supplier",
+        icon: <ShopOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/supplier">
+            Supplier
+          </Link>
+        ),
+      },
+      {
+        key: "supplier-products",
+        icon: <AppstoreAddOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/supplier-products">
+            Supplier Products
+          </Link>
+        ),
+      },
+      {
+        key: "purchase-order",
+        icon: <FileDoneOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/purchase-order">
+            Purchase Orders
+          </Link>
+        ),
+      },
+      {
+        key: "purchase-returns",
+        icon: <RollbackOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/returns">
+            Returns
+          </Link>
+        ),
+      },
+      // {
+      //   key: "supplier-payment",
+      //   icon: <DollarOutlined />,
+      //   label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
+      // },
+      // {
+      //   key: "supplier-performance",
+      //   icon: <BarChartOutlined />,
+      //   label: (
+      //     <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
+      //   ),
+      // },
     ],
   },
 
@@ -571,63 +619,6 @@ export const items: MenuProps["items"] = [
           </Link>
         ),
       },
-    ],
-  },
-
-  // suppliers-procurement
-  {
-    key: "suppliers-procurement",
-    icon: <ShopOutlined />,
-    label: "Suppliers",
-    children: [
-      {
-        key: "supplier",
-        icon: <ShopOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/supplier">
-            Supplier
-          </Link>
-        ),
-      },
-      {
-        key: "supplier-products",
-        icon: <AppstoreAddOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/supplier-products">
-            Supplier Products
-          </Link>
-        ),
-      },
-      {
-        key: "purchase-order",
-        icon: <FileDoneOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/purchase-order">
-            Purchase Orders
-          </Link>
-        ),
-      },
-      {
-        key: "purchase-returns",
-        icon: <RollbackOutlined />,
-        label: (
-          <Link href="/admin/dashboard/suppliers/returns">
-            Returns
-          </Link>
-        ),
-      },
-      // {
-      //   key: "supplier-payment",
-      //   icon: <DollarOutlined />,
-      //   label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
-      // },
-      // {
-      //   key: "supplier-performance",
-      //   icon: <BarChartOutlined />,
-      //   label: (
-      //     <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
-      //   ),
-      // },
     ],
   },
 

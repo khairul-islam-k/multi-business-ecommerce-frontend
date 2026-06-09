@@ -265,8 +265,25 @@ export type UpdateTenantStatusPayload = {
   status: SystemUserStatus;
 };
 
-export type PermissionAction = string;
-export type RbacFeature = string;
+export type PermissionAction =
+|"CREATE"
+|"READ"
+|"UPDATE"
+|"DELETE";
+export type RbacFeature =
+  "MEDIA_MANAGEMENT"
+  | "PACKAGE_MANAGEMENT"
+  | "PRODUCT_MANAGEMENT"
+  | "SUPPLIER_MANAGEMENT"
+  | "INVENTORY_MANAGEMENT"
+  | "ORDER_MANAGEMENT"
+  | "POS_MANAGEMENT"
+  | "PAYMENT_MANAGEMENT"
+  | "FINANCE_MANAGEMENT"
+  | "COURIER_MANAGEMENT"
+  | "BUSINESS_MANAGEMENT"
+  | "EMPLOYEE_MANAGEMENT"
+  | "ROLE_PERMISSION_MANAGEMENT";
 
 export type PermissionItem = {
   feature: RbacFeature;
@@ -411,17 +428,11 @@ export type PackageStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED";
 export type PackageResetCycle = "LIFETIME" | "DAILY" | "MONTHLY" | "YEARLY";
 
 export type PackageLimitKey =
-  |"MAX_TAGS" 
-  |"MAX_UNITS" 
-  |"MAX_ROLES" 
-  |"MAX_MEDIAS" 
-  |"MAX_BRANDS" 
-  |"MAX_PRODUCTS" 
-  |"MAX_VARIANTS" 
-  |"MAX_EMPLOYEES" 
-  |"MAX_ATTRIBUTES" 
-  |"MAX_BUSINESSES" 
-  |"MAX_CATEGORIES" ;
+  | "MAX_MEDIAS"
+  | "MAX_PRODUCTS"
+  | "MAX_EMPLOYEES"
+  | "MAX_BUSINESSES"
+
 
 export type PackageSubscriptionStatus =
   | "TRIALING"

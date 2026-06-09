@@ -1,5 +1,18 @@
 export type EntityStatus = "ACTIVE" | "INACTIVE";
 
+export type StockItem = {
+  id: string;
+  businessId: string;
+  productId: string;
+  variantId: string | null;
+  stockItemKey: string;
+  totalQuantity: string;
+  quantityReserved: string;
+  lowStockAlertQty: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Product = {
   id: string;
   businessId: string;
@@ -19,6 +32,7 @@ export type Product = {
   deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  productStocks: StockItem[];
 };
 
 export type ProductVariant = {

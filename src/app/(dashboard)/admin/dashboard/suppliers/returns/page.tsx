@@ -10,10 +10,6 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseReturnResponse, PurchaseReturnStatus } from "@/types/suppliers/return";
-// import {
-//   PurchaseReturnResponse,
-//   PurchaseReturnStatus,
-// } from "@/types/suppliers/purchase-return";
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -48,6 +44,8 @@ const ReturnPage = () => {
         isLoading,
         isFetching,
     } = usePurchaseOrderReturnQuery(businessId);
+
+    console.log('return', returns);
 
     const { updateReturnComplete, updateReturnCancel } = usePurchaseOrderReturnMutation(businessId);
 
@@ -213,22 +211,29 @@ const ReturnPage = () => {
                 <DataTable
                     data={paginatedReturns}
                     toolbarEnd={
-                        <Select
-                            placeholder="Filter by status"
-                            allowClear
-                            style={{ width: 180 }}
-                            value={statusFilter}
-                            onChange={(value) => {
-                                setCurrentPage(1);
-                                setStatusFilter(value);
-                            }}
-                            options={[
-                                { label: "Draft", value: "DRAFT" },
-                                { label: "Pending", value: "PENDING" },
-                                { label: "Completed", value: "COMPLETED" },
-                                { label: "Cancelled", value: "CANCELLED" },
-                            ]}
-                        />
+                        <div>
+                            <Select
+                                placeholder="Filter by status"
+                                allowClear
+                                style={{ width: 180, marginRight: '8px'}}
+                                value={statusFilter}
+                                onChange={(value) => {
+                                    setCurrentPage(1);
+                                    setStatusFilter(value);
+                                }}
+                                options={[
+                                    { label: "Draft", value: "DRAFT" },
+                                    { label: "Pending", value: "PENDING" },
+                                    { label: "Completed", value: "COMPLETED" },
+                                    { label: "Cancelled", value: "CANCELLED" },
+                                ]}
+                            />
+                            <Button
+                                type="primary"
+                                danger onClick={() => router.push(`/admin/dashboard/suppliers/returns/create-return`)}>
+                                Return Request
+                            </Button>
+                        </div>
                     }
                     columns={columns}
                     onSearch={(value) => {

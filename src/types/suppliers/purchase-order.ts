@@ -2,7 +2,7 @@ import { ApiId } from "@/lib/api";
 import { SupplierResponse } from "./supplier";
 import { TaxResponse } from "../finance/tax";
 import { WarehouseResponse } from "../product/warehouse";
-import { Product } from "../stock/stock";
+import { Product, StockItem } from "../stock/stock";
 
 export type PurchaseOrderStatus =
   | "DRAFT"
@@ -77,6 +77,7 @@ export type ProductVariant = {
   createdBy: string;
   updatedBy: string;
   deletedAt: string | null;
+  variantStocks: StockItem[];
 };
 
 export type PurchaseOrderItemResponse = {

@@ -9,9 +9,11 @@ import type {
   ApiPaginatedResponse,
   ApiResponse,
   Permission,
+  PermissionAction,
   PermissionItem,
   PermissionPayload,
   PermissionQuery,
+  RbacFeature,
   Role,
 } from "@/lib/api/types";
 
@@ -24,10 +26,10 @@ const rolePath = (businessId: ApiId, roleId: ApiId) =>
 type AvailablePermissionsResponse =
   | PermissionItem[]
   | {
-      actions?: string[];
+      actions?: PermissionAction[];
       features?: Array<{
-        feature: string;
-        actions?: string[];
+        feature: RbacFeature;
+        actions?: PermissionAction[];
       }>;
     };
 

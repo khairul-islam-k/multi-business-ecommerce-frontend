@@ -18,6 +18,7 @@ import {
 import api, { getApiErrorMessage } from "@/lib/axios";
 import ImageUpload from "./image-upload";
 import { useAuthStore } from "@/stores/auth.store";
+import { countryOptions } from "@/lib/business/options";
 
 type Gender = "MALE" | "FEMALE" | "OTHER";
 
@@ -240,7 +241,10 @@ export default function EditProfile() {
 
           <Col xs={24} md={12}>
             <Form.Item name={["profile", "country"]} label="Country">
-              <Input placeholder="Bangladesh" />
+              <Select
+                placeholder="Select gender"
+                options={countryOptions}
+              />
             </Form.Item>
           </Col>
 

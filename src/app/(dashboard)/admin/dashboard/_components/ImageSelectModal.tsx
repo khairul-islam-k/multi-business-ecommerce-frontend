@@ -20,10 +20,8 @@ import {
 } from "@ant-design/icons";
 import { useAuthStore } from "@/stores/auth.store";
 import { getApiErrorMessage } from "@/lib/axios";
-import {
-  useMediaAssets,
-  useMediaMutations,
-} from "@/lib/api/hooks/media";
+import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
+import Image from "next/image";
 
 const { Text } = Typography;
 
@@ -119,6 +117,13 @@ const ImageSelectModal = ({
       width={900}
       centered
       maskClosable={!isUploading}
+      styles={{
+        body: {
+          maxHeight: "70vh",
+          overflowY: "auto",
+          overflowX: "hidden"
+        },
+      }}
       footer={[
         <Button key="cancel" onClick={onClose} disabled={isUploading}>
           Cancel
@@ -135,7 +140,6 @@ const ImageSelectModal = ({
       ]}
     >
       <Row gutter={[16, 16]}>
-        {/* Upload Image Card */}
         <Col xs={24} sm={12} md={8}>
           <Upload
             accept="image/*"
@@ -143,7 +147,6 @@ const ImageSelectModal = ({
             disabled={isUploading}
             beforeUpload={(file) => {
               void handleUploadImage(file);
-
               return false;
             }}
           >
@@ -213,10 +216,13 @@ const ImageSelectModal = ({
             return (
               <Col xs={24} sm={12} md={8} key={image.id}>
                 <Card
-                  hoverable
+                  hoverable={!isUploading}
                   onClick={() => {
                     if (isUploading) return;
-                    setCurrentUrl(image.fileUrl);
+
+                    setCurrentUrl((prev) =>
+                      prev === image.fileUrl ? undefined : image.fileUrl
+                    );
                   }}
                   style={{
                     border: isSelected
@@ -235,7 +241,7 @@ const ImageSelectModal = ({
                         background: "#f5f5f5",
                       }}
                     >
-                      <img
+                      <Image
                         src={previewUrl}
                         alt={image.altText || image.fileName || "Media image"}
                         style={{
@@ -244,6 +250,9 @@ const ImageSelectModal = ({
                           objectFit: "cover",
                           display: "block",
                         }}
+                        width={200}
+                        height={200}
+                        unoptimized
                       />
 
                       {isSelected ? (

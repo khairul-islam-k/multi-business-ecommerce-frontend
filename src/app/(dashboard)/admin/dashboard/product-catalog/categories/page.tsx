@@ -42,6 +42,8 @@ const Categories = () => {
         sortOrder: "desc",
     });
 
+    console.log('category', category);
+
     const { removeCategories } = useProductCategoriesMutation(businessId);
 
     // pagination
@@ -93,9 +95,9 @@ const Categories = () => {
             ),
         },
         {
-            key: "_count",
-            label: "Children",
-            render: (row) => row._count?.children ?? 0,
+            key: "parent",
+            label: "Parent",
+            render: (row) => row.parent?.name,
         },
         {
             key: "createdAt",

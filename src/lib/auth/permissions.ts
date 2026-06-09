@@ -1,18 +1,8 @@
-import type { SystemUserType } from "@/lib/api/types";
+import type { PermissionAction, RbacFeature, SystemUserType } from "@/lib/api/types";
 
 export const ADMIN_DASHBOARD_PATH = "/super-admin/dashboard";
 export const TENANT_DASHBOARD_PATH = "/admin/dashboard";
 export const SIGN_IN_PATH = "/sign-in";
-
-export type RbacFeature =
-  | "BUSINESS_MANAGEMENT"
-  | "EMPLOYEE_MANAGEMENT"
-  | "MEDIA_MANAGEMENT"
-  | "PACKAGE_MANAGEMENT"
-  | "ROLE_PERMISSION_MANAGEMENT"
-  | "PRODUCT_CATALOG_MANAGEMENT";
-
-export type PermissionAction = "CREATE" | "READ" | "UPDATE" | "DELETE";
 
 export type PermissionRequirement = {
   feature: RbacFeature;
@@ -42,10 +32,10 @@ export const PERMISSIONS = {
   roleRead: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "READ" },
   roleUpdate: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "UPDATE" },
   roleDelete: { feature: "ROLE_PERMISSION_MANAGEMENT", action: "DELETE" },
-  productCatalogCreate: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "CREATE" },
-  productCatalogRead: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "READ" },
-  productCatalogUpdate: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "UPDATE" },
-  productCatalogDelete: { feature: "PRODUCT_CATALOG_MANAGEMENT", action: "DELETE" },
+  productCatalogCreate: { feature: "PRODUCT_MANAGEMENT", action: "CREATE" },
+  productCatalogRead: { feature: "PRODUCT_MANAGEMENT", action: "READ" },
+  productCatalogUpdate: { feature: "PRODUCT_MANAGEMENT", action: "UPDATE" },
+  productCatalogDelete: { feature: "PRODUCT_MANAGEMENT", action: "DELETE" },
 } satisfies Record<string, PermissionRequirement>;
 
 export function getDashboardPath(userType?: SystemUserType | null) {

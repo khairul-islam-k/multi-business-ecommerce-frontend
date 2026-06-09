@@ -65,9 +65,12 @@ export default function MediaLibraryPage() {
   const handleUpload = async (values: { altText?: string; tags?: string }) => {
     if (!businessId) return;
 
+
     const files = fileList
       .map((file) => file.originFileObj)
       .filter(Boolean) as File[];
+
+      console.log('image', files);
 
     if (!files.length) {
       message.error("Choose at least one image to upload.");

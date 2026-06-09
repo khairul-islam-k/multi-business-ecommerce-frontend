@@ -32,6 +32,7 @@ import {
   ResponseVariant,
   VariantPayload,
 } from "@/types/product/variant";
+import MultiImageSelectModal from "../../../_components/multi-image-select-modal";
 
 type SelectOption = {
   label: string;
@@ -699,6 +700,12 @@ const ProductForm = ({
     onSubmit(payload, variants);
   };
 
+  // multi Image
+  const [multiOpen, setMultiOpen] = useState<boolean>(true);
+  const handleMultiImage = (data: string[]) => {
+    console.log('img', data);
+  }
+ 
   const selectedImageUrl =
     activeImageIndex !== null
       ? images?.[activeImageIndex]?.imageUrl
@@ -1030,6 +1037,12 @@ const ProductForm = ({
         }}
         onSelect={handleSelectImage}
       />
+
+      {/* <MultiImageSelectModal 
+      open={multiOpen}
+      onClose={() => setMultiOpen(false)}
+      onSelect={handleMultiImage}
+      /> */}
     </>
   );
 };
