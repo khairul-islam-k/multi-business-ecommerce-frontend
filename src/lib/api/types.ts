@@ -266,10 +266,11 @@ export type UpdateTenantStatusPayload = {
 };
 
 export type PermissionAction =
-|"CREATE"
-|"READ"
-|"UPDATE"
-|"DELETE";
+  | "CREATE"
+  | "READ"
+  | "UPDATE"
+  | "DELETE"
+  | string;
 export type RbacFeature =
   "MEDIA_MANAGEMENT"
   | "PACKAGE_MANAGEMENT"
@@ -283,7 +284,8 @@ export type RbacFeature =
   | "COURIER_MANAGEMENT"
   | "BUSINESS_MANAGEMENT"
   | "EMPLOYEE_MANAGEMENT"
-  | "ROLE_PERMISSION_MANAGEMENT";
+  | "ROLE_PERMISSION_MANAGEMENT"
+  | string;
 
 export type PermissionItem = {
   feature: RbacFeature;

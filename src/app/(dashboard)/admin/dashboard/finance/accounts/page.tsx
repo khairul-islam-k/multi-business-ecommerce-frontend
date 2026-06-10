@@ -1,170 +1,290 @@
 "use client";
-
-import Link from "next/link";
-import { useMemo } from "react";
-import { PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { Column, DataTable } from "@/components/shared/data-table";
 import {
-  Card,
-  Row,
-  Col,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import {
   Button,
-  Table,
-  Typography,
-  Badge,
-  Input,
+  Card,
+  Col,
+  Popconfirm,
+  Row,
   Select,
+  Tag,
+  Tooltip,
+  Typography,
 } from "antd";
-
-import { mockAccounts } from "./data";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  useFinanceAccountMutation,
+  useFinanceAccountQuery,
+} from "@/lib/api/hooks/finance-account";
+import { getApiErrorMessage } from "@/lib/axios";
+import { AccountStatus, FinanceAccountResponse } from "@/types/finance/account";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text } = Typography;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const statusColors: Record<string, any> = {
-  Active: "success",
-  Inactive: "default",
+const formatMoney = (value?: string | number | null, currency = "BDT") => {
+  const amount = Number(value ?? 0);
+  return `${currency} ${amount.toLocaleString()}`;
 };
 
-export default function AccountsList() {
-  const totalBalance = useMemo(
-    () => mockAccounts.reduce((s, a) => s + a.current, 0),
-    [],
-  );
+const accountTypeLabel: Record<string, string> = {
+  CASH: "Cash",
+  BANK: "Bank",
+  MOBILE_BANKING: "Mobile Banking",
+  PAYMENT_GATEWAY: "Payment Gateway",
+  OTHER: "Other",
+};
 
-  const columns = [
+const AccountsList = () => {
+  const router = useRouter();
+  const swal = useSwal();
+
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<AccountStatus | undefined>();
+
+  const limit = 5;
+
+  const {
+    data: accounts,
+    isLoading,
+    isFetching,
+  } = useFinanceAccountQuery(businessId, {
+    page: currentPage,
+    limit,
+    search,
+    status: statusFilter,
+  });
+
+  const { removeAccount } = useFinanceAccountMutation(businessId);
+
+  const total = accounts?.meta?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  const accountItems = accounts?.items ?? [];
+
+  const totalBalance = accountItems.reduce((total, account) => {
+    return total + Number(account.currentBalance ?? 0);
+  }, 0);
+
+  const activeAccounts = accountItems.filter(
+    (account) => account.status === "ACTIVE"
+  ).length;
+
+  const inactiveAccounts = accountItems.filter(
+    (account) => account.status === "INACTIVE"
+  ).length;
+
+  const handleDelete = async (id: string) => {
+    try {
+      await removeAccount.mutateAsync(id);
+      swal.success("Account deleted successfully.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  };
+
+  const columns: Column<FinanceAccountResponse>[] = [
     {
-      title: "Account",
-      dataIndex: "name",
       key: "name",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render: (record: any) => (
-        <Link
-          href={`/admin/dashboard/accounts/${record.id}`}
-          className="font-medium"
-        >
-          {record.name}
-        </Link>
+      label: "Account Name",
+      type: "primary",
+      render: (row) => <strong>{row.name}</strong>,
+    },
+    {
+      key: "accountType",
+      label: "Account Type",
+      render: (row) => accountTypeLabel[row.accountType] ?? row.accountType,
+    },
+    {
+      key: "accountNumber",
+      label: "Account Number",
+      render: (row) => row.accountNumber,
+    },
+    {
+      key: "currentBalance",
+      label: "Current Balance",
+      render: (row) => (
+        <strong>{formatMoney(row.currentBalance, row.currencyCode)}</strong>
       ),
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-      render: (val: string) => <Text type="secondary">{val}</Text>,
+      key: "openingBalance",
+      label: "Opening Balance",
+      render: (row) => formatMoney(row.openingBalance, row.currencyCode),
     },
     {
-      title: "Account No",
-      dataIndex: "accountNo",
-      key: "accountNo",
-      render: (val: string | null) => (
-        <Text type="secondary">{val || "—"}</Text>
-      ),
-    },
-    {
-      title: "Opening",
-      dataIndex: "opening",
-      key: "opening",
-      align: "right" as const,
-      render: (val: number) => (
-        <span className="font-mono">${val.toLocaleString()}</span>
-      ),
-    },
-    {
-      title: "Current",
-      dataIndex: "current",
-      key: "current",
-      align: "right" as const,
-      render: (val: number) => (
-        <span className="font-mono font-medium">${val.toLocaleString()}</span>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
       key: "status",
-      render: (status: string) => (
-        <Badge status={statusColors[status] || "default"} text={status} />
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={row.status === "ACTIVE" ? "green" : "red"}>
+          {row.status}
+        </Tag>
       ),
     },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Tooltip title="View account">
+            <Button
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() =>
+                router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`)
+              }
+            />
+          </Tooltip>
+
+          <Tooltip title="Update account">
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() =>
+                router.push(`/admin/dashboard/finance/accounts/edit/${row.id}`)
+              }
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete account">
+            <Popconfirm
+              title="Delete account?"
+              description="Are you sure?"
+              okText="Yes"
+              cancelText="No"
+              onConfirm={() => handleDelete(row.id)}
+            >
+              <Button
+                danger
+                size="small"
+                icon={<DeleteOutlined />}
+              loading={removeAccount.isPending}
+              />
+            </Popconfirm>
+          </Tooltip>
+        </div>
+      ),
+    }
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Accounts" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Accounts"
+        subtitle="Manage cash, bank, mobile banking, payment gateway, and other finance accounts."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      {/* Stats */}
       <Row gutter={[16, 16]}>
         <Col xs={12} md={6}>
           <Card>
-            <Text type="secondary">Total Accounts</Text>
-            <Title level={4}>{mockAccounts.length}</Title>
+            <Text
+            type="secondary">Total Accounts</Text>
+            <Title
+            style={{
+              marginTop: 0
+            }}
+            level={4}>{total}</Title>
           </Card>
         </Col>
 
         <Col xs={12} md={6}>
           <Card>
-            <Text type="secondary">Total Balance</Text>
-            <Title level={4}>
-              $
-              {totalBalance.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-              })}
-            </Title>
+            <Text type="secondary">Account Balance</Text>
+            <Title
+            style={{
+              marginTop: 0
+            }}
+            level={4}>{formatMoney(totalBalance)}</Title>
           </Card>
         </Col>
 
         <Col xs={12} md={6}>
           <Card>
-            <Text type="secondary">Receivables</Text>
-            <Title level={4}>$45,200</Title>
+            <Text type="secondary">Active Account</Text>
+            <Title
+            style={{
+              marginTop: 0
+            }}
+            level={4}>{activeAccounts}</Title>
           </Card>
         </Col>
 
         <Col xs={12} md={6}>
           <Card>
-            <Text type="secondary">Payables</Text>
-            <Title level={4}>$18,750</Title>
+            <Text type="secondary">Inactive Account</Text>
+            <Title
+            style={{
+              marginTop: 0
+            }}
+            level={4}>{inactiveAccounts}</Title>
           </Card>
         </Col>
       </Row>
 
-      <div className="flex flex-col md:flex-row items-center justify-between">
-        <div className="flex flex-col md:flex-row items-center gap-3">
-          <Input
-            placeholder="Search orders..."
-            prefix={<SearchOutlined />}
-            style={{ minWidth: 200 }}
-          />
+      <Card>
+        <DataTable
+          data={accountItems}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                showSearch
+                allowClear
+                placeholder="Filter by status"
+                style={{ width: 180 }}
+                optionFilterProp="label"
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+                options={[
+                  { label: "Active", value: "ACTIVE" },
+                  { label: "Inactive", value: "INACTIVE" },
+                ]}
+              />
 
-          <Select style={{ width: 150 }} defaultValue="all">
-            <option value="all">All Types</option>
-            <option value="bank">Bank</option>
-            <option value="revenue">Revenue</option>
-            <option value="cash">Cash</option>
-          </Select>
-        </div>
-
-        <Col>
-          <Link href="/admin/dashboard/finance/accounts/create">
-            <Button type="primary" icon={<PlusOutlined />}>
-              Create Account
-            </Button>
-          </Link>
-        </Col>
-      </div>
-
-      {/* Table */}
-      <Card style={{ padding: 0 }}>
-        <Table
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/finance/accounts/create")
+                }
+              >
+                Create Account
+              </Button>
+            </div>
+          }
           columns={columns}
-          dataSource={mockAccounts}
-          rowKey="id"
-          pagination={{ pageSize: 10 }}
-          locale={{ emptyText: "No accounts found." }}
+          onSearch={(value) => {
+            setSearch(value);
+            setCurrentPage(1);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
         />
       </Card>
     </div>
   );
-}
+};
+
+export default AccountsList;

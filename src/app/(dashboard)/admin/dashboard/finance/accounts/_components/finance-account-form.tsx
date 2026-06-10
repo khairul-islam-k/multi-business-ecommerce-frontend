@@ -1,7 +1,8 @@
 "use client";
 
-import { Button, Card, Form, Input, InputNumber, Select } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from "antd";
 import type { FinanceAccountPayload } from "@/types/finance/account";
+import { currencyOptions } from "@/lib/business/options";
 
 type FinanceAccountFormProps = {
   initialValues?: Partial<FinanceAccountPayload>;
@@ -51,53 +52,87 @@ const FinanceAccountForm = ({
         }}
         onFinish={onSubmit}
       >
-        <Form.Item
-          label="Account Name"
-          name="name"
-          rules={[{ required: true, message: "Account name is required" }]}
-        >
-          <Input placeholder="Enter account name" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Account Name"
+              name="name"
+              rules={[{ required: true, message: "Account name is required" }]}
+            >
+              <Input placeholder="Enter account name" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Account Type"
-          name="accountType"
-          rules={[{ required: true, message: "Account type is required" }]}
-        >
-          <Select placeholder="Select account type" options={accountTypeOptions} />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Account Type"
+              name="accountType"
+              rules={[{ required: true, message: "Account type is required" }]}
+            >
+              <Select
+                placeholder="Select account type"
+                options={accountTypeOptions}
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Account Number"
-          name="accountNumber"
-          rules={[{ required: true, message: "Account number is required" }]}
-        >
-          <Input placeholder="Enter account number" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Account Number"
+              name="accountNumber"
+              rules={[
+                { required: true, message: "Account number is required" },
+              ]}
+            >
+              <Input placeholder="Enter account number" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Currency Code"
-          name="currencyCode"
-          rules={[{ required: true, message: "Currency code is required" }]}
-        >
-          <Input placeholder="BDT" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Currency Code"
+              name="currencyCode"
+              rules={[{ required: true, message: "Currency code is required" }]}
+            >
+              <Select
+                showSearch
+                placeholder="Select account type"
+                options={currencyOptions}
+                optionFilterProp="label"
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Opening Balance"
-          name="openingBalance"
-          rules={[{ required: true, message: "Opening balance is required" }]}
-        >
-          <InputNumber min={0} className="w-full" placeholder="0" />
-        </Form.Item>
+          {
+            !(submitText === "Update Account") &&
+            <Col xs={24} md={12}>
+              <Form.Item
+                label="Opening Balance"
+                name="openingBalance"
+                rules={[
+                  { required: true, message: "Opening balance is required" },
+                ]}
+              >
+                <InputNumber
+                  style={{
+                    width: '100%'
+                  }}
+                  min={0} className="w-full" placeholder="0" />
+              </Form.Item>
+            </Col>
+          }
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[{ required: true, message: "Status is required" }]}
-        >
-          <Select placeholder="Select status" options={statusOptions} />
-        </Form.Item>
+
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[{ required: true, message: "Status is required" }]}
+            >
+              <Select placeholder="Select status" options={statusOptions} />
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Button htmlType="submit" type="primary" loading={loading}>
           {submitText}

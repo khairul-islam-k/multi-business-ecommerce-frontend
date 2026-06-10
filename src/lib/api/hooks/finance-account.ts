@@ -1,34 +1,33 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId } from "../types";
-import { ProductPayload, ProductQuery } from "@/types/product/product";
-import { productApi } from "../product";
+import { ProductQuery } from "@/types/product/product";
 import { financeAccountApi } from "../finance-account";
 import { FinanceAccountPayload } from "@/types/finance/account";
 
-// export function useProductsQuery(businessId: ApiId, query?: ProductQuery) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.Product.list(businessId, query),
-//     queryFn: () => productApi.list(businessId, query),
-//     enabled: Boolean(businessId),
-//   });
-// }
+export function useFinanceAccountQuery(businessId: ApiId, query?: ProductQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.financeAccount.list(businessId, query),
+    queryFn: () => financeAccountApi.list(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
 
-// export function useProduct(businessId: ApiId, productId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.Product.detail(businessId, productId),
+export function useFinanceAccount(businessId: ApiId, accountId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.financeAccount.detail(businessId, accountId),
 
-//     queryFn: () => {
-//       if (!businessId || !productId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!businessId || !accountId) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productApi.get(businessId, productId);
-//     },
+      return financeAccountApi.get(businessId, accountId);
+    },
 
-//     enabled: Boolean(businessId && productId),
-//   });
-// }
+    enabled: Boolean(businessId && accountId),
+  });
+}
 
 export function useFinanceAccountMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
@@ -45,22 +44,22 @@ export function useFinanceAccountMutation(businessId: ApiId) {
       onSuccess: invalidate,
     }),
 
-    // updateProduct: useMutation({
-    //   mutationFn: ({
-    //     productId,
-    //     payload,
-    //   }: {
-    //     productId: ApiId;
-    //     payload: ProductPayload;
-    //   }) => productApi.update(businessId, productId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updateFinanceAccount: useMutation({
+      mutationFn: ({
+        accountId,
+        payload,
+      }: {
+        accountId: ApiId;
+        payload: FinanceAccountPayload;
+      }) => financeAccountApi.update(businessId, accountId, payload),
+      onSuccess: invalidate,
+    }),
 
-    // removeProduct: useMutation({
-    //   mutationFn: (productId: ApiId) =>
-    //     productApi.remove(businessId, productId),
-    //   onSuccess: invalidate,
-    // }),
+    removeAccount: useMutation({
+      mutationFn: (accountId: ApiId) =>
+        financeAccountApi.remove(businessId, accountId),
+      onSuccess: invalidate,
+    }),
 
   };
 }

@@ -6,12 +6,12 @@ import { useFinanceAccountMutation } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import type { FinanceAccountPayload } from "@/types/finance/account";
-import { App } from "antd";
 import { useRouter } from "next/navigation";
 import FinanceAccountForm from "../_components/finance-account-form";
+import { useSwal } from "@/hooks/use-swal";
 
 const CreateFinanceAccountPage = () => {
-  const { message } = App.useApp();
+  const swal = useSwal()
   const router = useRouter();
 
   const business = useAuthStore((s) => s.selectedBusiness);
@@ -20,13 +20,15 @@ const CreateFinanceAccountPage = () => {
   const { createFinanceAccount } = useFinanceAccountMutation(businessId);
 
   const handleSubmit = async (values: FinanceAccountPayload) => {
+    
     try {
-      await createFinanceAccount.mutateAsync(values);
+    const res = await createFinanceAccount.mutateAsync(values);
+    console.log('res', res);
 
-      message.success("Account created successfully.");
+      swal.success("Account created successfully.");
       router.push("/admin/dashboard/finance/accounts");
     } catch (error) {
-      message.error(getApiErrorMessage(error));
+      swal.error(getApiErrorMessage(error));
     }
   };
 

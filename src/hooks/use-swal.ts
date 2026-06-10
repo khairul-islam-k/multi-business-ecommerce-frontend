@@ -1,79 +1,58 @@
 "use client";
 
-import { theme } from "antd";
-import Swal, { type SweetAlertOptions } from "sweetalert2";
+import { App } from "antd";
+import type { ModalFuncProps } from "antd";
 
-type BaseOptions = SweetAlertOptions & {
+type ConfirmOptions = ModalFuncProps & {
   onConfirm?: () => void | Promise<void>;
 };
 
 export function useSwal() {
-  const { token } = theme.useToken();
+  const { message, modal } = App.useApp();
 
-  const fire = async (options: BaseOptions) => {
-    const { onConfirm, ...swalOptions } = options;
+  const confirm = (options: ConfirmOptions) => {
+    const { onConfirm, ...modalOptions } = options;
 
-    const result = await Swal.fire({
-      ...swalOptions,
-
-      buttonsStyling: false,
-
-      customClass: {
-        popup: "antd-swal-popup",
-        title: "antd-swal-title",
-        htmlContainer: "antd-swal-content",
-        confirmButton: "antd-btn antd-btn-primary",
-        cancelButton: "antd-btn",
-        actions: "antd-swal-actions",
+    modal.confirm({
+      title: "Are you sure?",
+      content: "This action cannot be undone.",
+      okText: "Confirm",
+      cancelText: "Cancel",
+      okButtonProps: {
+        danger: true,
       },
-
-      didOpen: (el) => {
-        const style = el.style;
-
-        style.setProperty("--swal-bg", token.colorBgElevated);
-        style.setProperty("--swal-text", token.colorText);
-        style.setProperty("--swal-border", token.colorBorder);
-        style.setProperty("--swal-radius", `${token.borderRadiusLG}px`);
-        style.setProperty("--swal-shadow", token.boxShadowSecondary);
+      async onOk() {
+        if (onConfirm) {
+          await onConfirm();
+        }
       },
+      ...modalOptions,
     });
-
-    if (result.isConfirmed && onConfirm) {
-      await onConfirm();
-    }
-
-    return result;
   };
 
-  const confirm = (options: BaseOptions) =>
-    fire({
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Cancel",
-      ...options,
-    });
+  const success = (text: string) => {
+    message.success(text);
+  };
 
-  const success = (title: string) =>
-    fire({
-      position: "top-end",
-      icon: "success",
-      title,
-      showConfirmButton: false,
-      timer: 1500,
-    });
+  const error = (text: string) => {
+    message.error(text);
+  };
 
-  const error = (text: string) =>
-    fire({
-      icon: "error",
-      text,
-      confirmButtonText: "OK",
-    });
+  const warning = (text: string) => {
+    message.warning(text);
+  };
+
+  const info = (text: string) => {
+    message.info(text);
+  };
 
   return {
-    fire,
     confirm,
     success,
     error,
+    warning,
+    info,
+    message,
+    modal,
   };
 }

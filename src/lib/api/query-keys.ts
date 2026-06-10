@@ -193,4 +193,20 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["financeAccount", businessId, "detail", CategoryId] as const,
   },
+  financePayable: {
+    all: (businessId: ApiId) => ["financePayable", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["financePayable", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["financePayable", businessId, "detail", CategoryId] as const,
+  },
+  financeReceivable: {
+    all: (businessId: ApiId) => ["financeReceivable", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["financeReceivable", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["financeReceivable", businessId, "detail", CategoryId] as const,
+  },
 };

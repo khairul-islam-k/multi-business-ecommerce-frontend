@@ -8,6 +8,7 @@ import {
   BarChartOutlined,
   BellOutlined,
   BulbOutlined,
+  CalculatorOutlined,
   CalendarOutlined,
   CarOutlined,
   CloudUploadOutlined,
@@ -16,6 +17,7 @@ import {
   CreditCardOutlined,
   DashboardOutlined,
   DeploymentUnitOutlined,
+  DollarCircleOutlined,
   DollarOutlined,
   EditOutlined,
   EnvironmentOutlined,
@@ -72,6 +74,11 @@ export const items: MenuProps["items"] = [
     key: "dashboard",
     icon: <DashboardOutlined />,
     label: <Link href="/admin/dashboard">Dashboard</Link>,
+  },
+  {
+    key: "pos",
+    icon: <ShoppingCartOutlined />,
+    label: <Link href="/admin/dashboard/pos">POS</Link>,
   },
 
   // Business
@@ -432,13 +439,23 @@ export const items: MenuProps["items"] = [
     children: [
       {
         key: "accounts",
-        icon: <WalletOutlined />, // Accounts
+        icon: <BankOutlined />,
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
       },
       {
         key: "tax",
-        icon: <WalletOutlined />, // Accounts
+        icon: <CalculatorOutlined />,
         label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
+      },
+      {
+        key: "payable",
+        icon: <CreditCardOutlined />,
+        label: <Link href="/admin/dashboard/finance/payables">Payable</Link>,
+      },
+      {
+        key: "receivable",
+        icon: <DollarCircleOutlined />,
+        label: <Link href="/admin/dashboard/finance/receivables">Receivables</Link>,
       },
       {
         key: "overview",

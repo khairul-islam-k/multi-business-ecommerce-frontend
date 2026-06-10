@@ -10,12 +10,13 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import type { FinanceAccountPayload } from "@/types/finance/account";
-import { App, Empty } from "antd";
+import { Empty } from "antd";
 import { useParams, useRouter } from "next/navigation";
-import FinanceAccountForm from "../_components/finance-account-form";
+import FinanceAccountForm from "../../_components/finance-account-form";
+import { useSwal } from "@/hooks/use-swal";
 
 const UpdateFinanceAccountPage = () => {
-  const { message } = App.useApp();
+  const swal = useSwal();
   const router = useRouter();
   const { accountId } = useParams<{ accountId: string }>();
 
@@ -31,15 +32,17 @@ const UpdateFinanceAccountPage = () => {
 
   const handleSubmit = async (values: FinanceAccountPayload) => {
     try {
-      await updateFinanceAccount.mutateAsync({
+      const res = await updateFinanceAccount.mutateAsync({
         accountId,
         payload: values,
       });
 
-      message.success("Account updated successfully.");
+      console.log('res', res);
+
+      swal.success("Account updated successfully.");
       router.push("/admin/dashboard/finance/accounts");
     } catch (error) {
-      message.error(getApiErrorMessage(error));
+      swal.error(getApiErrorMessage(error));
     }
   };
 
