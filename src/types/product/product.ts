@@ -175,8 +175,10 @@ export type ResponseProduct = {
   unitId: string;
 
   name: string;
+  sku?: string;
+  barcode?: string;
   price: string;
-  weight: string;
+  weight: string | null;
   slug: string;
   description: string | null;
   status: ProductStatus;
@@ -189,6 +191,11 @@ export type ResponseProduct = {
   category: ResponseCategory;
   brand: ResponseBrand;
   unit: ResponseUnit;
+  stockSummary?: {
+    totalQuantity: string | number;
+    quantityReserved: string | number;
+    availableQuantity: string | number;
+  };
 
   createdBy: string | null;
   updatedBy: string | null;

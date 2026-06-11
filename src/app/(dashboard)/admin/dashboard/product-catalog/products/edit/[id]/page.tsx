@@ -18,19 +18,16 @@ import {
 
 const UpdateProductPage = () => {
   const { id } = useParams<{ id: string }>();
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const { message } = App.useApp();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const { data: product } = useProduct(businessId, id);
   const { updateProduct } = useProductMutation(businessId);
-  const {
-    bulkCreateVariants,
-    bulkUpdateVariants,
-    removeVariant,
-  } = useVariantMutation(businessId);
+  const { bulkCreateVariants, bulkUpdateVariants } =
+    useVariantMutation(businessId);
 
   const handleUpdateProduct = async (
     values: ProductPayload,
@@ -56,15 +53,10 @@ const UpdateProductPage = () => {
         payload,
       });
 
-      const submittedVariantIds = variants
-        .map((variant) => variant.variantId)
-        .filter(Boolean);
-      const removedVariantIds =
-        product?.variants
-          ?.map((variant) => variant.id)
-          .filter((variantId) => !submittedVariantIds.includes(variantId)) ?? [];
       const existingVariants = variants.filter(
-        (variant): variant is BulkUpdateVariantItemPayload & { variantId: string } =>
+        (
+          variant,
+        ): variant is BulkUpdateVariantItemPayload & { variantId: string } =>
           Boolean(variant.variantId),
       );
       const newVariants: VariantPayload[] = variants
@@ -77,17 +69,6 @@ const UpdateProductPage = () => {
           status: variant.status ?? "ACTIVE",
           attributes: variant.attributes ?? [],
         }));
-
-      if (removedVariantIds.length) {
-        await Promise.all(
-          removedVariantIds.map((variantId) =>
-            removeVariant.mutateAsync({
-              productId: id,
-              variantId,
-            }),
-          ),
-        );
-      }
 
       if (existingVariants.length) {
         await bulkUpdateVariants.mutateAsync({
@@ -107,7 +88,7 @@ const UpdateProductPage = () => {
         });
       }
 
-      message.success('Product updated successfully');
+      message.success("Product updated successfully");
       router.push("/admin/dashboard/product-catalog/products");
     } catch (error) {
       message.error(getApiErrorMessage(error));
@@ -117,7 +98,7 @@ const UpdateProductPage = () => {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       <PageHeader
         title="Update Product"
         subtitle="Edit product information, images, category, brand, unit, tags, and product status."

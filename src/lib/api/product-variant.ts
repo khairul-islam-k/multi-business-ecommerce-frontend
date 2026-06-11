@@ -4,6 +4,8 @@ import api from "../axios";
 import {
     BulkUpdateVariantPayload,
     BulkVariantPayload,
+    ProductVariantOptionsPayload,
+    ProductVariantOptionsResponse,
     ResponseVariant,
     VariantPayload,
 } from "@/types/product/variant";
@@ -15,6 +17,19 @@ export const productVariantApi = {
         return api
             .get<ApiResponse<ResponseVariant[]>>(
                 `${basePath(businessId, productId)}?search=${search}`,
+            )
+            .then((res) => unwrapApiResponse(res.data));
+    },
+
+    options(
+        businessId: ApiId,
+        productId: ApiId,
+        payload: ProductVariantOptionsPayload,
+    ) {
+        return api
+            .post<ApiResponse<ProductVariantOptionsResponse>>(
+                `${basePath(businessId, productId)}/options`,
+                payload,
             )
             .then((res) => unwrapApiResponse(res.data));
     },
