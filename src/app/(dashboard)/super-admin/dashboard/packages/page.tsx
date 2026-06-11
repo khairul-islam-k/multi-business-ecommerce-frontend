@@ -5,7 +5,6 @@ import {
   DeleteOutlined,
   EditOutlined,
   PlusOutlined,
-  RetweetOutlined,
   StopOutlined,
 } from "@ant-design/icons";
 import { App, Button, Modal, Select, Space, Tabs, Tag } from "antd";
@@ -88,6 +87,7 @@ export default function PackagesPage() {
   );
 
   const plans = usePackagePlans(planQuery);
+
   const subscriptions = useTenantSubscriptions(subscriptionQuery);
   const tenantOptions = useTenants({ page: 1, limit: 100 });
   const planOptions = usePackagePlans({

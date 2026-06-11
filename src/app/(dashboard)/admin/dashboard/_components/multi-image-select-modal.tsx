@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   App,
   Button,
@@ -15,6 +15,7 @@ import {
 } from "antd";
 import {
   CheckCircleFilled,
+  DeleteOutlined,
   LoadingOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
@@ -22,6 +23,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
 import Image from "next/image";
+import { ProductImage } from "../product-catalog/products/_components/product-form";
 
 const { Text } = Typography;
 
@@ -34,9 +36,9 @@ type MediaAsset = {
 
 type ImageSelectModalProps = {
   open: boolean;
-  selectedUrl?: string[];
+  selectedUrl?: ProductImage[];
   onClose: () => void;
-  onSelect: (urls: string) => void;
+  onSelect: Dispatch<SetStateAction<ProductImage[]>>;
 };
 
 const imageUrlSet = (url?: string | null) => {
@@ -61,25 +63,20 @@ const MultiImageSelectModal = ({
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const [currentUrl, setCurrentUrl] = useState<string[] | undefined>(selectedUrl);
+  const [currentUrl, setCurrentUrl] = useState<ProductImage[]>([]);
 
   const { data, isLoading } = useMediaAssets(businessId);
   const { uploadMedia, uploadMediaBulk } = useMediaMutations(businessId);
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
+
   const isUploading = uploadMedia.isPending;
 
   const images: MediaAsset[] = data?.items ?? [];
 
-  useEffect(() => {
-    if (open) {
-      setCurrentUrl(selectedUrl);
-    }
-  }, [open, selectedUrl]);
-
   const handleUploadImage = async (file: File) => {
-    console.log('file', file);
+
     setImageFiles((prev) => {
       const alreadyExists = prev.some(
         (item) =>
@@ -97,17 +94,31 @@ const MultiImageSelectModal = ({
   };
 
   const handleImageBulkUpload = async () => {
-    console.log('image', imageFiles);
+    if (!imageFiles.length) {
+      message.error("Please select at least one image.");
+      return;
+    }
+
     try {
       const res = await uploadMediaBulk.mutateAsync({
-          files: imageFiles
-        });
-        message.success("Images upload successfully");
-        console.log('res', res);
+        files: imageFiles,
+      });
+
+      const uploadedImages: ProductImage[] = res.map((item, index) => ({
+        imageUrl: item.fileUrl,
+        altText: item.altText || item.fileName || "Product image",
+        isThumbnail: false,
+      }));
+
+      setCurrentUrl((prev) => [...prev, ...uploadedImages]);
+
+      setImageFiles([]);
+
+      message.success("Images uploaded successfully.");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
-  }
+  };
 
   const handleUseSelectedImage = () => {
     if (!currentUrl) {
@@ -115,18 +126,30 @@ const MultiImageSelectModal = ({
       return;
     }
 
-    // onSelect(currentUrl);
+    onSelect(currentUrl);
     onClose();
   };
+
+  useEffect(() => {
+    if (selectedUrl) {
+      setCurrentUrl(selectedUrl);
+    }
+  }, [selectedUrl])
 
   return (
     <Modal
       title={
-        <div className="flex items-center gap-2">
-          <h3>Select Images {imageFiles.length}</h3>
+        <div className="flex items-center justify-between gap-2 pt-8">
+          <h3 className="m-0">Select Images</h3>
+
           <Button
-          type="primary"
-          onClick={handleImageBulkUpload}>upload</Button>
+            type="primary"
+            onClick={handleImageBulkUpload}
+            disabled={!imageFiles.length || isUploading}
+            loading={isUploading}
+          >
+            Upload
+          </Button>
         </div>
       }
       open={open}
@@ -134,6 +157,13 @@ const MultiImageSelectModal = ({
       width={900}
       centered
       maskClosable={!isUploading}
+      styles={{
+        body: {
+          maxHeight: "70vh",
+          overflowY: "auto",
+          overflowX: "hidden",
+        },
+      }}
       footer={[
         <Button key="cancel" onClick={onClose} disabled={isUploading}>
           Cancel
@@ -142,70 +172,123 @@ const MultiImageSelectModal = ({
         <Button
           key="select"
           type="primary"
-          disabled={!currentUrl || isUploading}
+          disabled={currentUrl.length === 0 || isUploading}
           onClick={handleUseSelectedImage}
         >
           Use Selected Image
         </Button>,
       ]}
     >
-      {/* <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} md={8}>
-          <Upload
-            accept="image/*"
-            showUploadList={false}
-            disabled={isUploading}
-            beforeUpload={(file) => {
-              void handleUploadImage(file);
-              return false;
-            }}
-          >
-            <Card
-              hoverable={!isUploading}
-              style={{
-                height: 230,
-                border: "1px dashed #1677ff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: isUploading ? "not-allowed" : "pointer",
-                opacity: isUploading ? 0.75 : 1,
-              }}
-              bodyStyle={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+      <Row gutter={[16, 16]}>
+        {/* Upload image full width */}
+        <Col span={24}>
+          <div className="w-full [&_.ant-upload]:w-full [&_.ant-upload-select]:w-full">
+            <Upload
+              accept="image/*"
+              multiple
+              showUploadList={false}
+              disabled={isUploading}
+              beforeUpload={(file) => {
+                setImageFiles((prev) => {
+                  const exists = prev.some((item) => item.name === file.name);
+
+                  if (exists) return prev;
+
+                  return [...prev, file as File];
+                });
+
+                // Do not upload here if you already use upload button
+                // void handleUploadImage(file);
+
+                return false;
               }}
             >
-              {isUploading ? (
-                <div className="flex flex-col items-center justify-center gap-3 text-blue-600">
-                  <Spin
-                    indicator={
-                      <LoadingOutlined style={{ fontSize: 34 }} spin />
-                    }
-                  />
+              <Card
+                hoverable={!isUploading}
+                style={{
+                  height: 150,
+                  width: "100%",
+                  border: "1px dashed #1677ff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: isUploading ? "not-allowed" : "pointer",
+                  opacity: isUploading ? 0.75 : 1,
+                }}
+                bodyStyle={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {isUploading ? (
+                  <div className="flex flex-col items-center justify-center gap-3 text-blue-600">
+                    <Spin
+                      indicator={<LoadingOutlined style={{ fontSize: 34 }} spin />}
+                    />
 
-                  <Text strong>Uploading image...</Text>
+                    <Text strong>Uploading image...</Text>
 
-                  <Text type="secondary" className="text-xs">
-                    Please wait
-                  </Text>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-2 text-blue-600">
-                  <PlusOutlined style={{ fontSize: 34 }} />
+                    <Text type="secondary" className="text-xs">
+                      Please wait
+                    </Text>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center gap-2 text-blue-600">
+                    <PlusOutlined style={{ fontSize: 34 }} />
 
-                  <Text strong>Upload Image</Text>
+                    <Text strong>Upload Image</Text>
 
-                  <Text type="secondary" className="text-xs">
-                    Click to add new image
-                  </Text>
-                </div>
-              )}
-            </Card>
-          </Upload>
+                    <Text type="secondary" className="text-xs">
+                      Click to add new image
+                    </Text>
+                  </div>
+                )}
+              </Card>
+            </Upload>
+          </div>
+
+          {imageFiles.length > 0 && (
+            <div style={{ marginTop: 12 }}>
+              <Text strong>Selected Images:  {imageFiles.length}</Text>
+
+              <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
+                {imageFiles.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className="flex items-center justify-between rounded-md border border-gray-200 px-3 py-2"
+                  >
+                    <Text
+                      type="secondary"
+                      style={{
+                        maxWidth: 210,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {index + 1}. {file.name}
+                    </Text>
+
+                    <DeleteOutlined
+                      onClick={() => {
+                        setImageFiles((prev) =>
+                          prev.filter((_, fileIndex) => fileIndex !== index),
+                        );
+                      }}
+                      style={{
+                        color: "red",
+                        cursor: "pointer",
+                        fontSize: 16,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </Col>
 
         {isLoading ? (
@@ -220,7 +303,10 @@ const MultiImageSelectModal = ({
           </Col>
         ) : (
           images.map((image) => {
-            const isSelected = currentUrl === image.fileUrl;
+            const isSelected = currentUrl.some(
+              (item) => item.imageUrl === image.fileUrl,
+            );
+
             const previewUrl = imageUrlSet(image.fileUrl);
 
             return (
@@ -230,9 +316,27 @@ const MultiImageSelectModal = ({
                   onClick={() => {
                     if (isUploading) return;
 
-                    setCurrentUrl((prev) =>
-                      prev === image.fileUrl ? undefined : image.fileUrl
-                    );
+                    setCurrentUrl((prev) => {
+                      const alreadySelected = prev.some(
+                        (item) => item.imageUrl === image.fileUrl,
+                      );
+
+                      if (alreadySelected) {
+                        return prev.filter(
+                          (item) => item.imageUrl !== image.fileUrl,
+                        );
+                      }
+
+                      return [
+                        ...prev,
+                        {
+                          imageUrl: image.fileUrl,
+                          altText:
+                            image.altText || image.fileName || "Product image",
+                          isThumbnail: false,
+                        },
+                      ];
+                    });
                   }}
                   style={{
                     border: isSelected
@@ -265,7 +369,7 @@ const MultiImageSelectModal = ({
                         unoptimized
                       />
 
-                      {isSelected ? (
+                      {isSelected && (
                         <CheckCircleFilled
                           style={{
                             position: "absolute",
@@ -277,7 +381,7 @@ const MultiImageSelectModal = ({
                             borderRadius: "50%",
                           }}
                         />
-                      ) : null}
+                      )}
                     </div>
                   }
                 >
@@ -297,7 +401,7 @@ const MultiImageSelectModal = ({
             );
           })
         )}
-      </Row> */}
+      </Row>
     </Modal>
   );
 };

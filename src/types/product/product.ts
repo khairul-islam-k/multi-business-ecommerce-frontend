@@ -8,41 +8,41 @@ export type MediaFileType = "IMAGE" | "VIDEO" | "PDF" | "DOCUMENT";
 export type MediaStatus = "ACTIVE" | "INACTIVE";
 
 export type MediaTag = {
-    id: string;
-    name: string;
+  id: string;
+  name: string;
 };
 
 export type MediaFile = {
-    id: string;
-    businessId: string;
-    uploadedBy: string;
-    fileName: string;
-    fileUrl: string;
-    fileType: MediaFileType;
-    mimeType: string;
-    fileSize: number;
-    altText: string | null;
-    status: MediaStatus;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string | null;
-    tags: MediaTag[];
+  id: string;
+  businessId: string;
+  uploadedBy: string;
+  fileName: string;
+  fileUrl: string;
+  fileType: MediaFileType;
+  mimeType: string;
+  fileSize: number;
+  altText: string | null;
+  status: MediaStatus;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  tags: MediaTag[];
 };
 
 export type CategoryStatus = "ACTIVE" | "INACTIVE";
 
 export type ProductCategoryPayload = {
-    name: string;
-    description: string;
-    imageUrl: string;
-    parentId?: string | null;
-    status: CategoryStatus;
-    sortOrder: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  parentId?: string | null;
+  status: CategoryStatus;
+  sortOrder: number;
 };
 
 export type ProductCategoryCount = {
-    children: number;
-    products: number;
+  children: number;
+  products: number;
 };
 
 
@@ -108,7 +108,8 @@ export type ProductStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
 export type ProductImagePayload = {
   imageUrl: string;
-  altText: string;
+  altText?: string;
+  isThumbnail?: boolean;
 };
 
 export type ProductPayload = {
@@ -154,7 +155,7 @@ type ProductImage = {
   variantId: string | null;
 
   imageUrl: string;
-  altText: string ;
+  altText: string;
   isThumbnail: boolean;
   sortOrder: number;
 

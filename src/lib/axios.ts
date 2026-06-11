@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { redirect } from "next/navigation";
 
 const baseURL = `${process.env.NEXT_PUBLIC_API_BASE_URL!}/api/v1`;
 
@@ -51,6 +52,10 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
+
+    if (error.response?.status === 500) {
+      redirect("/internal-error");
+    }
 
     if (!originalRequest || error.response?.status !== 401) {
       return Promise.reject(error);

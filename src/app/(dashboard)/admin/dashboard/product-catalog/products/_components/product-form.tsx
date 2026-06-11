@@ -3,11 +3,13 @@
 import {
   Button,
   Card,
+  Col,
   Divider,
   Empty,
   Form,
   Input,
   InputNumber,
+  Row,
   Select,
   Space,
   Switch,
@@ -37,6 +39,12 @@ import MultiImageSelectModal from "../../../_components/multi-image-select-modal
 type SelectOption = {
   label: string;
   value: string;
+};
+
+export type ProductImage = {
+  imageUrl: string;
+  altText?: string;
+  isThumbnail?: boolean;
 };
 
 type ProductFormVariant = VariantPayload & {
@@ -93,9 +101,9 @@ type VariantOptionRowProps = {
 const getVariantKey = (
   attributes:
     | {
-        attributeId: string;
-        attributeValueId: string;
-      }[]
+      attributeId: string;
+      attributeValueId: string;
+    }[]
     | undefined,
 ) => {
   const valueIds = attributes
@@ -143,11 +151,11 @@ const getInitialVariantOptions = (
   return options.length
     ? options
     : [
-        {
-          attributeId: undefined,
-          attributeValueIds: [],
-        },
-      ];
+      {
+        attributeId: undefined,
+        attributeValueIds: [],
+      },
+    ];
 };
 
 const getInitialVariants = (
@@ -565,13 +573,17 @@ const ProductForm = ({
   const [form] = Form.useForm<ProductFormValues>();
 
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const [multiOpen, setMultiOpen] = useState(false);
 
-  const images = Form.useWatch("images", form);
+  const [thumbnailImage, setThumbnailImage] = useState<ProductImage | null>(
+    null,
+  );
+  const [multipleImage, setMultipleImage] = useState<ProductImage[]>([]);
+
   const enableVariants = Form.useWatch("enableVariants", form);
 
   const business = useAuthStore((s) => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : "";
+  const businessId = business?.id ? business.id : "";
 
   const arrayTagId = useMemo(() => {
     return initialValues?.tags?.map((tag) => tag.tagId);
@@ -622,15 +634,38 @@ const ProductForm = ({
 
     const initialVariants = getProductVariants(initialValues.variants);
 
+    const initialImages = initialValues.images ?? [];
+
+    const thumbnail =
+      initialImages.find((image) => image.isThumbnail) ?? initialImages[0];
+
+    const mediaImages = initialImages.filter((image) => {
+      if (!image.imageUrl) return false;
+
+      if (thumbnail?.imageUrl === image.imageUrl) {
+        return false;
+      }
+
+      return !image.isThumbnail;
+    });
+
+    if (thumbnail?.imageUrl) {
+      setThumbnailImage({
+        imageUrl: thumbnail.imageUrl,
+        altText: thumbnail.altText ?? "",
+        isThumbnail: true,
+      });
+    }
+
+    setMultipleImage(
+      mediaImages.map((image) => ({
+        imageUrl: image.imageUrl,
+        altText: image.altText ?? "",
+        isThumbnail: false,
+      })),
+    );
+
     form.setFieldsValue({
-      images: initialValues.images?.length
-        ? initialValues.images
-        : [
-            {
-              imageUrl: "",
-              altText: "",
-            },
-          ],
       name: initialValues.name ?? "",
       price: Number(initialValues.price) ?? 0,
       weight: Number(initialValues.weight) ?? 0,
@@ -646,29 +681,45 @@ const ProductForm = ({
     });
   }, [form, initialValues, arrayTagId]);
 
-  const openImageModal = (index: number) => {
-    setActiveImageIndex(index);
-    setImageModalOpen(true);
-  };
-
-  const handleSelectImage = (url: string) => {
-    if (activeImageIndex === null) return;
-
-    form.setFieldValue(["images", activeImageIndex, "imageUrl"], url);
+  const handleSelectThumbnail = (url: string) => {
+    setThumbnailImage({
+      imageUrl: url,
+      altText: "Thumbnail image",
+      isThumbnail: true,
+    });
 
     setImageModalOpen(false);
-    setActiveImageIndex(null);
+  };
+
+  const handleRemoveMediaImage = (index: number) => {
+    setMultipleImage((prev) =>
+      prev.filter((_, imageIndex) => imageIndex !== index),
+    );
   };
 
   const handleFinish = (values: ProductFormValues) => {
+    const finalImages: ProductImage[] = [
+      ...(thumbnailImage?.imageUrl
+        ? [
+          {
+            imageUrl: thumbnailImage.imageUrl,
+            altText: thumbnailImage.altText || values.name.trim(),
+            isThumbnail: true,
+          },
+        ]
+        : []),
+
+      ...multipleImage
+        .filter((image) => image.imageUrl?.trim())
+        .map((image) => ({
+          imageUrl: image.imageUrl.trim(),
+          altText: image.altText?.trim() || values.name.trim(),
+          isThumbnail: false,
+        })),
+    ];
+
     const payload: ProductPayload = {
-      images:
-        values.images
-          ?.filter((image) => image.imageUrl?.trim())
-          .map((image) => ({
-            imageUrl: image.imageUrl.trim(),
-            altText: image.altText?.trim() || values.name.trim(),
-          })) ?? [],
+      images: finalImages,
       name: values.name.trim(),
       price: values.price,
       weight: values.weight,
@@ -681,35 +732,27 @@ const ProductForm = ({
     };
 
     const formVariants = form.getFieldValue("variants") ?? [];
+
     const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
       ? formVariants.map((variant: ProductFormVariant) => ({
-          variantId: variant.variantId,
-          images: normalizeVariantImages(variant.images),
-          title: variant.title.trim(),
-          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
-          weight: Number(variant.weight ?? values.weight ?? 0),
-          status: variant.status ?? "ACTIVE",
-          attributes:
-            variant.attributes?.map((attribute) => ({
-              attributeId: attribute.attributeId,
-              attributeValueId: attribute.attributeValueId,
-            })) ?? [],
-        }))
+        variantId: variant.variantId,
+        images: normalizeVariantImages(variant.images),
+        title: variant.title.trim(),
+        priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+        weight: Number(variant.weight ?? values.weight ?? 0),
+        status: variant.status ?? "ACTIVE",
+        attributes:
+          variant.attributes?.map((attribute) => ({
+            attributeId: attribute.attributeId,
+            attributeValueId: attribute.attributeValueId,
+          })) ?? [],
+      }))
       : [];
+
+    console.log('product', payload, variants)
 
     onSubmit(payload, variants);
   };
-
-  // multi Image
-  const [multiOpen, setMultiOpen] = useState<boolean>(true);
-  const handleMultiImage = (data: string[]) => {
-    console.log('img', data);
-  }
- 
-  const selectedImageUrl =
-    activeImageIndex !== null
-      ? images?.[activeImageIndex]?.imageUrl
-      : undefined;
 
   return (
     <>
@@ -719,12 +762,6 @@ const ProductForm = ({
           layout="vertical"
           onFinish={handleFinish}
           initialValues={{
-            images: [
-              {
-                imageUrl: "",
-                altText: "",
-              },
-            ],
             name: "",
             description: "",
             status: "DRAFT",
@@ -786,101 +823,102 @@ const ProductForm = ({
 
           <Divider titlePlacement="left">Product Images</Divider>
 
-          <Form.List name="images">
-            {(fields, { add, remove }) => (
-              <div className="space-y-4">
-                {fields.map((field, index) => {
-                  const currentImageUrl = images?.[index]?.imageUrl;
-
-                  return (
-                    <div
-                      key={field.key}
-                      className="rounded-lg border bg-gray-50 p-4"
-                    >
-                      <div className="mb-3 flex items-center justify-between">
-                        <h4 className="m-0 font-medium">Image {index + 1}</h4>
-
-                        {fields.length > 1 ? (
-                          <Button
-                            danger
-                            size="small"
-                            icon={<DeleteOutlined />}
-                            onClick={() => remove(field.name)}
-                          />
-                        ) : null}
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-[120px_1fr]">
-                        <div className="h-[120px] w-[120px] overflow-hidden rounded-lg border bg-white">
-                          {currentImageUrl ? (
-                            <Image
-                              src={imageUrlSet(currentImageUrl)}
-                              alt="Product image"
-                              width={120}
-                              height={120}
-                              className="h-full w-full object-cover"
-                              unoptimized
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-sm text-gray-400">
-                              No Image
-                            </div>
-                          )}
-                        </div>
-
-                        <div>
-                          <Form.Item
-                            label="Image URL"
-                            name={[field.name, "imageUrl"]}
-                            rules={[
-                              {
-                                required: index === 0,
-                                message: "Image is required",
-                              },
-                            ]}
-                          >
-                            <Input
-                              placeholder="/uploads/media/product.jpg"
-                              readOnly
-                              addonAfter={
-                                <Button
-                                  type="link"
-                                  size="small"
-                                  onClick={() => openImageModal(index)}
-                                >
-                                  Choose
-                                </Button>
-                              }
-                            />
-                          </Form.Item>
-
-                          <Form.Item
-                            label="Alt Text"
-                            name={[field.name, "altText"]}
-                          >
-                            <Input placeholder="Front view" />
-                          </Form.Item>
-                        </div>
-                      </div>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} md={12}>
+              <Card
+                title="Thumbnail Image"
+                extra={
+                  <Button type="primary" onClick={() => setImageModalOpen(true)}>
+                    Choose Thumbnail
+                  </Button>
+                }
+              >
+                {thumbnailImage?.imageUrl ? (
+                  <div className="space-y-3">
+                    <div className="h-[180px] w-full overflow-hidden rounded-lg border bg-gray-50">
+                      <Image
+                        src={imageUrlSet(thumbnailImage.imageUrl)}
+                        alt={thumbnailImage.altText || "Thumbnail image"}
+                        width={400}
+                        height={180}
+                        className="h-full w-full object-cover"
+                        unoptimized
+                      />
                     </div>
-                  );
-                })}
 
-                <Button
-                  type="dashed"
-                  icon={<PlusOutlined />}
-                  onClick={() =>
-                    add({
-                      imageUrl: "",
-                      altText: "",
-                    })
-                  }
-                >
-                  Add Image
-                </Button>
-              </div>
-            )}
-          </Form.List>
+                    <div className="flex items-center justify-between gap-3">
+                      <Tag color="blue">Thumbnail</Tag>
+
+                      <Button
+                        danger
+                        size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => setThumbnailImage(null)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-[180px] items-center justify-center rounded-lg border border-dashed text-gray-400">
+                    No thumbnail selected
+                  </div>
+                )}
+              </Card>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Card
+                title="Media Images"
+                extra={
+                  <Button type="primary" onClick={() => setMultiOpen(true)}>
+                    Choose Media
+                  </Button>
+                }
+              >
+                {multipleImage.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {multipleImage.map((image, index) => (
+                      <div
+                        key={`${image.imageUrl}-${index}`}
+                        className="relative overflow-hidden rounded-lg border bg-gray-50"
+                      >
+                        <Image
+                          src={imageUrlSet(image.imageUrl)}
+                          alt={image.altText || "Media image"}
+                          width={250}
+                          height={140}
+                          className="h-[140px] w-full object-cover"
+                          unoptimized
+                        />
+
+                        <div className="absolute bottom-2 left-2 z-10">
+                          <Tag>Media</Tag>
+                        </div>
+
+                        <Button
+                          danger
+                          size="small"
+                          icon={<DeleteOutlined />}
+                          onClick={() => handleRemoveMediaImage(index)}
+                          style={{
+                            position: "absolute",
+                            right: 8,
+                            bottom: 8,
+                            zIndex: 20,
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex h-[180px] items-center justify-center rounded-lg border border-dashed text-gray-400">
+                    No media images selected
+                  </div>
+                )}
+              </Card>
+            </Col>
+          </Row>
 
           <Divider titlePlacement="left">Product Information</Divider>
 
@@ -1030,19 +1068,17 @@ const ProductForm = ({
 
       <ImageSelectModal
         open={imageModalOpen}
-        selectedUrl={selectedImageUrl}
-        onClose={() => {
-          setImageModalOpen(false);
-          setActiveImageIndex(null);
-        }}
-        onSelect={handleSelectImage}
+        selectedUrl={thumbnailImage?.imageUrl}
+        onClose={() => setImageModalOpen(false)}
+        onSelect={handleSelectThumbnail}
       />
 
-      {/* <MultiImageSelectModal 
-      open={multiOpen}
-      onClose={() => setMultiOpen(false)}
-      onSelect={handleMultiImage}
-      /> */}
+      <MultiImageSelectModal
+        open={multiOpen}
+        onClose={() => setMultiOpen(false)}
+        onSelect={setMultipleImage}
+        selectedUrl={multipleImage}
+      />
     </>
   );
 };
