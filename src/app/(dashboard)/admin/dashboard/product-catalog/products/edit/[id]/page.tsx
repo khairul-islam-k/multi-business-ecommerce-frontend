@@ -26,7 +26,7 @@ const UpdateProductPage = () => {
 
   const { data: product } = useProduct(businessId, id);
   const { updateProduct } = useProductMutation(businessId);
-  const { bulkCreateVariants, bulkUpdateVariants, removeVariant } =
+  const { bulkCreateVariants, bulkUpdateVariants } =
     useVariantMutation(businessId);
 
   const handleUpdateProduct = async (
@@ -53,14 +53,6 @@ const UpdateProductPage = () => {
         payload,
       });
 
-      const submittedVariantIds = variants
-        .map((variant) => variant.variantId)
-        .filter(Boolean);
-      const removedVariantIds =
-        product?.variants
-          ?.map((variant) => variant.id)
-          .filter((variantId) => !submittedVariantIds.includes(variantId)) ??
-        [];
       const existingVariants = variants.filter(
         (
           variant,
@@ -77,17 +69,6 @@ const UpdateProductPage = () => {
           status: variant.status ?? "ACTIVE",
           attributes: variant.attributes ?? [],
         }));
-
-      if (removedVariantIds.length) {
-        await Promise.all(
-          removedVariantIds.map((variantId) =>
-            removeVariant.mutateAsync({
-              productId: id,
-              variantId,
-            }),
-          ),
-        );
-      }
 
       if (existingVariants.length) {
         await bulkUpdateVariants.mutateAsync({
