@@ -279,23 +279,29 @@ export default function PackagesPage() {
     }
   };
 
-  const cancelSubscription = async (subscription: TenantSubscription) => {
-    const { isConfirmed } = await swal.confirm({
+  const cancelSubscription = (subscription: TenantSubscription) => {
+    swal.modal.confirm({
       title: "Cancel subscription?",
-      text: `${subscription.tenant?.name ?? "This tenant"} will lose the current package subscription.`,
-      confirmButtonText: "Cancel subscription",
-    });
-    if (!isConfirmed) return;
+      content: `${subscription.tenant?.name ?? "This tenant"
+        } will lose the current package subscription.`,
+      okText: "Cancel subscription",
+      cancelText: "Close",
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await mutations.cancelSubscription.mutateAsync({
+            subscriptionId: subscription.id,
+            payload: {},
+          });
 
-    try {
-      await mutations.cancelSubscription.mutateAsync({
-        subscriptionId: subscription.id,
-        payload: {},
-      });
-      message.success("Subscription cancelled successfully.");
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    }
+          message.success("Subscription cancelled successfully.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
+    });
   };
 
   return (

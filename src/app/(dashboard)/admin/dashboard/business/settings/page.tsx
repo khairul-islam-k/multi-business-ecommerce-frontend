@@ -126,30 +126,36 @@ export default function BusinessSettingsPage() {
     }
   };
 
-  const handleDeleteBusiness = async (targetBusiness: AuthBusiness) => {
+
+  const handleDeleteBusiness = (targetBusiness: AuthBusiness) => {
     if (targetBusiness.id === businessId) return;
 
-    const { isConfirmed } = await swal.confirm({
+    swal.modal.confirm({
       title: "Delete business?",
-      text: `This will delete ${targetBusiness.name}. This action cannot be undone.`,
-      confirmButtonText: "Delete business",
+      content: `This will delete ${targetBusiness.name}. This action cannot be undone.`,
+      okText: "Delete business",
+      cancelText: "Cancel",
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await removeBusiness.mutateAsync(targetBusiness.id);
+
+          const remainingBusinesses = businesses.filter(
+            (item) => item.id !== targetBusiness.id,
+          );
+
+          setBusinesses(remainingBusinesses);
+
+          await queryClient.invalidateQueries();
+
+          swal.success("Business deleted.");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
     });
-
-    if (!isConfirmed) return;
-
-    try {
-      await removeBusiness.mutateAsync(targetBusiness.id);
-
-      const remainingBusinesses = businesses.filter(
-        (item) => item.id !== targetBusiness.id,
-      );
-      setBusinesses(remainingBusinesses);
-
-      await queryClient.invalidateQueries();
-      swal.success("Business deleted.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
   };
 
   if (!businessId) return <Empty description="No active business selected" />;

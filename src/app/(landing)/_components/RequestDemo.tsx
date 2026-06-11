@@ -145,28 +145,43 @@ export const RequestDemoForm = () => {
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = demoSchema.safeParse(values);
-    if (!result.success) {
-      const fieldErrors: Partial<Record<keyof FormState, string>> = {};
-      for (const issue of result.error.issues) {
-        const key = issue.path[0] as keyof FormState;
-        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+ const onSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const result = demoSchema.safeParse(values);
+
+  if (!result.success) {
+    const fieldErrors: Partial<Record<keyof FormState, string>> = {};
+
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof FormState;
+
+      if (!fieldErrors[key]) {
+        fieldErrors[key] = issue.message;
       }
-      setErrors(fieldErrors);
-      swal.error("Please check the form. Some fields need your attention.");
-      return;
     }
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 700));
-    setSubmitting(false);
-    setValues(initial);
-    swal.fire({
-      title: "Demo request received",
-      text: "We'll email you within 1 business day to schedule your walkthrough.",
-    });
-  };
+
+    setErrors(fieldErrors);
+
+    swal.error("Please check the form. Some fields need your attention.");
+
+    return;
+  }
+
+  setSubmitting(true);
+
+  await new Promise((r) => setTimeout(r, 700));
+
+  setSubmitting(false);
+  setValues(initial);
+  setErrors({});
+
+  swal.modal.success({
+    title: "Demo request received",
+    content: "We'll email you within 1 business day to schedule your walkthrough.",
+    okText: "OK",
+  });
+};
 
   const baseField =
     "w-full rounded-xl border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20";

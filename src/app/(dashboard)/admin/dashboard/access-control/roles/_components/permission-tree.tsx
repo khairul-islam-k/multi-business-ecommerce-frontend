@@ -47,6 +47,7 @@ export default function PermissionTree({
     }));
   }, [data]);
 
+
   if (isLoading) return <Loader />;
 
   return (

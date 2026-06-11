@@ -86,29 +86,33 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleStatusChange = async (
+  const handleStatusChange = (
     tenant: Tenant,
     status: SystemUserStatus,
   ) => {
     if (tenant.status === status) return;
 
-    const { isConfirmed } = await swal.confirm({
+    swal.modal.confirm({
       title: "Update tenant status?",
-      text: `Set ${tenant.name}'s account status to ${status}?`,
-      confirmButtonText: "Update status",
+      content: `Set ${tenant.name}'s account status to ${status}?`,
+      okText: "Update status",
+      cancelText: "Cancel",
+      okButtonProps: {
+        danger: status !== "ACTIVE",
+      },
+      async onOk() {
+        try {
+          await updateTenantStatus.mutateAsync({
+            tenantId: tenant.id,
+            payload: { status },
+          });
+
+          message.success("Tenant status updated successfully.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
     });
-
-    if (!isConfirmed) return;
-
-    try {
-      await updateTenantStatus.mutateAsync({
-        tenantId: tenant.id,
-        payload: { status },
-      });
-      message.success("Tenant status updated successfully.");
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    }
   };
 
   return (

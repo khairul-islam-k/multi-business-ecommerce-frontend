@@ -59,10 +59,7 @@ const ContactForm = () => {
     setTimeout(() => {
       setLoading(false);
       (e.target as HTMLFormElement).reset();
-      swal.fire({
-        title: "Message sent!",
-        text: "Our team will get back to you within a few hours.",
-      });
+      swal.info("Message sent!");
     }, 800);
   };
 

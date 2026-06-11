@@ -27,18 +27,24 @@ export const resetCycleOptions: PackageResetCycle[] = [
 ];
 
 export const limitKeyOptions: PackageLimitKey[] = [
-"MAX_TAGS",
-"MAX_UNITS",
-"MAX_ROLES",
 "MAX_MEDIAS",
-"MAX_BRANDS",
 "MAX_PRODUCTS",
-"MAX_VARIANTS",
 "MAX_EMPLOYEES",
-"MAX_ATTRIBUTES",
 "MAX_BUSINESSES",
-"MAX_CATEGORIES",
 ];
+// export const limitKeyOptions: PackageLimitKey[] = [
+// "MAX_TAGS",
+// "MAX_UNITS",
+// "MAX_ROLES",
+// "MAX_MEDIAS",
+// "MAX_BRANDS",
+// "MAX_PRODUCTS",
+// "MAX_VARIANTS",
+// "MAX_EMPLOYEES",
+// "MAX_ATTRIBUTES",
+// "MAX_BUSINESSES",
+// "MAX_CATEGORIES",
+// ];
 
 export const subscriptionStatusOptions: PackageSubscriptionStatus[] = [
   "TRIALING",

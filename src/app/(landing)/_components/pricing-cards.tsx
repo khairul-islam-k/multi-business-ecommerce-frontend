@@ -105,25 +105,33 @@ export default function PricingCards() {
     const handleBuyPackage = async (id: string) => {
         try {
             const payment = await mutations.checkoutPlan.mutateAsync(id);
-            console.log('payment', payment);
-            const confirm = await swal.confirm({
-                title: "Confirm mock payment?",
-                text: `Confirm payment payment`,
-                confirmButtonText: "Confirm payment",
-            });
 
-            if (confirm.isConfirmed) {
-                await mutations.confirmMockPayment.mutateAsync(payment.id);
-                router.push('/admin/dashboard');
-                toast.success("Plan changed successfully.");
-            } else {
-                toast.success("Checkout created. Confirm it before it expires.");
-            }
+            console.log("payment", payment);
+
+            swal.modal.confirm({
+                title: "Confirm mock payment?",
+                content: "Confirm payment payment",
+                okText: "Confirm payment",
+                cancelText: "Cancel",
+                async onOk() {
+                    try {
+                        await mutations.confirmMockPayment.mutateAsync(payment.id);
+
+                        router.push("/admin/dashboard");
+                        toast.success("Plan changed successfully.");
+                    } catch (error) {
+                        toast.error("Payment confirmation failed.");
+                    }
+                },
+                onCancel() {
+                    toast.success("Checkout created. Confirm it before it expires.");
+                },
+            });
         } catch (error) {
-            toast.error('Please log in first.');
-            router.push('/sign-in');
+            toast.error("Please log in first.");
+            router.push("/sign-in");
         }
-    }
+    };
 
     if (isLoading) {
         return (
