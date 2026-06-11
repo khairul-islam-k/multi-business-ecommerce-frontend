@@ -5,6 +5,7 @@ import { productVariantApi } from "../product-variant";
 import {
   BulkUpdateVariantPayload,
   BulkVariantPayload,
+  ProductVariantAttributeInput,
   VariantPayload,
 } from "@/types/product/variant";
 
@@ -13,6 +14,26 @@ export function useProductVariantQuery(businessId: ApiId, productId: ApiId, sear
     queryKey: apiQueryKeys.ProductVariant.list(businessId, productId, search),
     queryFn: () => productVariantApi.list(businessId, productId, search),
     enabled: Boolean(businessId),
+  });
+}
+
+export function useProductVariantOptionsQuery(
+  businessId: ApiId,
+  productId: ApiId,
+  selectedAttributes: ProductVariantAttributeInput[],
+) {
+  return useQuery({
+    queryKey: apiQueryKeys.ProductVariant.options(
+      businessId,
+      productId,
+      selectedAttributes,
+    ),
+    queryFn: () =>
+      productVariantApi.options(businessId, productId, {
+        selectedAttributes,
+        includeOutOfStock: false,
+      }),
+    enabled: Boolean(businessId && productId),
   });
 }
 

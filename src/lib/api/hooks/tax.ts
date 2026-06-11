@@ -39,27 +39,19 @@ export function useTaxMutation(businessId: ApiId) {
 
   return {
     createTax: useMutation({
-      mutationFn: (payload: TaxPayload) =>
-        taxApi.create(businessId, payload),
+      mutationFn: (payload: TaxPayload) => taxApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
 
     updateTax: useMutation({
-      mutationFn: ({
-        taxId,
-        payload,
-      }: {
-        taxId: ApiId;
-        payload: TaxPayload;
-      }) => taxApi.update(businessId, taxId, payload),
+      mutationFn: ({ taxId, payload }: { taxId: ApiId; payload: TaxPayload }) =>
+        taxApi.update(businessId, taxId, payload),
       onSuccess: invalidate,
     }),
 
     removeTax: useMutation({
-      mutationFn: (taxId: ApiId) =>
-        taxApi.remove(businessId, taxId),
+      mutationFn: (taxId: ApiId) => taxApi.remove(businessId, taxId),
       onSuccess: invalidate,
     }),
-
   };
 }

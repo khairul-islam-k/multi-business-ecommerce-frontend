@@ -123,9 +123,14 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["variant", businessId] as const,
     list: (businessId: ApiId, productId: ApiId, search?: string) =>
       ["variant", businessId, productId, "list", search] as const,
+    options: (businessId: ApiId, productId: ApiId, selectedAttributes?: unknown) =>
+      ["variant", businessId, productId, "options", selectedAttributes] as const,
 
     detail: (businessId: ApiId, productId: ApiId, variantId: ApiId) =>
       ["variant", businessId, "detail", productId, variantId] as const,
+  },
+  pos: {
+    all: (businessId: ApiId) => ["pos", businessId] as const,
   },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,

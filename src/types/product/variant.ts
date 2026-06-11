@@ -13,6 +13,8 @@ export type VariantAttributePayload = {
   attributeValueId: string;
 };
 
+export type ProductVariantAttributeInput = VariantAttributePayload;
+
 export type VariantPayload = {
   images: VariantImagePayload[];
   title: string;
@@ -88,6 +90,13 @@ export type ResponseVariant = {
 
   images: ResponseVariantImage[];
   attributes: ResponseVariantAttribute[];
+  effectivePrice?: string | number;
+  stock?: {
+    totalQuantity: number;
+    quantityReserved: number;
+    availableQuantity: number;
+    inStock: boolean;
+  };
 
   createdBy: string | null;
   updatedBy: string | null;
@@ -96,3 +105,36 @@ export type ResponseVariant = {
   deletedAt: string | null;
 };
 
+export type ProductVariantOptionsPayload = {
+  selectedAttributes: ProductVariantAttributeInput[];
+  includeOutOfStock?: boolean;
+};
+
+export type ProductVariantOptionValue = {
+  attributeValueId: string;
+  value: string;
+  matchingVariantCount: number;
+  availableQuantity: number;
+  inStock: boolean;
+  selected: boolean;
+};
+
+export type ProductVariantAvailableOption = {
+  attributeId: string;
+  name: string;
+  values: ProductVariantOptionValue[];
+};
+
+export type ProductVariantSelectedAttribute = {
+  attributeId: string;
+  attributeName: string;
+  attributeValueId: string;
+  attributeValue: string;
+};
+
+export type ProductVariantOptionsResponse = {
+  selectedAttributes: ProductVariantSelectedAttribute[];
+  availableOptions: ProductVariantAvailableOption[];
+  matchingVariants: ResponseVariant[];
+  selectedVariant: ResponseVariant | null;
+};
