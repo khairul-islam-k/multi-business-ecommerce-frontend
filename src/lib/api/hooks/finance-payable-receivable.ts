@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId } from "../types";
 import { financePayableReceivableApi } from "../finance-payable-receivable";
-import { PayableQuery, ReceivableQuery } from "@/types/finance/payable";
+import { PayableQuery, PayPayableFormValues, ReceivableQuery, ReceiveReceivableFormValues } from "@/types/finance/payable";
 
 export function useFinancePayableQuery(businessId: ApiId, query?: PayableQuery) {
   return useQuery({
@@ -52,26 +52,50 @@ export function useFinanceReceivable(businessId: ApiId, receivableId: ApiId) {
   });
 }
 
-// export function useFinanceAccountMutation(businessId: ApiId) {
-//   const queryClient = useQueryClient();
+export function useFinancePayableMutation(businessId: ApiId) {
+  const queryClient = useQueryClient();
 
-//   const invalidate = () =>
-//     queryClient.invalidateQueries({
-//       queryKey: apiQueryKeys.financeAccount.all(businessId),
-//     });
+  const invalidate = () =>
+    queryClient.invalidateQueries({
+      queryKey: apiQueryKeys.financePayable.all(businessId),
+    });
 
-//   return {
+  return {
 
-//     updateFinanceAccount: useMutation({
-//       mutationFn: ({
-//         accountId,
-//         payload,
-//       }: {
-//         accountId: ApiId;
-//         payload: FinanceAccountPayload;
-//       }) => financeAccountApi.update(businessId, accountId, payload),
-//       onSuccess: invalidate,
-//     }),
+    updateFinancePayable: useMutation({
+      mutationFn: ({
+        payableId,
+        payload,
+      }: {
+        payableId: ApiId;
+        payload: PayPayableFormValues;
+      }) => financePayableReceivableApi.updatePayable(businessId, payableId, payload),
+      onSuccess: invalidate,
+    }),
 
-//   };
-// }
+  };
+}
+
+export function useFinanceReceivableMutation(businessId: ApiId) {
+  const queryClient = useQueryClient();
+
+  const invalidate = () =>
+    queryClient.invalidateQueries({
+      queryKey: apiQueryKeys.financeReceivable.all(businessId),
+    });
+
+  return {
+
+    updateFinanceReceivable: useMutation({
+      mutationFn: ({
+        receivableId,
+        payload,
+      }: {
+        receivableId: ApiId;
+        payload: ReceiveReceivableFormValues;
+      }) => financePayableReceivableApi.updateReceivable(businessId, receivableId, payload),
+      onSuccess: invalidate,
+    }),
+
+  };
+}

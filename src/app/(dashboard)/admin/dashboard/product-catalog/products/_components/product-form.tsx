@@ -360,6 +360,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
     }
 
     const currentVariants = form.getFieldValue("variants") ?? [];
+    console.log('current', currentVariants);
     const variantsByKey = new Map(
       currentVariants.map((variant: ProductFormVariant) => [
         variant.variantKey || getVariantKey(variant.attributes),
@@ -563,6 +564,11 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   );
 };
 
+
+
+
+
+
 const ProductForm = ({
   mode,
   initialValues,
@@ -571,13 +577,17 @@ const ProductForm = ({
   onCancel,
 }: ProductFormProps) => {
   const [form] = Form.useForm<ProductFormValues>();
+  console.log('init', initialValues);
 
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [multiOpen, setMultiOpen] = useState(false);
 
+  // thumbnail
   const [thumbnailImage, setThumbnailImage] = useState<ProductImage | null>(
     null,
   );
+
+  // multipleImage
   const [multipleImage, setMultipleImage] = useState<ProductImage[]>([]);
 
   const enableVariants = Form.useWatch("enableVariants", form);
@@ -700,13 +710,11 @@ const ProductForm = ({
   const handleFinish = (values: ProductFormValues) => {
     const finalImages: ProductImage[] = [
       ...(thumbnailImage?.imageUrl
-        ? [
-          {
+        ? [{
             imageUrl: thumbnailImage.imageUrl,
             altText: thumbnailImage.altText || values.name.trim(),
             isThumbnail: true,
-          },
-        ]
+          }]
         : []),
 
       ...multipleImage
@@ -748,8 +756,6 @@ const ProductForm = ({
           })) ?? [],
       }))
       : [];
-
-    console.log('product', payload, variants)
 
     onSubmit(payload, variants);
   };

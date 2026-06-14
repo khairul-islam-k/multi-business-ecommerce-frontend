@@ -7,6 +7,7 @@ import { useFinanceReceivableQuery } from "@/lib/api/hooks/finance-payable-recei
 import { useAuthStore } from "@/stores/auth.store";
 import { ReceivableResponse, ReceivableStatus } from "@/types/finance/payable";
 import {
+  DollarOutlined,
   EditOutlined,
   EyeOutlined,
 } from "@ant-design/icons";
@@ -14,6 +15,7 @@ import {
   Button,
   Card,
   Col,
+  Modal,
   Row,
   Select,
   Tag,
@@ -22,6 +24,7 @@ import {
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import ReceiveReceivable from "./_components/receivable_form";
 
 const { Title, Text } = Typography;
 
@@ -71,6 +74,10 @@ const ReceivablesPage = () => {
     ReceivableStatus | undefined
   >();
 
+  // modal state
+  const [payModalOpen, setPayModalOpen] = useState<boolean>(false);
+  const [payableId, setPayableId] = useState<string>("");
+
   const limit = 5;
 
   const {
@@ -100,7 +107,7 @@ const ReceivablesPage = () => {
   const dueAmount = totalAmount - receivedAmount;
 
   const pendingReceivables = receivableItems.filter(
-    (receivable) => receivable.status === "PENDING"
+    (receivable) => receivable.status === "PENDING",
   ).length;
 
   const columns: Column<ReceivableResponse>[] = [
@@ -134,9 +141,7 @@ const ReceivablesPage = () => {
       key: "status",
       label: "Status",
       type: "meta",
-      render: (row) => (
-        <Tag color={statusColor[row.status]}>{row.status}</Tag>
-      ),
+      render: (row) => <Tag color={statusColor[row.status]}>{row.status}</Tag>,
     },
     {
       key: "actions",
@@ -149,23 +154,26 @@ const ReceivablesPage = () => {
               icon={<EyeOutlined />}
               onClick={() =>
                 router.push(
-                  `/admin/dashboard/finance/receivables/view/${row.id}`
+                  `/admin/dashboard/finance/receivables/view/${row.id}`,
                 )
               }
             />
           </Tooltip>
 
-          <Tooltip title="Update receivable">
+          {
+            (!(row.status === "RECEIVED")) && <Tooltip title="Pay receivable">
             <Button
               size="small"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(
-                  `/admin/dashboard/finance/receivables/edit/${row.id}`
-                )
-              }
+              type="primary"
+              icon={<DollarOutlined />}
+              onClick={() => {
+                setPayableId(row.id);
+                setPayModalOpen(true);
+              }}
             />
           </Tooltip>
+          }
+
         </div>
       ),
     },
@@ -191,7 +199,7 @@ const ReceivablesPage = () => {
 
         <Col xs={12} md={6}>
           <Card>
-            <Text type="secondary">Total Amount</Text>
+            <Text type="secondary">Total Receivable Amount</Text>
             <Title style={{ marginTop: 0 }} level={4}>
               {formatMoney(totalAmount)}
             </Title>
@@ -258,6 +266,22 @@ const ReceivablesPage = () => {
           }}
         />
       </Card>
+
+      <Modal
+        title="Pay Payable"
+        open={payModalOpen}
+        onCancel={() => {
+          setPayModalOpen(false);
+          setPayableId("");
+        }}
+        footer={null}
+        destroyOnHidden
+      >
+        <ReceiveReceivable
+          receivableId={payableId}
+          receiveModalOpen={setPayModalOpen}
+        />
+      </Modal>
     </div>
   );
 };

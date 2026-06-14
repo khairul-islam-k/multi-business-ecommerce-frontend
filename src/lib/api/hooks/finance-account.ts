@@ -3,12 +3,20 @@ import { apiQueryKeys } from "../query-keys";
 import { ApiId } from "../types";
 import { ProductQuery } from "@/types/product/product";
 import { financeAccountApi } from "../finance-account";
-import { FinanceAccountPayload } from "@/types/finance/account";
+import { AddMoneyPayload, FinanceAccountPayload } from "@/types/finance/account";
 
 export function useFinanceAccountQuery(businessId: ApiId, query?: ProductQuery) {
   return useQuery({
     queryKey: apiQueryKeys.financeAccount.list(businessId, query),
     queryFn: () => financeAccountApi.list(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
+
+export function useFinanceTransactionQuery(businessId: ApiId, accountId: ApiId, query?: ProductQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.financeAccount.listTransaction(businessId, accountId, query),
+    queryFn: () => financeAccountApi.listTransaction(businessId, accountId, query),
     enabled: Boolean(businessId),
   });
 }
@@ -41,6 +49,18 @@ export function useFinanceAccountMutation(businessId: ApiId) {
     createFinanceAccount: useMutation({
       mutationFn: (payload: FinanceAccountPayload) =>
         financeAccountApi.create(businessId, payload),
+      onSuccess: invalidate,
+    }),
+
+    addMoney: useMutation({
+      mutationFn: ({
+        accountId,
+        payload
+      }: {
+        accountId: ApiId;
+        payload: AddMoneyPayload;
+      }) =>
+        financeAccountApi.addMoney(businessId, accountId, payload),
       onSuccess: invalidate,
     }),
 

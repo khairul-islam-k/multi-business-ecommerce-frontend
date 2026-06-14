@@ -4,13 +4,21 @@ import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
+  MoreOutlined,
+  PlusCircleOutlined,
   PlusOutlined,
+  TransactionOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   Card,
   Col,
-  Popconfirm,
+  Dropdown,
+  Form,
+  Input,
+  InputNumber,
+  MenuProps,
+  Modal,
   Row,
   Select,
   Tag,
@@ -25,7 +33,7 @@ import {
   useFinanceAccountQuery,
 } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
-import { AccountStatus, FinanceAccountResponse } from "@/types/finance/account";
+import { AccountStatus, AddMoneyPayload, FinanceAccountResponse } from "@/types/finance/account";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
@@ -48,6 +56,7 @@ const accountTypeLabel: Record<string, string> = {
 const AccountsList = () => {
   const router = useRouter();
   const swal = useSwal();
+  const [form] = Form.useForm<AddMoneyPayload>();
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -69,7 +78,7 @@ const AccountsList = () => {
     status: statusFilter,
   });
 
-  const { removeAccount } = useFinanceAccountMutation(businessId);
+  const { removeAccount, addMoney } = useFinanceAccountMutation(businessId);
 
   const total = accounts?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
@@ -96,6 +105,45 @@ const AccountsList = () => {
       swal.error(getApiErrorMessage(error));
     }
   };
+
+  // modal add money
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [accountId, setAccountId] = useState<string>('');
+  console.log(accountId);
+
+  const handleFinish = async (values: AddMoneyPayload) => {
+    if (!accountId) {
+      swal.error("Account id is missing.");
+      return;
+    }
+    setLoading(true);
+
+    try {
+      const payload: AddMoneyPayload = {
+        amount: values.amount,
+        note: values.note?.trim() || undefined,
+      };
+
+      const res = await addMoney.mutateAsync({
+        accountId,
+        payload,
+      });
+
+      console.log("res", res);
+
+      swal.success("Money added successfully.");
+
+      form.resetFields();
+      setModalOpen(false);
+      setAccountId("");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const columns: Column<FinanceAccountResponse>[] = [
     {
@@ -139,46 +187,92 @@ const AccountsList = () => {
     {
       key: "actions",
       label: "Actions",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Tooltip title="View account">
-            <Button
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() =>
-                router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`)
-              }
-            />
-          </Tooltip>
+      render: (row) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "view",
+            label: "View account",
+            icon: <EyeOutlined />,
+          },
+          {
+            key: "edit",
+            label: "Update account",
+            icon: <EditOutlined />,
+          },
+          {
+            key: "add-money",
+            label: "Add money",
+            icon: <PlusCircleOutlined />,
+          },
+          {
+            key: "transactions",
+            label: "Transactions",
+            icon: <TransactionOutlined />,
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "delete",
+            label: "Delete account",
+            icon: <DeleteOutlined />,
+            danger: true,
+            disabled: removeAccount.isPending,
+          },
+        ];
 
-          <Tooltip title="Update account">
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(`/admin/dashboard/finance/accounts/edit/${row.id}`)
-              }
-            />
-          </Tooltip>
+        const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+          console.log('ant', key)
+          if (key === "view") {
+            router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`);
+          }
 
-          <Tooltip title="Delete account">
-            <Popconfirm
-              title="Delete account?"
-              description="Are you sure?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() => handleDelete(row.id)}
-            >
-              <Button
-                danger
-                size="small"
-                icon={<DeleteOutlined />}
-              loading={removeAccount.isPending}
-              />
-            </Popconfirm>
-          </Tooltip>
-        </div>
-      ),
+          if (key === "edit") {
+            router.push(`/admin/dashboard/finance/accounts/edit/${row.id}`);
+          }
+
+          if (key === "add-money") {
+            setModalOpen(true);
+            setAccountId(row.id);
+          }
+
+          if (key === "transactions") {
+            router.push(`/admin/dashboard/finance/accounts/transactions/${row.id}`);
+          }
+
+          if (key === "delete") {
+            swal.modal.confirm({
+              title: "Delete account?",
+              content: "Are you sure you want to delete this account?",
+              okText: "Yes",
+              cancelText: "No",
+              okButtonProps: {
+                danger: true,
+                loading: removeAccount.isPending,
+              },
+              onOk: async () => {
+                await handleDelete(row.id);
+              },
+            });
+          }
+        };
+
+        return (
+          <Dropdown
+            menu={{
+              items,
+              onClick: handleMenuClick,
+            }}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
+            <Tooltip title="Actions">
+              <Button size="small" icon={<MoreOutlined />}>
+              </Button>
+            </Tooltip>
+          </Dropdown>
+        );
+      },
     }
   ];
 
@@ -194,12 +288,12 @@ const AccountsList = () => {
         <Col xs={12} md={6}>
           <Card>
             <Text
-            type="secondary">Total Accounts</Text>
+              type="secondary">Total Accounts</Text>
             <Title
-            style={{
-              marginTop: 0
-            }}
-            level={4}>{total}</Title>
+              style={{
+                marginTop: 0
+              }}
+              level={4}>{total}</Title>
           </Card>
         </Col>
 
@@ -207,10 +301,10 @@ const AccountsList = () => {
           <Card>
             <Text type="secondary">Account Balance</Text>
             <Title
-            style={{
-              marginTop: 0
-            }}
-            level={4}>{formatMoney(totalBalance)}</Title>
+              style={{
+                marginTop: 0
+              }}
+              level={4}>{formatMoney(totalBalance)}</Title>
           </Card>
         </Col>
 
@@ -218,10 +312,10 @@ const AccountsList = () => {
           <Card>
             <Text type="secondary">Active Account</Text>
             <Title
-            style={{
-              marginTop: 0
-            }}
-            level={4}>{activeAccounts}</Title>
+              style={{
+                marginTop: 0
+              }}
+              level={4}>{activeAccounts}</Title>
           </Card>
         </Col>
 
@@ -229,10 +323,10 @@ const AccountsList = () => {
           <Card>
             <Text type="secondary">Inactive Account</Text>
             <Title
-            style={{
-              marginTop: 0
-            }}
-            level={4}>{inactiveAccounts}</Title>
+              style={{
+                marginTop: 0
+              }}
+              level={4}>{inactiveAccounts}</Title>
           </Card>
         </Col>
       </Row>
@@ -283,6 +377,61 @@ const AccountsList = () => {
           }}
         />
       </Card>
+
+      {/* modal */}
+      <Modal
+        title="Add Money"
+        open={modalOpen}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <Form<AddMoneyPayload>
+          form={form}
+          layout="vertical"
+          onFinish={handleFinish}
+        >
+          <Form.Item
+            label="Amount"
+            name="amount"
+            rules={[
+              {
+                required: true,
+                message: "Please enter amount",
+              },
+              {
+                validator: (_, value) => {
+                  if (!value || value <= 0) {
+                    return Promise.reject("Amount must be greater than 0");
+                  }
+
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <InputNumber
+              min={1}
+              style={{ width: "100%" }}
+              placeholder="Enter amount"
+            />
+          </Form.Item>
+
+          <Form.Item label="Note" name="note">
+            <Input.TextArea rows={3} placeholder="Owner cash deposit" />
+          </Form.Item>
+
+          <div className="flex justify-end gap-2">
+            <Button onClick={() => setModalOpen(false)} disabled={loading}>
+              Cancel
+            </Button>
+
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Add Money
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };

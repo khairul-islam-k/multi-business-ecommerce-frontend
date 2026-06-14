@@ -5,27 +5,20 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 import { useFinancePayableQuery } from "@/lib/api/hooks/finance-payable-receivable";
-// import {
-//   usePayableMutation,
-//   usePayableQuery,
-// } from "@/lib/api/hooks/payable";
-import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   PayableResponse,
   PayableStatus,
 } from "@/types/finance/payable";
 import {
-  DeleteOutlined,
-  EditOutlined,
+  DollarOutlined,
   EyeOutlined,
-  PlusOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   Card,
   Col,
-  Popconfirm,
+  Modal,
   Row,
   Select,
   Tag,
@@ -34,6 +27,7 @@ import {
 } from "antd";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import PayPayable from "./_components/pay-payable";
 
 const { Title, Text } = Typography;
 
@@ -74,6 +68,9 @@ const statusColor: Record<PayableStatus, string> = {
 const PayablePage = () => {
   const router = useRouter();
   const swal = useSwal();
+  // modal confirm
+  const [payModalOpen, setPayModalOpen] = useState<boolean>(false);
+  const [payableId, setPayableId] = useState<string>('');
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -164,15 +161,19 @@ const PayablePage = () => {
             />
           </Tooltip>
 
-          <Tooltip title="Update payable">
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(`/admin/dashboard/finance/payables/edit/${row.id}`)
-              }
-            />
-          </Tooltip>
+          {
+            (!(row.status === 'PAID')) && <Tooltip title="Pay payable">
+              <Button
+                size="small"
+                type="primary"
+                icon={<DollarOutlined />}
+                onClick={() => {
+                  setPayModalOpen(true);
+                  setPayableId(row.id);
+                }}
+              />
+            </Tooltip>
+          }
 
         </div>
       ),
@@ -263,6 +264,20 @@ const PayablePage = () => {
           }}
         />
       </Card>
+
+      <Modal
+        title="Pay Payable"
+        open={payModalOpen}
+        onCancel={() => setPayModalOpen(false)}
+        okText="Pay Now"
+        footer={null}
+        destroyOnHidden
+      >
+        <PayPayable
+          payableId={payableId}
+          payModalOpen={setPayModalOpen}
+        />
+      </Modal>
     </div>
   );
 };

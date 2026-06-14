@@ -194,6 +194,8 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["financeAccount", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["financeAccount", businessId, "list", query] as const,
+    listTransaction: (businessId: ApiId, accountId: ApiId, query?: CategoriesQuery) =>
+      ["financeAccount", businessId, accountId, "listTraction", query] as const,
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["financeAccount", businessId, "detail", CategoryId] as const,

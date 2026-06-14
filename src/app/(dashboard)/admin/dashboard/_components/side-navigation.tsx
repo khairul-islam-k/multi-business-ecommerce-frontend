@@ -475,15 +475,6 @@ export const items: MenuProps["items"] = [
           </Link>
         ),
       },
-      {
-        key: "transactions",
-        icon: <SwapOutlined />, // Transactions
-        label: (
-          <Link href="/admin/dashboard/finance/accounts/transactions">
-            Transactions
-          </Link>
-        ),
-      },
     ],
   },
 

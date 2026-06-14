@@ -27,7 +27,7 @@ const ProductBrands = () => {
 
     const [currentPage, setCurrentPage] = useState<number>(1)
     const [search, setSearch] = useState('');
-    const limit = 5;
+    const limit = 10;
 
     const { data: brands, isLoading, isFetching } = useProductBrandQuery(businessId, {
         page: currentPage,

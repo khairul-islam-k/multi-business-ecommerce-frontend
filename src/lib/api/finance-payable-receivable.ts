@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { PayableQuery, PayableResponse, ReceivableQuery, ReceivableResponse } from "@/types/finance/payable";
+import { PayableQuery, PayableResponse, PayPayableFormValues, ReceivableQuery, ReceivableResponse, ReceiveReceivableFormValues } from "@/types/finance/payable";
 
 const basePath = (businessId: ApiId) => `/finance/businesses/${businessId}/payables`;
 const basePathReceivable = (businessId: ApiId) => `/finance/businesses/${businessId}/receivables`;
@@ -37,17 +37,30 @@ export const financePayableReceivableApi = {
   },
 
 
-//   update(
-//     businessId: ApiId,
-//     accountId: ApiId,
-//     payload: FinanceAccountPayload,
-//   ) {
-//     return api
-//       .patch<ApiResponse<FinanceAccountResponse>>(
-//         `${basePath(businessId)}/${accountId}`,
-//         payload,
-//       )
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
+  updatePayable(
+    businessId: ApiId,
+    payableId: ApiId,
+    payload: PayPayableFormValues,
+  ) {
+    return api
+      .patch<ApiResponse<PayableResponse>>(
+        `${basePath(businessId)}/${payableId}/pay`,
+        payload,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  updateReceivable(
+    businessId: ApiId,
+    receivableId: ApiId,
+    payload: ReceiveReceivableFormValues,
+  ) {
+    return api
+      .patch<ApiResponse<ReceivableResponse>>(
+        `${basePathReceivable(businessId)}/${receivableId}/receive`,
+        payload,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
 };
