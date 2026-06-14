@@ -61,10 +61,11 @@ export function ProductPicker({
 
             return (
               <List.Item
-                className="cursor-pointer rounded-md px-3 transition-colors"
+                className="cursor-pointer rounded-md px-10 transition-colors"
                 style={{
                   border: isSelected ? "1px solid #1677ff" : undefined,
                   background: isSelected ? "rgba(22, 119, 255, 0.06)" : undefined,
+                  paddingLeft: '10px'
                 }}
                 onClick={() => onSelect(product)}
               >

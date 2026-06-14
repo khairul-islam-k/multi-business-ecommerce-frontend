@@ -11,10 +11,9 @@ import type {
   RegisterPayload,
   SystemUser,
 } from "@/lib/api/types";
-import { getApiErrorMessage } from "@/lib/axios";
 import axios from "axios";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
-import { businessesApi } from "@/lib/api";
+import type { PosCartItem } from "@/app/(dashboard)/admin/dashboard/pos/_components/types";
+
 
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 const ACCESS_TOKEN_COOKIE = "accessToken";
@@ -24,6 +23,9 @@ const COOKIE_OPTIONS = {
   path: "/",
   sameSite: "lax" as const,
 };
+
+// local
+const CART_POS_KEY = "cartPos";
 
 const parseCookieJson = <T>(key: string): T | null => {
   const value = Cookies.get(key);
@@ -45,7 +47,12 @@ type AuthState = {
   refreshToken: string | null;
   loading: boolean;
   initialized: boolean;
+  cartPos: PosCartItem[];
 
+  addCartItem: (item: PosCartItem) => void;
+  removeCartItem: (id: string) => void;
+  updateCartItem: (itemId: string, values: Partial<PosCartItem>) => void;
+  clearCart: () => void;
   setAccessToken: (token: string | null) => void;
   setRefreshToken: (token: string | null) => void;
   setUser: (user: SystemUser | null) => void;
@@ -71,6 +78,93 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   refreshToken: null,
   loading: false,
   initialized: false,
+  cartPos: [],
+
+  // pos Add
+  addCartItem: (item) => {
+    const currentCart = get().cartPos;
+
+    const existingItem = currentCart.find((cartItem) => {
+      const sameProduct = cartItem.product.id === item.product.id;
+      const sameVariant = cartItem.variant?.id === item.variant?.id;
+
+      return sameProduct && sameVariant;
+    });
+
+    let updatedCart: PosCartItem[];
+
+    if (!existingItem) {
+      updatedCart = [
+        ...currentCart,
+        {
+          ...item,
+        },
+      ];
+    } else {
+      updatedCart = currentCart.map((cartItem) => {
+        const sameProduct = cartItem.product.id === item.product.id;
+        const sameVariant = cartItem.variant?.id === item.variant?.id;
+
+        if (!sameProduct || !sameVariant) return cartItem;
+
+        return {
+          ...cartItem,
+          quantity: cartItem.quantity + item.quantity,
+          discountAmount: cartItem.discountAmount + item.discountAmount,
+        };
+      });
+    }
+
+    localStorage.setItem(CART_POS_KEY, JSON.stringify(updatedCart));
+
+    set({
+      cartPos: updatedCart,
+    });
+  },
+
+  removeCartItem: (id) => {
+    const currentCart = get().cartPos;
+
+    const updatedCart = currentCart.filter((item) => item.id !== id);
+
+    localStorage.setItem(CART_POS_KEY, JSON.stringify(updatedCart));
+
+    set({
+      cartPos: updatedCart,
+    });
+  },
+
+  updateCartItem: (itemId, values) => {
+    const currentCart = get().cartPos;
+
+    const updatedCart = currentCart.map((item) =>
+      item.id === itemId
+        ? {
+          ...item,
+          ...values,
+          discountAmount: Math.min(
+            Number(values.discountAmount ?? item.discountAmount),
+            Number(values.quantity ?? item.quantity) * item.unitPrice,
+          ),
+        }
+        : item,
+    );
+
+    localStorage.setItem(CART_POS_KEY, JSON.stringify(updatedCart));
+
+    set({
+      cartPos: updatedCart,
+    });
+  },
+
+  clearCart: () => {
+    localStorage.removeItem(CART_POS_KEY);
+
+    set({
+      cartPos: [],
+    });
+  },
+
 
   setAccessToken: (token) => {
     if (token) {
@@ -268,11 +362,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const refreshToken = Cookies.get(REFRESH_TOKEN_COOKIE) ?? null;
     const accessToken = Cookies.get(ACCESS_TOKEN_COOKIE) ?? null;
     const selectedBusiness = parseCookieJson<AuthBusiness>(BUSINESS_COOKIE);
+    const cart = localStorage.getItem(CART_POS_KEY);
+    const cartPos = cart ? JSON.parse(cart) : [];
 
     // business 
 
     set({
       refreshToken,
+      cartPos,
       accessToken,
       selectedBusiness,
       initialized: false,

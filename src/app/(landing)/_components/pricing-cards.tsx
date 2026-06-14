@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
 
-import { useTenantPackageMutations, useTenantPackagePlans, useTenantPackageUsage } from "@/lib/api";
+import { useTenantPackageMutations, useTenantPackagePlans } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Swal from "sweetalert2";
 
 type BillingCycle = "MONTHLY" | "YEARLY" | "LIFETIME";
 
@@ -108,26 +109,31 @@ export default function PricingCards() {
 
             console.log("payment", payment);
 
-            swal.modal.confirm({
+            const confirm = await Swal.fire({
                 title: "Confirm mock payment?",
-                content: "Confirm payment payment",
-                okText: "Confirm payment",
-                cancelText: "Cancel",
-                async onOk() {
-                    try {
-                        await mutations.confirmMockPayment.mutateAsync(payment.id);
-
-                        router.push("/admin/dashboard");
-                        toast.success("Plan changed successfully.");
-                    } catch (error) {
-                        toast.error("Payment confirmation failed.");
-                    }
-                },
-                onCancel() {
-                    toast.success("Checkout created. Confirm it before it expires.");
-                },
+                text: "Confirm payment payment",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Confirm payment",
+                cancelButtonText: "Cancel",
+                confirmButtonColor: "#1677ff",
+                cancelButtonColor: "#d33",
             });
+
+            if (confirm.isConfirmed) {
+                try {
+                    await mutations.confirmMockPayment.mutateAsync(payment.id);
+
+                    router.push("/admin/dashboard");
+                    toast.success("Plan changed successfully.");
+                } catch (error) {
+                    toast.error("Payment confirmation failed.");
+                }
+            } else {
+                toast.success("Checkout created. Confirm it before it expires.");
+            }
         } catch (error) {
+            console.log(getApiErrorMessage(error));
             toast.error("Please log in first.");
             router.push("/sign-in");
         }

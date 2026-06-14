@@ -3,8 +3,8 @@ import { ResponseVariant } from "@/types/product/variant";
 
 export type PosCartItem = {
   id: string;
-  product: ResponseProduct;
-  variant: ResponseVariant | null;
+  product: Pick<ResponseProduct, 'id'| 'name'>;
+  variant: Pick<ResponseVariant, 'id'| 'title'> | null;
   quantity: number;
   discountAmount: number;
   unitPrice: number;

@@ -19,7 +19,7 @@ import { VariantSelector } from "./_components/variant-selector";
 
 const PAGE_LIMIT = 8;
 
-const createCartId = () =>
+export const createCartId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random()}`;
@@ -33,11 +33,15 @@ const PosOrder = () => {
   const { message } = App.useApp();
   const business = useAuthStore((state) => state.selectedBusiness);
   const businessId = business?.id ?? "";
+  const addToCard = useAuthStore(s => s.addCartItem);
+  const cartPos = useAuthStore(s => s.cartPos);
+  const removeCartItem = useAuthStore(s => s.removeCartItem);
+  const updateCartItem = useAuthStore(s => s.updateCartItem);
+  const resetCard = useAuthStore(s => s.clearCart);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<string>();
-  const [cart, setCart] = useState<PosCartItem[]>([]);
   const [checkoutValues, setCheckoutValues] = useState<PosCheckoutValues>({});
 
   const {
@@ -84,28 +88,10 @@ const PosOrder = () => {
   );
 
   const handleAddItem = (item: Omit<PosCartItem, "id">) => {
-    setCart((current) => [...current, { ...item, id: createCartId() }]);
-    message.success("Item added to cart.");
-  };
-
-  const handleCartItemChange = (
-    itemId: string,
-    values: Partial<PosCartItem>,
-  ) => {
-    setCart((current) =>
-      current.map((item) =>
-        item.id === itemId
-          ? {
-              ...item,
-              ...values,
-              discountAmount: Math.min(
-                Number(values.discountAmount ?? item.discountAmount),
-                Number(values.quantity ?? item.quantity) * item.unitPrice,
-              ),
-            }
-          : item,
-      ),
-    );
+    addToCard({
+      ...item,
+      id: createCartId()
+    });
   };
 
   const handleCheckout = async () => {
@@ -113,7 +99,7 @@ const PosOrder = () => {
       !checkoutValues.taxId ||
       !checkoutValues.paymentMethod ||
       !checkoutValues.financeAccountId ||
-      cart.length === 0
+      cartPos.length === 0
     ) {
       message.error("Complete the required checkout fields first.");
       return;
@@ -124,7 +110,7 @@ const PosOrder = () => {
       warehouseId: checkoutValues.warehouseId,
       customerName: trimOrUndefined(checkoutValues.customerName),
       customerPhone: trimOrUndefined(checkoutValues.customerPhone),
-      items: cart.map((item) => ({
+      items: cartPos.map((item) => ({
         productId: item.product.id,
         variantId: item.variant?.id,
         quantity: Number(item.quantity),
@@ -138,7 +124,7 @@ const PosOrder = () => {
 
     try {
       await createPosSale.mutateAsync(payload);
-      setCart([]);
+      resetCard();
       setCheckoutValues({});
       setSelectedProductId(undefined);
       message.success("POS sale completed successfully.");
@@ -190,7 +176,7 @@ const PosOrder = () => {
         </div>
 
         <PosCart
-          cart={cart}
+          cart={cartPos}
           values={checkoutValues}
           taxes={taxItems}
           warehouses={warehouseItems}
@@ -200,10 +186,8 @@ const PosOrder = () => {
           onValuesChange={(values) =>
             setCheckoutValues((current) => ({ ...current, ...values }))
           }
-          onItemChange={handleCartItemChange}
-          onRemoveItem={(itemId) =>
-            setCart((current) => current.filter((item) => item.id !== itemId))
-          }
+          onItemChange={updateCartItem}
+          onRemoveItem={(itemId) => removeCartItem(itemId)}
           onCheckout={handleCheckout}
         />
       </div>

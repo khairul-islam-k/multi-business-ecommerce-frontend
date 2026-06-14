@@ -22,20 +22,23 @@ import {
   ProductVariantAvailableOption,
   ResponseVariant,
 } from "@/types/product/variant";
+import { PosCartItem } from "./types";
 
 const { Text } = Typography;
+
+type Items = {
+  product: Pick<ResponseProduct, 'id' | 'name'>;
+  variant: Pick<ResponseVariant, 'id' | 'title'> | null;
+  quantity: number;
+  discountAmount: number;
+  unitPrice: number;
+  availableQuantity?: number;
+}
 
 type VariantSelectorProps = {
   businessId: string;
   product?: ResponseProduct;
-  onAdd: (item: {
-    product: ResponseProduct;
-    variant: ResponseVariant | null;
-    quantity: number;
-    discountAmount: number;
-    unitPrice: number;
-    availableQuantity?: number;
-  }) => void;
+  onAdd: (item: Items) => void;
 };
 
 const toNumber = (value?: string | number | null) => Number(value ?? 0);
@@ -79,6 +82,7 @@ export function VariantSelector({
 
   const hasVariants = Boolean(product?.variants?.length);
 
+  // when Emty [] selectedAttributes . it provide all available attribute
   const {
     data: variantOptions,
     isLoading,
@@ -147,6 +151,38 @@ export function VariantSelector({
       return [...next, { attributeId, attributeValueId }];
     });
   };
+
+  // const [cart, setCart] = useState<Items[]>([]);
+
+  // handle the cart
+  // const handleAddItem = (item: Items) => {
+  //   setCart((currentCart) => {
+  //     const existingItem = currentCart.find((cartItem) => {
+  //       const sameProduct = cartItem.product.id === item.product.id;
+  //       const sameVariant = cartItem.variant?.id === item.variant?.id;
+
+  //       return sameProduct && sameVariant;
+  //     });
+
+  //     if (!existingItem) {
+  //       return [...currentCart, item];
+  //     }
+
+  //     return currentCart.map((cartItem) => {
+  //       const sameProduct = cartItem.product.id === item.product.id;
+  //       const sameVariant = cartItem.variant?.id === item.variant?.id;
+
+  //       if (!sameProduct || !sameVariant) {
+  //         return cartItem;
+  //       }
+
+  //       return {
+  //         ...cartItem,
+  //         quantity: cartItem.quantity + item.quantity,
+  //       };
+  //     });
+  //   });
+  // };
 
   if (!product) {
     return (
@@ -278,20 +314,24 @@ export function VariantSelector({
           type="primary"
           icon={<PlusOutlined />}
           disabled={!canAdd}
-          onClick={() =>
+          onClick={() => {
             onAdd({
-              product,
-              variant: selectedVariant,
+              product: { id: product.id, name: product.name },
+              variant: selectedVariant
+                ? {
+                  id: selectedVariant.id,
+                  title: selectedVariant.title,
+                } : null,
               quantity,
               discountAmount,
               unitPrice,
               availableQuantity,
             })
-          }
+          }}
         >
           Add to Cart
         </Button>
       </Space>
-    </Card>
+    </Card >
   );
 }
