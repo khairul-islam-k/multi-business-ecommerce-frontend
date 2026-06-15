@@ -137,7 +137,7 @@ export const apiQueryKeys = {
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["attribute", businessId, "list", query] as const,
 
-    detail: (businessId: ApiId,  attributeId: ApiId) =>
+    detail: (businessId: ApiId, attributeId: ApiId) =>
       ["attribute", businessId, attributeId, "detail"] as const,
   },
   supplier: {
@@ -189,6 +189,22 @@ export const apiQueryKeys = {
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["stocks", businessId, "detail", CategoryId] as const,
+  },
+  stockAdjustment: {
+    all: (businessId: ApiId) => ["stockAdjustment", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["stockAdjustment", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, adjustmentId: ApiId) =>
+      ["stockAdjustment", businessId, "detail", adjustmentId] as const,
+  },
+  stockTransfer: {
+    all: (businessId: ApiId) => ["stockTransfer", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["stockTransfer", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, adjustmentId: ApiId) =>
+      ["stockTransfer", businessId, "detail", adjustmentId] as const,
   },
   financeAccount: {
     all: (businessId: ApiId) => ["financeAccount", businessId] as const,

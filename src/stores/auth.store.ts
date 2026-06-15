@@ -24,7 +24,7 @@ const COOKIE_OPTIONS = {
   sameSite: "lax" as const,
 };
 
-// local
+// localStore
 const CART_POS_KEY = "cartPos";
 
 const parseCookieJson = <T>(key: string): T | null => {

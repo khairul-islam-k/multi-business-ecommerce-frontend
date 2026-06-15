@@ -19,7 +19,7 @@ import { VariantSelector } from "./_components/variant-selector";
 
 const PAGE_LIMIT = 8;
 
-export const createCartId = () =>
+const createCartId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random()}`;

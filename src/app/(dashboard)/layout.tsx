@@ -13,13 +13,13 @@ export default function DashboardLayout({
   return (
     <AntdRegistry>
       <AntdThemeProvider>
-        <ConfigProvider>
+        {/* <ConfigProvider> */}
           <App>
             <Layout>
               {children}
             </Layout>
           </App>
-        </ConfigProvider>
+        {/* </ConfigProvider> */}
       </AntdThemeProvider>
     </AntdRegistry>
   );

@@ -1,211 +1,350 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
-import {
-  Card,
-  Col,
-  Row,
-  Typography,
-  Form as AntdForm,
-  Input,
-  Select,
-  Button,
-  InputNumber,
-} from "antd";
-
-import { useSwal } from "@/hooks/use-swal";
-import useSubmit from "@/hooks/use-submit";
-import { mockWarehouses, mockProducts } from "../data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+import { useProductsQuery } from "@/lib/api/hooks/product";
+import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
+import { useStockAdjustmentMutation } from "@/lib/api/hooks/stock-adjustment";
+import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { StockAdjustmentPayload } from "@/types/stock/adjustment";
+import { DeleteOutlined, PlusOutlined, SaveOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+} from "antd";
+import type { FormInstance } from "antd";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
-const { Title } = Typography;
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+type VariantSelectProps = {
+  businessId: string;
+  productId?: string;
+  fieldName: number;
+};
+
+const VariantSelect = ({
+  businessId,
+  productId,
+  fieldName,
+}: VariantSelectProps) => {
+  const {
+    data: variants,
+    isLoading,
+    isFetching,
+  } = useProductVariantQuery(businessId, productId ?? "", "");
+
+  const variantOptions: SelectOption[] = useMemo(() => {
+    return (
+      variants?.map((variant) => ({
+        label: variant.title || "Untitled Variant",
+        value: variant.id,
+      })) ?? []
+    );
+  }, [variants]);
+
+  return (
+    <Form.Item label="Variant" name={[fieldName, "variantId"]}>
+      <Select
+        allowClear
+        showSearch
+        disabled={!productId}
+        loading={isLoading || isFetching}
+        placeholder={productId ? "Select variant optional" : "Select product first"}
+        optionFilterProp="label"
+        options={variantOptions}
+      />
+    </Form.Item>
+  );
+};
+
+type StockAdjustmentItemRowProps = {
+  businessId: string;
+  form: FormInstance<StockAdjustmentPayload>;
+  fieldName: number;
+  productOptions: SelectOption[];
+  productLoading: boolean;
+};
+
+const StockAdjustmentItemRow = ({
+  businessId,
+  form,
+  fieldName,
+  productOptions,
+  productLoading,
+}: StockAdjustmentItemRowProps) => {
+  const selectedProductId = Form.useWatch(
+    ["items", fieldName, "productId"],
+    form,
+  );
+
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <Form.Item
+        label="Product"
+        name={[fieldName, "productId"]}
+        rules={[{ required: true, message: "Please select product" }]}
+      >
+        <Select
+          allowClear
+          showSearch
+          loading={productLoading}
+          placeholder="Select product"
+          optionFilterProp="label"
+          options={productOptions}
+          onChange={() => {
+            form.setFieldValue(["items", fieldName, "variantId"], undefined);
+          }}
+        />
+      </Form.Item>
+
+      <VariantSelect
+        businessId={businessId}
+        productId={selectedProductId}
+        fieldName={fieldName}
+      />
+
+      <Form.Item
+        label="Adjustment Qty"
+        name={[fieldName, "adjustmentQty"]}
+        rules={[
+          { required: true, message: "Please enter quantity" },
+          {
+            validator: (_, value) => {
+              if (!value || Number(value) <= 0) {
+                return Promise.reject("Quantity must be greater than 0");
+              }
+
+              return Promise.resolve();
+            },
+          },
+        ]}
+      >
+        <InputNumber min={1} style={{ width: "100%" }} placeholder="3" />
+      </Form.Item>
+
+      <Form.Item
+        label="Item Reason"
+        name={[fieldName, "reason"]}
+        className="md:col-span-4"
+      >
+        <Input.TextArea rows={3} placeholder="Opening stock" />
+      </Form.Item>
+    </div>
+  );
+};
 
 export default function CreateStockAdjustmentPage() {
-  const [form] = AntdForm.useForm();
+  const [form] = Form.useForm<StockAdjustmentPayload>();
   const swal = useSwal();
+  const router = useRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { loading, handler } = useSubmit(async (values: any) => {
-    await new Promise((r) => setTimeout(r, 1000));
-    swal.success("Stock adjustment created");
-    console.log("value", values);
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const {
+    data: warehouses,
+    isLoading: warehouseLoading,
+    isFetching: warehouseFetching,
+  } = useWarehousesQuery(businessId, {
+    status: "ACTIVE",
+    sortOrder: "desc",
   });
+
+  const {
+    data: products,
+    isLoading: productLoading,
+    isFetching: productFetching,
+  } = useProductsQuery(businessId, {
+    status: "ACTIVE",
+    sortOrder: "desc",
+  });
+
+  const warehouseOptions: SelectOption[] = useMemo(() => {
+    return (
+      warehouses?.items?.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.id,
+      })) ?? []
+    );
+  }, [warehouses?.items]);
+
+  const productOptions: SelectOption[] = useMemo(() => {
+    return (
+      products?.items?.map((product) => ({
+        label: product.name,
+        value: product.id,
+      })) ?? []
+    );
+  }, [products?.items]);
+
+  const adjustmentTypeOptions: SelectOption[] = useMemo(
+    () => [
+      { label: "Increase", value: "INCREASE" },
+      { label: "Decrease", value: "DECREASE" },
+    ],
+    [],
+  );
+
+  const { createStockAdjustment } = useStockAdjustmentMutation(businessId);
+
+  const handleSubmit = async (values: StockAdjustmentPayload) => {
+    const payload = {
+      warehouseId: values.warehouseId,
+      adjustmentType: values.adjustmentType,
+      reason: values.reason?.trim() || "",
+      items: values.items.map((item) => ({
+        productId: item.productId,
+        variantId: item.variantId || "",
+        adjustmentQty: Number(item.adjustmentQty),
+        reason: item.reason?.trim() || "",
+      })),
+    };
+
+    console.log("stock adjustment payload", payload);
+
+    try {
+      await createStockAdjustment.mutateAsync(payload);
+
+      swal.success("Stock adjustment created successfully.");
+
+      form.resetFields();
+
+      // optional redirect
+      router.push("/admin/dashboard/inventory/stock-adjustments");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Create Stock Adjustment"
+        subtitle="Create stock increase or decrease adjustments for warehouse inventory with product, variant, quantity, and reason details."
         breadcrumb={adminBreadcrumb}
       />
-
-      <Card>
-        <Title level={5}>Adjustment Info</Title>
-
-        <AntdForm
+      
+      <Card title="Create Stock Adjustment">
+        <Form<StockAdjustmentPayload>
           form={form}
           layout="vertical"
-          onFinish={handler}
+          onFinish={handleSubmit}
           initialValues={{
-            items: [{}],
+            adjustmentType: "INCREASE",
+            items: [
+              {
+                productId: undefined,
+                variantId: undefined,
+                adjustmentQty: 3,
+              },
+            ],
           }}
         >
-          <Row gutter={[16, 16]}>
-            <Col xs={24} md={12}>
-              <AntdForm.Item
-                name="warehouse_id"
-                label="Warehouse"
-                rules={[{ required: true }]}
-              >
-                <Select
-                  placeholder="Select warehouse"
-                  options={mockWarehouses.map((w) => ({
-                    label: w.name,
-                    value: w.id,
-                  }))}
-                />
-              </AntdForm.Item>
-            </Col>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Form.Item
+              label="Warehouse"
+              name="warehouseId"
+              rules={[{ required: true, message: "Please select warehouse" }]}
+            >
+              <Select
+                allowClear
+                showSearch
+                loading={warehouseLoading || warehouseFetching}
+                placeholder="Select warehouse"
+                optionFilterProp="label"
+                options={warehouseOptions}
+              />
+            </Form.Item>
 
-            <Col xs={24} md={12}>
-              <AntdForm.Item
-                name="reason"
-                label="Reason"
-                rules={[{ required: true }]}
-              >
-                <Input placeholder="Reason for adjustment" />
-              </AntdForm.Item>
-            </Col>
+            <Form.Item
+              label="Adjustment Type"
+              name="adjustmentType"
+              rules={[
+                { required: true, message: "Please select adjustment type" },
+              ]}
+            >
+              <Select
+                placeholder="Select adjustment type"
+                options={adjustmentTypeOptions}
+              />
+            </Form.Item>
+          </div>
 
-            <Col xs={24}>
-              <Title level={5}>Adjustment Items</Title>
-            </Col>
+          <Form.Item label="Reason" name="reason">
+            <Input.TextArea rows={3} placeholder="Cycle count correction" />
+          </Form.Item>
 
-            <Col span={24}>
-              <AntdForm.List name="items">
-                {(fields, { add, remove }) => (
-                  <>
-                    {fields.map(({ key, name, ...restField }) => (
-                      <Row gutter={16} key={key} align="middle">
-                        <Col xs={24} md={6}>
-                          <AntdForm.Item
-                            {...restField}
-                            name={[name, "product_id"]}
-                            rules={[{ required: true }]}
+          <Card size="small" title="Adjustment Items">
+            <Form.List name="items">
+              {(fields, { add, remove }) => (
+                <div className="space-y-4">
+                  {fields.map((field) => (
+                    <Card
+                      key={field.key}
+                      size="small"
+                      type="inner"
+                      title={`Item ${field.name + 1}`}
+                      extra={
+                        fields.length > 1 ? (
+                          <Button
+                            danger
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            onClick={() => remove(field.name)}
                           >
-                            <Select
-                              placeholder="Product"
-                              options={mockProducts.map((p) => ({
-                                label: `${p.name} (${p.sku})`,
-                                value: p.id,
-                              }))}
-                            />
-                          </AntdForm.Item>
-                        </Col>
-
-                        <Col xs={24} md={6}>
-                          <AntdForm.Item
-                            {...restField}
-                            name={[name, "variant_id"]}
-                            rules={[{ required: true }]}
-                          >
-                            <Select
-                              placeholder="variant"
-                              options={mockProducts.map((p) => ({
-                                label: `${p.name} (${p.sku})`,
-                                value: p.id,
-                              }))}
-                            />
-                          </AntdForm.Item>
-                        </Col>
-
-                        <Col xs={24} md={5}>
-                          <AntdForm.Item
-                            {...restField}
-                            name={[name, "old_qty"]}
-                            rules={[{ required: true }]}
-                          >
-                            <InputNumber
-                              placeholder="Old Qty"
-                              style={{ width: "100%" }}
-                            />
-                          </AntdForm.Item>
-                        </Col>
-
-                        <Col xs={24} md={5}>
-                          <AntdForm.Item
-                            {...restField}
-                            name={[name, "new_qty"]}
-                            rules={[{ required: true }]}
-                          >
-                            <InputNumber
-                              placeholder="New Qty"
-                              style={{ width: "100%" }}
-                            />
-                          </AntdForm.Item>
-                        </Col>
-
-                        <Col xs={24} md={4}>
-                          <AntdForm.Item
-                            shouldUpdate={(prev, curr) =>
-                              prev.items !== curr.items
-                            }
-                          >
-                            {() => {
-                              const oldQty = form.getFieldValue([
-                                "items",
-                                name,
-                                "old_qty",
-                              ]);
-                              const newQty = form.getFieldValue([
-                                "items",
-                                name,
-                                "new_qty",
-                              ]);
-
-                              const diff = (newQty || 0) - (oldQty || 0);
-
-                              return (
-                                <InputNumber
-                                  value={diff}
-                                  disabled
-                                  style={{ width: "100%" }}
-                                  placeholder="Diff"
-                                />
-                              );
-                            }}
-                          </AntdForm.Item>
-                        </Col>
-
-                        <Col xs={24} md={2}>
-                          <MinusCircleOutlined onClick={() => remove(name)} />
-                        </Col>
-                      </Row>
-                    ))}
-
-                    <Button
-                      type="dashed"
-                      onClick={() => add()}
-                      icon={<PlusOutlined />}
-                      block
+                            Remove
+                          </Button>
+                        ) : null
+                      }
                     >
-                      Add Item
-                    </Button>
-                  </>
-                )}
-              </AntdForm.List>
-            </Col>
+                      <StockAdjustmentItemRow
+                        businessId={businessId}
+                        form={form}
+                        fieldName={field.name}
+                        productOptions={productOptions}
+                        productLoading={productLoading || productFetching}
+                      />
+                    </Card>
+                  ))}
 
-            <Col span={24}>
-              <div className="flex justify-end">
-                <Button type="primary" htmlType="submit" loading={loading}>
-                  Create Adjustment
-                </Button>
-              </div>
-            </Col>
-          </Row>
-        </AntdForm>
+                  <Button
+                    type="dashed"
+                    icon={<PlusOutlined />}
+                    onClick={() =>
+                      add({
+                        productId: undefined,
+                        variantId: undefined,
+                        adjustmentQty: 1,
+                        reason: "Opening stock",
+                      })
+                    }
+                  >
+                    Add Item
+                  </Button>
+                </div>
+              )}
+            </Form.List>
+          </Card>
+
+          <Space className="mt-4">
+            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+              Create Adjustment
+            </Button>
+          </Space>
+        </Form>
       </Card>
     </div>
   );

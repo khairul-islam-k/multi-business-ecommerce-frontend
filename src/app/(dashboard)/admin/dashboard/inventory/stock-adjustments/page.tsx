@@ -1,157 +1,282 @@
 "use client";
 
-import { useState } from "react";
+import { Button, Card, Select, Tag, Tooltip } from "antd";
+import { CheckOutlined, CloseOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  Table,
-  Typography,
-  Button,
-  Tag,
-  Row,
-  Col,
-  Input,
-  Select,
-} from "antd";
 
-import { mockAdjustments, mockWarehouses } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useStockAdjustmentMutation, useStockAdjustmentQuery } from "@/lib/api/hooks/stock-adjustment";
+import { useAuthStore } from "@/stores/auth.store";
+import { Column, DataTable } from "@/components/shared/data-table";
+import type { StockAdjustmentResponse, StockAdjustmentStatus } from "@/types/stock/adjustment";
+import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
+type StockAdjustmentTableRow = StockAdjustmentResponse & {
+  serial: number;
+};
+
+type SelectOption = {
+  label: string;
+  value: string;
+};
+
+type AdjustmentType = "INCREASE" | "DECREASE";
+
+const statusColor: Record<StockAdjustmentStatus, string> = {
+  DRAFT: "default",
+  PENDING: "blue",
+  APPROVED: "green",
+  REJECTED: "red",
+  CANCELLED: "orange",
+};
+
+const adjustmentTypeColor: Record<AdjustmentType, string> = {
+  INCREASE: "green",
+  DECREASE: "red",
+};
 
 export default function StockAdjustmentListPage() {
   const router = useRouter();
+  const swal = useSwal();
 
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const [warehouseFilter, setWarehouseFilter] = useState<string | undefined>();
-  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [warehouseId, setWarehouseId] = useState("");
 
-  // Filtering logic
-  const filteredData = mockAdjustments.filter((a) => {
-    const matchesSearch =
-      a.adjustment_no.toLowerCase().includes(search.toLowerCase()) ||
-      a.reason.toLowerCase().includes(search.toLowerCase());
+  const limit = 5;
 
-    const matchesWarehouse = warehouseFilter
-      ? a.warehouse_name === warehouseFilter
-      : true;
-
-    const matchesStatus = statusFilter ? a.status === statusFilter : true;
-
-    return matchesSearch && matchesWarehouse && matchesStatus;
+  const {
+    data: adjustments,
+    isLoading,
+    isFetching,
+  } = useStockAdjustmentQuery(businessId, {
+    page: currentPage,
+    limit,
+    search,
+    warehouseId
   });
 
-  const columns = [
-    {
-      title: "Adjustment No",
-      dataIndex: "adjustment_no",
-      render: (v: string) => <Text strong>{v}</Text>,
-    },
-    {
-      title: "Warehouse",
-      dataIndex: "warehouse_name",
-    },
-    {
-      title: "Reason",
-      dataIndex: "reason",
-    },
-    {
-      title: "Items",
-      dataIndex: "total_items",
-      align: "right" as const,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (status: string) => {
-        if (status === "approved") return <Tag color="green">Approved</Tag>;
-        if (status === "rejected") return <Tag color="red">Rejected</Tag>;
-        return <Tag color="orange">Pending</Tag>;
+  const total = adjustments?.meta?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  const tableData: StockAdjustmentTableRow[] =
+    adjustments?.items?.map((item, index) => ({
+      ...item,
+      serial: (currentPage - 1) * limit + index + 1,
+    })) ?? [];
+
+  const {
+    data: warehouses,
+    isLoading: warehouseLoading,
+    isFetching: warehouseFetching,
+  } = useWarehousesQuery(businessId, {
+    status: "ACTIVE",
+    sortOrder: "desc",
+  });
+
+  const warehouseOptions: SelectOption[] = useMemo(() => {
+    return (
+      warehouses?.items?.map((warehouse) => ({
+        label: warehouse.name,
+        value: warehouse.id,
+      })) ?? []
+    );
+  }, [warehouses?.items]);
+
+  const { updateApprove, updateCancel } = useStockAdjustmentMutation(businessId);
+
+  const handleApprove = (id: string) => {
+    swal.modal.confirm({
+      title: "Approve stock adjustment?",
+      content: "After approval, stock quantity will be updated.",
+      okText: "Approve",
+      cancelText: "Cancel",
+      centered: true,
+      async onOk() {
+        try {
+          await updateApprove.mutateAsync(id);
+
+
+          swal.success("Stock adjustment approved successfully.");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
       },
+    });
+  };
+
+  const handleCancel = (id: string) => {
+    swal.modal.confirm({
+      title: "Cancel stock adjustment?",
+      content: "This stock adjustment will be cancelled.",
+      okText: "Cancel Adjustment",
+      cancelText: "Close",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await updateCancel.mutateAsync(id);
+
+          swal.success("Stock adjustment cancelled successfully.");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
+
+  const columns: Column<StockAdjustmentTableRow>[] = [
+    {
+      key: "serial",
+      label: "SL",
+      render: (row) => row.serial,
     },
     {
-      title: "Date",
-      dataIndex: "created_at",
-      render: (v: string) => <Text type="secondary">{v}</Text>,
+      key: "adjustmentNo",
+      label: "Adjustment No",
+      type: "primary",
+      render: (row) => <strong>{row.adjustmentNo}</strong>,
     },
+    {
+      key: "warehouse",
+      label: "Warehouse",
+      render: (row) => row.warehouse?.name ?? "-",
+    },
+    {
+      key: "adjustmentType",
+      label: "Type",
+      type: "meta",
+      render: (row) => (
+        <Tag color={adjustmentTypeColor[row.adjustmentType]}>
+          {row.adjustmentType}
+        </Tag>
+      ),
+    },
+    {
+      key: "items",
+      label: "Items",
+      render: (row) => row.items?.length ?? 0,
+    },
+    {
+      key: "adjustmentQty",
+      label: "Total Qty",
+      render: (row) =>
+        row.items?.reduce(
+          (total, item) => total + Number(item.adjustmentQty ?? 0),
+          0,
+        ) ?? 0,
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={statusColor[row.status]}>{row.status}</Tag>
+      ),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Tooltip title="View">
+            <Button
+              size="small"
+              icon={<EyeOutlined />}
+              onClick={() =>
+                router.push(
+                  `/admin/dashboard/inventory/stock-adjustments/details/${row.id}`,
+                )
+              }
+            />
+          </Tooltip>
+
+          <Tooltip title="Approve">
+            <Button
+              size="small"
+              type="primary"
+              icon={<CheckOutlined />}
+              disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
+              onClick={() => handleApprove(row.id)}
+            />
+          </Tooltip>
+
+          <Tooltip title="Cancel">
+            <Button
+              size="small"
+              danger
+              icon={<CloseOutlined />}
+              disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
+              onClick={() => handleCancel(row.id)}
+            />
+          </Tooltip>
+        </div>
+      ),
+    }
   ];
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Stock Adjustments" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Stock Adjustments"
+        subtitle="Manage stock increase, decrease, warehouse adjustments, approval status, and cancellation records."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      {/* Filters */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="flex flex-col md:flex-row gap-3">
-          <Col xs={24} sm={12} md={8}>
-            <Search
-              placeholder="Search adjustment..."
-              allowClear
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ width: "100%" }}
-            />
-          </Col>
+      <Card>
+        <DataTable
+          data={tableData}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
 
-          <Col xs={24} sm={12} md={8}>
-            <Select
-              placeholder="Filter warehouse"
-              allowClear
-              style={{ width: "100%" }}
-              value={warehouseFilter}
-              onChange={setWarehouseFilter}
-              options={mockWarehouses.map((w) => ({
-                label: w.name,
-                value: w.name,
-              }))}
-            />
-          </Col>
+              <Select
+                allowClear
+                showSearch
+                loading={warehouseLoading || warehouseFetching}
+                placeholder="Select warehouse"
+                optionFilterProp="label"
+                options={warehouseOptions}
+                style={{ width: 180 }}
+                value={warehouseId || undefined}
+                onChange={(value) => {
+                  setCurrentPage(1);
+                  setWarehouseId(value ?? "");
+                }}
+              />
 
-          <Col xs={24} sm={12} md={8}>
-            <Select
-              placeholder="Filter status"
-              allowClear
-              style={{ width: "100%" }}
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={[
-                { label: "Pending", value: "pending" },
-                { label: "Approved", value: "approved" },
-                { label: "Rejected", value: "rejected" },
-              ]}
-            />
-          </Col>
-        </div>
-
-        <Button
-          type="primary"
-          onClick={() =>
-            router.push("/admin/dashboard/inventory/stock-adjustments/create")
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push("/admin/dashboard/inventory/stock-adjustments/create")
+                }
+              >
+                Create Adjustment
+              </Button>
+            </div>
           }
-        >
-          Create Adjustment
-        </Button>
-      </div>
-
-      {/* Table */}
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>All Adjustments</Title>
-
-            <Table
-              columns={columns}
-              dataSource={filteredData}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
-              scroll={{ x: "max-content" }}
-            />
-          </Card>
-        </Col>
-      </Row>
+          columns={columns}
+          onSearch={(value) => {
+            setCurrentPage(1);
+            setSearch(value);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
+        />
+      </Card>
     </div>
   );
 }

@@ -19,6 +19,7 @@ export default function AdminDashboardLayout({
   const { token } = theme.useToken();
 
   return (
+    
       <Layout hasSider style={{ maxHeight: "100vh", overflow: "hidden" }}>
         {/* Desktop Sidebar */}
         {!screens.xs && (
@@ -26,7 +27,6 @@ export default function AdminDashboardLayout({
             width={260}
             collapsed={collapsed}
             breakpoint="md"
-            // collapsedWidth="0"
             trigger={null}
             style={{ background: token.colorBgContainer }}
           >

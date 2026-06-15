@@ -334,7 +334,7 @@ export const items: MenuProps["items"] = [
         icon: <SwapOutlined />,
         label: (
           <Link href="/admin/dashboard/inventory/transactions">
-            Inventory Transactions
+            Inventory Movements
           </Link>
         ),
       },
@@ -443,6 +443,20 @@ export const items: MenuProps["items"] = [
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
       },
       {
+        key: "expenses",
+        icon: <DollarOutlined />, // Expense list
+        label: <Link href="/admin/dashboard/finance/expenses">Expenses</Link>,
+      },
+      {
+        key: "expenses-category",
+        icon: <TagsOutlined />,
+        label: (
+          <Link href="/admin/dashboard/finance/expense-category">
+            Expenses Categories
+          </Link>
+        ),
+      },
+      {
         key: "tax",
         icon: <CalculatorOutlined />,
         label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
@@ -472,29 +486,6 @@ export const items: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/finance/accounts/profit-loss">
             Profit & Loss
-          </Link>
-        ),
-      },
-    ],
-  },
-
-  // Expense
-  {
-    key: "finance-expense",
-    icon: <DollarOutlined />, // Expenses
-    label: "Expenses",
-    children: [
-      {
-        key: "expenses",
-        icon: <DollarOutlined />, // Expense list
-        label: <Link href="/admin/dashboard/finance/expenses">Expenses</Link>,
-      },
-      {
-        key: "categories-finance",
-        icon: <TagsOutlined />, // Expense Categories
-        label: (
-          <Link href="/admin/dashboard/finance/expenses/categories">
-            Categories
           </Link>
         ),
       },

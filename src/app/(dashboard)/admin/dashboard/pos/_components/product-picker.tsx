@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Empty, Input, List, Skeleton, Tag, Typography } from "antd";
+import { Card, Empty, Input, List, Skeleton, Tag, theme, Typography } from "antd";
 import Image from "next/image";
 import { ResponseProduct } from "@/types/product/product";
 import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
@@ -27,6 +27,8 @@ export function ProductPicker({
   onSearch,
   onSelect,
 }: ProductPickerProps) {
+
+  const { token } = theme.useToken();
   return (
     <Card
       title="Products"
@@ -61,11 +63,16 @@ export function ProductPicker({
 
             return (
               <List.Item
-                className="cursor-pointer rounded-md px-10 transition-colors"
+                className="cursor-pointer rounded-md transition-colors"
                 style={{
-                  border: isSelected ? "1px solid #1677ff" : undefined,
-                  background: isSelected ? "rgba(22, 119, 255, 0.06)" : undefined,
-                  paddingLeft: '10px'
+                  border: isSelected
+                    ? `1px solid ${token.colorPrimary}`
+                    : `1px solid ${token.colorBorderSecondary}`,
+                  background: isSelected
+                    ? token.controlItemBgActive
+                    : token.colorBgContainer,
+                  paddingLeft: 10,
+                  paddingRight: 10,
                 }}
                 onClick={() => onSelect(product)}
               >
@@ -81,14 +88,23 @@ export function ProductPicker({
                         unoptimized
                       />
                     ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 text-xs text-gray-500">
+                      <div
+                        className="flex h-12 w-12 items-center justify-center rounded-md text-xs"
+                        style={{
+                          background: token.colorFillSecondary,
+                          color: token.colorTextTertiary,
+                        }}
+                      >
                         No image
                       </div>
                     )
                   }
                   title={
                     <div className="flex flex-wrap items-center gap-2">
-                      <span>{product.name}</span>
+                      <span style={{ color: token.colorText }}>
+                        {product.name}
+                      </span>
+
                       <Tag color={product.status === "ACTIVE" ? "green" : "default"}>
                         {product.status}
                       </Tag>
@@ -100,7 +116,11 @@ export function ProductPicker({
                         {product.category?.name ?? "Uncategorized"} ·{" "}
                         {product.brand?.name ?? "No brand"}
                       </Text>
-                      <div className="flex flex-wrap gap-2 text-xs text-gray-500">
+
+                      <div
+                        className="flex flex-wrap gap-2 text-xs"
+                        style={{ color: token.colorTextTertiary }}
+                      >
                         <span>{money(product.price)}</span>
                         <span>{product.variants?.length ?? 0} variants</span>
                         <span>{availableQuantity} available</span>

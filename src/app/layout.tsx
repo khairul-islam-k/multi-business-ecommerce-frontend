@@ -30,11 +30,11 @@ export default function RootLayout({
       className={cn(openSans.variable, "font-sans", geist.variable)}
     >
       <body>
-        <ShadcnThemeProvider>
+        {/* <ShadcnThemeProvider> */}
           <AuthProvider>
             <QueryProvider>{children}</QueryProvider>
           </AuthProvider>
-        </ShadcnThemeProvider>
+        {/* </ShadcnThemeProvider> */}
       </body>
     </html>
   );
