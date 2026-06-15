@@ -232,4 +232,12 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["financeReceivable", businessId, "detail", CategoryId] as const,
   },
+  financeExpenseCategory: {
+    all: (businessId: ApiId) => ["financeExpenseCategory", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["financeExpenseCategory", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["financeExpenseCategory", businessId, "detail", CategoryId] as const,
+  },
 };
