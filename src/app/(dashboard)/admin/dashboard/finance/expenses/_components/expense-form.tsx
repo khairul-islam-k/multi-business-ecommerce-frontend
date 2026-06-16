@@ -3,7 +3,7 @@
 import { useExpenseCategoryQuery } from "@/lib/api/hooks/expense-category";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { useAuthStore } from "@/stores/auth.store";
-import { ExpensePayload } from "@/types/stock/expense";
+import { ExpensePayload, ExpenseResponse } from "@/types/stock/expense";
 import {
     Button,
     Card,
@@ -16,7 +16,7 @@ import {
     Select,
 } from "antd";
 import dayjs, { Dayjs } from "dayjs";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 const { TextArea } = Input;
 
@@ -24,15 +24,6 @@ type SelectOption = {
     label: string;
     value: string;
 };
-
-// export type ExpensePayload = {
-//     accountId: string;
-//     expenseCategoryId: string;
-//     title: string;
-//     amount: number;
-//     expenseDate: string;
-//     note?: string;
-// };
 
 type ExpenseFormValues = {
     accountId: string;
@@ -44,7 +35,7 @@ type ExpenseFormValues = {
 };
 
 type ExpenseFormProps = {
-    initialData?: ExpensePayload;
+    initialData?: ExpenseResponse | undefined;
     loading?: boolean;
     onSubmit: (payload: ExpensePayload) => void | Promise<void>;
 };
@@ -57,6 +48,7 @@ export default function ExpenseForm({
     const isUpdate = Boolean(initialData);
     const business = useAuthStore((s) => s.selectedBusiness);
     const businessId = business?.id ?? "";
+    const [form] = Form.useForm<ExpenseFormValues>();
 
     const {
         data: accounts,
@@ -105,21 +97,25 @@ export default function ExpenseForm({
         await onSubmit(payload);
     };
 
+    useEffect(() => {
+    if (initialData) {
+      form.setFieldsValue({
+        accountId: initialData.accountId,
+        expenseCategoryId: initialData.expenseCategoryId,
+        title: initialData.title,
+        amount: Number(initialData.amount),
+        expenseDate: dayjs(initialData.expenseDate),
+        note: initialData.note ?? undefined,
+      });
+    }
+  }, [initialData, form]);
+
     return (
         <Card title={isUpdate ? "Update Expense" : "Create Expense"}>
             <Form<ExpenseFormValues>
                 layout="vertical"
                 onFinish={handleFinish}
-                initialValues={{
-                    accountId: initialData?.accountId,
-                    expenseCategoryId: initialData?.expenseCategoryId,
-                    title: initialData?.title,
-                    amount: initialData?.amount,
-                    expenseDate: initialData?.expenseDate
-                        ? dayjs(initialData.expenseDate)
-                        : dayjs(),
-                    note: initialData?.note,
-                }}
+                form={form}
             >
                 <Row gutter={16}>
                     <Col xs={24} md={12}>

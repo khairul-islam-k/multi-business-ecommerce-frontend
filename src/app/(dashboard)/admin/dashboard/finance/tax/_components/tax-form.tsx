@@ -127,16 +127,16 @@ const TaxForm = ({
         <Form.Item
           label="Description"
           name="description"
-          rules={[
-            {
-              required: true,
-              message: "Description is required",
-            },
-            {
-              min: 3,
-              message: "Description must be at least 3 characters",
-            },
-          ]}
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: "Description is required",
+          //   },
+          //   {
+          //     min: 3,
+          //     message: "Description must be at least 3 characters",
+          //   },
+          // ]}
         >
           <TextArea rows={3} placeholder="Default VAT" />
         </Form.Item>

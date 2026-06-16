@@ -34,6 +34,8 @@ export const getApiErrorMessage = (error: unknown) => {
       | { message?: string; errors?: string[] }
       | undefined;
 
+    console.log('api message', data);
+
     return data?.message ?? error.message;
   }
 
@@ -54,7 +56,11 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 500) {
-      redirect("/internal-error");
+      if (typeof window !== "undefined") {
+        window.location.href = "/internal-error";
+      }
+
+      return Promise.reject(error);
     }
 
     if (!originalRequest || error.response?.status !== 401) {

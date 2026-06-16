@@ -44,16 +44,26 @@ export function useExpenseMutation(businessId: ApiId) {
       onSuccess: invalidate,
     }),
 
-    // updateExpenseCategory: useMutation({
-    //   mutationFn: ({
-    //     expenseId,
-    //     payload,
-    //   }: {
-    //     expenseId: ApiId;
-    //     payload: ExpenseCategoryPayload;
-    //   }) => ExpenseCategoryApi.update(businessId, expenseId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updateExpense: useMutation({
+      mutationFn: ({
+        expenseId,
+        payload,
+      }: {
+        expenseId: ApiId;
+        payload: ExpensePayload;
+      }) => ExpenseApi.update(businessId, expenseId, payload),
+      onSuccess: invalidate,
+    }),
+
+    updateExpensePay: useMutation({
+      mutationFn: (expenseId: ApiId) => ExpenseApi.updatePay(businessId, expenseId),
+      onSuccess: invalidate,
+    }),
+
+    updateExpenseCancel: useMutation({
+      mutationFn: (expenseId: ApiId) => ExpenseApi.updateCancel(businessId, expenseId),
+      onSuccess: invalidate,
+    }),
 
     removeExpense: useMutation({
       mutationFn: (expenseId: ApiId) =>

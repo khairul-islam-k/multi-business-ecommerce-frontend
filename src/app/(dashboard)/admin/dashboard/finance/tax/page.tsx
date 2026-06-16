@@ -7,7 +7,7 @@ import { useTaxMutation, useTaxQuery } from "@/lib/api/hooks/tax";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { TaxResponse } from "@/types/finance/tax";
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Button, Popconfirm, Select, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";

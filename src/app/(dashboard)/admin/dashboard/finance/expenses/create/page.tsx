@@ -7,6 +7,8 @@ import { useSwal } from '@/hooks/use-swal';
 import { getApiErrorMessage } from '@/lib/axios';
 import { ExpensePayload } from '@/types/stock/expense';
 import { useRouter } from 'next/navigation';
+import PageHeader from '@/components/shared/page-header';
+import { adminBreadcrumb } from '@/config/breadcrumb.config';
 
 const ExpenseCreate = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -33,7 +35,14 @@ const ExpenseCreate = () => {
     };
 
     return (
-        <div>
+        <div className="space-y-6">
+
+            <PageHeader
+                title="Create Expense"
+                subtitle="Add a new business expense with account, category, amount, date, and note."
+                breadcrumb={adminBreadcrumb}
+            />
+
             <ExpenseForm
                 onSubmit={handleSubmit}
                 loading={loading}
