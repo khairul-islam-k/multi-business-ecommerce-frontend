@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import {
   DeleteOutlined,
   EditOutlined,
+  EnvironmentOutlined,
   EyeOutlined,
+  MoreOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { App, Button, Card, Popconfirm, Select, Tag, Tooltip } from "antd";
+import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -16,9 +18,9 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useCustomerMutation, useCustomerQuery } from "@/lib/api/hooks/customer";
 import { useAuthStore } from "@/stores/auth.store";
-// import { CustomerResponse, CustomerStatus } from "@/types/customer";
 import CustomerCard from "./_components/CustomerCard";
 import { CustomerResponse, CustomerStatus } from "@/types/customer/customer";
+import { useSwal } from "@/hooks/use-swal";
 
 const getStatusColor = (status: CustomerStatus) => {
   if (status === "ACTIVE") return "green";
@@ -28,7 +30,7 @@ const getStatusColor = (status: CustomerStatus) => {
 
 const CustomerList = () => {
   const router = useRouter();
-  const { message } = App.useApp();
+  const swal = useSwal();
 
   const [statusFilter, setStatusFilter] = useState<CustomerStatus | undefined>();
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -56,13 +58,25 @@ const CustomerList = () => {
   const total = customers?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
-  const handleDelete = async (id: string) => {
-    try {
-      await removeCustomer.mutateAsync(id);
-      message.success("Customer deleted successfully");
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    }
+  const handleDelete = (id: string) => {
+    swal.modal.confirm({
+      title: "Delete customer?",
+      content: "Are you sure you want to delete this customer?",
+      okText: "Delete",
+      cancelText: "Cancel",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await removeCustomer.mutateAsync(id);
+          swal.success("Customer deleted successfully");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
+    });
   };
 
   const columns: Column<CustomerResponse>[] = [
@@ -113,46 +127,78 @@ const CustomerList = () => {
     {
       key: "actions",
       label: "Actions",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Tooltip title="View customer">
-            <Button
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() =>
-                router.push(
-                  `/admin/dashboard/customers/customer-list/view/${row.id}`
-                )
-              }
-            />
-          </Tooltip>
+      render: (row) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "view",
+            icon: <EyeOutlined />,
+            label: "View",
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Edit",
+          },
+          {
+            key: "add-address",
+            icon: <EnvironmentOutlined />,
+            label: "Add Address",
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "delete",
+            icon: <DeleteOutlined />,
+            label: "Delete",
+            danger: true,
+          },
+        ];
 
-          <Tooltip title="Edit customer">
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(
-                  `/admin/dashboard/customers/customer-list/update/${row.id}`
-                )
-              }
-            />
-          </Tooltip>
+        const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+          if (key === "view") {
+            router.push(
+              `/admin/dashboard/customers/customer-list/details/${row.id}`
+            );
+          }
 
-          <Tooltip title="Delete customer">
-            <Popconfirm
-              title="Delete customer?"
-              description="Are you sure?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() => handleDelete(row.id)}
-            >
-              <Button danger size="small" icon={<DeleteOutlined />} />
-            </Popconfirm>
-          </Tooltip>
-        </div>
-      ),
-    },
+          if (key === "edit") {
+            router.push(
+              `/admin/dashboard/customers/customer-list/update/${row.id}`
+            );
+          }
+
+          if (key === "add-address") {
+            router.push(
+              `/admin/dashboard/customers/customer-list/address/${row.id}`
+            );
+          }
+
+          if (key === "delete") {
+            handleDelete(row.id);
+          }
+        };
+
+        return (
+          <Dropdown
+            menu={{
+              items,
+              onClick: handleMenuClick,
+            }}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
+            <Tooltip title="Actions">
+              <Button
+                size="small"
+                icon={<MoreOutlined />}
+                onClick={(e) => e.preventDefault()}
+              />
+            </Tooltip>
+          </Dropdown>
+        );
+      },
+    }
   ];
 
   return (

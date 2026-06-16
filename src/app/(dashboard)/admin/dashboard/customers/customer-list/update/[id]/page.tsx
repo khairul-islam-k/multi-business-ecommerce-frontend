@@ -4,21 +4,47 @@ import CustomerForm from '../../_components/customer-form';
 import { CustomerPayload } from '@/types/customer/customer';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
-
-const customer = {
-    name: "John Wick",
-    email: "john@example.com",
-    phone: "+8801700000000",
-    status: "ACTIVE",
-    note: "Frequent buyer"
-};
+import { useCustomer, useCustomerMutation } from '@/lib/api/hooks/customer';
+import { useAuthStore } from '@/stores/auth.store';
+import { useParams, useRouter } from 'next/navigation';
+import Loader from '@/components/shared/loader';
+import { useSwal } from '@/hooks/use-swal';
+import { getApiErrorMessage } from '@/lib/axios';
 
 const UpdateCustomer = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    const business = useAuthStore((s) => s.selectedBusiness);
+    const businessId = business?.id ?? "";
+    const { id } = useParams<{ id: string }>();
+    const swal = useSwal();
+    const router = useRouter();
 
-    const handleSubmit = (values: CustomerPayload) => {
-        console.log('value', values)
-    }
+    const { data: customer, isLoading, isFetching } = useCustomer(businessId, id);
+    const { updateCustomer } = useCustomerMutation(businessId);
+
+    const handleSubmit = async (values: CustomerPayload) => {
+        if (!businessId) {
+            swal.error("Business not selected.");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            await updateCustomer.mutateAsync({
+                customerId: id,
+                payload: values
+            });
+            router.push('/admin/dashboard/customers/customer-list');
+            swal.success("Customer Updated successfully.");
+        } catch (error) {
+            swal.error(getApiErrorMessage(error));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (isLoading || isFetching) return <Loader />
 
     return (
         <div className='space-y-6'>

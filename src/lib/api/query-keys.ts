@@ -256,4 +256,12 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["customer", businessId, "detail", CategoryId] as const,
   },
+  customerAddress: {
+    all: (businessId: ApiId) => ["customerAddress", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["customerAddress", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["customerAddress", businessId, "detail", CategoryId] as const,
+  },
 };

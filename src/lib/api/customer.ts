@@ -14,36 +14,36 @@ export const customerApi = {
       .then((res) => normalizePaginatedResponse(res.data));
   },
 
-  //   get(businessId: ApiId, brandId: ApiId) {
-  //     return api
-  //       .get<ApiResponse<ResponseBrand>>(`${basePath(businessId)}/${brandId}`)
-  //       .then((res) => unwrapApiResponse(res.data));
-  //   },
+    get(businessId: ApiId, customerId: ApiId) {
+      return api
+        .get<ApiResponse<CustomerResponse>>(`${basePath(businessId)}/${customerId}`)
+        .then((res) => unwrapApiResponse(res.data));
+    },
 
   create(businessId: ApiId, payload: CustomerPayload) {
     return api
       .post<ApiResponse<CustomerResponse>>(basePath(businessId), payload)
       .then((res) => unwrapApiResponse(res.data));
   },
-  //   update(
-  //     businessId: ApiId,
-  //     brandId: ApiId,
-  //     payload: BrandPayload,
-  //   ) {
-  //     return api
-  //       .patch<ApiResponse<ResponseBrand>>(
-  //         `${basePath(businessId)}/${brandId}`,
-  //         payload,
-  //       )
-  //       .then((res) => unwrapApiResponse(res.data));
-  //   },
+    update(
+      businessId: ApiId,
+      customerId: ApiId,
+      payload: CustomerPayload,
+    ) {
+      return api
+        .patch<ApiResponse<CustomerResponse>>(
+          `${basePath(businessId)}/${customerId}`,
+          payload,
+        )
+        .then((res) => unwrapApiResponse(res.data));
+    },
 
-  //   remove(businessId: ApiId, brandId: ApiId) {
-  //     return api
-  //       .delete<ApiResponse<null>>(`${basePath(businessId)}/${brandId}`)
-  //       .then((res) => ({
-  //         message: res.data.message ?? "Employee deleted successfully",
-  //       }));
-  //   },
+    remove(businessId: ApiId, customerId: ApiId) {
+      return api
+        .delete<ApiResponse<null>>(`${basePath(businessId)}/${customerId}`)
+        .then((res) => ({
+          message: res.data.message ?? "Employee deleted successfully",
+        }));
+    },
 
 };

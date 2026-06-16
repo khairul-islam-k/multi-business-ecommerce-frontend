@@ -8,12 +8,14 @@ import { useSwal } from '@/hooks/use-swal';
 import { getApiErrorMessage } from '@/lib/axios';
 import PageHeader from '@/components/shared/page-header';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
+import { useRouter } from 'next/navigation';
 
 const CreateCustomer = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const business = useAuthStore((s) => s.selectedBusiness);
     const businessId = business?.id ?? "";
     const swal = useSwal();
+    const router = useRouter();
 
     const { createCustomer } = useCustomerMutation(businessId);
 
@@ -26,8 +28,8 @@ const CreateCustomer = () => {
         setLoading(true);
 
         try {
-            const res = await createCustomer.mutateAsync(values);
-            console.log('res', res);
+            await createCustomer.mutateAsync(values);
+            router.push('/admin/dashboard/customers/customer-list');
             swal.success("Customer created successfully.");
         } catch (error) {
             swal.error(getApiErrorMessage(error));

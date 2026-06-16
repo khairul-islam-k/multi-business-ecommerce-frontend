@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { productBrandApi } from "../product-brand";
 import { customerApi } from "../customer";
 import { CustomerPayload } from "@/types/customer/customer";
 
@@ -13,21 +12,21 @@ export function useCustomerQuery(businessId: ApiId, query?: CategoriesQuery) {
   });
 }
 
-// export function useBrand(businessId: ApiId, brandId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductCategories.detail(businessId, brandId),
+export function useCustomer(businessId: ApiId, customerId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.customer.detail(businessId, customerId),
 
-//     queryFn: () => {
-//       if (!businessId || !brandId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!businessId || !customerId) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productBrandApi.get(businessId, brandId);
-//     },
+      return customerApi.get(businessId, customerId);
+    },
 
-//     enabled: Boolean(businessId && brandId),
-//   });
-// }
+    enabled: Boolean(businessId && customerId),
+  });
+}
 
 export function useCustomerMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
@@ -44,22 +43,22 @@ export function useCustomerMutation(businessId: ApiId) {
       onSuccess: invalidate,
     }),
 
-    // updateBrand: useMutation({
-    //   mutationFn: ({
-    //     brandId,
-    //     payload,
-    //   }: {
-    //     brandId: ApiId;
-    //     payload: BrandPayload;
-    //   }) => productBrandApi.update(businessId, brandId, payload),
-    //   onSuccess: invalidate,
-    // }),
+    updateCustomer: useMutation({
+      mutationFn: ({
+        customerId,
+        payload,
+      }: {
+        customerId: ApiId;
+        payload: CustomerPayload;
+      }) => customerApi.update(businessId, customerId, payload),
+      onSuccess: invalidate,
+    }),
 
-    // removeBrand: useMutation({
-    //   mutationFn: (brandId: ApiId) =>
-    //     productBrandApi.remove(businessId, brandId),
-    //   onSuccess: invalidate,
-    // }),
+    removeCustomer: useMutation({
+      mutationFn: (customerId: ApiId) =>
+        customerApi.remove(businessId, customerId),
+      onSuccess: invalidate,
+    }),
 
   };
 }

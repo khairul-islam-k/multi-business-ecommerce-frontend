@@ -1,3 +1,5 @@
+import { CustomerAddressResponse } from "./customerAddress";
+
 export type CustomerStatus =
     | "ACTIVE"
     | "INACTIVE"
@@ -9,24 +11,6 @@ export type CustomerPayload = {
     phone?: string;
     status: CustomerStatus;
     note?: string;
-};
-
-export type CustomerAddress = {
-  id: string;
-  customerId: string;
-  businessId: string;
-  name?: string | null;
-  phone?: string | null;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
-  city?: string | null;
-  state?: string | null;
-  postalCode?: string | null;
-  country?: string | null;
-  isDefault?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  deletedAt?: string | null;
 };
 
 export type CustomerCount = {
@@ -47,6 +31,6 @@ export type CustomerResponse = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  addresses: CustomerAddress[];
+  addresses: CustomerAddressResponse[];
   _count: CustomerCount;
 };
