@@ -40,7 +40,7 @@ const PurchaseDetail = () => {
     id
   );
 
-  console.log('status', purchase?.status);
+  console.log('status', purchase);
   const cancelOrReceiveStatus = !((purchase?.status === "CANCELLED") || (purchase?.status === "RECEIVED"));
 
   const receiveStatus = purchase?.status === "RECEIVED"
@@ -184,13 +184,14 @@ const PurchaseDetail = () => {
           dataSource={purchase.items ?? []}
           columns={[
             {
-              title: "Product ID",
+              title: "Product",
               dataIndex: "productId",
+              render: (_, row) => row.product.name
             },
             {
-              title: "Variant ID",
+              title: "Variant",
               dataIndex: "variantId",
-              render: (value) => value || "-",
+              render: (_, row) => row.variant?.title || "-",
             },
             {
               title: "Qty Ordered",

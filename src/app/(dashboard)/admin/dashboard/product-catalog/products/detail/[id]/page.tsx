@@ -1,12 +1,16 @@
 "use client";
 
+import Loader from "@/components/shared/loader";
 import { useProduct } from "@/lib/api/hooks/product";
 import { useAuthStore } from "@/stores/auth.store";
 import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import { Button, Card, Col, Empty, Row, Statistic, Tag } from "antd";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
+import ViewVariantTable from "./_components/view-variant-table";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -46,9 +50,7 @@ export default function ProductDetailPage() {
 
   if (isLoading || isFetching) {
     return (
-      <Card>
-        <Skeleton active paragraph={{ rows: 8 }} />
-      </Card>
+      <Loader />
     );
   }
 
@@ -68,6 +70,13 @@ export default function ProductDetailPage() {
 
   return (
     <div className="space-y-6">
+
+      <PageHeader
+        title="Product Details"
+        subtitle="View product information, variants, SKU, barcode, price, stock, category, brand, and status."
+        breadcrumb={adminBreadcrumb}
+      />
+
       <div className="flex items-center justify-between">
         <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
           Back
@@ -118,9 +127,8 @@ export default function ProductDetailPage() {
                       key={image.id}
                       type="button"
                       onClick={() => setSelectedImageId(image.id)}
-                      className={`relative h-20 overflow-hidden rounded-lg border bg-gray-50 ${
-                        isSelected ? "border-blue-500 ring-2 ring-blue-200" : ""
-                      }`}
+                      className={`relative h-20 overflow-hidden rounded-lg border bg-gray-50 ${isSelected ? "border-blue-500 ring-2 ring-blue-200" : ""
+                        }`}
                     >
                       <Image
                         src={imageUrlSet(image.imageUrl)}
@@ -207,17 +215,46 @@ export default function ProductDetailPage() {
         </div>
       </Card>
 
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Total Quantity"
+              value={Number(product?.stockSummary?.totalQuantity ?? 0)}
+            />
+          </Card>
+        </Col>
+
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Reserved Quantity"
+              value={Number(product?.stockSummary?.quantityReserved ?? 0)}
+            />
+          </Card>
+        </Col>
+
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Available Quantity"
+              value={Number(product?.stockSummary?.availableQuantity ?? 0)}
+            />
+          </Card>
+        </Col>
+      </Row>
+
       <Card title="System Information">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <InfoItem label="Product ID" value={product.id} />
-          <InfoItem label="Business ID" value={product.businessId} />
-          <InfoItem label="Category ID" value={product.categoryId} />
-          <InfoItem label="Brand ID" value={product.brandId} />
-          <InfoItem label="Unit ID" value={product.unitId} />
-          <InfoItem label="Created By" value={product.createdBy ?? "-"} />
-          <InfoItem label="Updated By" value={product.updatedBy ?? "-"} />
+          <InfoItem label="Product Sku" value={product.sku} />
+          <InfoItem label="Product slug" value={product.slug} />
         </div>
       </Card>
+
+      <ViewVariantTable
+        variants={product.variants ?? []}
+      />
+
     </div>
   );
 }
