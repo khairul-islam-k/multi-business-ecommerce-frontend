@@ -1,7 +1,7 @@
 "use client";
 
-import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { App, Button, Card, Popconfirm, Select, Tag, Tooltip } from "antd";
+import { CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -14,57 +14,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { ExpenseResponse, ExpenseStatus } from "@/types/stock/expense";
 import { useSwal } from "@/hooks/use-swal";
 
-// type ExpenseStatus = "DRAFT" | "APPROVED" | "CANCELLED";
-type AccountType = "CASH" | "BANK" | "MOBILE_BANKING";
-type ActiveStatus = "ACTIVE" | "INACTIVE";
 
-type ExpenseAccount = {
-  id: string;
-  businessId: string;
-  name: string;
-  accountNumber: string;
-  accountType: AccountType;
-  currencyCode: string;
-  openingBalance: string;
-  currentBalance: string;
-  status: ActiveStatus;
-  createdBy: string;
-  updatedBy: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-};
-
-type ExpenseCategory = {
-  id: string;
-  businessId: string;
-  name: string;
-  description: string | null;
-  status: ActiveStatus;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-};
-
-type Expense = {
-  id: string;
-  businessId: string;
-  accountId: string;
-  expenseCategoryId: string;
-  expenseNo: string;
-  referenceNo: string | null;
-  title: string;
-  amount: string;
-  expenseDate: string;
-  note: string | null;
-  status: ExpenseStatus;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  account: ExpenseAccount;
-  category: ExpenseCategory;
-};
 
 const getStatusColor = (status: ExpenseStatus) => {
   if (status === "PAID") return "green";
@@ -96,11 +46,12 @@ const ExpensesList = () => {
     ...(statusFilter === "ALL" ? {} : { status: statusFilter }),
   });
 
-  const { removeExpense } = useExpenseMutation(businessId);
+  const { removeExpense, updateExpensePay, updateExpenseCancel } = useExpenseMutation(businessId);
 
   const total = expenses?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
+  // all action
   const handleDelete = (id: string) => {
     swal.modal.confirm({
       title: "Delete expense?",
@@ -121,6 +72,46 @@ const ExpensesList = () => {
       },
     });
   };
+
+  const handleMarkAsPaid = (id: string) => {
+  swal.modal.confirm({
+    title: "Mark expense as paid?",
+    content: "This expense will be marked as paid.",
+    okText: "Mark as Paid",
+    cancelText: "Cancel",
+    centered: true,
+    async onOk() {
+      try {
+        const res = await updateExpensePay.mutateAsync(id);
+        console.log('res', res);
+        swal.success("Expense marked as paid successfully");
+      } catch (error) {
+        swal.error(getApiErrorMessage(error));
+      }
+    },
+  });
+};
+
+const handleCancel = (id: string) => {
+  swal.modal.confirm({
+    title: "Cancel expense?",
+    content: "This expense will be cancelled.",
+    okText: "Cancel Expense",
+    cancelText: "Close",
+    centered: true,
+    okButtonProps: {
+      danger: true,
+    },
+    async onOk() {
+      try {
+        await updateExpenseCancel.mutateAsync(id);
+        swal.success("Expense cancelled successfully");
+      } catch (error) {
+        swal.error(getApiErrorMessage(error));
+      }
+    },
+  });
+};
 
   const columns: Column<ExpenseResponse>[] = [
     {
@@ -173,35 +164,86 @@ const ExpensesList = () => {
     {
       key: "actions",
       label: "Actions",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Tooltip title="View expense">
-            <Button
-              size="small"
-              icon={<EyeOutlined />}
-              onClick={() =>
-                router.push(`/admin/dashboard/finance/expenses/view/${row.id}`)
-              }
-            />
-          </Tooltip>
+      render: (row) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "view",
+            icon: <EyeOutlined />,
+            label: "View",
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Edit",
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "paid",
+            icon: <CheckCircleOutlined />,
+            label: "Mark as Paid",
+            disabled: row.status === "PAID" || row.status === "CANCELLED",
+          },
+          {
+            key: "cancel",
+            icon: <CloseCircleOutlined />,
+            label: "Cancel",
+            danger: true,
+            disabled: row.status === "CANCELLED" || row.status === "PAID",
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "delete",
+            icon: <DeleteOutlined />,
+            label: "Delete",
+            danger: true,
+          },
+        ];
 
-          <Tooltip title="Edit expense">
-            <Button
-              size="small"
-              icon={<EditOutlined />}
-              onClick={() =>
-                router.push(`/admin/dashboard/finance/expenses/update/${row.id}`)
-              }
-            />
-          </Tooltip>
+        const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+          if (key === "view") {
+            router.push(`/admin/dashboard/finance/expenses/view/${row.id}`);
+          }
 
-          <Tooltip title="Delete expense">
-            <Button danger size="small"
-              onClick={() => handleDelete(row.id)}
-              icon={<DeleteOutlined />} />
-          </Tooltip>
-        </div>
-      ),
+          if (key === "edit") {
+            router.push(`/admin/dashboard/finance/expenses/update/${row.id}`);
+          }
+
+          if (key === "paid") {
+            handleMarkAsPaid(row.id);
+          }
+
+          if (key === "cancel") {
+            handleCancel(row.id);
+          }
+
+          if (key === "delete") {
+            handleDelete(row.id);
+          }
+        };
+
+        return (
+          <Dropdown
+            menu={{
+              items,
+              onClick: handleMenuClick,
+            }}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
+            <Tooltip title="Actions">
+              <Button
+                size="small"
+                icon={<MoreOutlined />}
+                onClick={(e) => e.preventDefault()}
+              />
+            </Tooltip>
+          </Dropdown>
+        );
+      },
     }
   ];
 
@@ -235,7 +277,7 @@ const ExpensesList = () => {
                 options={[
                   { label: "All", value: "ALL" },
                   { label: "Draft", value: "DRAFT" },
-                  { label: "Approved", value: "PAID" },
+                  { label: "PAID", value: "PAID" },
                   { label: "Cancelled", value: "CANCELLED" },
                 ]}
               />

@@ -148,6 +148,14 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["suppliers", businessId, "detail", CategoryId] as const,
   },
+  supplierProduct: {
+    all: (businessId: ApiId) => ["supplierProduct", businessId] as const,
+    list: (businessId: ApiId, supplierId: ApiId, query?: CategoriesQuery) =>
+      ["supplierProduct", businessId, supplierId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId, productMId: ApiId) =>
+      ["supplierProduct", businessId, "detail", CategoryId, productMId] as const,
+  },
   warehouse: {
     all: (businessId: ApiId) => ["warehouse", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
@@ -247,5 +255,21 @@ export const apiQueryKeys = {
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["financeExpense", businessId, "detail", CategoryId] as const,
+  },
+  customer: {
+    all: (businessId: ApiId) => ["customer", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["customer", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["customer", businessId, "detail", CategoryId] as const,
+  },
+  customerAddress: {
+    all: (businessId: ApiId) => ["customerAddress", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["customerAddress", businessId, "list", query] as const,
+
+    detail: (businessId: ApiId, CategoryId: ApiId) =>
+      ["customerAddress", businessId, "detail", CategoryId] as const,
   },
 };

@@ -1,61 +1,172 @@
-import { Card, Col, Row, Tag } from "antd";
-import {
-  EnvironmentOutlined,
-  FileMarkdownOutlined,
-  PhoneOutlined,
-} from "@ant-design/icons";
+"use client";
 
-type Customer = {
-  id: number;
-  customer: string;
-  contact: string;
-  email: string;
-  city: string;
-  source: string;
-  orders: number;
-  spent: string;
-  status: "Active" | "Inactive";
-};
+import { Column, DataTable } from "@/components/shared/data-table";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { CustomerAddressResponse } from "@/types/customer/customerAddress";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, Card, Modal, Tag, Tooltip } from "antd";
+import { useState } from "react";
+import UpdateAddress from "./update-address";
+import { useCustomerAddressMutation } from "@/lib/api/hooks/customer-address";
 
 type Props = {
-  userData: Customer;
+  address: CustomerAddressResponse[];
+  customerId: string;
 };
 
-const Address = ({ userData }: Props) => {
-  return (
-    <div>
-      <Row gutter={20}>
-        <Col xs={24} md={12}>
-          <Card title="Contact Info" style={{ height: "100%" }}>
-            <h4>
-              <PhoneOutlined /> {userData.contact}
-            </h4>
-            <p>
-              <FileMarkdownOutlined /> {userData.email}
-            </p>
-            <p>
-              <EnvironmentOutlined /> {userData.city}
-            </p>
-            <p>Region: Federal · District: Islamabad · Source: Website</p>
-          </Card>
-        </Col>
-        <Col xs={24} md={12}>
-          <Card title="Addresses (2)" style={{ height: "100%" }}>
-            <Card style={{ marginBottom: "10px" }}>
-              <h3 style={{ fontSize: "17px" }}>
-                Home <Tag>Default</Tag>
-              </h3>
-              <p>House 12, Street 5, F-8, Islamabad Islamabad · 44000</p>
-            </Card>
+const formatDate = (date?: string | null) => {
+  if (!date) return "-";
+  return new Date(date).toLocaleDateString();
+};
 
-            <Card>
-              <h3 style={{ fontSize: "17px" }}>Office</h3>
-              <p>Office 301, Blue Area, Islamabad Islamabad · 44000</p>
-            </Card>
-          </Card>
-        </Col>
-      </Row>
-    </div>
+const Address = ({ address, customerId }: Props) => {
+  const [search, setSearch] = useState('');
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+  const swal = useSwal();
+
+  const {removeAddress} = useCustomerAddressMutation(businessId);
+
+  // modal
+  const [singleAddress, setSingleAddress] = useState<CustomerAddressResponse>({
+    id: '',
+    customerId: '',
+    addressType: 'HOME',
+    name: '',
+    address: '',
+    city: '',
+    country: '',
+    isDefault: false,
+    createdAt: '',
+    updatedAt: '',
+    deletedAt: ''
+  });
+  const [openModal, setOpenModal] = useState<boolean>(false);
+
+  const handleDeleteAddress = (addressId: string) => {
+    swal.modal.confirm({
+      title: "Delete address?",
+      content: "Are you sure you want to delete this customer address?",
+      okText: "Delete",
+      cancelText: "Cancel",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await removeAddress.mutateAsync({
+            customerId,
+            addressId
+          });
+          swal.success("Address deleted successfully");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
+
+  const addressColumns: Column<CustomerAddressResponse>[] = [
+    {
+      key: "addressType",
+      label: "Type",
+      type: "meta",
+      render: (row) => <Tag>{row.addressType}</Tag>,
+    },
+    {
+      key: "name",
+      label: "Name",
+      type: "primary",
+      render: (row) => <strong>{row.name ?? "-"}</strong>,
+    },
+    {
+      key: "address",
+      label: "Address",
+      render: (row) => row.address ?? "-",
+    },
+    {
+      key: "city",
+      label: "City",
+      render: (row) => row.city ?? "-",
+    },
+    {
+      key: "country",
+      label: "Country",
+      render: (row) => row.country ?? "-",
+    },
+    {
+      key: "isDefault",
+      label: "Default",
+      type: "meta",
+      render: (row) =>
+        row.isDefault ? (
+          <Tag color="green">Default</Tag>
+        ) : (
+          <Tag>Normal</Tag>
+        ),
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (row) => formatDate(row.createdAt),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Tooltip title="Edit address">
+            <Button
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setSingleAddress(row);
+                setOpenModal(true);
+              }}
+            />
+          </Tooltip>
+
+          <Tooltip title="Delete address">
+            <Button
+              danger
+              size="small"
+              icon={<DeleteOutlined />}
+              onClick={() => handleDeleteAddress(row.id)}
+            />
+          </Tooltip>
+        </div>
+      ),
+    }
+  ];
+
+  return (
+    <Card title='Customer Address'>
+
+      <DataTable
+        data={address}
+        columns={addressColumns}
+        onSearch={(value) => {
+          setSearch(value);
+        }}
+
+      />
+
+      <Modal
+        title="Basic Modal"
+        closable={{ 'aria-label': 'Custom Close Button' }}
+        open={openModal}
+        footer={null}
+        onCancel={() => setOpenModal(false)}
+      >
+        <UpdateAddress
+          customerId={customerId}
+          singleAddress={singleAddress}
+        />
+      </Modal>
+    </Card>
   );
 };
 

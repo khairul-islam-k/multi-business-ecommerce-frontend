@@ -30,18 +30,15 @@ export default function CreateTaxPage() {
       status: values.status,
     };
 
-    console.log('payload', payload);
-
     try {
       setSubmitting(true);
 
-     const res = await createTax.mutateAsync(payload);
+     await createTax.mutateAsync(payload);
 
       message.success("Tax created successfully");
       router.push("/admin/dashboard/finance/tax");
     } catch (error) {
       message.error(getApiErrorMessage(error));
-      console.log(getApiErrorMessage(error))
     } finally {
       setSubmitting(false);
     }

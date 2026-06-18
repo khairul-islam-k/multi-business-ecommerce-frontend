@@ -26,18 +26,40 @@ export const ExpenseApi = {
       .then((res) => unwrapApiResponse(res.data));
   },
 
-  //   update(
-  //     businessId: ApiId,
-  //     expenseId: ApiId,
-  //     payload: ExpenseCategoryPayload,
-  //   ) {
-  //     return api
-  //       .patch<ApiResponse<ExpenseCategoryResponse>>(
-  //         `${basePath(businessId)}/${expenseId}`,
-  //         payload,
-  //       )
-  //       .then((res) => unwrapApiResponse(res.data));
-  //   },
+    update(
+      businessId: ApiId,
+      expenseId: ApiId,
+      payload: ExpensePayload,
+    ) {
+      return api
+        .patch<ApiResponse<ExpenseResponse>>(
+          `${basePath(businessId)}/${expenseId}`,
+          payload,
+        )
+        .then((res) => unwrapApiResponse(res.data));
+    },
+
+    updatePay(
+      businessId: ApiId,
+      expenseId: ApiId,
+    ) {
+      return api
+        .patch<ApiResponse<ExpenseResponse>>(
+          `${basePath(businessId)}/${expenseId}/pay`
+        )
+        .then((res) => unwrapApiResponse(res.data));
+    },
+
+    updateCancel(
+      businessId: ApiId,
+      expenseId: ApiId,
+    ) {
+      return api
+        .patch<ApiResponse<ExpenseResponse>>(
+          `${basePath(businessId)}/${expenseId}/cancel`
+        )
+        .then((res) => unwrapApiResponse(res.data));
+    },
 
   remove(businessId: ApiId, expenseId: ApiId) {
     return api

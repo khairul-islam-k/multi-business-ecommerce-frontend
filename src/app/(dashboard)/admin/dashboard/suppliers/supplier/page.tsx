@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import {
   DeleteOutlined,
   EditOutlined,
+  MoreOutlined,
   PlusOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
-import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
+import { App, Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag, Tooltip } from "antd";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
@@ -109,30 +111,74 @@ const SupplierInfo = () => {
     {
       key: "actions",
       label: "Actions",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <Button
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() =>
-              router.push(
-                `/admin/dashboard/suppliers/supplier/edit/${row.id}`
-              )
-            }
-          />
+      render: (row) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "view-products",
+            icon: <ShoppingOutlined />,
+            label: "View Supplier Products",
+          },
+          {
+            key: "add-supplier-product",
+            icon: <PlusOutlined />,
+            label: "Add Supplier Product",
+          },
+          {
+            key: "edit",
+            icon: <EditOutlined />,
+            label: "Edit",
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "delete",
+            icon: <DeleteOutlined />,
+            label: "Delete",
+            danger: true,
+          },
+        ];
 
-          <Popconfirm
-            title="Delete supplier?"
-            description="Are you sure you want to delete this supplier?"
-            okText="Yes"
-            cancelText="No"
-            onConfirm={() => handleDelete(row.id)}
+        const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
+          if (key === "view-products") {
+            router.push(`/admin/dashboard/suppliers/supplier/product/${row.id}`);
+          }
+
+          if (key === "add-supplier-product") {
+            router.push(
+              `/admin/dashboard/suppliers/supplier/add-supplier-product/${row.id}`
+            );
+          }
+
+          if (key === "edit") {
+            router.push(`/admin/dashboard/suppliers/supplier/edit/${row.id}`);
+          }
+
+          if (key === "delete") {
+            handleDelete(row.id);
+          }
+        };
+
+        return (
+          <Dropdown
+            menu={{
+              items,
+              onClick: handleMenuClick,
+            }}
+            trigger={["click"]}
+            placement="bottomRight"
           >
-            <Button danger size="small" icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </div>
-      ),
-    },
+            <Tooltip title="Actions">
+              <Button
+                size="small"
+                icon={<MoreOutlined />}
+                onClick={(e) => e.preventDefault()}
+              />
+            </Tooltip>
+          </Dropdown>
+        );
+      },
+    }
   ];
 
   return (

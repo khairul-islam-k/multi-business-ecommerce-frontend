@@ -29,6 +29,7 @@ export interface Column<T> {
 }
 
 interface DataTableProps<T> {
+  isSearch?: boolean;
   data: T[];
   columns: Column<T>[];
 
@@ -71,6 +72,7 @@ function renderCell<T extends object>(row: T, column: Column<T>) {
 }
 
 export function DataTable<T extends object>({
+  isSearch = true,
   data,
   columns,
   toolbarEnd,
@@ -239,14 +241,16 @@ export function DataTable<T extends object>({
     <div className="space-y-4">
       <div className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
         <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
-          <Input
-            placeholder="Search..."
-            prefix={<SearchOutlined />}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            allowClear
-            className="w-full sm:w-64"
-          />
+          {
+            isSearch && <Input
+              placeholder="Search..."
+              prefix={<SearchOutlined />}
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              allowClear
+              className="w-full sm:w-64"
+            />
+          }
 
           {extra}
         </div>

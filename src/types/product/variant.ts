@@ -81,7 +81,7 @@ export type ResponseVariant = {
   barcode: string;
 
   // Your API returns string: "15", "55"
-  priceOverride: string | number;
+  priceOverride: string | undefined;
   weight: string | number;
 
   status: VariantStatus;

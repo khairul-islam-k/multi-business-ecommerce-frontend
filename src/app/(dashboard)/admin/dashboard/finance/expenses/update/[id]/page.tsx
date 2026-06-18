@@ -3,19 +3,13 @@ import React, { useState } from 'react';
 import ExpenseForm from '../../_components/expense-form';
 import { getApiErrorMessage } from '@/lib/axios';
 import { ExpensePayload } from '@/types/stock/expense';
-import { useExpenseMutation } from '@/lib/api/hooks/expense';
-import { useRouter } from 'next/navigation';
+import { useExpense, useExpenseMutation } from '@/lib/api/hooks/expense';
+import { useParams, useRouter } from 'next/navigation';
 import { useSwal } from '@/hooks/use-swal';
 import { useAuthStore } from '@/stores/auth.store';
-
-const expense = {
-    accountId: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
-    expenseCategoryId: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
-    title: "Packaging materials",
-    amount: 500,
-    expenseDate: "2026-06-02T00:00:00.000Z",
-    note: "Paid to local vendor",
-};
+import Loader from '@/components/shared/loader';
+import PageHeader from '@/components/shared/page-header';
+import { adminBreadcrumb } from '@/config/breadcrumb.config';
 
 const UpdateExpense = () => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -23,15 +17,21 @@ const UpdateExpense = () => {
     const businessId = business?.id ?? "";
     const swal = useSwal();
     const router = useRouter();
+    const { id } = useParams<{ id: string }>();
 
-    const { createExpense } = useExpenseMutation(businessId);
+    const { data: expense, isFetching, isLoading } = useExpense(businessId, id);
+
+    const { updateExpense } = useExpenseMutation(businessId);
 
     const handleSubmit = async (values: ExpensePayload) => {
         setLoading(true);
 
         try {
-            const res = await createExpense.mutateAsync(values);
-            console.log('res', res);
+            await updateExpense.mutateAsync({
+                expenseId: id,
+                payload: values
+            });
+
             router.push('/admin/dashboard/finance/expenses/');
             swal.success("Expense created successfully.");
         } catch (error) {
@@ -41,8 +41,19 @@ const UpdateExpense = () => {
         }
     };
 
+    if (isLoading || isFetching) {
+        return <Loader />
+    }
+
     return (
-        <div>
+        <div className='space-y-6'>
+
+            <PageHeader
+                title="Update Expense"
+                subtitle="Modify expense account, category, amount, date, note, and other expense information."
+                breadcrumb={adminBreadcrumb}
+            />
+
             <ExpenseForm
                 initialData={expense}
                 onSubmit={handleSubmit}
