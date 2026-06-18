@@ -5,12 +5,14 @@ import ProductForm from "../../_components/product-form";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProduct, useProductMutation } from "@/lib/api/hooks/product";
 import { useVariantMutation } from "@/lib/api/hooks/product-variant";
+import { apiQueryKeys } from "@/lib/api/query-keys";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { getApiErrorMessage } from "@/lib/axios";
 import { ProductPayload } from "@/types/product/product";
 import { App } from "antd";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BulkUpdateVariantItemPayload,
   VariantPayload,
@@ -22,16 +24,18 @@ const UpdateProductPage = () => {
   const businessId = business?.id ? business?.id : "";
   const { message } = App.useApp();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const { data: product } = useProduct(businessId, id);
   const { updateProduct } = useProductMutation(businessId);
-  const { bulkCreateVariants, bulkUpdateVariants } =
+  const { bulkCreateVariants, bulkUpdateVariants, removeVariant } =
     useVariantMutation(businessId);
 
   const handleUpdateProduct = async (
     values: ProductPayload,
     variants: BulkUpdateVariantItemPayload[],
+    deletedVariantIds: string[],
   ) => {
     setIsSubmitting(true);
     const payload: ProductPayload = {
@@ -69,6 +73,14 @@ const UpdateProductPage = () => {
           status: variant.status ?? "ACTIVE",
           attributes: variant.attributes ?? [],
         }));
+      if (deletedVariantIds.length) {
+        for (const variantId of deletedVariantIds) {
+          await removeVariant.mutateAsync({
+            productId: id,
+            variantId,
+          });
+        }
+      }
 
       if (existingVariants.length) {
         await bulkUpdateVariants.mutateAsync({
@@ -88,8 +100,20 @@ const UpdateProductPage = () => {
         });
       }
 
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: apiQueryKeys.Product.all(businessId),
+          refetchType: "all",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: apiQueryKeys.ProductVariant.all(businessId),
+          refetchType: "all",
+        }),
+      ]);
+
       message.success("Product updated successfully");
       router.push("/admin/dashboard/product-catalog/products");
+      router.refresh();
     } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {

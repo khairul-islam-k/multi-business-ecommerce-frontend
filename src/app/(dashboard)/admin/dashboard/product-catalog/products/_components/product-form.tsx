@@ -61,6 +61,7 @@ type ProductFormValues = ProductPayload & {
   enableVariants?: boolean;
   variantOptions?: ProductVariantOption[];
   variants?: ProductFormVariant[];
+  removedVariantKeys?: string[];
 };
 
 type ProductFormProps = {
@@ -70,6 +71,7 @@ type ProductFormProps = {
   onSubmit: (
     values: ProductPayload,
     variants: BulkUpdateVariantItemPayload[],
+    deletedVariantIds: string[],
   ) => void;
   onCancel?: () => void;
 };
@@ -234,6 +236,36 @@ const getVariantPreviews = (
   }));
 };
 
+const isVariantSelectedByOptions = (
+  variant: ProductFormVariant,
+  variantOptions: ProductVariantOption[] | undefined,
+) => {
+  const selectedOptions =
+    variantOptions?.filter(
+      (option) => option.attributeId && option.attributeValueIds?.length,
+    ) ?? [];
+
+  if (!selectedOptions.length) return false;
+  if ((variant.attributes?.length ?? 0) !== selectedOptions.length) {
+    return false;
+  }
+
+  const selectedValuesByAttribute = new Map(
+    selectedOptions.map((option) => [
+      option.attributeId,
+      new Set(option.attributeValueIds),
+    ]),
+  );
+
+  return (
+    variant.attributes?.every((attribute) =>
+      selectedValuesByAttribute
+        .get(attribute.attributeId)
+        ?.has(attribute.attributeValueId),
+    ) ?? false
+  );
+};
+
 const VariantOptionRow = ({
   form,
   fieldName,
@@ -334,6 +366,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const { data: attributes, isLoading } = useProductAttributeQuery(businessId);
   const watchedOptions = Form.useWatch("variantOptions", form);
   const watchedVariants = Form.useWatch("variants", form);
+  const watchedRemovedVariantKeys = Form.useWatch("removedVariantKeys", form);
   const price = Form.useWatch("price", form);
   const weight = Form.useWatch("weight", form);
 
@@ -345,6 +378,10 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const variantRows = useMemo(
     () => watchedVariants ?? [],
     [watchedVariants],
+  );
+  const removedVariantKeys = useMemo(
+    () => new Set(watchedRemovedVariantKeys ?? []),
+    [watchedRemovedVariantKeys],
   );
   const previews = useMemo(
     () => getVariantPreviews(selectedOptions, attributeItems),
@@ -360,17 +397,19 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
     }
 
     const currentVariants = form.getFieldValue("variants") ?? [];
-    console.log('current', currentVariants);
     const variantsByKey = new Map(
       currentVariants.map((variant: ProductFormVariant) => [
         variant.variantKey || getVariantKey(variant.attributes),
         variant,
       ]),
     );
+    const visiblePreviews = previews.filter(
+      (preview) => !removedVariantKeys.has(preview.variantKey),
+    );
 
     form.setFieldValue(
       "variants",
-      previews.map((preview) => {
+      visiblePreviews.map((preview) => {
         const existing = variantsByKey.get(preview.variantKey);
 
         if (existing) {
@@ -398,7 +437,26 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
         };
       }),
     );
-  }, [attributeItems.length, form, previews]);
+  }, [attributeItems.length, form, previews, removedVariantKeys]);
+
+  const handleRemoveVariant = (variant: ProductFormVariant | undefined) => {
+    const variantKey = variant?.variantKey || getVariantKey(variant?.attributes);
+
+    if (!variantKey) return;
+
+    const nextRemovedVariantKeys = Array.from(
+      new Set([...(form.getFieldValue("removedVariantKeys") ?? []), variantKey]),
+    );
+    const nextVariants = (form.getFieldValue("variants") ?? []).filter(
+      (item: ProductFormVariant) =>
+        (item.variantKey || getVariantKey(item.attributes)) !== variantKey,
+    );
+
+    form.setFieldsValue({
+      removedVariantKeys: nextRemovedVariantKeys,
+      variants: nextVariants,
+    });
+  };
 
   const getAttributeLabels = (variant: ProductFormVariant | undefined) =>
     variant?.attributes
@@ -456,7 +514,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
         </div>
 
         <Form.List name="variants">
-          {(fields, { remove }) =>
+          {(fields) =>
             fields.length ? (
               <div className="space-y-3">
                 {fields.map((field) => {
@@ -464,7 +522,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
 
                   return (
                     <div
-                      key={field.key}
+                      key={row?.variantKey ?? field.key}
                       className="rounded-md border bg-white p-3"
                     >
                       <div className="mb-3 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
@@ -478,7 +536,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                           danger
                           size="small"
                           icon={<DeleteOutlined />}
-                          onClick={() => remove(field.name)}
+                          onClick={() => handleRemoveVariant(row)}
                         >
                           Remove
                         </Button>
@@ -688,6 +746,7 @@ const ProductForm = ({
       enableVariants: initialVariants.length > 0,
       variantOptions: getInitialVariantOptions(initialVariants),
       variants: getInitialVariants(initialVariants),
+      removedVariantKeys: [],
     });
   }, [form, initialValues, arrayTagId]);
 
@@ -739,7 +798,19 @@ const ProductForm = ({
       tagIds: values.tagIds ?? [],
     };
 
-    const formVariants = form.getFieldValue("variants") ?? [];
+    const removedVariantKeys = new Set(
+      form.getFieldValue("removedVariantKeys") ?? [],
+    );
+    const formVariants = ((form.getFieldValue("variants") ?? []) as ProductFormVariant[])
+      .filter((variant) => {
+        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+
+        return (
+          variantKey &&
+          !removedVariantKeys.has(variantKey) &&
+          isVariantSelectedByOptions(variant, values.variantOptions)
+        );
+      });
 
     const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
       ? formVariants.map((variant: ProductFormVariant) => ({
@@ -757,7 +828,23 @@ const ProductForm = ({
       }))
       : [];
 
-    onSubmit(payload, variants);
+    const initialVariants = getInitialVariants(
+      getProductVariants(initialValues?.variants),
+    );
+    const deletedVariantIds = initialVariants
+      .filter((variant) => {
+        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+
+        return (
+          variant.variantId &&
+          (!values.enableVariants ||
+            !isVariantSelectedByOptions(variant, values.variantOptions) ||
+            removedVariantKeys.has(variantKey))
+        );
+      })
+      .map((variant) => variant.variantId as string);
+
+    onSubmit(payload, variants, deletedVariantIds);
   };
 
   return (
@@ -780,6 +867,7 @@ const ProductForm = ({
               },
             ],
             variants: [],
+            removedVariantKeys: [],
           }}
         >
           <Form.Item
@@ -1048,6 +1136,7 @@ const ProductForm = ({
                       },
                     ],
                     variants: [],
+                    removedVariantKeys: [],
                   });
                 }
               }}

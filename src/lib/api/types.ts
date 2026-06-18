@@ -82,8 +82,6 @@ export type AuthBusiness = {
   }>;
 };
 
-
-
 export type AuthPayload = {
   accessToken: string;
   refreshToken: string;
@@ -265,14 +263,9 @@ export type UpdateTenantStatusPayload = {
   status: SystemUserStatus;
 };
 
-export type PermissionAction =
-  | "CREATE"
-  | "READ"
-  | "UPDATE"
-  | "DELETE"
-  | string;
+export type PermissionAction = "CREATE" | "READ" | "UPDATE" | "DELETE" | string;
 export type RbacFeature =
-  "MEDIA_MANAGEMENT"
+  | "MEDIA_MANAGEMENT"
   | "PACKAGE_MANAGEMENT"
   | "PRODUCT_MANAGEMENT"
   | "SUPPLIER_MANAGEMENT"
@@ -434,7 +427,7 @@ export type PackageLimitKey =
   | "MAX_PRODUCTS"
   | "MAX_EMPLOYEES"
   | "MAX_BUSINESSES"
-
+  | "MAX_WEBSITES";
 
 export type PackageSubscriptionStatus =
   | "TRIALING"
@@ -653,10 +646,10 @@ export type PackageUsageSummaryItem = {
 
 export type ConfirmPackagePaymentResult =
   | {
-    payment: PackageMockPayment;
-    subscription: TenantSubscription;
-  }
+      payment: PackageMockPayment;
+      subscription: TenantSubscription;
+    }
   | {
-    payment: PackageMockPayment;
-    subscriptionAddon: PackageSubscriptionAddon;
-  };
+      payment: PackageMockPayment;
+      subscriptionAddon: PackageSubscriptionAddon;
+    };

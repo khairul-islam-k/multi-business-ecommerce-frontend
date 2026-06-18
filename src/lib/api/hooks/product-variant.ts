@@ -57,9 +57,14 @@ export function useVariantMutation(businessId: ApiId) {
   const queryClient = useQueryClient();
 
   const invalidate = () =>
-    queryClient.invalidateQueries({
-      queryKey: apiQueryKeys.ProductVariant.all(businessId),
-    });
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: apiQueryKeys.ProductVariant.all(businessId),
+      }),
+      queryClient.invalidateQueries({
+        queryKey: apiQueryKeys.Product.all(businessId),
+      }),
+    ]);
 
   return {
     createVariant: useMutation({
@@ -71,7 +76,9 @@ export function useVariantMutation(businessId: ApiId) {
         payload: VariantPayload
       }) =>
         productVariantApi.create(businessId, productId, payload),
-      onSuccess: invalidate,
+      onSuccess: () => {
+        void invalidate();
+      },
     }),
 
     bulkCreateVariants: useMutation({
@@ -83,7 +90,9 @@ export function useVariantMutation(businessId: ApiId) {
         payload: BulkVariantPayload
       }) =>
         productVariantApi.bulkCreate(businessId, productId, payload),
-      onSuccess: invalidate,
+      onSuccess: () => {
+        void invalidate();
+      },
     }),
 
     bulkUpdateVariants: useMutation({
@@ -95,7 +104,9 @@ export function useVariantMutation(businessId: ApiId) {
         payload: BulkUpdateVariantPayload
       }) =>
         productVariantApi.bulkUpdate(businessId, productId, payload),
-      onSuccess: invalidate,
+      onSuccess: () => {
+        void invalidate();
+      },
     }),
 
     updateVariant: useMutation({
@@ -108,7 +119,9 @@ export function useVariantMutation(businessId: ApiId) {
         variantId: ApiId;
         payload: VariantPayload;
       }) => productVariantApi.update(businessId, productId, variantId, payload),
-      onSuccess: invalidate,
+      onSuccess: () => {
+        void invalidate();
+      },
     }),
 
     removeVariant: useMutation({
@@ -120,7 +133,9 @@ export function useVariantMutation(businessId: ApiId) {
         variantId: ApiId;
       }) =>
         productVariantApi.remove(businessId, productId, variantId),
-      onSuccess: invalidate,
+      onSuccess: () => {
+        void invalidate();
+      },
     }),
 
   };
