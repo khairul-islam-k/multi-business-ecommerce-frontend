@@ -8,6 +8,7 @@ export const subscriptionStatusColor: Record<
   CANCELLED: "default",
   EXPIRED: "red",
   PAST_DUE: "red",
+  SUPERSEDED: "default",
   TRIALING: "blue",
 };
 

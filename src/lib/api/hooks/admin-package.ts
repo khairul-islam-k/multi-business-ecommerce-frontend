@@ -9,7 +9,6 @@ import type {
   CancelPackageSubscriptionPayload,
   ChangeTenantSubscriptionPlanPayload,
   CreateTenantSubscriptionPayload,
-  PackageAddonPayload,
   PackagePlanPayload,
   PackageQuery,
   TenantSubscriptionQuery,
@@ -19,13 +18,6 @@ export function usePackagePlans(query?: PackageQuery) {
   return useQuery({
     queryKey: apiQueryKeys.adminPackages.plans(query),
     queryFn: () => adminPackagesApi.listPlans(query),
-  });
-}
-
-export function usePackageAddons(query?: PackageQuery) {
-  return useQuery({
-    queryKey: apiQueryKeys.adminPackages.addons(query),
-    queryFn: () => adminPackagesApi.listAddons(query),
   });
 }
 
@@ -61,25 +53,6 @@ export function useAdminPackageMutations() {
     }),
     deletePlan: useMutation({
       mutationFn: adminPackagesApi.deletePlan,
-      onSuccess: invalidate,
-    }),
-    createAddon: useMutation({
-      mutationFn: (payload: PackageAddonPayload) =>
-        adminPackagesApi.createAddon(payload),
-      onSuccess: invalidate,
-    }),
-    updateAddon: useMutation({
-      mutationFn: ({
-        addonId,
-        payload,
-      }: {
-        addonId: ApiId;
-        payload: Partial<PackageAddonPayload>;
-      }) => adminPackagesApi.updateAddon(addonId, payload),
-      onSuccess: invalidate,
-    }),
-    deleteAddon: useMutation({
-      mutationFn: adminPackagesApi.deleteAddon,
       onSuccess: invalidate,
     }),
     createSubscription: useMutation({

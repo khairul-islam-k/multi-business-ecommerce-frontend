@@ -40,6 +40,31 @@ import Loader from "@/components/shared/loader";
 
 const { Text } = Typography;
 
+const prefixFields: Array<{
+  name: keyof NonNullable<BusinessPayload["settings"]>;
+  label: string;
+  placeholder: string;
+}> = [
+  { name: "orderPrefix", label: "Order prefix", placeholder: "ORD" },
+  { name: "invoicePrefix", label: "Invoice prefix", placeholder: "INV" },
+  { name: "paymentPrefix", label: "Payment prefix", placeholder: "PAY" },
+  { name: "shipmentPrefix", label: "Shipment prefix", placeholder: "SHP" },
+  { name: "purchaseOrderPrefix", label: "Purchase order prefix", placeholder: "PO" },
+  { name: "purchaseReturnPrefix", label: "Purchase return prefix", placeholder: "RET" },
+  { name: "stockAdjustmentPrefix", label: "Stock adjustment prefix", placeholder: "ADJ" },
+  { name: "stockTransferPrefix", label: "Stock transfer prefix", placeholder: "TRF" },
+  { name: "expensePrefix", label: "Expense prefix", placeholder: "EXP" },
+  { name: "supplierInvoicePrefix", label: "Supplier invoice prefix", placeholder: "SIN" },
+  { name: "supplierPaymentPrefix", label: "Supplier payment prefix", placeholder: "SPAY" },
+  { name: "receivablePrefix", label: "Receivable prefix", placeholder: "REC" },
+  { name: "payablePrefix", label: "Payable prefix", placeholder: "PAYB" },
+  { name: "transactionPrefix", label: "Transaction prefix", placeholder: "TXN" },
+  { name: "productSkuPrefix", label: "Product SKU prefix", placeholder: "SKU" },
+  { name: "productBarcodePrefix", label: "Product barcode prefix", placeholder: "BAR" },
+  { name: "variantSkuPrefix", label: "Variant SKU prefix", placeholder: "SKU" },
+  { name: "variantBarcodePrefix", label: "Variant barcode prefix", placeholder: "BAR" },
+];
+
 type BusinessSettingsValues = {
   name: string;
   email?: string;
@@ -79,10 +104,31 @@ export default function BusinessSettingsPage() {
       country: business.country ?? undefined,
       currencyCode: business.currencyCode ?? "BDT",
       timezone: business.timezone ?? "Asia/Dhaka",
-      status: business.status ?? "TRIAL",
+      status: business.status ?? "ACTIVE",
       settings: {
         orderPrefix: business.settings?.orderPrefix ?? "ORD",
         invoicePrefix: business.settings?.invoicePrefix ?? "INV",
+        paymentPrefix: business.settings?.paymentPrefix ?? "PAY",
+        shipmentPrefix: business.settings?.shipmentPrefix ?? "SHP",
+        purchaseOrderPrefix: business.settings?.purchaseOrderPrefix ?? "PO",
+        purchaseReturnPrefix: business.settings?.purchaseReturnPrefix ?? "RET",
+        stockAdjustmentPrefix:
+          business.settings?.stockAdjustmentPrefix ?? "ADJ",
+        stockTransferPrefix: business.settings?.stockTransferPrefix ?? "TRF",
+        expensePrefix: business.settings?.expensePrefix ?? "EXP",
+        supplierInvoicePrefix:
+          business.settings?.supplierInvoicePrefix ?? "SIN",
+        supplierPaymentPrefix:
+          business.settings?.supplierPaymentPrefix ?? "SPAY",
+        receivablePrefix: business.settings?.receivablePrefix ?? "REC",
+        payablePrefix: business.settings?.payablePrefix ?? "PAYB",
+        transactionPrefix: business.settings?.transactionPrefix ?? "TXN",
+        productSkuPrefix: business.settings?.productSkuPrefix ?? "SKU",
+        productBarcodePrefix:
+          business.settings?.productBarcodePrefix ?? "BAR",
+        variantSkuPrefix: business.settings?.variantSkuPrefix ?? "SKU",
+        variantBarcodePrefix:
+          business.settings?.variantBarcodePrefix ?? "BAR",
         lowStockThreshold: business.settings?.lowStockThreshold ?? 5,
         allowBackorder: business.settings?.allowBackorder ?? false,
         autoConfirmOrder: business.settings?.autoConfirmOrder ?? false,
@@ -225,7 +271,6 @@ export default function BusinessSettingsPage() {
                   <Form.Item name="status" label="Status">
                     <Select
                       options={[
-                        { label: "Trial", value: "TRIAL" },
                         { label: "Active", value: "ACTIVE" },
                         { label: "Inactive", value: "INACTIVE" },
                         { label: "Suspended", value: "SUSPENDED" },
@@ -281,22 +326,16 @@ export default function BusinessSettingsPage() {
           <Col xs={24}>
             <Card title="Operational Defaults">
               <Row gutter={12}>
-                <Col xs={24} md={8}>
-                  <Form.Item
-                    name={["settings", "orderPrefix"]}
-                    label="Order prefix"
-                  >
-                    <Input placeholder="ORD" maxLength={20} />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={8}>
-                  <Form.Item
-                    name={["settings", "invoicePrefix"]}
-                    label="Invoice prefix"
-                  >
-                    <Input placeholder="INV" maxLength={20} />
-                  </Form.Item>
-                </Col>
+                {prefixFields.map((field) => (
+                  <Col xs={24} md={8} key={field.name}>
+                    <Form.Item
+                      name={["settings", field.name]}
+                      label={field.label}
+                    >
+                      <Input placeholder={field.placeholder} maxLength={20} />
+                    </Form.Item>
+                  </Col>
+                ))}
                 <Col xs={24} md={8}>
                   <Form.Item
                     name={["settings", "allowBackorder"]}

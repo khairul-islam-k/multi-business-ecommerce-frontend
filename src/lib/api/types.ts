@@ -52,7 +52,7 @@ export type ListQuery = {
 
 export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
-export type BusinessStatus = "TRIAL" | "ACTIVE" | "INACTIVE" | string;
+export type BusinessStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
 export type RoleStatus = "ACTIVE" | "INACTIVE" | string;
 export type AssignmentStatus = "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
 export type EmployeeStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
@@ -130,9 +130,22 @@ export type BusinessSetting = {
   id?: ApiId;
   orderPrefix?: string;
   invoicePrefix?: string;
-  defaultLanguage?: string;
-  defaultCurrency?: string;
-  timezone?: string;
+  paymentPrefix?: string;
+  shipmentPrefix?: string;
+  purchaseOrderPrefix?: string;
+  purchaseReturnPrefix?: string;
+  stockAdjustmentPrefix?: string;
+  stockTransferPrefix?: string;
+  expensePrefix?: string;
+  supplierInvoicePrefix?: string;
+  supplierPaymentPrefix?: string;
+  receivablePrefix?: string;
+  payablePrefix?: string;
+  transactionPrefix?: string;
+  productSkuPrefix?: string;
+  productBarcodePrefix?: string;
+  variantSkuPrefix?: string;
+  variantBarcodePrefix?: string;
   lowStockThreshold?: number;
   allowBackorder?: boolean;
   autoConfirmOrder?: boolean;
@@ -433,10 +446,9 @@ export type PackageSubscriptionStatus =
   | "TRIALING"
   | "ACTIVE"
   | "PAST_DUE"
+  | "SUPERSEDED"
   | "CANCELLED"
   | "EXPIRED";
-
-export type PackageSubscriptionAddonStatus = "ACTIVE" | "CANCELLED" | "EXPIRED";
 
 export type PackagePaymentStatus =
   | "PENDING"
@@ -444,7 +456,7 @@ export type PackagePaymentStatus =
   | "CANCELLED"
   | "EXPIRED";
 
-export type PackagePaymentType = "PLAN_CHANGE" | "ADDON_PURCHASE";
+export type PackagePaymentType = "PLAN_CHANGE" | "CREDIT_ONLY_PLAN_CHANGE";
 
 export type PackagePlanLimit = {
   id?: ApiId;
@@ -488,27 +500,6 @@ export type PackagePlan = {
   updatedAt?: string;
 };
 
-export type PackageAddon = {
-  id: ApiId;
-  name: string;
-  description?: string | null;
-  price: number | string;
-  billingCycle: PackageBillingCycle;
-  currencyCode: string;
-  limitKey: PackageLimitKey;
-  limitValue: number;
-  resetCycle?: PackageResetCycle;
-  status: PackageStatus;
-  sortOrder: number;
-  createdBy?: ApiId | null;
-  updatedBy?: ApiId | null;
-  _count?: {
-    subscriptions?: number;
-  };
-  createdAt?: string;
-  updatedAt?: string;
-};
-
 export type PackagePlanPayload = {
   name: string;
   description?: string;
@@ -523,19 +514,6 @@ export type PackagePlanPayload = {
   features: PackageFeature[];
 };
 
-export type PackageAddonPayload = {
-  name: string;
-  description?: string;
-  price: number;
-  billingCycle: PackageBillingCycle;
-  currencyCode?: string;
-  limitKey: PackageLimitKey;
-  limitValue: number;
-  resetCycle?: PackageResetCycle;
-  status?: PackageStatus;
-  sortOrder?: number;
-};
-
 export type PackageQuery = {
   page?: number;
   limit?: number;
@@ -548,19 +526,6 @@ export type TenantSubscriptionQuery = {
   limit?: number;
   status?: PackageSubscriptionStatus;
   tenantId?: ApiId;
-};
-
-export type PackageSubscriptionAddon = {
-  id: ApiId;
-  subscriptionId: ApiId;
-  addonId: ApiId;
-  quantity: number;
-  status: PackageSubscriptionAddonStatus;
-  price: number | string;
-  currencyCode: string;
-  addon?: PackageAddon;
-  createdAt?: string;
-  updatedAt?: string;
 };
 
 export type PackageUsageCounter = {
@@ -579,19 +544,16 @@ export type PackageMockPayment = {
   tenantId: ApiId;
   subscriptionId?: ApiId | null;
   planId?: ApiId | null;
-  addonId?: ApiId | null;
   type: PackagePaymentType;
   status: PackagePaymentStatus;
   amount: number | string;
   currencyCode: string;
-  quantity: number;
   metadata?: unknown;
   expiresAt: string;
   confirmedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
   plan?: PackagePlan;
-  addon?: PackageAddon;
 };
 
 export type TenantSubscription = {
@@ -611,7 +573,6 @@ export type TenantSubscription = {
   autoRenew: boolean;
   tenant?: Pick<SystemUser, "id" | "name" | "email" | "status">;
   package?: PackagePlan;
-  addons?: PackageSubscriptionAddon[];
   usageCounters?: PackageUsageCounter[];
   mockPayments?: PackageMockPayment[];
   createdAt?: string;
@@ -631,10 +592,6 @@ export type CancelPackageSubscriptionPayload = {
   reason?: string;
 };
 
-export type CheckoutPackageAddonPayload = {
-  quantity?: number;
-};
-
 export type PackageUsageSummaryItem = {
   limitKey: PackageLimitKey;
   allowed: number;
@@ -645,11 +602,7 @@ export type PackageUsageSummaryItem = {
 };
 
 export type ConfirmPackagePaymentResult =
-  | {
-      payment: PackageMockPayment;
-      subscription: TenantSubscription;
-    }
-  | {
-      payment: PackageMockPayment;
-      subscriptionAddon: PackageSubscriptionAddon;
-    };
+  {
+    payment: PackageMockPayment;
+    subscription: TenantSubscription;
+  };

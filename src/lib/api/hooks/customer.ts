@@ -3,6 +3,7 @@ import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { customerApi } from "../customer";
 import { CustomerPayload } from "@/types/customer/customer";
+import type { OrderQuery } from "../orders";
 
 export function useCustomerQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -24,6 +25,18 @@ export function useCustomer(businessId: ApiId, customerId: ApiId) {
       return customerApi.get(businessId, customerId);
     },
 
+    enabled: Boolean(businessId && customerId),
+  });
+}
+
+export function useCustomerOrdersQuery(
+  businessId: ApiId,
+  customerId: ApiId,
+  query?: OrderQuery,
+) {
+  return useQuery({
+    queryKey: apiQueryKeys.customer.orders(businessId, customerId, query),
+    queryFn: () => customerApi.orders(businessId, customerId, query),
     enabled: Boolean(businessId && customerId),
   });
 }

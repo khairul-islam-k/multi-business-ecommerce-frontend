@@ -50,7 +50,7 @@ export default function SubscriptionPage() {
     <div className="space-y-6">
       <PageHeader
         title="Subscription"
-        subtitle="Review the current package subscription, active add-ons, and usage."
+        subtitle="Review the current package subscription and usage."
         breadcrumb={adminBreadcrumb}
       />
 

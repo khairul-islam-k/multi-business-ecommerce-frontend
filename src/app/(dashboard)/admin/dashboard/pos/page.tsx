@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { App, Card, Pagination } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useCustomerQuery } from "@/lib/api";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { usePosSaleMutation } from "@/lib/api/hooks/pos";
 import { useProductsQuery } from "@/lib/api/hooks/product";
@@ -42,7 +43,9 @@ const PosOrder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedProductId, setSelectedProductId] = useState<string>();
-  const [checkoutValues, setCheckoutValues] = useState<PosCheckoutValues>({});
+  const [checkoutValues, setCheckoutValues] = useState<PosCheckoutValues>({
+    customerMode: "walk-in",
+  });
 
   const {
     data: products,
@@ -73,6 +76,14 @@ const PosOrder = () => {
       status: "ACTIVE",
     },
   );
+  const { data: customers, isLoading: customersLoading } = useCustomerQuery(
+    businessId,
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+    },
+  );
 
   const createPosSale = usePosSaleMutation(businessId);
 
@@ -80,6 +91,7 @@ const PosOrder = () => {
   const taxItems = taxes?.items ?? [];
   const warehouseItems = warehouses?.items ?? [];
   const accountItems = accounts?.items ?? [];
+  const customerItems = customers?.items ?? [];
   const totalProducts = products?.meta?.total ?? 0;
 
   const selectedProduct = useMemo(
@@ -105,11 +117,30 @@ const PosOrder = () => {
       return;
     }
 
+    const customerMode = checkoutValues.customerMode ?? "walk-in";
+
+    if (customerMode === "existing" && !checkoutValues.customerId) {
+      message.error("Select an existing customer first.");
+      return;
+    }
+
     const payload: CreatePosSalePayload = {
       taxId: checkoutValues.taxId,
       warehouseId: checkoutValues.warehouseId,
-      customerName: trimOrUndefined(checkoutValues.customerName),
-      customerPhone: trimOrUndefined(checkoutValues.customerPhone),
+      customerId:
+        customerMode === "existing" ? checkoutValues.customerId : undefined,
+      customerName:
+        customerMode === "walk-in"
+          ? trimOrUndefined(checkoutValues.customerName)
+          : undefined,
+      customerPhone:
+        customerMode === "walk-in"
+          ? trimOrUndefined(checkoutValues.customerPhone)
+          : undefined,
+      customerEmail:
+        customerMode === "walk-in"
+          ? trimOrUndefined(checkoutValues.customerEmail)
+          : undefined,
       items: cartPos.map((item) => ({
         productId: item.product.id,
         variantId: item.variant?.id,
@@ -125,7 +156,7 @@ const PosOrder = () => {
     try {
       await createPosSale.mutateAsync(payload);
       resetCard();
-      setCheckoutValues({});
+      setCheckoutValues({ customerMode: "walk-in" });
       setSelectedProductId(undefined);
       message.success("POS sale completed successfully.");
     } catch (error) {
@@ -181,7 +212,13 @@ const PosOrder = () => {
           taxes={taxItems}
           warehouses={warehouseItems}
           accounts={accountItems}
-          loading={taxesLoading || warehousesLoading || accountsLoading}
+          customers={customerItems}
+          loading={
+            taxesLoading ||
+            warehousesLoading ||
+            accountsLoading ||
+            customersLoading
+          }
           submitting={createPosSale.isPending}
           onValuesChange={(values) =>
             setCheckoutValues((current) => ({ ...current, ...values }))

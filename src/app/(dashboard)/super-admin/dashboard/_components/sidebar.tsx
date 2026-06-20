@@ -7,7 +7,6 @@ import {
   DashboardOutlined,
   BankOutlined,
   AppstoreOutlined,
-  CreditCardOutlined,
   BarChartOutlined,
   BellOutlined,
   RadarChartOutlined,
@@ -19,8 +18,14 @@ import Logo from "@/components/shared/logo";
 const { Sider } = Layout;
 
 const BASE_PATH = "/super-admin/dashboard";
+const hiddenNavigationKeys = new Set([
+  "/reports",
+  "/notifications",
+  "/monitoring",
+  "/settings",
+]);
 
-const navItems: MenuProps["items"] = [
+const allNavItems: MenuProps["items"] = [
   {
     type: "group",
     label: "Overview",
@@ -51,6 +56,25 @@ const navItems: MenuProps["items"] = [
     ],
   },
 ];
+
+const navItems: MenuProps["items"] = allNavItems
+  .map((group) => {
+    if (!group || !("children" in group) || !group.children) return group;
+
+    return {
+      ...group,
+      children: group.children.filter(
+        (item) =>
+          item &&
+          "key" in item &&
+          item.key != null &&
+          !hiddenNavigationKeys.has(String(item.key)),
+      ),
+    };
+  })
+  .filter(
+    (group) => !group || !("children" in group) || Boolean(group.children?.length),
+  );
 
 interface Props {
   mobileOpen: boolean;

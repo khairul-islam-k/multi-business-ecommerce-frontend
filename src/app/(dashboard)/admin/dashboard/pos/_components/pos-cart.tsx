@@ -8,12 +8,14 @@ import {
   Empty,
   Input,
   InputNumber,
+  Radio,
   Select,
   Space,
   Table,
   Typography,
 } from "antd";
 import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { CustomerResponse } from "@/types/customer/customer";
 import { FinanceAccountResponse } from "@/types/finance/account";
 import { TaxResponse } from "@/types/finance/tax";
 import { WarehouseResponse } from "@/types/product/warehouse";
@@ -38,6 +40,7 @@ type PosCartProps = {
   taxes: TaxResponse[];
   warehouses: WarehouseResponse[];
   accounts: FinanceAccountResponse[];
+  customers: CustomerResponse[];
   loading: boolean;
   submitting: boolean;
   onValuesChange: (values: Partial<PosCheckoutValues>) => void;
@@ -54,6 +57,7 @@ export function PosCart({
   taxes,
   warehouses,
   accounts,
+  customers,
   loading,
   submitting,
   onValuesChange,
@@ -74,11 +78,13 @@ export function PosCart({
   const taxableAmount = Math.max(subtotal - discountTotal, 0);
   const taxAmount = taxableAmount * (taxRate / 100);
   const grandTotal = taxableAmount + taxAmount;
+  const customerMode = values.customerMode ?? "walk-in";
   const canCheckout =
     cart.length > 0 &&
     Boolean(values.taxId) &&
     Boolean(values.paymentMethod) &&
-    Boolean(values.financeAccountId);
+    Boolean(values.financeAccountId) &&
+    (customerMode !== "existing" || Boolean(values.customerId));
 
   return (
     <Card title="Cart & Checkout">
@@ -174,6 +180,86 @@ export function PosCart({
         />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="md:col-span-2">
+            <Text type="secondary">Customer</Text>
+            <Radio.Group
+              className="mt-1"
+              optionType="button"
+              buttonStyle="solid"
+              value={customerMode}
+              options={[
+                { label: "Walk-in", value: "walk-in" },
+                { label: "Existing", value: "existing" },
+              ]}
+              onChange={(event) =>
+                onValuesChange({
+                  customerMode: event.target.value,
+                  customerId: undefined,
+                  customerName: undefined,
+                  customerPhone: undefined,
+                  customerEmail: undefined,
+                })
+              }
+            />
+          </div>
+
+          {customerMode === "existing" ? (
+            <div className="md:col-span-2">
+              <Text type="secondary">Existing Customer</Text>
+              <Select
+                allowClear
+                showSearch
+                className="mt-1 w-full"
+                placeholder="Select customer"
+                optionFilterProp="label"
+                value={values.customerId}
+                options={customers.map((customer) => ({
+                  label: `${customer.name}${customer.phone ? ` (${customer.phone})` : ""}`,
+                  value: customer.id,
+                }))}
+                onChange={(customerId) => onValuesChange({ customerId })}
+              />
+            </div>
+          ) : (
+            <>
+              <div>
+                <Text type="secondary">Customer Name</Text>
+                <Input
+                  className="mt-1"
+                  placeholder="Walk-in Customer"
+                  value={values.customerName}
+                  onChange={(event) =>
+                    onValuesChange({ customerName: event.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <Text type="secondary">Customer Phone</Text>
+                <Input
+                  className="mt-1"
+                  placeholder="+880..."
+                  value={values.customerPhone}
+                  onChange={(event) =>
+                    onValuesChange({ customerPhone: event.target.value })
+                  }
+                />
+              </div>
+
+              <div className="md:col-span-2">
+                <Text type="secondary">Customer Email</Text>
+                <Input
+                  className="mt-1"
+                  placeholder="customer@example.com"
+                  value={values.customerEmail}
+                  onChange={(event) =>
+                    onValuesChange({ customerEmail: event.target.value })
+                  }
+                />
+              </div>
+            </>
+          )}
+
           <div>
             <Text type="secondary">Warehouse</Text>
             <Select
@@ -232,30 +318,6 @@ export function PosCart({
               }))}
               onChange={(financeAccountId) =>
                 onValuesChange({ financeAccountId })
-              }
-            />
-          </div>
-
-          <div>
-            <Text type="secondary">Customer Name</Text>
-            <Input
-              className="mt-1"
-              placeholder="Walk-in Customer"
-              value={values.customerName}
-              onChange={(event) =>
-                onValuesChange({ customerName: event.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <Text type="secondary">Customer Phone</Text>
-            <Input
-              className="mt-1"
-              placeholder="+880..."
-              value={values.customerPhone}
-              onChange={(event) =>
-                onValuesChange({ customerPhone: event.target.value })
               }
             />
           </div>

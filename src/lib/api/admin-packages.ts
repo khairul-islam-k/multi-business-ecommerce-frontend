@@ -11,8 +11,6 @@ import type {
   CancelPackageSubscriptionPayload,
   ChangeTenantSubscriptionPlanPayload,
   CreateTenantSubscriptionPayload,
-  PackageAddon,
-  PackageAddonPayload,
   PackagePlan,
   PackagePlanPayload,
   PackageQuery,
@@ -50,32 +48,6 @@ export const adminPackagesApi = {
       .delete<ApiResponse<null>>(`${basePath}/plans/${planId}`)
       .then((res) => ({
         message: res.data.message ?? "Package plan deleted successfully",
-      }));
-  },
-  listAddons(query?: PackageQuery) {
-    return api
-      .get<
-        ApiPaginatedResponse<PackageAddon>
-      >(`${basePath}/addons${buildQueryString(query)}`)
-      .then((res) => normalizePaginatedResponse(res.data));
-  },
-  createAddon(payload: PackageAddonPayload) {
-    return api
-      .post<ApiResponse<PackageAddon>>(`${basePath}/addons`, payload)
-      .then((res) => unwrapApiResponse(res.data));
-  },
-  updateAddon(addonId: ApiId, payload: Partial<PackageAddonPayload>) {
-    return api
-      .patch<
-        ApiResponse<PackageAddon>
-      >(`${basePath}/addons/${addonId}`, payload)
-      .then((res) => unwrapApiResponse(res.data));
-  },
-  deleteAddon(addonId: ApiId) {
-    return api
-      .delete<ApiResponse<null>>(`${basePath}/addons/${addonId}`)
-      .then((res) => ({
-        message: res.data.message ?? "Package add-on deleted successfully",
       }));
   },
   listSubscriptions(query?: TenantSubscriptionQuery) {

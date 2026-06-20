@@ -8,13 +8,10 @@ import type {
   ApiId,
   ApiPaginatedResponse,
   ApiResponse,
-  CheckoutPackageAddonPayload,
   ConfirmPackagePaymentResult,
-  PackageAddon,
   PackageMockPayment,
   PackagePlan,
   PackageQuery,
-  PackageSubscriptionAddon,
   PackageUsageSummaryItem,
   TenantSubscription,
 } from "@/lib/api/types";
@@ -26,13 +23,6 @@ export const tenantPackagesApi = {
     return api
       .get<ApiPaginatedResponse<PackagePlan>>(
         `${basePath}/plans${buildQueryString(query)}`,
-      )
-      .then((res) => normalizePaginatedResponse(res.data));
-  },
-  listAddons(query?: PackageQuery) {
-    return api
-      .get<ApiPaginatedResponse<PackageAddon>>(
-        `${basePath}/addons${buildQueryString(query)}`,
       )
       .then((res) => normalizePaginatedResponse(res.data));
   },
@@ -62,26 +52,11 @@ export const tenantPackagesApi = {
       )
       .then((res) => unwrapApiResponse(res.data));
   },
-  checkoutAddon(addonId: ApiId, payload: CheckoutPackageAddonPayload) {
-    return api
-      .post<ApiResponse<PackageMockPayment>>(
-        `${basePath}/addons/${addonId}/checkout`,
-        payload,
-      )
-      .then((res) => unwrapApiResponse(res.data));
-  },
   confirmMockPayment(paymentId: ApiId) {
     return api
       .post<ApiResponse<ConfirmPackagePaymentResult>>(
         `${basePath}/mock-payments/${paymentId}/confirm`,
       )
-      .then((res) => unwrapApiResponse(res.data));
-  },
-  removeAddon(subscriptionAddonId: ApiId) {
-    return api
-      .delete<
-        ApiResponse<PackageSubscriptionAddon>
-      >(`${basePath}/subscription/addons/${subscriptionAddonId}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 };
