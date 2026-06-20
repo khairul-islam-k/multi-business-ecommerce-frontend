@@ -121,7 +121,7 @@ const ImageSelectModal = ({
         body: {
           maxHeight: "70vh",
           overflowY: "auto",
-          overflowX: "hidden"
+          overflowX: "hidden",
         },
       }}
       footer={[
@@ -142,6 +142,7 @@ const ImageSelectModal = ({
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} md={8}>
           <Upload
+            style={{ width: "100%" }}
             accept="image/*"
             showUploadList={false}
             disabled={isUploading}
@@ -221,7 +222,7 @@ const ImageSelectModal = ({
                     if (isUploading) return;
 
                     setCurrentUrl((prev) =>
-                      prev === image.fileUrl ? undefined : image.fileUrl
+                      prev === image.fileUrl ? undefined : image.fileUrl,
                     );
                   }}
                   style={{
