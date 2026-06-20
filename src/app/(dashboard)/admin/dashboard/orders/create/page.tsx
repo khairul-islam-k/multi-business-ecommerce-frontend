@@ -1,400 +1,539 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import {
-  Card,
-  Row,
-  Col,
+  App,
   Button,
+  Card,
+  Col,
+  Divider,
+  Form,
   Input,
   InputNumber,
-  Divider,
+  Modal,
+  Radio,
+  Row,
+  Select,
   Space,
-  Spin,
-  Empty,
+  Typography,
 } from "antd";
+import { CreditCardOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
-import api from "@/lib/axios";
-import useSubmit from "@/hooks/use-submit";
-import { useSwal } from "@/hooks/use-swal";
-import { queryClient } from "@/providers/query-provider";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import SearchableSelect from "@/components/shared/searchable-select";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
+import {
+  useCustomerQuery,
+  useOrderMutations,
+  useProductsQuery,
+  useTaxQuery,
+  useWarehousesQuery,
+} from "@/lib/api";
+import type { OrderPaymentPayload, OrderPayload } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
+import type { ResponseVariant } from "@/types/product/variant";
 
-const { TextArea } = Input;
+const { Text, Title } = Typography;
 
-/* =====================================================
-   ORDER ITEMS COMPONENT
-===================================================== */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function OrderItems({ onChange }: { onChange: (items: any[]) => void }) {
-  const { data: products = [], isLoading } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => {
-      const res = await api.get("/products");
-      return res.data?.data?.data ?? [];
-    },
-  });
+type OrderFormValues = Omit<OrderPayload, "items"> & {
+  customerMode?: "existing" | "walk-in";
+  items: Array<{
+    productId?: string;
+    variantId?: string;
+    quantity?: number;
+    discountAmount?: number;
+  }>;
+};
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [items, setItems] = useState<any[]>([]);
+const trimOrUndefined = (value?: string | null) => {
+  const trimmed = value?.trim();
+  return trimmed ? trimmed : undefined;
+};
 
-  const addItem = () => {
-    setItems((prev) => [
-      ...prev,
-      {
-        product_id: null,
-        variant_id: null,
-        product_name_snapshot: "",
-        sku_snapshot: "",
-        qty: 1,
-        discount_amount: 0,
-        unit_price: 0,
-        total_price: 0,
-      },
-    ]);
-  };
+const toNumber = (value?: string | number | null) => Number(value ?? 0);
 
-  const removeItem = (index: number) => {
-    setItems((prev) => prev.filter((_, i) => i !== index));
-  };
+const getVariantLabel = (variant: ResponseVariant) => {
+  const attributes = variant.attributes
+    ?.map((item) => item.attributeValue?.value)
+    .filter(Boolean)
+    .join(" / ");
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const updateItem = (index: number, key: string, value: any) => {
-    setItems((prev) => {
-      const updated = [...prev];
-      updated[index][key] = value;
+  return attributes
+    ? `${variant.title || variant.sku || "Variant"} - ${attributes}`
+    : variant.title || variant.sku || "Variant";
+};
 
-      const qty = updated[index].qty || 0;
-      const price = updated[index].unit_price || 0;
-      const discount = updated[index].discount_amount || 0;
+const getVariantPrice = (variant: ResponseVariant | undefined) =>
+  toNumber(variant?.effectivePrice ?? variant?.priceOverride);
 
-      updated[index].total_price = Math.max(qty * price - discount, 0);
+const money = (value: number) => `BDT ${value.toLocaleString()}`;
 
-      return updated;
-    });
-  };
-
-  useEffect(() => {
-    onChange(items);
-  }, [items]);
-
-  return (
-    <Card
-      title="Order Items"
-      extra={
-        <Button type="dashed" onClick={addItem}>
-          + Add Item
-        </Button>
-      }
-    >
-      {isLoading ? (
-        <div className="flex justify-center py-10">
-          <Spin />
-        </div>
-      ) : products.length === 0 ? (
-        <Empty description="No products found" />
-      ) : (
-        <Space orientation="vertical" style={{ width: "100%" }}>
-          {items.length === 0 && <Empty description="No items added" />}
-
-          {items.map((item, index) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const product = products.find((p: any) => p.id === item.product_id);
-            const variants = product?.variants || [];
-
-            return (
-              <Row gutter={12} key={index} align="middle">
-                <Col span={6}>
-                  <label className="font-semibold">Product</label>
-                  <SearchableSelect
-                    value={item.product_id}
-                    placeholder="Search product"
-                    endpoint="/products"
-                    onChange={(v) => {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const p = products.find((x: any) => x.id === v);
-
-                      updateItem(index, "product_id", v);
-                      updateItem(index, "product_name_snapshot", p?.name || "");
-
-                      updateItem(index, "variant_id", null);
-                      updateItem(index, "sku_snapshot", "");
-                      updateItem(index, "unit_price", 0);
-                    }}
-                  />
-                </Col>
-
-                <Col span={6}>
-                  <label className="text-sm font-semibold">Variant</label>
-                  <SearchableSelect
-                    value={item.variant_id}
-                    placeholder="Search variant"
-                    endpoint={`/variant?product_id=${item.product_id}`}
-                    onChange={(v) => {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const variant = variants.find((x: any) => x.id === v);
-
-                      updateItem(index, "variant_id", v);
-                      updateItem(index, "sku_snapshot", variant?.sku || "");
-                      updateItem(index, "unit_price", variant?.price || 0);
-                    }}
-                  />
-                </Col>
-
-                <Col span={3}>
-                  <label className="text-sm font-semibold">Qty</label>
-                  <InputNumber
-                    min={1}
-                    value={item.qty}
-                    onChange={(v) => updateItem(index, "qty", v)}
-                    style={{ width: "100%" }}
-                  />
-                </Col>
-
-                <Col span={3}>
-                  <label className="text-sm font-semibold">Discount</label>
-                  <InputNumber
-                    min={0}
-                    value={item.discount_amount}
-                    onChange={(v) => updateItem(index, "discount_amount", v)}
-                    style={{ width: "100%" }}
-                  />
-                </Col>
-
-                <Col span={4}>
-                  <label className="text-sm font-semibold">Total</label>
-                  <InputNumber
-                    value={item.total_price}
-                    disabled
-                    style={{ width: "100%" }}
-                  />
-                </Col>
-
-                <Col span={2}>
-                  <label className="text-sm font-semibold">Remove</label>
-                  <Button danger onClick={() => removeItem(index)}>
-                    X
-                  </Button>
-                </Col>
-              </Row>
-            );
-          })}
-        </Space>
-      )}
-    </Card>
-  );
-}
-
-/* =====================================================
-   CREATE ORDER PAGE
-===================================================== */
 export default function CreateOrder() {
+  const [form] = Form.useForm<OrderFormValues>();
+  const [paymentForm] = Form.useForm<OrderPaymentPayload>();
   const router = useRouter();
-  const swal = useSwal();
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [items, setItems] = useState<any[]>([]);
-
-  const [form, setForm] = useState({
-    company_id: null,
-    customer_id: null,
-    courier_id: null,
-    supplier_id: null,
-
-    order_no: "",
-    external_order_no: "",
-
-    subtotal: 0,
-    discount_amount: 0,
-    shipping_charge: 0,
-    total_amount: 0,
-
-    note: "",
+  const { message } = App.useApp();
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentValues, setPaymentValues] = useState<OrderPaymentPayload>();
+  const businessId = useActiveBusinessId();
+  const products = useProductsQuery(businessId ?? "", { page: 1, limit: 100 });
+  const customers = useCustomerQuery(businessId ?? "", { page: 1, limit: 100 });
+  const warehouses = useWarehousesQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
   });
+  const taxes = useTaxQuery(businessId ?? "", { page: 1, limit: 100 });
+  const accounts = useFinanceAccountQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
+    status: "ACTIVE",
+  });
+  const mutations = useOrderMutations(businessId ?? "");
+  const watchedItems = Form.useWatch("items", form);
+  const customerMode = Form.useWatch("customerMode", form) ?? "walk-in";
+  const taxId = Form.useWatch("taxId", form);
+  const shippingCharge = Form.useWatch("shippingCharge", form);
+  const orderItems = useMemo(() => watchedItems ?? [], [watchedItems]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const set = (key: string, value: any) =>
-    setForm((prev) => ({ ...prev, [key]: value }));
+  const productItems = useMemo(() => products.data?.items ?? [], [products.data?.items]);
 
-  useEffect(() => {
-    const subtotal = items.reduce((sum, i) => sum + (i.total_price || 0), 0);
+  const productOptions = useMemo(
+    () =>
+      productItems.map((product) => ({
+        label: product.name,
+        value: product.id,
+      })),
+    [productItems],
+  );
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setForm((prev) => ({
-      ...prev,
+  const getVariantOptions = (productId?: string) =>
+    productItems
+      .find((product) => product.id === productId)
+      ?.variants?.map((variant) => ({
+        label: getVariantLabel(variant),
+        value: variant.id,
+      })) ?? [];
+
+  const totals = useMemo(() => {
+    const subtotal = orderItems.reduce((total, item) => {
+      const product = productItems.find((entry) => entry.id === item?.productId);
+      if (!product) return total;
+
+      const variant = product.variants?.find(
+        (entry) => entry.id === item?.variantId,
+      );
+      const unitPrice = variant ? getVariantPrice(variant) : toNumber(product.price);
+
+      return total + unitPrice * toNumber(item?.quantity);
+    }, 0);
+    const discountTotal = orderItems.reduce(
+      (total, item) => total + toNumber(item?.discountAmount),
+      0,
+    );
+    const selectedTax = taxes.data?.items?.find((tax) => tax.id === taxId);
+    const taxRate = toNumber(selectedTax?.rate);
+    const taxableAmount = Math.max(subtotal - discountTotal, 0);
+    const taxTotal = taxableAmount * (taxRate / 100);
+    const shipping = toNumber(shippingCharge);
+
+    return {
       subtotal,
-      total_amount:
-        subtotal - (prev.discount_amount || 0) + (prev.shipping_charge || 0),
-    }));
-  }, [items]);
+      discountTotal,
+      taxTotal,
+      shipping,
+      total: taxableAmount + taxTotal + shipping,
+    };
+  }, [orderItems, productItems, shippingCharge, taxId, taxes.data?.items]);
 
-  const { handler, loading } = useSubmit(async () => {
+  const onFinish = async (values: OrderFormValues) => {
+    if (!businessId) return;
+
+    const items = values.items
+      .filter((item) => item.productId && item.quantity)
+      .map((item) => ({
+        productId: item.productId as string,
+        variantId: item.variantId || undefined,
+        quantity: Number(item.quantity),
+        discountAmount: Number(item.discountAmount ?? 0),
+      }));
+
     if (!items.length) {
-      swal.error("Add at least one item");
+      message.error("Add at least one order item.");
       return;
     }
 
-    const orderRes = await api.post("/orders", form);
-    const orderId = orderRes.data.data.id;
+    const resolvedCustomerMode = values.customerMode ?? "walk-in";
 
-    const payload = items.map((item) => ({
-      order_id: orderId,
-      product_id: item.product_id,
-      variant_id: item.variant_id,
-      product_name_snapshot: item.product_name_snapshot,
-      sku_snapshot: item.sku_snapshot,
-      qty: item.qty,
-      discount_amount: item.discount_amount,
-      total_price: item.total_price,
-    }));
+    if (resolvedCustomerMode === "existing" && !values.customerId) {
+      message.error("Select an existing customer.");
+      return;
+    }
 
-    await Promise.all(payload.map((item) => api.post("/order-items", item)));
-    swal.success("Order created");
-    queryClient.invalidateQueries({
-      predicate: (q) => q.queryKey[0] === "fetch-orders",
-    });
-    router.push("/admin/dashboard/orders");
-  });
+    try {
+      const payload: OrderPayload = {
+        customerId:
+          resolvedCustomerMode === "existing" ? values.customerId : undefined,
+        warehouseId: values.warehouseId,
+        taxId: values.taxId,
+        payment: paymentValues,
+        orderType: values.orderType ?? "ADMIN",
+        orderSource: values.orderSource ?? "ADMIN_PANEL",
+        customerName:
+          resolvedCustomerMode === "walk-in"
+            ? trimOrUndefined(values.customerName)
+            : undefined,
+        customerPhone:
+          resolvedCustomerMode === "walk-in"
+            ? trimOrUndefined(values.customerPhone)
+            : undefined,
+        customerEmail:
+          resolvedCustomerMode === "walk-in"
+            ? trimOrUndefined(values.customerEmail)
+            : undefined,
+        shippingCharge: Number(values.shippingCharge ?? 0),
+        note: trimOrUndefined(values.note),
+        isCod: Boolean(values.isCod),
+        items,
+      };
+
+      await mutations.createOrder.mutateAsync(payload);
+      message.success("Order created.");
+      router.push("/admin/dashboard/orders");
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    }
+  };
+
+  const openPaymentModal = () => {
+    if (paymentValues) {
+      paymentForm.setFieldsValue(paymentValues);
+    } else {
+      paymentForm.resetFields();
+    }
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentModalOk = async () => {
+    const values = await paymentForm.validateFields();
+    setPaymentValues(values);
+    setIsPaymentModalOpen(false);
+    message.success("Payment details added to this order.");
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader title="Create Order" breadcrumb={adminBreadcrumb} />
 
-      <Row gutter={16}>
-        {/* LEFT */}
-        <Col xs={24} lg={16}>
-          <Space direction="vertical" size="large" style={{ width: "100%" }}>
-            <Card title="Order Info">
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={onFinish}
+        initialValues={{
+          customerMode: "walk-in",
+          orderType: "ADMIN",
+          orderSource: "ADMIN_PANEL",
+          shippingCharge: 0,
+          isCod: false,
+          items: [{ quantity: 1, discountAmount: 0 }],
+        }}
+      >
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={16}>
+            <Card title="Order Details">
               <Row gutter={12}>
-                <Col span={12}>
-                  <label className="text-sm font-semibold">Order No</label>
-                  <Input
-                    value={form.order_no}
-                    onChange={(e) => set("order_no", e.target.value)}
-                  />
+                <Col xs={24}>
+                  <Form.Item name="customerMode" label="Customer">
+                    <Radio.Group
+                      optionType="button"
+                      buttonStyle="solid"
+                      onChange={() =>
+                        form.setFieldsValue({
+                          customerId: undefined,
+                          customerName: undefined,
+                          customerPhone: undefined,
+                          customerEmail: undefined,
+                        })
+                      }
+                      options={[
+                        { label: "Walk-in", value: "walk-in" },
+                        { label: "Existing customer", value: "existing" },
+                      ]}
+                    />
+                  </Form.Item>
                 </Col>
 
-                <Col span={12}>
-                  <label className="text-sm font-semibold">
-                    External Order No
-                  </label>
-                  <Input
-                    value={form.external_order_no}
-                    onChange={(e) => set("external_order_no", e.target.value)}
-                  />
+                {customerMode === "existing" ? (
+                  <Col xs={24} md={12}>
+                    <Form.Item
+                      name="customerId"
+                      label="Customer"
+                      rules={[{ required: true }]}
+                    >
+                      <Select
+                        allowClear
+                        showSearch
+                        optionFilterProp="label"
+                        placeholder="Select customer"
+                        options={(customers.data?.items ?? []).map((customer) => ({
+                          label: `${customer.name}${customer.phone ? ` (${customer.phone})` : ""}`,
+                          value: customer.id,
+                        }))}
+                      />
+                    </Form.Item>
+                  </Col>
+                ) : (
+                  <>
+                    <Col xs={24} md={12}>
+                      <Form.Item name="customerName" label="Walk-in customer name">
+                        <Input maxLength={150} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item name="customerPhone" label="Customer phone">
+                        <Input maxLength={30} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={12}>
+                      <Form.Item name="customerEmail" label="Customer email">
+                        <Input maxLength={150} />
+                      </Form.Item>
+                    </Col>
+                  </>
+                )}
+
+                <Col xs={24} md={12}>
+                  <Form.Item name="warehouseId" label="Warehouse">
+                    <Select
+                      allowClear
+                      showSearch
+                      optionFilterProp="label"
+                      placeholder="Select warehouse"
+                      options={(warehouses.data?.items ?? []).map((warehouse) => ({
+                        label: warehouse.name,
+                        value: warehouse.id,
+                      }))}
+                    />
+                  </Form.Item>
                 </Col>
-
-                <Col span={12} style={{ marginTop: 12 }}>
-                  <label className="text-sm font-semibold">Customer</label>
-
-                  <SearchableSelect
-                    endpoint="/customers"
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    value={form.customer_id as any}
-                    onChange={(v) => set("customer_id", v)}
-                  />
+                <Col xs={24} md={12}>
+                  <Form.Item name="taxId" label="Tax" rules={[{ required: true }]}>
+                    <Select
+                      showSearch
+                      optionFilterProp="label"
+                      placeholder="Select tax"
+                      options={(taxes.data?.items ?? []).map((tax) => ({
+                        label: `${tax.name} (${tax.rate}%)`,
+                        value: tax.id,
+                      }))}
+                    />
+                  </Form.Item>
                 </Col>
-
-                <Col span={12} style={{ marginTop: 12 }}>
-                  <label className="text-sm font-semibold">Company</label>
-                  <SearchableSelect
-                    endpoint="/companies"
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    value={form.company_id as any}
-                    onChange={(v) => set("company_id", v)}
-                  />
-                </Col>
-
-                <Col span={24} style={{ marginTop: 12 }}>
-                  <label className="text-sm font-semibold">Note</label>
-                  <TextArea
-                    rows={3}
-                    value={form.note}
-                    onChange={(e) => set("note", e.target.value)}
-                  />
+                <Col xs={24} md={12}>
+                  <Form.Item name="note" label="Note">
+                    <Input.TextArea rows={3} />
+                  </Form.Item>
                 </Col>
               </Row>
             </Card>
 
-            <OrderItems onChange={setItems} />
-          </Space>
-        </Col>
+            <Card title="Items" className="mt-4">
+              <Form.List name="items">
+                {(fields, { add, remove }) => (
+                  <Space direction="vertical" className="w-full" size={12}>
+                    {fields.map((field) => (
+                      <Row gutter={12} key={field.key} align="middle">
+                        <Col xs={24} md={8}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "productId"]}
+                            label="Product"
+                            rules={[{ required: true }]}
+                          >
+                            <Select
+                              showSearch
+                              optionFilterProp="label"
+                              options={productOptions}
+                              onChange={() =>
+                                form.setFieldValue(
+                                  ["items", field.name, "variantId"],
+                                  undefined,
+                                )
+                              }
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={6}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "variantId"]}
+                            label="Variant"
+                          >
+                            <Select
+                              allowClear
+                              showSearch
+                              optionFilterProp="label"
+                              placeholder="No variant"
+                              disabled={
+                                !orderItems[field.name]?.productId ||
+                                getVariantOptions(
+                                  orderItems[field.name]?.productId,
+                                ).length === 0
+                              }
+                              options={getVariantOptions(
+                                orderItems[field.name]?.productId,
+                              )}
+                            />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={12} md={4}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "quantity"]}
+                            label="Quantity"
+                            rules={[{ required: true }]}
+                          >
+                            <InputNumber min={0.001} style={{ width: "100%" }} />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={12} md={4}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name, "discountAmount"]}
+                            label="Discount"
+                          >
+                            <InputNumber min={0} style={{ width: "100%" }} />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24} md={2}>
+                          <Button
+                            danger
+                            title="Remove item"
+                            icon={<DeleteOutlined />}
+                            onClick={() => remove(field.name)}
+                          />
+                        </Col>
+                      </Row>
+                    ))}
+                    <Button icon={<PlusOutlined />} onClick={() => add()}>
+                      Add item
+                    </Button>
+                  </Space>
+                )}
+              </Form.List>
+            </Card>
+          </Col>
 
-        {/* RIGHT */}
-        <Col xs={24} lg={8}>
-          <Card>
-            <Space orientation="vertical" style={{ width: "100%" }}>
-              <div>
-                <label className="text-sm font-semibold">Courier</label>
-                <SearchableSelect
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  value={form.courier_id as any}
-                  endpoint="/couriers"
-                  onChange={(v) => set("courier_id", v)}
-                />
+          <Col xs={24} lg={8}>
+            <Card title="Charges">
+              <Form.Item name="shippingCharge" label="Shipping charge">
+                <InputNumber min={0} style={{ width: "100%" }} />
+              </Form.Item>
+
+              <Divider className="my-3" />
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Text type="secondary">Subtotal</Text>
+                  <Text>{money(totals.subtotal)}</Text>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Text type="secondary">Discount</Text>
+                  <Text>{money(totals.discountTotal)}</Text>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Text type="secondary">Tax</Text>
+                  <Text>{money(totals.taxTotal)}</Text>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Text type="secondary">Shipping</Text>
+                  <Text>{money(totals.shipping)}</Text>
+                </div>
+                <div className="flex items-center justify-between">
+                  <Title level={5} className="m-0">
+                    Total
+                  </Title>
+                  <Title level={5} className="m-0">
+                    {money(totals.total)}
+                  </Title>
+                </div>
               </div>
 
-              <div>
-                <label className="text-sm font-semibold">Supplier</label>
-                <SearchableSelect
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  value={form.supplier_id as any}
-                  onChange={(v) => set("supplier_id", v)}
-                  endpoint="/business-suppliers"
-                />
-              </div>
-
-              <Divider />
-
-              <div>
-                <label className="text-sm font-semibold">Subtotal</label>
-                <InputNumber
-                  value={form.subtotal}
-                  disabled
-                  style={{ width: "100%" }}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold">Order Discount</label>
-                <InputNumber
-                  value={form.discount_amount}
-                  onChange={(v) => set("discount_amount", v)}
-                  style={{ width: "100%" }}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold">Shipping</label>
-                <InputNumber
-                  value={form.shipping_charge}
-                  onChange={(v) => set("shipping_charge", v)}
-                  style={{ width: "100%" }}
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-semibold">Total</label>
-                <InputNumber
-                  value={form.total_amount}
-                  disabled
-                  style={{ width: "100%" }}
-                />
-              </div>
-
-              <Divider />
-
-              <Button type="primary" block onClick={handler} loading={loading}>
-                Create Order
+              <Button
+                className="mt-4"
+                block
+                icon={<CreditCardOutlined />}
+                onClick={openPaymentModal}
+              >
+                {paymentValues ? "Edit payment details" : "Add payment details"}
               </Button>
-            </Space>
-          </Card>
-        </Col>
-      </Row>
+
+              {paymentValues && (
+                <div className="mt-2 text-xs text-gray-500">
+                  {paymentValues.paymentMethod} payment will be attached.
+                </div>
+              )}
+
+              <Button
+                className="mt-4"
+                type="primary"
+                block
+                htmlType="submit"
+                loading={mutations.createOrder.isPending}
+              >
+                Create order
+              </Button>
+            </Card>
+          </Col>
+        </Row>
+      </Form>
+
+      <Modal
+        title="Order payment"
+        open={isPaymentModalOpen}
+        okText="Save payment"
+        onOk={handlePaymentModalOk}
+        onCancel={() => setIsPaymentModalOpen(false)}
+        destroyOnHidden
+      >
+        <Form form={paymentForm} layout="vertical" className="mt-4">
+          <Form.Item
+            name="paymentMethod"
+            label="Payment method"
+            rules={[{ required: true }]}
+          >
+            <Select
+              placeholder="Select method"
+              options={[
+                "CASH",
+                "COD",
+                "BKASH",
+                "NAGAD",
+                "CARD",
+                "BANK_TRANSFER",
+                "OTHER",
+              ].map((method) => ({ label: method, value: method }))}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="financeAccountId"
+            label="Finance account"
+            rules={[{ required: true }]}
+          >
+            <Select
+              showSearch
+              optionFilterProp="label"
+              placeholder="Select finance account"
+              options={(accounts.data?.items ?? []).map((account) => ({
+                label: `${account.name} (${account.accountType})`,
+                value: account.id,
+              }))}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }

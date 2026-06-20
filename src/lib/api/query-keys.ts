@@ -11,6 +11,9 @@ import type {
   TenantSubscriptionQuery,
   CategoriesQuery,
 } from "@/lib/api/types";
+import type { OrderQuery } from "./orders";
+import type { ProductReviewQuery } from "./product-reviews";
+import type { SupplierInvoiceQuery } from "./supplier-invoices";
 
 export const apiQueryKeys = {
   auth: {
@@ -31,8 +34,6 @@ export const apiQueryKeys = {
     all: ["admin-packages"] as const,
     plans: (query?: PackageQuery) =>
       ["admin-packages", "plans", query] as const,
-    addons: (query?: PackageQuery) =>
-      ["admin-packages", "addons", query] as const,
     subscriptions: (query?: TenantSubscriptionQuery) =>
       ["admin-packages", "subscriptions", query] as const,
   },
@@ -40,8 +41,6 @@ export const apiQueryKeys = {
     all: ["tenant-packages"] as const,
     plans: (query?: PackageQuery) =>
       ["tenant-packages", "plans", query] as const,
-    addons: (query?: PackageQuery) =>
-      ["tenant-packages", "addons", query] as const,
     current: ["tenant-packages", "current"] as const,
     history: (query?: PackageQuery) =>
       ["tenant-packages", "history", query] as const,
@@ -119,6 +118,11 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["products", businessId, "detail", CategoryId] as const,
   },
+  ProductReviews: {
+    all: (businessId: ApiId) => ["productReviews", businessId] as const,
+    list: (businessId: ApiId, query?: ProductReviewQuery) =>
+      ["productReviews", businessId, "list", query] as const,
+  },
   ProductVariant: {
     all: (businessId: ApiId) => ["variant", businessId] as const,
     list: (businessId: ApiId, productId: ApiId, search?: string) =>
@@ -177,6 +181,13 @@ export const apiQueryKeys = {
       ["purchaseOrderReturn", businessId, "list", query] as const,
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["purchaseOrderReturn", businessId, "detail", CategoryId] as const,
+  },
+  supplierInvoices: {
+    all: (businessId: ApiId) => ["supplierInvoices", businessId] as const,
+    list: (businessId: ApiId, query?: SupplierInvoiceQuery) =>
+      ["supplierInvoices", businessId, "list", query] as const,
+    detail: (businessId: ApiId, supplierInvoiceId: ApiId) =>
+      ["supplierInvoices", businessId, "detail", supplierInvoiceId] as const,
   },
   tax: {
     all: (businessId: ApiId) => ["tax", businessId] as const,
@@ -263,6 +274,8 @@ export const apiQueryKeys = {
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["customer", businessId, "detail", CategoryId] as const,
+    orders: (businessId: ApiId, customerId: ApiId, query?: OrderQuery) =>
+      ["customer", businessId, "detail", customerId, "orders", query] as const,
   },
   customerAddress: {
     all: (businessId: ApiId) => ["customerAddress", businessId] as const,
@@ -271,5 +284,12 @@ export const apiQueryKeys = {
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
       ["customerAddress", businessId, "detail", CategoryId] as const,
+  },
+  orders: {
+    all: (businessId: ApiId) => ["orders", businessId] as const,
+    list: (businessId: ApiId, query?: OrderQuery) =>
+      ["orders", businessId, "list", query] as const,
+    detail: (businessId: ApiId, orderId: ApiId) =>
+      ["orders", businessId, "detail", orderId] as const,
   },
 };

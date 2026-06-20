@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { BrandPayload } from "@/types/product/brands";
 import { productStockApi } from "../stock";
 import { LowStockAlertFormValues } from "@/types/stock/stock";
 

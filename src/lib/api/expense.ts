@@ -63,9 +63,9 @@ export const ExpenseApi = {
 
   remove(businessId: ApiId, expenseId: ApiId) {
     return api
-      .delete<ApiResponse<null>>(`${basePath(businessId)}/${expenseId}`)
+      .delete<ApiResponse<null>>(`${basePath(businessId)}/${expenseId}/delete`)
       .then((res) => ({
-        message: res.data.message ?? "Employee deleted successfully",
+        message: res.data.message ?? "Expense deleted successfully",
       }));
   },
 

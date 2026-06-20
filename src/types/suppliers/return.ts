@@ -139,6 +139,9 @@ export type SupplierInvoice = {
     updatedAt: string;
     createdBy: string;
     deletedAt: string | null;
+    supplier?: Supplier;
+    purchaseOrder?: PurchaseOrder;
+    tax?: Tax | null;
 };
 
 export type Tax = {

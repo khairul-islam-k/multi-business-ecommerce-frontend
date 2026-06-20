@@ -12,10 +12,13 @@ export type PosCartItem = {
 };
 
 export type PosCheckoutValues = {
+  customerMode?: "existing" | "walk-in";
+  customerId?: string;
   warehouseId?: string;
   taxId?: string;
   paymentMethod?: string;
   financeAccountId?: string;
   customerName?: string;
   customerPhone?: string;
+  customerEmail?: string;
 };

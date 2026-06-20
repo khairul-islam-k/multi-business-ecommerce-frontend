@@ -308,7 +308,7 @@ export default function PackagesPage() {
     <div className="space-y-6">
       <PageHeader
         title="Packages"
-        subtitle="Manage platform plans, add-ons, and tenant package subscriptions."
+        subtitle="Manage platform plans and tenant package subscriptions."
         breadcrumb={superAdminBreadcrumb}
       />
 

@@ -1,507 +1,313 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 import {
-  TruckOutlined,
-  BlockOutlined,
-  ReloadOutlined,
-  CreditCardOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  Card,
-  Row,
-  Col,
-  Table,
-  Tabs,
+  App,
   Button,
-  Typography,
-  Badge,
-  Modal,
-  Select,
-  Spin,
-  Empty,
+  Card,
+  Col,
   Descriptions,
-  Input,
+  Empty,
+  Form,
+  Row,
+  Select,
+  Space,
+  Table,
+  Tag,
+  Typography,
 } from "antd";
+import {
+  CheckCircleOutlined,
+  CreditCardOutlined,
+  StopOutlined,
+  TruckOutlined,
+} from "@ant-design/icons";
 
-import api from "@/lib/axios";
-import { useSwal } from "@/hooks/use-swal";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { OrderNotesPanel } from "./_components/notes-panel";
-import { OrderTimeline } from "./_components/timeline-panel";
-import SearchableSelect from "@/components/shared/searchable-select";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useOrder, useOrderMutations } from "@/lib/api";
+import type { OrderPaymentPayload, OrderStatus } from "@/lib/api";
 
-const { Title, Text } = Typography;
-const { TextArea } = Input;
+const { Text } = Typography;
 
-type ValueType = string | number;
-
-type OrderItem = {
-  id: string;
-  product_name_snapshot: string;
-  sku_snapshot?: string;
-  qty: number;
-  discount_amount?: string | number | null;
-  total_price?: string | number | null;
+const statusColor: Record<OrderStatus, string> = {
+  CANCELLED: "red",
+  CONFIRMED: "cyan",
+  DELIVERED: "green",
+  PENDING: "blue",
+  PROCESSING: "purple",
+  RETURNED: "orange",
+  SHIPPED: "geekblue",
 };
 
-type Customer = {
-  id: string;
-  name: string;
-  phone?: string | null;
-  email?: string | null;
-  source?: string | null;
-  status?: string | null;
-};
+function money(value: string | number | null | undefined) {
+  return `BDT ${Number(value ?? 0).toLocaleString()}`;
+}
 
-type Supplier = {
-  id: string;
-  name?: string;
-};
-
-type Order = {
-  id: string;
-  uuid: string;
-  createdAt: string;
-  order_no?: string | null;
-  external_order_no?: string | null;
-  order_status?: string | null;
-  payment_status?: string | null;
-  payment_method?: string | null;
-  source_channel?: string | null;
-  courier_id?: string | null;
-  supplier_id?: string | null;
-  subtotal?: string | number | null;
-  discount_amount?: string | number | null;
-  shipping_charge?: string | number | null;
-  total_amount?: string | number | null;
-  note?: string | null;
-  customer?: Customer | null;
-  supplier?: Supplier | null;
-  items?: OrderItem[];
-};
-
-const toMoney = (value?: string | number | null) => {
-  const amount = Number(value ?? 0);
-  return `$${amount.toFixed(2)}`;
-};
+function displayName(value: unknown) {
+  if (!value || typeof value !== "object") return "-";
+  const record = value as { name?: unknown; title?: unknown; sku?: unknown };
+  return String(record.name ?? record.title ?? record.sku ?? "-");
+}
 
 export default function OrderDetails() {
-  const swal = useSwal();
   const { id } = useParams();
-  const uuid = id as string;
-
-  const queryClient = useQueryClient();
-
-  const [courierVisible, setCourierVisible] = useState(false);
-  const [supplierVisible, setSupplierVisible] = useState(false);
-  const [noteVisible, setNoteVisible] = useState(false);
-
-  const [selectedCourier, setSelectedCourier] = useState("");
-  const [selectedSupplier, setSelectedSupplier] = useState<
-    ValueType | undefined
-  >();
-  const [note, setNote] = useState("");
-
-  const { data: order, isLoading } = useQuery<Order>({
-    queryKey: ["order", uuid],
-    queryFn: async () => {
-      const res = await api.get(`/orders/${uuid}`);
-      return res.data?.data;
-    },
-    enabled: !!uuid,
+  const businessId = useActiveBusinessId();
+  const { message, modal } = App.useApp();
+  const [paymentForm] = Form.useForm<OrderPaymentPayload>();
+  const orderId = String(id ?? "");
+  const order = useOrder(businessId ?? "", orderId);
+  const accounts = useFinanceAccountQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
+    status: "ACTIVE",
   });
+  const mutations = useOrderMutations(businessId ?? "");
 
-  useEffect(() => {
-    if (!order) return;
-
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSelectedSupplier(order.supplier_id ?? undefined);
-    setSelectedCourier(order.courier_id ?? "");
-    setNote(order.note ?? "");
-  }, [order]);
-
-  const updateOrderMutation = useMutation({
-    mutationFn: async (payload: Partial<Order>) => {
-      const res = await api.patch(`/orders/${uuid}`, payload);
-      return res.data?.data;
-    },
-    onSuccess: () => {
-      swal.success("Order updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["order", uuid] });
-    },
-    onError: () => {
-      swal.error("Failed to update order");
-    },
-  });
-
-  const assignSupplier = () => {
-    if (!selectedSupplier) return;
-
-    updateOrderMutation.mutate(
-      { supplier_id: String(selectedSupplier) },
-      {
-        onSuccess: () => {
-          setSupplierVisible(false);
-        },
+  const runAction = (
+    title: string,
+    action: () => Promise<unknown>,
+    successMessage: string,
+  ) => {
+    modal.confirm({
+      title,
+      okText: "Confirm",
+      cancelText: "Cancel",
+      async onOk() {
+        try {
+          await action();
+          message.success(successMessage);
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
       },
-    );
+    });
   };
 
-  const assignCourier = () => {
-    if (!selectedCourier) return;
-
-    updateOrderMutation.mutate(
-      { courier_id: selectedCourier },
-      {
-        onSuccess: () => {
-          setCourierVisible(false);
-        },
+  const openPaymentModal = () => {
+    paymentForm.resetFields();
+    modal.confirm({
+      title: "Add order payment",
+      icon: null,
+      content: (
+        <Form form={paymentForm} layout="vertical" className="mt-4">
+          <Form.Item
+            name="paymentMethod"
+            label="Payment method"
+            rules={[{ required: true }]}
+          >
+            <Select
+              options={[
+                "CASH",
+                "COD",
+                "BKASH",
+                "NAGAD",
+                "CARD",
+                "BANK_TRANSFER",
+                "OTHER",
+              ].map((method) => ({ label: method, value: method }))}
+            />
+          </Form.Item>
+          <Form.Item
+            name="financeAccountId"
+            label="Finance account"
+            rules={[{ required: true }]}
+          >
+            <Select
+              showSearch
+              optionFilterProp="label"
+              placeholder="Select finance account"
+              loading={accounts.isLoading}
+              options={(accounts.data?.items ?? []).map((account) => ({
+                label: `${account.name} (${account.accountType})`,
+                value: account.id,
+              }))}
+            />
+          </Form.Item>
+        </Form>
+      ),
+      okText: "Add payment",
+      async onOk() {
+        try {
+          const values = await paymentForm.validateFields();
+          await mutations.addPayment.mutateAsync({
+            orderId,
+            payload: values,
+          });
+          paymentForm.resetFields();
+          message.success("Payment added.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+          throw error;
+        }
       },
-    );
+    });
   };
 
-  const saveNote = () => {
-    updateOrderMutation.mutate(
-      { note },
-      {
-        onSuccess: () => {
-          setNoteVisible(false);
-        },
-      },
-    );
-  };
+  if (order.isLoading) return <Loader label="Loading order" />;
+  if (!order.data) return <Empty description="Order not found" />;
 
-  const columns = useMemo(
-    () => [
-      {
-        title: "Product",
-        dataIndex: "product_name_snapshot",
-        key: "product",
-        render: (value: string) => value || "—",
-      },
-      {
-        title: "SKU",
-        dataIndex: "sku_snapshot",
-        key: "sku",
-        render: (sku: string) => (sku ? <Text code>{sku}</Text> : "—"),
-      },
-      {
-        title: "Qty",
-        dataIndex: "qty",
-        key: "qty",
-        align: "center" as const,
-      },
-      {
-        title: "Discount",
-        dataIndex: "discount_amount",
-        key: "discount",
-        align: "right" as const,
-        render: (v: string | number | null) =>
-          Number(v ?? 0) > 0 ? `-${toMoney(v)}` : "—",
-      },
-      {
-        title: "Total",
-        dataIndex: "total_price",
-        key: "total",
-        align: "right" as const,
-        render: (v: string | number | null) => <Text strong>{toMoney(v)}</Text>,
-      },
-    ],
-    [],
-  );
-
-  if (isLoading) {
-    return (
-      <div style={{ textAlign: "center", padding: 40 }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  if (!order) {
-    return <Empty description="Order not found" />;
-  }
-
-  const items = order.items ?? [];
-  const customer = order.customer;
+  const current = order.data;
+  const items = (current.items ?? []) as Array<Record<string, unknown>>;
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Order Details" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title={current.orderNo ?? current.id}
+        subtitle="Order details and lifecycle actions from the API."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      <Row justify="space-between" align="middle" gutter={[16, 16]}>
-        <Col>
-          <Title level={3} style={{ display: "inline", marginLeft: 10 }}>
-            {order.order_no || order.external_order_no || order.uuid}
-          </Title>
-
-          <Badge
-            status="processing"
-            text={order.order_status || "Unknown"}
-            style={{ marginLeft: 12 }}
-          />
-
-          <div style={{ marginLeft: 10, marginTop: 4 }}>
-            <Text type="secondary">
-              {customer?.name || "Unknown customer"} ·{" "}
-              {new Date(order.createdAt).toDateString()}
-            </Text>
-          </div>
-        </Col>
-
-        <Col>
-          <Button
-            icon={<TruckOutlined />}
-            onClick={() => setCourierVisible(true)}
-            style={{ marginRight: 8 }}
-          >
-            Assign Courier
-          </Button>
-
-          <Button
-            icon={<BlockOutlined />}
-            onClick={() => setSupplierVisible(true)}
-            style={{ marginRight: 8 }}
-          >
-            Assign Supplier
-          </Button>
-
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => setNoteVisible(true)}
-            style={{ marginRight: 8 }}
-          >
-            Add Note
-          </Button>
-
-          <Link href={`/admin/dashboard/orders/${order.uuid}/returns`}>
-            <Button icon={<ReloadOutlined />} style={{ marginRight: 8 }}>
-              Returns
-            </Button>
-          </Link>
-
-          <Link href={`/admin/dashboard/orders/${order.uuid}/payments`}>
-            <Button icon={<CreditCardOutlined />}>Payments</Button>
-          </Link>
-        </Col>
-      </Row>
-
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} align="top">
         <Col xs={24} lg={16}>
-          <Card title={`Items (${items.length})`} variant="outlined">
-            <Table
-              columns={columns}
-              dataSource={items}
-              rowKey="id"
-              pagination={false}
-              summary={() => (
-                <Table.Summary>
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell colSpan={4} align="right" index={0}>
-                      <Text strong>Subtotal</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell align="right" index={1}>
-                      {toMoney(order.subtotal)}
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell colSpan={4} align="right" index={2}>
-                      <Text strong>Discount</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell align="right" index={3}>
-                      {toMoney(order.discount_amount)}
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell colSpan={4} align="right" index={4}>
-                      <Text strong>Shipping</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell align="right" index={5}>
-                      {toMoney(order.shipping_charge)}
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-
-                  <Table.Summary.Row>
-                    <Table.Summary.Cell colSpan={4} align="right" index={6}>
-                      <Text strong>Total</Text>
-                    </Table.Summary.Cell>
-                    <Table.Summary.Cell align="right" index={7}>
-                      <Text strong>{toMoney(order.total_amount)}</Text>
-                    </Table.Summary.Cell>
-                  </Table.Summary.Row>
-                </Table.Summary>
-              )}
-            />
+          <Card
+            title="Order"
+            extra={
+              current.status ? (
+                <Tag color={statusColor[current.status]}>{current.status}</Tag>
+              ) : null
+            }
+          >
+            <Descriptions column={1} bordered size="small">
+              <Descriptions.Item label="Customer">
+                {current.customerName ?? displayName(current.customer)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Phone">
+                {current.customerPhone ?? "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Source">
+                {current.orderSource ?? "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Payment status">
+                {current.paymentStatus ?? "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Note">
+                {current.note ?? "-"}
+              </Descriptions.Item>
+            </Descriptions>
           </Card>
 
-          <Card style={{ marginTop: 16 }}>
-            <Tabs
-              defaultActiveKey="timeline"
-              items={[
+          <Card title={`Items (${items.length})`} className="mt-4">
+            <Table
+              rowKey={(row) => String(row.id ?? JSON.stringify(row))}
+              dataSource={items}
+              pagination={false}
+              columns={[
                 {
-                  key: "timeline",
-                  label: "Timeline",
-                  children: <OrderTimeline orderId={order.uuid} />,
+                  title: "Product",
+                  key: "product",
+                  render: (_, row) =>
+                    displayName(row.product) ||
+                    String(row.productNameSnapshot ?? row.productId ?? "-"),
                 },
                 {
-                  key: "notes",
-                  label: "Notes",
-                  children: <OrderNotesPanel orderId={order.uuid} />,
+                  title: "Variant",
+                  key: "variant",
+                  render: (_, row) => displayName(row.variant),
+                },
+                {
+                  title: "Qty",
+                  key: "quantity",
+                  render: (_, row) =>
+                    String(row.quantity ?? row.qty ?? row.quantityOrdered ?? "-"),
+                },
+                {
+                  title: "Total",
+                  key: "lineTotal",
+                  render: (_, row) =>
+                    money(
+                      (row.lineTotal ??
+                        row.totalPrice ??
+                        row.total_amount) as string | number | null,
+                    ),
                 },
               ]}
             />
           </Card>
         </Col>
 
-        <Col xs={24} lg={8} className="space-y-6">
-          <Card title="Customer">
-            {customer ? (
-              <Descriptions column={1} size="small">
-                <Descriptions.Item label="Name">
-                  {customer.name}
-                </Descriptions.Item>
-                <Descriptions.Item label="Email">
-                  {customer.email || "—"}
-                </Descriptions.Item>
-                <Descriptions.Item label="Phone">
-                  {customer.phone || "—"}
-                </Descriptions.Item>
-                <Descriptions.Item label="Source">
-                  {customer.source || "—"}
-                </Descriptions.Item>
-                <Descriptions.Item label="Status">
-                  {customer.status || "—"}
-                </Descriptions.Item>
-              </Descriptions>
-            ) : (
-              <Empty description="No customer data" />
-            )}
+        <Col xs={24} lg={8}>
+          <Card title="Totals">
+            <Descriptions column={1} size="small">
+              <Descriptions.Item label="Subtotal">
+                {money(current.subtotal)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Discount">
+                {money(current.discountTotal)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Tax">
+                {money(current.taxTotal)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Shipping">
+                {money(current.shippingCharge)}
+              </Descriptions.Item>
+              <Descriptions.Item label="Total">
+                <Text strong>{money(current.totalAmount)}</Text>
+              </Descriptions.Item>
+            </Descriptions>
           </Card>
 
-          <Card title="Fulfillment">
-            <Row justify="space-between">
-              <Text type="secondary">Channel</Text>
-              <Text>{order.source_channel || "—"}</Text>
-            </Row>
-
-            <Row justify="space-between">
-              <Text type="secondary">Courier</Text>
-              <Text>{order.courier_id || "Unassigned"}</Text>
-            </Row>
-
-            <Row justify="space-between">
-              <Text type="secondary">Supplier</Text>
-              <Text>
-                {order.supplier?.name || order.supplier_id || "Unassigned"}
-              </Text>
-            </Row>
-          </Card>
-
-          <Card title="Payment">
-            <Row justify="space-between">
-              <Text type="secondary">Status</Text>
-              <Text>{order.payment_status || "—"}</Text>
-            </Row>
-
-            <Row justify="space-between">
-              <Text type="secondary">Method</Text>
-              <Text>{order.payment_method || "—"}</Text>
-            </Row>
-
-            <Row justify="space-between">
-              <Text type="secondary">Total</Text>
-              <Text strong>{toMoney(order.total_amount)}</Text>
-            </Row>
-          </Card>
-
-          <Card
-            title="Order Note"
-            extra={
-              <Button type="link" onClick={() => setNoteVisible(true)}>
-                Edit
+          <Card title="Lifecycle" className="mt-4">
+            <Space direction="vertical" className="w-full">
+              <Button
+                block
+                icon={<CreditCardOutlined />}
+                onClick={openPaymentModal}
+                loading={mutations.addPayment.isPending}
+              >
+                Add payment
               </Button>
-            }
-          >
-            <Text>{order.note || "No note added"}</Text>
+              <Button
+                block
+                icon={<TruckOutlined />}
+                onClick={() =>
+                  runAction(
+                    "Mark this order as shipped?",
+                    () => mutations.shipOrder.mutateAsync(orderId),
+                    "Order marked as shipped.",
+                  )
+                }
+                loading={mutations.shipOrder.isPending}
+              >
+                Ship order
+              </Button>
+              <Button
+                block
+                icon={<CheckCircleOutlined />}
+                onClick={() =>
+                  runAction(
+                    "Mark this order as delivered?",
+                    () => mutations.deliverOrder.mutateAsync(orderId),
+                    "Order marked as delivered.",
+                  )
+                }
+                loading={mutations.deliverOrder.isPending}
+              >
+                Deliver order
+              </Button>
+              <Button
+                block
+                danger
+                icon={<StopOutlined />}
+                onClick={() =>
+                  runAction(
+                    "Cancel this order?",
+                    () => mutations.cancelOrder.mutateAsync(orderId),
+                    "Order cancelled.",
+                  )
+                }
+                loading={mutations.cancelOrder.isPending}
+              >
+                Cancel order
+              </Button>
+            </Space>
           </Card>
         </Col>
       </Row>
-
-      <Modal
-        title="Assign Courier"
-        open={courierVisible}
-        onOk={assignCourier}
-        onCancel={() => setCourierVisible(false)}
-        confirmLoading={updateOrderMutation.isPending}
-        okButtonProps={{ disabled: !selectedCourier }}
-      >
-        <Select
-          value={selectedCourier || undefined}
-          onChange={setSelectedCourier}
-          placeholder="Select courier"
-          style={{ width: "100%", marginBottom: 6 }}
-          allowClear
-        >
-          {["FedEx", "DHL", "UPS", "USPS", "Royal Mail", "Aramex"].map(
-            (courier) => (
-              <option key={courier} value={courier}>
-                {courier}
-              </option>
-            ),
-          )}
-        </Select>
-      </Modal>
-
-      <Modal
-        title="Assign Supplier"
-        open={supplierVisible}
-        onOk={assignSupplier}
-        onCancel={() => setSupplierVisible(false)}
-        confirmLoading={updateOrderMutation.isPending}
-        okButtonProps={{ disabled: !selectedSupplier }}
-      >
-        <SearchableSelect
-          value={selectedSupplier}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          onChange={setSelectedSupplier as any}
-          endpoint="/business-suppliers"
-          placeholder="Search and select supplier"
-          labelKey="name"
-          valueKey="id"
-        />
-
-        {order.supplier_id && (
-          <Text type="secondary" style={{ display: "block", marginTop: 8 }}>
-            Currently assigned: {order.supplier?.name || order.supplier_id}
-          </Text>
-        )}
-      </Modal>
-
-      <Modal
-        title="Add / Edit Order Note"
-        open={noteVisible}
-        onOk={saveNote}
-        onCancel={() => setNoteVisible(false)}
-        confirmLoading={updateOrderMutation.isPending}
-        okButtonProps={{ disabled: !note.trim() }}
-      >
-        <TextArea
-          rows={5}
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="Write an internal order note..."
-          maxLength={1000}
-          showCount
-        />
-      </Modal>
     </div>
   );
 }

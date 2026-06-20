@@ -1,9 +1,9 @@
 "use client";
 
 import { App, Button, Card, Col, Form, Input, Row } from "antd";
-import { useMutation } from "@tanstack/react-query";
 
 import api, { getApiErrorMessage } from "@/lib/axios";
+import { useMutation } from "@tanstack/react-query";
 
 type ResetPasswordFormValues = {
   oldPassword: string;
@@ -22,7 +22,7 @@ export default function ResetPassword() {
 
   const resetPasswordMutation = useMutation({
     mutationFn: async (payload: ResetPasswordPayload) => {
-      const response = await api.post("/auth/reset", payload);
+      const response = await api.post("/auth/reset-password", payload);
       return response.data;
     },
 

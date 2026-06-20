@@ -27,7 +27,6 @@ import {
   GlobalOutlined,
   HistoryOutlined,
   HomeOutlined,
-  InboxOutlined,
   KeyOutlined,
   LayoutOutlined,
   LineChartOutlined,
@@ -69,7 +68,19 @@ import {
 import type { MenuProps } from "antd";
 import Link from "next/link";
 
-export const items: MenuProps["items"] = [
+const hiddenNavigationKeys = new Set([
+  "payment-gateway",
+  "invoices",
+  "couriers",
+  "website-builder",
+  "sms-marketing",
+  "marketing-assistant",
+  "promotion-automation",
+  "reports-analytics",
+  "notifications",
+]);
+
+const allItems: MenuProps["items"] = [
   {
     key: "dashboard",
     icon: <DashboardOutlined />,
@@ -237,6 +248,15 @@ export const items: MenuProps["items"] = [
         ),
       },
       {
+        key: "reviews",
+        icon: <CommentOutlined />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/reviews">
+            Reviews
+          </Link>
+        ),
+      },
+      {
         key: "warehouses",
         icon: <ShopOutlined />,
         label: (
@@ -287,6 +307,15 @@ export const items: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/suppliers/returns">
             Returns
+          </Link>
+        ),
+      },
+      {
+        key: "supplier-invoices",
+        icon: <FileTextOutlined />,
+        label: (
+          <Link href="/admin/dashboard/suppliers/invoices">
+            Supplier Invoices
           </Link>
         ),
       },
@@ -412,21 +441,6 @@ export const items: MenuProps["items"] = [
         key: "all-orders",
         icon: <UnorderedListOutlined />,
         label: <Link href="/admin/dashboard/orders">All Orders</Link>,
-      },
-      {
-        key: "returns",
-        icon: <RollbackOutlined />,
-        label: <Link href="/admin/dashboard/orders/returns">Returns</Link>,
-      },
-      {
-        key: "payments",
-        icon: <CreditCardOutlined />,
-        label: <Link href="/admin/dashboard/orders/payments">Payments</Link>,
-      },
-      {
-        key: "analytics",
-        icon: <LineChartOutlined />,
-        label: <Link href="/admin/dashboard/orders/analytics">Analytics</Link>,
       },
     ],
   },
@@ -1017,3 +1031,11 @@ export const items: MenuProps["items"] = [
     label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
   },
 ];
+
+export const items: MenuProps["items"] = allItems.filter(
+  (item) =>
+    item &&
+    "key" in item &&
+    item.key != null &&
+    !hiddenNavigationKeys.has(String(item.key)),
+);

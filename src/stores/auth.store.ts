@@ -14,7 +14,6 @@ import type {
 import axios from "axios";
 import type { PosCartItem } from "@/app/(dashboard)/admin/dashboard/pos/_components/types";
 
-
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const USER_COOKIE = "user";
@@ -140,13 +139,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const updatedCart = currentCart.map((item) =>
       item.id === itemId
         ? {
-          ...item,
-          ...values,
-          discountAmount: Math.min(
-            Number(values.discountAmount ?? item.discountAmount),
-            Number(values.quantity ?? item.quantity) * item.unitPrice,
-          ),
-        }
+            ...item,
+            ...values,
+            discountAmount: Math.min(
+              Number(values.discountAmount ?? item.discountAmount),
+              Number(values.quantity ?? item.quantity) * item.unitPrice,
+            ),
+          }
         : item,
     );
 
@@ -165,12 +164,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 
-
   setAccessToken: (token) => {
     if (token) {
       Cookies.set(ACCESS_TOKEN_COOKIE, token, COOKIE_OPTIONS);
     } else {
-      Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
+      Cookies.remove(ACCESS_TOKEN_COOKIE, COOKIE_OPTIONS);
     }
 
     set({ accessToken: token });
@@ -189,8 +187,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setUser: (user) => {
     const cookiePayload = {
       id: user?.id,
-      type: user?.type
-    }
+      type: user?.type,
+    };
     if (user) {
       Cookies.set(USER_COOKIE, JSON.stringify(cookiePayload), COOKIE_OPTIONS);
     } else {
@@ -365,7 +363,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const cart = localStorage.getItem(CART_POS_KEY);
     const cartPos = cart ? JSON.parse(cart) : [];
 
-    // business 
+    // business
 
     set({
       refreshToken,
@@ -376,23 +374,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       loading: Boolean(refreshToken),
     });
 
-    const profile = await authApi.me();
-    const { businesses, user } = profile;
-
-
-    if (businesses !== undefined) get().setBusinesses(businesses);
-
-    if (businesses !== undefined) {
-      set({
-        user
-      });
-    };
-
-    if (!refreshToken) {
+    if (!refreshToken && !accessToken) {
       set({ initialized: true, loading: false });
       return;
     }
 
-    set({ initialized: true, loading: false });
+    try {
+      const profile = await authApi.me();
+      const { businesses, user } = profile;
+
+      if (businesses !== undefined) get().setBusinesses(businesses);
+
+      if (user !== undefined) {
+        set({ user });
+      }
+
+      set({ initialized: true, loading: false });
+    } catch {
+      await get().logout();
+      set({ initialized: true, loading: false });
+    }
   },
 }));

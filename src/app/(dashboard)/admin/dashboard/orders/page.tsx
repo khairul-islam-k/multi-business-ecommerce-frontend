@@ -1,115 +1,104 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { useSwal } from "@/hooks/use-swal";
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Badge, Space, Popconfirm, Select } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+import { useMemo, useState } from "react";
+import { Button, Select, Space, Tag } from "antd";
+import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
 
-import api from "@/lib/axios";
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
-import { queryClient } from "@/providers/query-provider";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useOrdersQuery } from "@/lib/api";
+import type { OrderResponse, OrderStatus } from "@/lib/api";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const statusColors: Record<string, any> = {
-  Pending: "processing",
-  Processing: "processing",
-  Delivered: "success",
-  Cancelled: "error",
-  Returned: "warning",
+const statusColor: Record<OrderStatus, string> = {
+  CANCELLED: "red",
+  CONFIRMED: "cyan",
+  DELIVERED: "green",
+  PENDING: "blue",
+  PROCESSING: "purple",
+  RETURNED: "orange",
+  SHIPPED: "geekblue",
 };
 
-export default function OrdersList() {
-  const swal = useSwal();
-  const router = useRouter();
+function money(value: string | number | null | undefined) {
+  return `BDT ${Number(value ?? 0).toLocaleString()}`;
+}
 
+export default function OrdersList() {
+  const businessId = useActiveBusinessId();
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState<OrderStatus | undefined>();
   const [currentPage, setCurrentPage] = useState(1);
 
-  const pageSize = 10;
+  const query = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+      search,
+      status,
+      sortOrder: "desc" as const,
+    }),
+    [currentPage, search, status],
+  );
 
-  const { data, isLoading, isFetching } = useQuery({
-    queryKey: ["fetch-orders", currentPage, search, status],
-    queryFn: async () => {
-      const res = await api.get("/orders", {
-        params: {
-          page: currentPage,
-          limit: pageSize,
-          order_status: status,
-          search,
-          sortBy: "createdAt",
-          sortOrder: "DESC",
-        },
-      });
+  const orders = useOrdersQuery(businessId ?? "", query);
 
-      return res.data;
-    },
-    placeholderData: (previousData) => previousData,
-  });
+  if (!businessId) return <Loader label="No active business selected" />;
+  if (orders.isLoading && !orders.data)
+    return <Loader label="Loading orders" />;
 
-  if (isLoading && !data) return <Loader />;
-
-  const orders = data?.data?.data || [];
-  const totalPages = data?.data?.meta?.totalPages || 1;
-
-  const handleDelete = async (uuid: string) => {
-    await api.delete(`/orders/${uuid}`);
-    swal.success("Addon deleted successfully.");
-
-    queryClient.invalidateQueries({
-      predicate: (q) => q.queryKey[0] === "fetch-orders",
-    });
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const columns: Column<any>[] = [
+  const columns: Column<OrderResponse>[] = [
     {
-      key: "order_no",
+      key: "orderNo",
       label: "Order",
       type: "primary",
-      render: (r) => (
+      render: (order) => (
         <Link
-          href={`/admin/dashboard/orders/${r.uuid}`}
-          className={`font-semibold`}
+          href={`/admin/dashboard/orders/${order.id}`}
+          className="font-semibold"
         >
-          {r.order_no}
+          {order.orderNo ?? order.id}
         </Link>
       ),
     },
     {
       key: "customer",
       label: "Customer",
-      render: (r) => r.customer?.name ?? "-",
+      render: (order) =>
+        order.customerName ??
+        (order.customer && typeof order.customer === "object"
+          ? String((order.customer as { name?: unknown }).name ?? "-")
+          : "-"),
     },
     {
-      key: "order_status",
+      key: "status",
       label: "Status",
-      render: (r) => (
-        <Badge status={statusColors[r.order_status]} text={r.order_status} />
-      ),
+      type: "meta",
+      render: (order) =>
+        order.status ? (
+          <Tag color={statusColor[order.status]}>{order.status}</Tag>
+        ) : (
+          "-"
+        ),
     },
     {
-      key: "source_channel",
-      label: "Channel",
-      render: (v) => v.source_channel ?? "-",
+      key: "paymentStatus",
+      label: "Payment",
+      render: (order) => order.paymentStatus ?? "-",
     },
     {
-      key: "total_amount",
+      key: "totalAmount",
       label: "Total",
-      render: (v) => (
-        <span className="font-mono">${Number(v.total_amount).toFixed(2)}</span>
-      ),
+      render: (order) => money(order.totalAmount),
     },
     {
       key: "createdAt",
       label: "Date",
-      render: (v) => new Date(v.createdAt).toLocaleDateString(),
+      render: (order) =>
+        order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "-",
     },
   ];
 
@@ -118,55 +107,52 @@ export default function OrdersList() {
       <PageHeader title="Orders" breadcrumb={adminBreadcrumb} />
 
       <DataTable
-        data={orders}
+        data={orders.data?.items ?? []}
         columns={columns}
-        loading={isFetching}
-        onSearch={(q) => setSearch(q)}
-        actions={(row) => (
+        loading={orders.isFetching}
+        onSearch={(value) => {
+          setSearch(value);
+          setCurrentPage(1);
+        }}
+        extra={
+          <Select
+            allowClear
+            placeholder="Status"
+            value={status}
+            style={{ width: 160 }}
+            onChange={(value) => {
+              setStatus(value);
+              setCurrentPage(1);
+            }}
+            options={[
+              "PENDING",
+              "CONFIRMED",
+              "PROCESSING",
+              "SHIPPED",
+              "DELIVERED",
+              "CANCELLED",
+              "RETURNED",
+            ].map((item) => ({ label: item, value: item }))}
+          />
+        }
+        actions={(order) => (
           <Space>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => router.push(`/admin/dashboard/orders/${row.uuid}`)}
-            />
-            <Popconfirm
-              title="Delete addon?"
-              description="This action cannot be undone"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={() => handleDelete(row.uuid)}
-            >
-              <Button type="text" danger icon={<DeleteOutlined />} />
-            </Popconfirm>
+            <Link href={`/admin/dashboard/orders/${order.id}`}>
+              <Button type="text" icon={<EyeOutlined />} />
+            </Link>
           </Space>
         )}
         toolbarEnd={
-          <div className="flex gap-2">
-            <Select
-              className="border rounded px-2"
-              value={status}
-              onChange={(e) => {
-                setStatus(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="Pending">Pending</option>
-              <option value="Processing">Processing</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
-            </Select>
-
-            <Link href="/admin/dashboard/orders/create">
-              <Button type="primary" icon={<PlusOutlined />}>
-                New Order
-              </Button>
-            </Link>
-          </div>
+          <Link href="/admin/dashboard/orders/create">
+            <Button type="primary" icon={<PlusOutlined />}>
+              New Order
+            </Button>
+          </Link>
         }
         pagination={{
           currentPage,
           onPageChange: setCurrentPage,
-          totalPages,
+          totalPages: orders.data?.meta.totalPages ?? 1,
         }}
       />
     </div>
