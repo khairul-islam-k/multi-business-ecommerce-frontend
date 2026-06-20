@@ -9,6 +9,7 @@ import { useThemeStore, type AppTheme } from "@/stores/theme.store";
 const { defaultAlgorithm, darkAlgorithm } = antdTheme;
 
 const lightTheme: ThemeConfig = {
+  algorithm: defaultAlgorithm,
   token: {
     colorPrimary: "#1D4ED8",
     colorInfo: "#0284C7",
@@ -73,6 +74,7 @@ const lightTheme: ThemeConfig = {
 };
 
 const darkTheme: ThemeConfig = {
+  algorithm: darkAlgorithm,
   token: {
     colorPrimary: "#3B82F6",
     colorInfo: "#38BDF8",
@@ -157,6 +159,7 @@ export default function AntdThemeProvider({
   children: React.ReactNode;
 }) {
   const theme = useThemeStore((state) => state.theme);
+  console.log('theme', theme);
   const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
   const setResolvedTheme = useThemeStore((state) => state.setResolvedTheme);
 
@@ -179,13 +182,9 @@ export default function AntdThemeProvider({
     return () => media.removeEventListener("change", syncSystemTheme);
   }, [theme, setResolvedTheme]);
 
-  const config = useMemo<ThemeConfig>(
-    () => ({
-      algorithm: resolvedTheme === "dark" ? darkAlgorithm : defaultAlgorithm,
-      ...(resolvedTheme === "dark" ? darkTheme : lightTheme),
-    }),
-    [resolvedTheme],
-  );
+  const config = useMemo<ThemeConfig>(() => {
+    return theme === "dark" ? darkTheme : lightTheme;
+  }, [theme]);
 
   return <ConfigProvider theme={config}>{children}</ConfigProvider>;
 }

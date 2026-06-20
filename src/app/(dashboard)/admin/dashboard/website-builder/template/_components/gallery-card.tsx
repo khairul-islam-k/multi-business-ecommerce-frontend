@@ -60,7 +60,7 @@ export default function GalleryCard() {
             className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
           >
             {/* Preview */}
-            <Link href='/store/myshop.com'>
+            <Link href='/store/myshop'>
               <div className="relative h-[250px] overflow-hidden bg-gray-100">
                 <motion.div
                   className="w-full"

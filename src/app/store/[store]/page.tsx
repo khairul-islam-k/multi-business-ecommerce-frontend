@@ -3,24 +3,25 @@ import React from 'react';
 
 type Props = {
   params: Promise<{
-    domain: string;
+    store: string;
   }>;
 };
 
 const Homepage = async ({ params }: Props) => {
-  const { domain } = await params;
-  console.log('params', domain);
+  const { store } = await params;
+  console.log('params', store);
 
   const site = {
     name: "Onecomm Store",
     templateName: "electronic",
     logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-    domain,
+    store,
   };
 
   if (site.templateName === "electronic") {
     return <ElectronicHomePage site={site} />;
   }
+  
 };
 
 export default Homepage;
