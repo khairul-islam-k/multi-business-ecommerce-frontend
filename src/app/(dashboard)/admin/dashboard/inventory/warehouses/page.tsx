@@ -2,11 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -18,10 +14,7 @@ import {
   useWarehousesQuery,
 } from "@/lib/api/hooks/warehouse";
 import { useAuthStore } from "@/stores/auth.store";
-import {
-  WarehouseResponse,
-  WarehouseStatus,
-} from "@/types/product/warehouse";
+import { WarehouseResponse, WarehouseStatus } from "@/types/product/warehouse";
 
 const Warehouses = () => {
   const router = useRouter();
@@ -111,13 +104,12 @@ const Warehouses = () => {
       label: "Actions",
       render: (row) => (
         <div className="flex items-center gap-2">
-
           <Button
             size="small"
             icon={<EditOutlined />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/product-catalog/warehouses/edit/${row.id}`
+                `/admin/dashboard/inventory/warehouses/edit/${row.id}`,
               )
             }
           />
@@ -169,9 +161,7 @@ const Warehouses = () => {
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() =>
-                  router.push(
-                    "/admin/dashboard/product-catalog/warehouses/create"
-                  )
+                  router.push("/admin/dashboard/inventory/warehouses/create")
                 }
               >
                 New Warehouse

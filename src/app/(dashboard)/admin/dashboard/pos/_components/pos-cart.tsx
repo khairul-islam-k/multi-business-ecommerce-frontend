@@ -180,8 +180,9 @@ export function PosCart({
         />
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 gap-2">
             <Text type="secondary">Customer</Text>
+            <br />
             <Radio.Group
               className="mt-1"
               optionType="button"
