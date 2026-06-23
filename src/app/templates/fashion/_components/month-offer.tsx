@@ -1,0 +1,65 @@
+import Image from "next/image";
+
+import monthOffer_1 from "@/assets/fashion/month-offer/month-offer-1.png";
+import monthOffer_2 from "@/assets/fashion/month-offer/month-offer-2.png";
+import monthOffer_3 from "@/assets/fashion/month-offer/month-offer-3.png";
+
+const MonthOffer = () => {
+  return (
+    <section className="bg-[#fffdf9] py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Header Text */}
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <h2 className="text-3xl font-bold text-gray-950 sm:text-4xl lg:text-5xl">
+            Best Month Offer
+          </h2>
+
+          <p className="mt-4 text-base leading-8 text-gray-600">
+            Erat pellentesque curabitur euismod dui etiam pellentesque rhoncus
+            fermentum tristique lobortis lectus magnis. Consequat porta turpis
+            maecenas.
+          </p>
+        </div>
+
+        {/* Images Layout */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Left Big Image */}
+          <div className="group relative min-h-[420px] overflow-hidden rounded-3xl bg-gray-100 sm:min-h-[560px] lg:min-h-[680px]">
+            <Image
+              src={monthOffer_1}
+              alt="Best month offer"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+          </div>
+
+          {/* Right Images */}
+          <div className="grid grid-rows-2 gap-6">
+            <div className="group relative min-h-[300px] overflow-hidden rounded-3xl bg-gray-100 lg:min-h-0">
+              <Image
+                src={monthOffer_2}
+                alt="Month offer top"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+
+            <div className="group relative min-h-[300px] overflow-hidden rounded-3xl bg-gray-100 lg:min-h-0">
+              <Image
+                src={monthOffer_3}
+                alt="Month offer bottom"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default MonthOffer;

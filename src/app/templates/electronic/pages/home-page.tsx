@@ -44,7 +44,7 @@ type Props = {
         name: string;
         logo?: string;
         templateName: string;
-        domain: string;
+        store: string;
     };
 };
 
@@ -152,7 +152,7 @@ export default function HomePage({ site }: Props) {
           </h2>
 
           <Link
-            href={`/store/${site.domain}/products`}
+            href={`/store/${site?.store}/products`}
             className="text-sm font-medium text-blue-600 hover:underline"
           >
             View all →
@@ -168,7 +168,7 @@ export default function HomePage({ site }: Props) {
             return (
               <Link
                 key={category}
-                href={`/store/${site.domain}/products`}
+                href={`/store/${site.store}/products`}
                 className="group relative aspect-[4/5] overflow-hidden rounded-2xl"
               >
                 <img
@@ -205,7 +205,7 @@ export default function HomePage({ site }: Props) {
           </div>
 
           <Link
-            href={`/store/${site.domain}/products`}
+            href={`/store/${site.store}/products`}
             className="text-sm font-medium text-blue-600 hover:underline"
           >
             Shop all →

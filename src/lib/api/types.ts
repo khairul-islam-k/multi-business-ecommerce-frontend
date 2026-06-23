@@ -52,7 +52,7 @@ export type ListQuery = {
 
 export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
-export type BusinessStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
+export type BusinessStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";
 export type RoleStatus = "ACTIVE" | "INACTIVE" | string;
 export type AssignmentStatus = "ACTIVE" | "INACTIVE" | "EXPIRED" | string;
 export type EmployeeStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;

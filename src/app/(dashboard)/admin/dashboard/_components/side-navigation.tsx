@@ -604,74 +604,74 @@ const allItems: MenuProps["items"] = [
   //   ],
   // },
 
-  // {
-  //   key: "website-builder",
-  //   icon: <AppstoreOutlined />, // Website Builder (main)
-  //   label: "Website Builder",
-  //   children: [
-  //     {
-  //       key: "websites",
-  //       icon: <GlobalOutlined />, // List of websites
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/websites">
-  //           Website List
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "section-editor",
-  //       icon: <LayoutOutlined />, // Sections & layouts
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/section-editor">
-  //           Section Editor
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "page-builder",
-  //       icon: <FileTextOutlined />, // Pages / content
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/page-builder">
-  //           Page Builder
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "menu-builder",
-  //       icon: <MenuOutlined />, // Navigation menus
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/menu-builder">
-  //           Menu Builder
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "template",
-  //       icon: <CopyOutlined />, // Templates
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/template">Template</Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "domains",
-  //       icon: <LinkOutlined />, // Domains
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/domains">
-  //           Domain Manager
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "publish-setting",
-  //       icon: <CloudUploadOutlined />, // Publish settings
-  //       label: (
-  //         <Link href="/admin/dashboard/website-builder/publish-setting">
-  //           Publish Setting
-  //         </Link>
-  //       ),
-  //     },
-  //   ],
-  // },
+  {
+    key: "website-builder",
+    icon: <AppstoreOutlined />, // Website Builder (main)
+    label: "Website Builder",
+    children: [
+      {
+        key: "websites",
+        icon: <GlobalOutlined />, // List of websites
+        label: (
+          <Link href="/admin/dashboard/website-builder/websites">
+            View Website
+          </Link>
+        ),
+      },
+      // {
+      //   key: "section-editor",
+      //   icon: <LayoutOutlined />, // Sections & layouts
+      //   label: (
+      //     <Link href="/admin/dashboard/website-builder/section-editor">
+      //       Section Editor
+      //     </Link>
+      //   ),
+      // },
+      // {
+      //   key: "page-builder",
+      //   icon: <FileTextOutlined />, // Pages / content
+      //   label: (
+      //     <Link href="/admin/dashboard/website-builder/page-builder">
+      //       Page Builder
+      //     </Link>
+      //   ),
+      // },
+      // {
+      //   key: "menu-builder",
+      //   icon: <MenuOutlined />, // Navigation menus
+      //   label: (
+      //     <Link href="/admin/dashboard/website-builder/menu-builder">
+      //       Menu Builder
+      //     </Link>
+      //   ),
+      // },
+      {
+        key: "template",
+        icon: <CopyOutlined />, // Templates
+        label: (
+          <Link href="/admin/dashboard/website-builder/template">Template</Link>
+        ),
+      },
+      // {
+      //   key: "domains",
+      //   icon: <LinkOutlined />, // Domains
+      //   label: (
+      //     <Link href="/admin/dashboard/website-builder/domains">
+      //       Domain Manager
+      //     </Link>
+      //   ),
+      // },
+      // {
+      //   key: "publish-setting",
+      //   icon: <CloudUploadOutlined />, // Publish settings
+      //   label: (
+      //     <Link href="/admin/dashboard/website-builder/publish-setting">
+      //       Publish Setting
+      //     </Link>
+      //   ),
+      // },
+    ],
+  },
 
   // {
   //   key: "sms-marketing",

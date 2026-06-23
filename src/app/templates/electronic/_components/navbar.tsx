@@ -5,7 +5,7 @@ import { useParams, usePathname } from "next/navigation";
 import { LogIn, Menu, ShoppingBag, X, Zap } from "lucide-react";
 import { useState } from "react";
 
-import { useCart } from "../../../store/[domain]/_components/contex/CartContex";
+import { useCart } from "../../../store/[websiteId]/_components/contex/CartContex";
 
 type Props = {
   site: {
@@ -20,25 +20,25 @@ export function ElectronicNavBar({ site }: Props) {
   const { count } = useCart();
   const params = useParams();
 
-  const domain = params.domain as string;
+  const store = params.store as string;
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const links = [
     {
-      href: `/store/${domain}`,
+      href: `/store/${store}`,
       label: "Home",
     },
     {
-      href: `/store/${domain}/products`,
+      href: `/store/${store}/products`,
       label: "Products",
     },
     {
-      href: `/store/${domain}/about`,
+      href: `/store/${store}/about`,
       label: "About Us",
     },
     {
-      href: `/store/${domain}/contact`,
+      href: `/store/${store}/contact`,
       label: "Contact Us",
     },
   ];
@@ -56,7 +56,7 @@ export function ElectronicNavBar({ site }: Props) {
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-10">
         {/* Logo */}
         <Link
-          href={`/store/${domain}`}
+          href={`/store/${store}`}
           onClick={() => setIsMenuOpen(false)}
           className="flex items-center gap-2 text-xl font-bold text-gray-900"
         >
@@ -88,7 +88,7 @@ export function ElectronicNavBar({ site }: Props) {
         <div className="flex items-center gap-3">
           {/* Login */}
           <Link
-            href={`/store/${domain}/login`}
+            href={`/store/${store}/login`}
             className="hidden items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-100 md:inline-flex"
           >
             <LogIn className="h-4 w-4" />
@@ -97,7 +97,7 @@ export function ElectronicNavBar({ site }: Props) {
 
           {/* Cart */}
           <Link
-            href={`/store/${domain}/cart`}
+            href={`/store/${store}/cart`}
             className="relative inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
           >
             <ShoppingBag className="h-4 w-4" />
@@ -148,7 +148,7 @@ export function ElectronicNavBar({ site }: Props) {
 
             {/* Mobile Login Button */}
             <Link
-              href={`/store/${domain}/login`}
+              href={`/store/${store}/login`}
               onClick={() => setIsMenuOpen(false)}
               className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
             >

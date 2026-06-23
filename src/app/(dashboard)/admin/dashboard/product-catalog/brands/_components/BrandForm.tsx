@@ -105,12 +105,6 @@ const BrandForm = ({
                 <Form.Item
                     label="Logo URL"
                     name="logoUrl"
-                    rules={[
-                        {
-                            required: true,
-                            message: "Brand Logo is required",
-                        },
-                    ]}
                 >
                     <Input 
                     onClick={() => setImageModalOpen(true)}
