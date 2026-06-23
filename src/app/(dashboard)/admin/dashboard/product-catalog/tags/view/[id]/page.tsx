@@ -80,6 +80,11 @@ const TagDetails = () => {
 
                     <InfoItem label="Status" value={tag.status} />
 
+                    <InfoItem
+                        label="Featured"
+                        value={tag.isFeatured ? "Yes" : "No"}
+                    />
+
                     <InfoItem label="Products" value={tag._count?.products ?? 0} />
 
                     <InfoItem

@@ -22,18 +22,17 @@ import {
   ProductVariantAvailableOption,
   ResponseVariant,
 } from "@/types/product/variant";
-import { PosCartItem } from "./types";
 
 const { Text } = Typography;
 
 type Items = {
-  product: Pick<ResponseProduct, 'id' | 'name'>;
-  variant: Pick<ResponseVariant, 'id' | 'title'> | null;
+  product: Pick<ResponseProduct, "id" | "name" | "taxId">;
+  variant: Pick<ResponseVariant, "id" | "title"> | null;
   quantity: number;
   discountAmount: number;
   unitPrice: number;
   availableQuantity?: number;
-}
+};
 
 type VariantSelectorProps = {
   businessId: string;
@@ -43,7 +42,10 @@ type VariantSelectorProps = {
 
 const toNumber = (value?: string | number | null) => Number(value ?? 0);
 
-const getVariantPrice = (variant: ResponseVariant | null, product: ResponseProduct) =>
+const getVariantPrice = (
+  variant: ResponseVariant | null,
+  product: ResponseProduct,
+) =>
   toNumber(variant?.effectivePrice ?? variant?.priceOverride ?? product.price);
 
 const getAvailableQuantity = (
@@ -51,7 +53,8 @@ const getAvailableQuantity = (
   product: ResponseProduct,
 ) => {
   if (variant?.stock) return Number(variant.stock.availableQuantity);
-  if (product.stockSummary) return Number(product.stockSummary.availableQuantity);
+  if (product.stockSummary)
+    return Number(product.stockSummary.availableQuantity);
   return undefined;
 };
 
@@ -142,7 +145,10 @@ export function VariantSelector({
     discountAmount <= subtotal &&
     (!hasVariants || Boolean(selectedVariant));
 
-  const handleAttributeChange = (attributeId: string, attributeValueId?: string) => {
+  const handleAttributeChange = (
+    attributeId: string,
+    attributeValueId?: string,
+  ) => {
     setSelectedAttributes((current) => {
       const next = current.filter((item) => item.attributeId !== attributeId);
 
@@ -316,22 +322,23 @@ export function VariantSelector({
           disabled={!canAdd}
           onClick={() => {
             onAdd({
-              product: { id: product.id, name: product.name },
+              product: { id: product.id, name: product.name, taxId: product.taxId },
               variant: selectedVariant
                 ? {
-                  id: selectedVariant.id,
-                  title: selectedVariant.title,
-                } : null,
+                    id: selectedVariant.id,
+                    title: selectedVariant.title,
+                  }
+                : null,
               quantity,
               discountAmount,
               unitPrice,
               availableQuantity,
-            })
+            });
           }}
         >
           Add to Cart
         </Button>
       </Space>
-    </Card >
+    </Card>
   );
 }

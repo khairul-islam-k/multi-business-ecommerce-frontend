@@ -2,13 +2,16 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { ResponseUnit, UnitPayload } from "@/types/product/unit";
+import {
+  ProductTagPayload,
+  ResponseProductTag,
+} from "@/types/product/product";
 
 const basePath = (businessId: ApiId) => `/product-catalog/businesses/${businessId}/tags`;
 export const productTagApi = {
   list(businessId: ApiId, query?: CategoriesQuery) {
     return api
-      .get<ApiPaginatedResponse<ResponseUnit>>(
+      .get<ApiPaginatedResponse<ResponseProductTag>>(
         `${basePath(businessId)}${buildQueryString(query)}`,
       )
       .then((res) => normalizePaginatedResponse(res.data));
@@ -16,23 +19,23 @@ export const productTagApi = {
 
   get(businessId: ApiId, tagId: ApiId) {
     return api
-      .get<ApiResponse<ResponseUnit>>(`${basePath(businessId)}/${tagId}`)
+      .get<ApiResponse<ResponseProductTag>>(`${basePath(businessId)}/${tagId}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 
-  create(businessId: ApiId, payload: UnitPayload) {
+  create(businessId: ApiId, payload: ProductTagPayload) {
     return api
-      .post<ApiResponse<ResponseUnit>>(basePath(businessId), payload)
+      .post<ApiResponse<ResponseProductTag>>(basePath(businessId), payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 
   update(
     businessId: ApiId,
     tagId: ApiId,
-    payload: UnitPayload,
+    payload: ProductTagPayload,
   ) {
     return api
-      .patch<ApiResponse<ResponseUnit>>(
+      .patch<ApiResponse<ResponseProductTag>>(
         `${basePath(businessId)}/${tagId}`,
         payload,
       )

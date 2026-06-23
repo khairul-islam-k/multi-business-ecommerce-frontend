@@ -4,7 +4,6 @@ import { useProductsQuery } from "@/lib/api/hooks/product";
 import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
 import { usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
 import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
-import { useTaxQuery } from "@/lib/api/hooks/tax";
 import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
@@ -40,11 +39,10 @@ type PurchaseOrderItemFormValue = {
 type PurchaseOrderFormValues = {
   supplierId?: string;
   warehouseId?: string;
-  taxId?: string;
   expectedDeliveryDate?: Dayjs;
-  status: PurchaseOrderStatus;
-  shippingCost: number;
-  note: string;
+  status?: PurchaseOrderStatus;
+  shippingCost?: number;
+  note?: string;
   items: PurchaseOrderItemFormValue[];
 };
 
@@ -149,12 +147,7 @@ const PurchaseOrderItem = ({
             }} />
         </Form.Item>
 
-        <Form.Item
-          label="Discount Amount"
-          name={[fieldName, "discountAmount"]}
-          rules={[{ required: true, message: "Discount amount is required" }]}
-          className="md:col-span-2"
-        >
+        <Form.Item label="Discount Amount" name={[fieldName, "discountAmount"]}>
           <InputNumber min={0} 
           style={{
               width: '100%'
@@ -191,10 +184,6 @@ const PurchaseOrderForm = () => {
     }
   );
 
-  const { data: taxes, isLoading: taxLoading } = useTaxQuery(businessId, {
-    status: "ACTIVE",
-  });
-
   const { data: products, isLoading: productLoading } = useProductsQuery(
     businessId,
     {
@@ -206,9 +195,7 @@ const PurchaseOrderForm = () => {
   const handleFinish = async (values: PurchaseOrderFormValues) => {
     if (
       !values.supplierId ||
-      !values.warehouseId ||
-      !values.taxId ||
-      !values.expectedDeliveryDate
+      !values.warehouseId
     ) {
       return;
     }
@@ -217,22 +204,21 @@ const PurchaseOrderForm = () => {
     const payload: PurchaseOrderPayload = {
       supplierId: values.supplierId,
       warehouseId: values.warehouseId,
-      taxId: values.taxId,
-      expectedDeliveryDate: values.expectedDeliveryDate.toDate().toISOString(),
+      expectedDeliveryDate: values.expectedDeliveryDate?.toDate().toISOString(),
       status: values.status,
-      shippingCost: Number(values.shippingCost),
-      note: values.note?.trim() || "",
+      shippingCost: Number(values.shippingCost ?? 0),
+      note: values.note?.trim() || undefined,
       items: values.items.map((item) => ({
         productId: item.productId as string,
-        variantId: item.variantId as string,
+        variantId: item.variantId || undefined,
         quantityOrdered: Number(item.quantityOrdered),
         unitCost: Number(item.unitCost),
-        discountAmount: Number(item.discountAmount),
+        discountAmount: Number(item.discountAmount ?? 0),
       })),
     };
 
     try {
-      const res = await createPurchaseOrder.mutateAsync(payload);
+      await createPurchaseOrder.mutateAsync(payload);
       router.push("/admin/dashboard/suppliers/purchase-order")
       message.success("Purchase Order created successfully");
       
@@ -300,41 +286,11 @@ const PurchaseOrderForm = () => {
             />
           </Form.Item>
 
-          <Form.Item
-            label="Tax"
-            name="taxId"
-            rules={[{ required: true, message: "Tax is required" }]}
-          >
-            <Select
-              showSearch
-              placeholder="Select tax"
-              loading={taxLoading}
-              optionFilterProp="label"
-              options={(taxes?.items ?? []).map((tax) => ({
-                label: tax.name,
-                value: tax.id,
-              }))}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Expected Delivery Date"
-            name="expectedDeliveryDate"
-            rules={[
-              {
-                required: true,
-                message: "Expected delivery date is required",
-              },
-            ]}
-          >
+          <Form.Item label="Expected Delivery Date" name="expectedDeliveryDate">
             <DatePicker className="w-full" />
           </Form.Item>
 
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[{ required: true, message: "Status is required" }]}
-          >
+          <Form.Item label="Status" name="status">
             <Select
               placeholder="Select status"
               options={[
@@ -344,11 +300,7 @@ const PurchaseOrderForm = () => {
             />
           </Form.Item>
 
-          <Form.Item
-            label="Shipping Cost"
-            name="shippingCost"
-            rules={[{ required: true, message: "Shipping cost is required" }]}
-          >
+          <Form.Item label="Shipping Cost" name="shippingCost">
             <InputNumber min={0}
               style={{
                 width: '100%'

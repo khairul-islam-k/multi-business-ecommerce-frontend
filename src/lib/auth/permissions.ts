@@ -36,6 +36,24 @@ export const PERMISSIONS = {
   productCatalogRead: { feature: "PRODUCT_MANAGEMENT", action: "READ" },
   productCatalogUpdate: { feature: "PRODUCT_MANAGEMENT", action: "UPDATE" },
   productCatalogDelete: { feature: "PRODUCT_MANAGEMENT", action: "DELETE" },
+  supplierCreate: { feature: "SUPPLIER_MANAGEMENT", action: "CREATE" },
+  supplierRead: { feature: "SUPPLIER_MANAGEMENT", action: "READ" },
+  supplierUpdate: { feature: "SUPPLIER_MANAGEMENT", action: "UPDATE" },
+  supplierDelete: { feature: "SUPPLIER_MANAGEMENT", action: "DELETE" },
+  inventoryCreate: { feature: "INVENTORY_MANAGEMENT", action: "CREATE" },
+  inventoryRead: { feature: "INVENTORY_MANAGEMENT", action: "READ" },
+  inventoryUpdate: { feature: "INVENTORY_MANAGEMENT", action: "UPDATE" },
+  inventoryDelete: { feature: "INVENTORY_MANAGEMENT", action: "DELETE" },
+  orderCreate: { feature: "ORDER_MANAGEMENT", action: "CREATE" },
+  orderRead: { feature: "ORDER_MANAGEMENT", action: "READ" },
+  orderUpdate: { feature: "ORDER_MANAGEMENT", action: "UPDATE" },
+  orderDelete: { feature: "ORDER_MANAGEMENT", action: "DELETE" },
+  posCreate: { feature: "POS_MANAGEMENT", action: "CREATE" },
+  financeCreate: { feature: "FINANCE_MANAGEMENT", action: "CREATE" },
+  financeRead: { feature: "FINANCE_MANAGEMENT", action: "READ" },
+  financeUpdate: { feature: "FINANCE_MANAGEMENT", action: "UPDATE" },
+  financeDelete: { feature: "FINANCE_MANAGEMENT", action: "DELETE" },
+  websiteRead: { feature: "WEBSITE_MANAGEMENT", action: "READ" },
 } satisfies Record<string, PermissionRequirement>;
 
 export function getDashboardPath(userType?: SystemUserType | null) {
@@ -59,6 +77,10 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
   if (pathname === TENANT_DASHBOARD_PATH) return null;
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/profile`)) return null;
 
+  if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/pos`)) {
+    return PERMISSIONS.posCreate;
+  }
+
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/business`)) {
     return PERMISSIONS.businessRead;
   }
@@ -69,6 +91,87 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
 
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/billing`)) {
     return PERMISSIONS.packageRead;
+  }
+
+  const productCatalogPath = `${TENANT_DASHBOARD_PATH}/product-catalog`;
+  if (pathname.startsWith(productCatalogPath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.productCatalogCreate;
+    if (
+      pathname.includes("/edit/") ||
+      pathname.includes("/update/") ||
+      pathname.includes("/variants/")
+    ) {
+      return PERMISSIONS.productCatalogUpdate;
+    }
+
+    return PERMISSIONS.productCatalogRead;
+  }
+
+  const inventoryPath = `${TENANT_DASHBOARD_PATH}/inventory`;
+  if (pathname.startsWith(inventoryPath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.inventoryCreate;
+    if (pathname.includes("/edit/") || pathname.includes("/update/")) {
+      return PERMISSIONS.inventoryUpdate;
+    }
+
+    return PERMISSIONS.inventoryRead;
+  }
+
+  const suppliersPath = `${TENANT_DASHBOARD_PATH}/suppliers`;
+  if (pathname.startsWith(suppliersPath)) {
+    if (
+      pathname.includes("/create") ||
+      pathname.includes("/add-supplier-product") ||
+      pathname.includes("/create-return") ||
+      pathname.includes("/return-request/")
+    ) {
+      return PERMISSIONS.supplierCreate;
+    }
+    if (
+      pathname.includes("/edit/") ||
+      pathname.includes("/update/") ||
+      pathname.includes("/update-s-product/")
+    ) {
+      return PERMISSIONS.supplierUpdate;
+    }
+
+    return PERMISSIONS.supplierRead;
+  }
+
+  const ordersPath = `${TENANT_DASHBOARD_PATH}/orders`;
+  if (pathname.startsWith(ordersPath)) {
+    if (pathname.startsWith(`${ordersPath}/create`)) {
+      return PERMISSIONS.orderCreate;
+    }
+    if (pathname.includes("/payments") || pathname.includes("/returns")) {
+      return PERMISSIONS.orderUpdate;
+    }
+
+    return PERMISSIONS.orderRead;
+  }
+
+  const customersPath = `${TENANT_DASHBOARD_PATH}/customers`;
+  if (pathname.startsWith(customersPath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.orderCreate;
+    if (pathname.includes("/update/") || pathname.includes("/address/")) {
+      return PERMISSIONS.orderUpdate;
+    }
+
+    return PERMISSIONS.orderRead;
+  }
+
+  const financePath = `${TENANT_DASHBOARD_PATH}/finance`;
+  if (pathname.startsWith(financePath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.financeCreate;
+    if (
+      pathname.includes("/edit/") ||
+      pathname.includes("/update/") ||
+      pathname.includes("/pay")
+    ) {
+      return PERMISSIONS.financeUpdate;
+    }
+
+    return PERMISSIONS.financeRead;
   }
 
   const employeesPath = `${TENANT_DASHBOARD_PATH}/access-control/employees`;

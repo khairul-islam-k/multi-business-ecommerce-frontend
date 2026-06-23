@@ -47,6 +47,7 @@ const UpdateProductPage = () => {
       categoryId: values.categoryId,
       brandId: values.brandId,
       unitId: values.unitId,
+      taxId: values.taxId,
       status: values.status,
       tagIds: values.tagIds ?? [],
     };

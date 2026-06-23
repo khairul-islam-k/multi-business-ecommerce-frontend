@@ -26,7 +26,6 @@ const { Text, Title } = Typography;
 
 const paymentMethods: Array<{ label: string; value: PosPaymentMethod }> = [
   { label: "Cash", value: "CASH" },
-  { label: "COD", value: "COD" },
   { label: "bKash", value: "BKASH" },
   { label: "Nagad", value: "NAGAD" },
   { label: "Card", value: "CARD" },
@@ -73,15 +72,23 @@ export function PosCart({
     (total, item) => total + Number(item.discountAmount ?? 0),
     0,
   );
-  const selectedTax = taxes.find((tax) => tax.id === values.taxId);
-  const taxRate = Number(selectedTax?.rate ?? 0);
   const taxableAmount = Math.max(subtotal - discountTotal, 0);
-  const taxAmount = taxableAmount * (taxRate / 100);
+  const taxAmount = cart.reduce((total, item) => {
+    const tax = taxes.find((entry) => entry.id === item.product.taxId);
+    const taxRate = Number(tax?.rate ?? 0);
+    const lineSubtotal = item.unitPrice * item.quantity;
+    const lineTaxableAmount = Math.max(
+      lineSubtotal - Number(item.discountAmount ?? 0),
+      0,
+    );
+
+    return total + lineTaxableAmount * (taxRate / 100);
+  }, 0);
   const grandTotal = taxableAmount + taxAmount;
   const customerMode = values.customerMode ?? "walk-in";
   const canCheckout =
     cart.length > 0 &&
-    Boolean(values.taxId) &&
+    Boolean(values.warehouseId) &&
     Boolean(values.paymentMethod) &&
     Boolean(values.financeAccountId) &&
     (customerMode !== "existing" || Boolean(values.customerId));
@@ -279,22 +286,6 @@ export function PosCart({
           </div>
 
           <div>
-            <Text type="secondary">Tax</Text>
-            <Select
-              showSearch
-              className="mt-1 w-full"
-              placeholder="Select tax"
-              optionFilterProp="label"
-              value={values.taxId}
-              options={taxes.map((tax) => ({
-                label: `${tax.name} (${tax.rate}%)`,
-                value: tax.id,
-              }))}
-              onChange={(taxId) => onValuesChange({ taxId })}
-            />
-          </div>
-
-          <div>
             <Text type="secondary">Payment Method</Text>
             <Select
               className="mt-1 w-full"
@@ -336,7 +327,7 @@ export function PosCart({
             <Text>{money(discountTotal)}</Text>
           </div>
           <div className="flex items-center justify-between">
-            <Text type="secondary">Tax</Text>
+            <Text type="secondary">Product tax estimate</Text>
             <Text>{money(taxAmount)}</Text>
           </div>
           <div className="flex items-center justify-between">

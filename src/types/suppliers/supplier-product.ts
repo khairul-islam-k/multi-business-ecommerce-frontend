@@ -84,8 +84,17 @@ export type SupplierProductResponse = {
 export type SupplierProductPayload = {
     productId: string;
     variantId?: string | null;
+    supplierSku?: string;
     lastPurchasePrice?: number;
     minOrderQuantity?: number | null;
     leadTimeDays?: number | null;
     status: CommonStatus;
+};
+
+export type SupplierProductQuery = {
+    page?: number;
+    limit?: number;
+    search?: string;
+    supplierId?: string;
+    status?: CommonStatus;
 };

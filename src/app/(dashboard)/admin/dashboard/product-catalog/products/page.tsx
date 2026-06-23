@@ -17,7 +17,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
 import Image from "next/image";
 import { Column, DataTable } from "@/components/shared/data-table";
-import { ResponseProduct } from "@/types/product/product";
+import { ProductStatus, ResponseProduct } from "@/types/product/product";
 import { imageUrlSet } from "./_components/image-url";
 import { getApiErrorMessage } from "@/lib/axios";
 
@@ -38,7 +38,9 @@ export interface TProduct {
 const ProductsList = () => {
   const router = useRouter();
 
-  const [statusFilter, setStatusFilter] = useState();
+  const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>();
+  const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt" | "updatedAt">("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const business = useAuthStore(s => s.selectedBusiness);
   const businessId = business?.id ? business?.id : '';
   const swal = useSwal();
@@ -52,7 +54,8 @@ const ProductsList = () => {
     limit,
     search,
     status: statusFilter,
-    sortOrder: "desc",
+    sortBy,
+    sortOrder,
   });
 
   const { removeProduct } = useProductMutation(businessId);
@@ -236,12 +239,43 @@ const ProductsList = () => {
                 placeholder="Filter by status"
                 allowClear
                 style={{ width: 180 }}
-                onChange={(v) => setStatusFilter(v)}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
                 options={[
                   { label: "DRAFT", value: "DRAFT" },
                   { label: "Active", value: "ACTIVE" },
                   { label: "Inactive", value: "INACTIVE" },
-                  { label: "Inactive", value: "ARCHIVED" },
+                  { label: "Archived", value: "ARCHIVED" },
+                ]}
+              />
+
+              <Select
+                value={sortBy}
+                style={{ width: 160 }}
+                onChange={(value) => {
+                  setSortBy(value);
+                  setCurrentPage(1);
+                }}
+                options={[
+                  { label: "Sort: Created", value: "createdAt" },
+                  { label: "Sort: Updated", value: "updatedAt" },
+                  { label: "Sort: Name", value: "name" },
+                  { label: "Sort: Price", value: "price" },
+                ]}
+              />
+
+              <Select
+                value={sortOrder}
+                style={{ width: 120 }}
+                onChange={(value) => {
+                  setSortOrder(value);
+                  setCurrentPage(1);
+                }}
+                options={[
+                  { label: "Desc", value: "desc" },
+                  { label: "Asc", value: "asc" },
                 ]}
               />
 
@@ -259,6 +293,7 @@ const ProductsList = () => {
           columns={columns}
           onSearch={(value) => {
             setSearch(value);
+            setCurrentPage(1);
           }}
           loading={
             isLoading ||

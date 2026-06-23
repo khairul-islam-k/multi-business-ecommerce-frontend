@@ -2,9 +2,13 @@
 
 import React, { useState } from "react";
 import { Layout, Drawer, theme, Grid } from "antd";
+import { usePathname } from "next/navigation";
 
 import Sidebar from "./_components/sidebar";
 import TopBar from "./_components/top-bar";
+import PermissionGate from "@/components/auth/permission-gate";
+import AccessDenied from "@/components/auth/access-denied";
+import { getAdminRoutePermission } from "@/lib/auth/permissions";
 
 const { Header, Sider, Content } = Layout;
 
@@ -17,6 +21,8 @@ export default function AdminDashboardLayout({
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const { token } = theme.useToken();
+  const pathname = usePathname();
+  const routePermission = getAdminRoutePermission(pathname);
 
   return (
     
@@ -78,7 +84,13 @@ export default function AdminDashboardLayout({
               background: token.colorBgLayout,
             }}
           >
-            {children}
+            {routePermission === "DENY" ? (
+              <AccessDenied />
+            ) : (
+              <PermissionGate permission={routePermission}>
+                {children}
+              </PermissionGate>
+            )}
           </Content>
         </Layout>
 

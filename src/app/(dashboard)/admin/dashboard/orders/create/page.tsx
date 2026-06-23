@@ -93,7 +93,6 @@ export default function CreateOrder() {
   const mutations = useOrderMutations(businessId ?? "");
   const watchedItems = Form.useWatch("items", form);
   const customerMode = Form.useWatch("customerMode", form) ?? "walk-in";
-  const taxId = Form.useWatch("taxId", form);
   const shippingCharge = Form.useWatch("shippingCharge", form);
   const orderItems = useMemo(() => watchedItems ?? [], [watchedItems]);
 
@@ -132,10 +131,27 @@ export default function CreateOrder() {
       (total, item) => total + toNumber(item?.discountAmount),
       0,
     );
-    const selectedTax = taxes.data?.items?.find((tax) => tax.id === taxId);
-    const taxRate = toNumber(selectedTax?.rate);
+    const taxTotal = orderItems.reduce((total, item) => {
+      const product = productItems.find((entry) => entry.id === item?.productId);
+      if (!product) return total;
+
+      const selectedTax = taxes.data?.items?.find(
+        (tax) => tax.id === product.taxId,
+      );
+      const taxRate = toNumber(selectedTax?.rate);
+      const variant = product.variants?.find(
+        (entry) => entry.id === item?.variantId,
+      );
+      const unitPrice = variant ? getVariantPrice(variant) : toNumber(product.price);
+      const lineSubtotal = unitPrice * toNumber(item?.quantity);
+      const lineTaxableAmount = Math.max(
+        lineSubtotal - toNumber(item?.discountAmount),
+        0,
+      );
+
+      return total + lineTaxableAmount * (taxRate / 100);
+    }, 0);
     const taxableAmount = Math.max(subtotal - discountTotal, 0);
-    const taxTotal = taxableAmount * (taxRate / 100);
     const shipping = toNumber(shippingCharge);
 
     return {
@@ -145,7 +161,7 @@ export default function CreateOrder() {
       shipping,
       total: taxableAmount + taxTotal + shipping,
     };
-  }, [orderItems, productItems, shippingCharge, taxId, taxes.data?.items]);
+  }, [orderItems, productItems, shippingCharge, taxes.data?.items]);
 
   const onFinish = async (values: OrderFormValues) => {
     if (!businessId) return;
@@ -176,7 +192,6 @@ export default function CreateOrder() {
         customerId:
           resolvedCustomerMode === "existing" ? values.customerId : undefined,
         warehouseId: values.warehouseId,
-        taxId: values.taxId,
         payment: paymentValues,
         orderType: values.orderType ?? "ADMIN",
         orderSource: values.orderSource ?? "ADMIN_PANEL",
@@ -318,19 +333,6 @@ export default function CreateOrder() {
                   </Form.Item>
                 </Col>
                 <Col xs={24} md={12}>
-                  <Form.Item name="taxId" label="Tax" rules={[{ required: true }]}>
-                    <Select
-                      showSearch
-                      optionFilterProp="label"
-                      placeholder="Select tax"
-                      options={(taxes.data?.items ?? []).map((tax) => ({
-                        label: `${tax.name} (${tax.rate}%)`,
-                        value: tax.id,
-                      }))}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
                   <Form.Item name="note" label="Note">
                     <Input.TextArea rows={3} />
                   </Form.Item>
@@ -443,7 +445,7 @@ export default function CreateOrder() {
                   <Text>{money(totals.discountTotal)}</Text>
                 </div>
                 <div className="flex items-center justify-between">
-                  <Text type="secondary">Tax</Text>
+                  <Text type="secondary">Product tax estimate</Text>
                   <Text>{money(totals.taxTotal)}</Text>
                 </div>
                 <div className="flex items-center justify-between">
