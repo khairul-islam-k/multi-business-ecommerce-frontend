@@ -1,4 +1,5 @@
 import ElectronicHomePage from '@/app/templates/electronic/pages/home-page';
+import FashionHomePage from '@/app/templates/fashion/pages/home-page';
 import React from 'react';
 
 type Props = {
@@ -13,13 +14,17 @@ const Homepage = async ({ params }: Props) => {
 
   const site = {
     name: "Onecomm Store",
-    templateName: "electronic",
+    templateName: "fashion",
     logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
     store,
   };
 
   if (site.templateName === "electronic") {
     return <ElectronicHomePage site={site} />;
+  }
+
+  if (site.templateName === "fashion") {
+    return <FashionHomePage site={site} />;
   }
   
 };

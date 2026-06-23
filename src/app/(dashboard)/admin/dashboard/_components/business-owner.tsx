@@ -104,21 +104,10 @@ export default function BusinessDropdown() {
 
       const business = await createBusiness.mutateAsync({
         ...payload,
-        status: "TRIAL",
         settings: {
-          orderPrefix: "ORD",
-          invoicePrefix: "INV",
-          lowStockThreshold: 5,
-          allowBackorder: false,
-          autoConfirmOrder: false,
-          codEnabled: true,
-          onlinePaymentEnabled: false,
+  
         },
         branding: {
-          primaryColor: "#0f766e",
-          secondaryColor: "#f8fafc",
-          accentColor: "#f59e0b",
-          fontFamily: "Inter",
           seoTitle: payload.name,
         },
       });

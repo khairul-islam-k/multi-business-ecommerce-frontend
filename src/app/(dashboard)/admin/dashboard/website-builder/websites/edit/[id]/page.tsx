@@ -1,110 +1,64 @@
 "use client";
 
-import api from "@/lib/axios";
+import Loader from "@/components/shared/loader";
+import { useSwal } from "@/hooks/use-swal";
+import { useWebsite, useWebsiteMutation } from "@/lib/api/hooks/website";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import WebsiteTemplateForm from "../../_components/website-template-form";
+import { WebsiteTemplatePayload } from "@/types/website/website";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { Button, Card, Form, Input, Space, Spin } from "antd";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSwal } from "@/hooks/use-swal";
-import { useQuery } from "@tanstack/react-query";
-import SearchableSelect from "@/components/shared/searchable-select";
 
 export default function EditWebsite() {
-  const { id } = useParams();
-  const [form] = Form.useForm();
-  const router = useRouter();
+  const { id } = useParams<{ id: string }>();
+  const business = useAuthStore(s => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : '';
+  const { data: website, isLoading, isFetching } = useWebsite(businessId, id);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const swal = useSwal();
-  const [loading, setLoading] = useState(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["website", id],
-    queryFn: async () => {
-      const res = await api.get(`/websites/${id}`);
-      return res.data?.data;
-    },
-    enabled: !!id,
-  });
+  const { updateWebsite } = useWebsiteMutation(businessId);
 
-  useEffect(() => {
-    if (!data) return;
+  const handleSubmit = async (values: WebsiteTemplatePayload) => {
+    setIsSubmitting(true);
 
-    form.setFieldsValue({
-      name: data.name,
-      slug: data.slug,
-      domain: data.domain,
-      subdomain: data.subdomain,
-      tenant_id: data.tenant_id,
-      company_id: data.company_id,
-      template_id: data.template_id,
-    });
-  }, [data]);
+    console.log('values', values);
 
-  const onFinish = async (values: any) => {
     try {
-      setLoading(true);
+      const res = await updateWebsite.mutateAsync({
+        websiteId: id,
+        payload: values
+      });
 
-      await api.patch(`/websites/${id}`, values);
-
-      swal.success("Website updated");
-      router.push("/admin/dashboard/website-builder/websites");
-    } catch (e) {
-      swal.error("Update failed");
+      console.log('res', res);
+      swal.success("Website template created successfully.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
     } finally {
-      setLoading(false);
+      setIsSubmitting(false)
     }
   };
 
-  if (isLoading) return <Spin />;
+  if (isLoading || isFetching) return <Loader />
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Edit Website" breadcrumb={adminBreadcrumb} />
+    <div className='space-y-6'>
 
-      <Card className="w-full">
-        <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Form.Item name="name" label="Website Name">
-            <Input />
-          </Form.Item>
+      <PageHeader
+        title="Update Website"
+        subtitle="Update your website template, header slides, footer content, theme settings, SEO information, media assets, and publishing status."
+        breadcrumb={adminBreadcrumb}
+      />
 
-          <Form.Item name="slug" label="Slug">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="domain" label="Domain">
-            <Input />
-          </Form.Item>
-
-          <Form.Item name="subdomain" label="Subdomain">
-            <Input addonAfter=".yourdomain.com" />
-          </Form.Item>
-
-          {/* COMPANY */}
-          <Form.Item name="company_id" label="Company">
-            <SearchableSelect
-              endpoint="/companies"
-              value={form.getFieldValue("company_id")}
-              onChange={(v) => form.setFieldsValue({ company_id: v })}
-            />
-          </Form.Item>
-
-          {/* TEMPLATE */}
-          <Form.Item name="template_id" label="Template">
-            <SearchableSelect
-              endpoint="/website-templates"
-              value={form.getFieldValue("template_id")}
-              onChange={(v) => form.setFieldsValue({ template_id: v })}
-            />
-          </Form.Item>
-
-          <Space>
-            <Button onClick={() => router.back()}>Cancel</Button>
-            <Button type="primary" htmlType="submit" loading={loading}>
-              Save Changes
-            </Button>
-          </Space>
-        </Form>
-      </Card>
+      <WebsiteTemplateForm
+        mode='update'
+        initialData={website}
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 }
