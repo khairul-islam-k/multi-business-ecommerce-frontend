@@ -13,6 +13,7 @@ import men_top_4 from "@/assets/fashion/products/men-top-4.jpg";
 import women_top_1 from "@/assets/fashion/products/women-tops-1.png";
 import women_top_2 from "@/assets/fashion/products/women-top-2.png";
 import women_top_3 from "@/assets/fashion/products/women-top-3.png";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 
 type Category = {
   id: number;
@@ -129,6 +130,10 @@ const chunkArray = <T,>(array: T[], size: number): T[][] => {
 const CategoriesSection = () => {
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const {data: categoriesData, isLoading, isFetching} = useProductCategoryQuery();
+  console.log('data', categoriesData);
+  
+
   const categorySlides = useMemo(() => {
     return chunkArray(categories, ITEMS_PER_SLIDE);
   }, []);
@@ -196,7 +201,7 @@ const CategoriesSection = () => {
               {categorySlides[activeSlide]?.map((category) => (
                 <Link
                   key={category.id}
-                  href={`/products?category=${category.id}`}
+                  href={`/store/products?categoryId=${category.id}`}
                   className="group text-center"
                 >
                   {/* Image */}

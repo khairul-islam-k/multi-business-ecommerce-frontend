@@ -17,7 +17,7 @@ type Props = {
     };
 };
 
-const FashionHomePage = ({ site }: Props) => {
+const FashionHomePage = () => {
     return (
         <div>
             <HeroSection />

@@ -12,8 +12,9 @@ import {
 } from "lucide-react";
 
 import { allProducts } from "../_components/productData";
-import { categoryData } from "../_components/navbar";
 import ProductCard from "../_components/product-card";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
+import Loader from "@/components/shared/loader";
 
 type ProductProps = {
   categoryId?: string;
@@ -123,13 +124,15 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  // all categories
+  const {data: categories, isLoading, isFetching} = useProductCategoryQuery();
+
   const [sortBy, setSortBy] = useState("latest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const categories = categoryData as CategoryTreeItem[];
 
   const selectedCategory = useMemo(() => {
-    return findCategoryById(categories, categoryId);
+    return findCategoryById(categories ?? [], categoryId);
   }, [categories, categoryId]);
 
   const filterCategoryIds = useMemo(() => {
@@ -173,6 +176,8 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
     router.push(pathname);
   };
 
+  if (isLoading || isFetching) return <Loader />
+
   return (
     <section className="bg-[#f6f6f6] py-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[270px_1fr] lg:px-8">
@@ -199,7 +204,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           </button>
 
           <div className="mt-3 space-y-1">
-            {categories.map((item) => (
+            {categories?.map((item) => (
               <CategorySidebarItem
                 key={item.category.id}
                 item={item}

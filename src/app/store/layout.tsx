@@ -1,9 +1,11 @@
-import { CartProvider } from "@/app/store/[websiteId]/_components/contex/CartContex";
+import { headers } from "next/headers";
+import { CartProvider } from "@/app/store/_components/contex/CartContex";
 import { ElectronicFooter } from "@/app/templates/electronic/_components/footer";
 import { ElectronicNavBar } from "@/app/templates/electronic/_components/navbar";
 import FashionFooter from "@/app/templates/fashion/_components/fashion-footer";
 import FashionNavbar from "@/app/templates/fashion/_components/navbar";
 import React from "react";
+import { publicApi } from "@/lib/axios";
 
 type WebsiteLayoutProps = {
   children: React.ReactNode;
@@ -14,10 +16,13 @@ type WebsiteLayoutProps = {
 
 const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
   const { websiteId } = await params;
+  const header = await headers()
 
-  console.log('web', websiteId);
-
-  
+  const res = await publicApi.get('/storefront/resolve', {
+    headers: {
+      host: header.get('host') || ""
+    }
+  })
 
   const site = {
     id: websiteId,
@@ -26,14 +31,14 @@ const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
     logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
   };
 
-  const isFashion = site.templateName === "fashion";
-  const isElectronic = site.templateName === "electronic";
+  const isFashion = res?.data?.data?.template === "FASHION";
+  const isElectronic = res?.data?.data?.template === "ELECTRONIC";
 
   return (
     <div>
       <CartProvider>
         {isElectronic ? <ElectronicNavBar site={site} /> : null}
-        {isFashion ? <FashionNavbar site={site} /> : null}
+        {isFashion ? <FashionNavbar /> : null}
 
         {children}
 

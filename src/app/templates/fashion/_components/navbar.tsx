@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   ChevronDown,
   GitCompareArrows,
@@ -13,7 +13,9 @@ import {
   ShoppingBag,
   X,
 } from "lucide-react";
-import SmallNavbar from "./small-navbar";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
+import Loader from "@/components/shared/loader";
+
 
 type Category = {
   id: string;
@@ -30,6 +32,8 @@ type CategoryTreeItem = {
   category: Category;
   children: CategoryTreeItem[];
 };
+
+
 
 export const categoryData: CategoryTreeItem[] = [
   {
@@ -244,34 +248,36 @@ const MobileCategoryItem = ({
   );
 };
 
-type Props = {
-  site: {
-    name: string;
-    logo?: string;
-    templateName: string;
-  };
-};
+// type Props = {
+//   site: {
+//     name: string;
+//     logo?: string;
+//     templateName: string;
+//   };
+// };
 
-const FashionNavbar = ({ site }: Props) => {
+const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { store } = useParams<{ store: string }>();
 
-  console.log('store', store);
+  const {data: categories, isLoading, isFetching} = useProductCategoryQuery();
+  // console.log('data', categoriesData);
 
   const cartCount = 3;
   const compareCount = 2;
   const favoriteCount = 5;
 
-  const categories = categoryData;
 
   const handleCategoryClick = (categoryId: string) => {
     console.log("Clicked category id:", categoryId);
 
     setMobileMenuOpen(false);
 
-    router.push(`/store/${store}/products?categoryId=${categoryId}`);
+    router.push(`/store/products?categoryId=${categoryId}`);
   };
+
+  if (isLoading || isFetching) return <Loader />
+
 
   return (
     <>
@@ -287,7 +293,7 @@ const FashionNavbar = ({ site }: Props) => {
           {/* Center Navigation */}
           <div className="hidden items-center justify-center gap-8 lg:flex">
             <Link
-              href={`/store/${store}`}
+              href={`/store`}
               className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
             >
               Home
@@ -305,7 +311,7 @@ const FashionNavbar = ({ site }: Props) => {
 
               <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
                 <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
-                  {categories.map((item, index) => (
+                  {categories?.map((item, index) => (
                     <CategoryMenuItem
                       key={`${item.category.id}-${index}`}
                       item={item}
@@ -349,7 +355,7 @@ const FashionNavbar = ({ site }: Props) => {
             </Link>
 
             <Link
-              href="/contact"
+              href="/store/contact"
               className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
             >
               Contact Us
@@ -412,7 +418,7 @@ const FashionNavbar = ({ site }: Props) => {
           <div className="border-t border-gray-200 bg-white px-4 py-4 lg:hidden">
             <div className="space-y-2">
               <Link
-                href={`/store/${store}`}
+                href={`/store`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
               >
@@ -426,7 +432,7 @@ const FashionNavbar = ({ site }: Props) => {
                 </summary>
 
                 <div className="mt-2 space-y-1 rounded-xl bg-gray-50 p-3">
-                  {categories.map((item, index) => (
+                  {categories?.map((item, index) => (
                     <MobileCategoryItem
                       key={`${item.category.id}-${index}`}
                       item={item}
@@ -465,7 +471,7 @@ const FashionNavbar = ({ site }: Props) => {
               </Link>
 
               <Link
-                href="/contact"
+                href="/store/contact"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
               >

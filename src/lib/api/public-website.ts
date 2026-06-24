@@ -1,6 +1,7 @@
 import api, { getApiErrorMessage, publicApi } from "@/lib/axios";
-import { unwrapApiResponse } from "@/lib/api/response";
+import { unwrapApiResponse, unwrapArrayResponse } from "@/lib/api/response";
 import type {
+  ApiArrayResponse,
   ApiResponse,
   AuthPayload,
   LoginPayload,
@@ -10,19 +11,23 @@ import type {
   RegisterResponse,
   SelectBusinessPayload,
 } from "@/lib/api/types";
+import webApi from "../public-api-hook/web-api";
+import { StorefrontCategoryTreeItem } from "@/types/template/public-website";
+
+const basePath = () => `/storefront`;
 
 export const publicWebsiteApi = {
-  register(payload: RegisterPayload) {
+  resolve() {
     return publicApi
-      .post<ApiResponse<RegisterResponse>>("/auth/register", payload)
+      .get<ApiResponse<RegisterResponse>>("/storefront/resolve")
       .then((res) => unwrapApiResponse(res.data));
   },
 
-//   login(payload: LoginPayload) {
-//     return publicApi
-//       .post<ApiResponse<AuthPayload>>("/auth/login", payload)
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
+  categories() {
+    return webApi
+      .get<ApiArrayResponse<StorefrontCategoryTreeItem>>(`${basePath()}/categories`)
+      .then((res) => unwrapArrayResponse(res.data));
+  },
 
 //   refresh(payload: RefreshPayload) {
 //     return publicApi

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 
 import type { Product } from "./data/products";
-import { useCart } from "../../../store/[websiteId]/_components/contex/CartContex";
+import { useCart } from "../../../store/_components/contex/CartContex";
 import { useParams } from "next/navigation";
 
 export function ProductCard({ product }: { product: Product }) {
