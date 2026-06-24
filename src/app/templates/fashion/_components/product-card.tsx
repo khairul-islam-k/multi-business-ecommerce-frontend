@@ -1,5 +1,5 @@
 "use client";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Eye,
@@ -12,45 +12,7 @@ import { useParams } from "next/navigation";
 import { StorefrontProduct } from "@/types/template/template-product";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
-type ProductImage = {
-  id: string;
-  imageUrl: StaticImageData;
-  altText: string;
-  isThumbnail: boolean;
-  sortOrder: number;
-};
 
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  price: string;
-  status: string;
-  tag: {
-    id: number;
-    name: string;
-  };
-  images: ProductImage[];
-  variants: {
-    id: string;
-    title: string;
-    sku: string;
-    price: string;
-    status: string;
-    images: ProductImage[];
-  }[];
-  stockSummary: {
-    totalQuantity: string;
-    quantityReserved: string;
-    availableQuantity: string;
-    inStock: boolean;
-  };
-  reviewSummary: {
-    reviewCount: number;
-    averageRating: number;
-  };
-};
 
 type Props = {
   product: StorefrontProduct;
@@ -89,7 +51,6 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
                 : "(max-width: 768px) 100vw, 25vw"
             }
             className="object-cover transition-transform duration-700 group-hover:scale-110"
-            unoptimized
           />
         )}
 

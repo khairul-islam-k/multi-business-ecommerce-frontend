@@ -7,15 +7,12 @@ import FashionNavbar from "@/app/templates/fashion/_components/navbar";
 import React from "react";
 import { publicApi } from "@/lib/axios";
 
-type WebsiteLayoutProps = {
-  children: React.ReactNode;
-  params: Promise<{
-    websiteId: string;
-  }>;
-};
 
-const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
-  const { websiteId } = await params;
+const WebsiteLayout = async ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const header = await headers()
 
   const res = await publicApi.get('/storefront/resolve', {
@@ -24,12 +21,6 @@ const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
     }
   })
 
-  const site = {
-    id: websiteId,
-    name: "Onecomm Store",
-    templateName: "fashion",
-    logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-  };
 
   const isFashion = res?.data?.data?.template === "FASHION";
   const isElectronic = res?.data?.data?.template === "ELECTRONIC";
@@ -42,8 +33,8 @@ const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
 
         {children}
 
-        {isElectronic ? <ElectronicFooter site={site} /> : null}
-        {isFashion ? <FashionFooter site={site} /> : null}
+        {isElectronic ? <ElectronicFooter /> : null}
+        {isFashion ? <FashionFooter /> : null}
       </CartProvider>
     </div>
   );

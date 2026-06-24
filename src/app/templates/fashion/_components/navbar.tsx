@@ -34,80 +34,6 @@ type CategoryTreeItem = {
 };
 
 
-
-export const categoryData: CategoryTreeItem[] = [
-  {
-    category: {
-      id: "906334a0-7d01-4f57-8df8-0fa89a4fcac8",
-      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-      parentId: null,
-      name: "cloth",
-      description: "asda",
-      imageUrl:
-        "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/76e99769-bc16-466c-87df-34c0f41e5b24.jpg",
-      status: "ACTIVE",
-      sortOrder: 0,
-    },
-    children: [],
-  },
-  {
-    category: {
-      id: "1d89ed6e-cdde-4896-a664-56f5bb88fb60",
-      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-      parentId: null,
-      name: "electric",
-      description: "safs",
-      imageUrl:
-        "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/3b9f910c-184e-446c-baa5-b2b6c7bf4750.jpg",
-      status: "ACTIVE",
-      sortOrder: 0,
-    },
-    children: [
-      {
-        category: {
-          id: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-          businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-          parentId: "1d89ed6e-cdde-4896-a664-56f5bb88fb60",
-          name: "paper",
-          description: null,
-          imageUrl:
-            "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/e084ace5-f27d-48c3-89c7-0baff069b20e.png",
-          status: "ACTIVE",
-          sortOrder: 0,
-        },
-        children: [
-          {
-            category: {
-              id: "295c8s9a-f81e-49df-ad9b-bfe8ae742585",
-              businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-              parentId: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-              name: "A4 Paper",
-              description: null,
-              imageUrl: null,
-              status: "ACTIVE",
-              sortOrder: 0,
-            },
-            children: [],
-          },
-          {
-            category: {
-              id: "paper-child-2",
-              businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-              parentId: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-              name: "Color Paper",
-              description: null,
-              imageUrl: null,
-              status: "ACTIVE",
-              sortOrder: 1,
-            },
-            children: [],
-          },
-        ],
-      },
-    ],
-  },
-];
-
 const pageLinks = [
   {
     label: "Contact Us",
@@ -248,19 +174,12 @@ const MobileCategoryItem = ({
   );
 };
 
-// type Props = {
-//   site: {
-//     name: string;
-//     logo?: string;
-//     templateName: string;
-//   };
-// };
 
 const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const {data: categories, isLoading, isFetching} = useProductCategoryQuery();
+  const {data: categories} = useProductCategoryQuery();
   // console.log('data', categoriesData);
 
   const cartCount = 3;
@@ -275,8 +194,6 @@ const FashionNavbar = () => {
 
     router.push(`/store/products?categoryId=${categoryId}`);
   };
-
-  if (isLoading || isFetching) return <Loader />
 
 
   return (
@@ -391,7 +308,7 @@ const FashionNavbar = () => {
             </IconButton>
 
             <Link
-              href="/login"
+              href="/store/login"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
             >
               <LogIn className="hidden h-4 w-4 sm:block" />
@@ -531,7 +448,7 @@ const FashionNavbar = () => {
                 </div>
 
                 <Link
-                  href="/login"
+                  href="/store/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="mt-3 flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f16d59] px-5 text-sm font-semibold text-white transition hover:bg-gray-950"
                 >

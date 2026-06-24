@@ -11,14 +11,6 @@ import {
     Youtube,
 } from "lucide-react";
 
-type Props = {
-    site: {
-        name: string;
-        logo?: string;
-        templateName: string;
-    };
-};
-
 const footerLinks = [
     {
         title: "Quick Links",
@@ -48,11 +40,7 @@ const footerLinks = [
     },
 ];
 
-const FashionFooter = ({ site }: Props) => {
-
-    if (site.templateName !== "fashion") {
-        return null;
-    }
+const FashionFooter = () => {
 
     return (
         <footer className="bg-gray-950 text-white">

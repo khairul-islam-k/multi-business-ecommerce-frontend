@@ -15,18 +15,12 @@ const ExploreOurProduct = () => {
     tagId: activeTab
   });
 
-  console.log('product', products);
-
 
   useEffect(() => {
     if (productTabs) {
       setActiveTab(productTabs[0].id);
     }
   }, [productTabs]);
-
-
-
-  if (isLoading || isFetching) return <span>loading...</span>
 
   return (
     <section className="bg-[#f6f6f6] py-16">
@@ -81,11 +75,11 @@ const ExploreOurProduct = () => {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
-              {/* {products?.items.map((product) => (
+              {products?.items.map((product) => (
                 <ProductCard key={product.id}
                 activeId={activeTab}
                 product={product} />
-              ))} */}
+              ))}
             </motion.div>
           </AnimatePresence>
 

@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  ArrowDownAZ,
+  ArrowUpAZ,
   ChevronDown,
   Grid2X2,
   List,
@@ -11,10 +13,10 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 
-import { allProducts } from "../_components/productData";
 import ProductCard from "../_components/product-card";
 import { useProductCategoryQuery, useTemplateProductQuery } from "@/lib/api/hooks/public-website";
 import Loader from "@/components/shared/loader";
+import { SortOrder } from "@/lib/api";
 
 type ProductProps = {
   categoryId?: string;
@@ -36,35 +38,7 @@ type CategoryTreeItem = {
   children: CategoryTreeItem[];
 };
 
-const getChildrenIds = (item: CategoryTreeItem): string[] => {
-  const childIds = item.children.flatMap((child) => [
-    child.category.id,
-    ...getChildrenIds(child),
-  ]);
 
-  return childIds;
-};
-
-const findCategoryById = (
-  items: CategoryTreeItem[],
-  categoryId?: string,
-): CategoryTreeItem | null => {
-  if (!categoryId) return null;
-
-  for (const item of items) {
-    if (item.category.id === categoryId) {
-      return item;
-    }
-
-    const found = findCategoryById(item.children, categoryId);
-
-    if (found) {
-      return found;
-    }
-  }
-
-  return null;
-};
 
 const CategorySidebarItem = ({
   item,
@@ -123,17 +97,19 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  console.log('id', categoryId);
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   const { data: products } = useTemplateProductQuery({
     // tagId: activeTab
     categoryId,
+    sortBy,
+    sortOrder
   });
 
   // all categories
   const { data: categories, isLoading, isFetching } = useProductCategoryQuery();
 
-  const [sortBy, setSortBy] = useState("latest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
 
@@ -205,14 +181,31 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   onChange={(event) => setSortBy(event.target.value)}
                   className="h-12 w-48 appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-sm text-gray-700 outline-none focus:border-[#f16d59]"
                 >
-                  <option value="latest">Latest Product</option>
-                  <option value="price-low">Price Low to High</option>
-                  <option value="price-high">Price High to Low</option>
-                  <option value="name">Name A to Z</option>
+                  <option value="name">Name</option>
+                  <option value="price">Price</option>
+                  <option value="createdAt">CreatedAt</option>
                 </select>
 
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
               </div>
+
+              <button
+                type="button"
+                onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+              >
+                {sortOrder === "desc" ? (
+                  <>
+                    <ArrowUpAZ className="size-4" />
+                    ASC
+                  </>
+                ) : (
+                  <>
+                    <ArrowDownAZ className="size-4" />
+                    DESC
+                  </>
+                )}
+              </button>
 
               <button
                 type="button"
@@ -236,27 +229,9 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 <Grid2X2 className="h-6 w-6" />
               </button>
             </div>
+
           </div>
 
-          {/* Selected Category Text */}
-          {/* {selectedCategory && (
-            <div className="mb-5 flex items-center justify-between rounded-xl bg-white px-5 py-3 shadow-sm">
-              <p className="text-sm text-gray-600">
-                Showing products for:{" "}
-                <span className="font-semibold text-[#f16d59]">
-                  {selectedCategory.category.name}
-                </span>
-              </p>
-
-              <button
-                type="button"
-                onClick={handleClearCategory}
-                className="text-sm font-semibold text-gray-900 hover:text-[#f16d59]"
-              >
-                Clear
-              </button>
-            </div>
-          )} */}
 
           {/* Product Grid */}
           {productItems.length > 0 ? (
