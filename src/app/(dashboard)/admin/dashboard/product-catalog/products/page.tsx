@@ -1,27 +1,36 @@
 "use client";
+
+import {
+  Button,
+  Card,
+  Dropdown,
+  MenuProps,
+  Popconfirm,
+  Select,
+  Tag,
+} from "antd";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag } from "antd";
+import { useState } from "react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { ProductStatus, ResponseProduct } from "@/types/product/product";
 import {
   DeleteOutlined,
   EditOutlined,
   EyeOutlined,
   MoreOutlined,
-  PlusOutlined
+  PlusOutlined,
 } from "@ant-design/icons";
 
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
-import { useState } from "react";
-import { useAuthStore } from "@/stores/auth.store";
-import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
-import Image from "next/image";
-import { Column, DataTable } from "@/components/shared/data-table";
-import { ProductStatus, ResponseProduct } from "@/types/product/product";
 import { imageUrlSet } from "./_components/image-url";
-import { getApiErrorMessage } from "@/lib/axios";
 
-/* ================= TYPES ================= */
 export interface TProduct {
   id: string;
   uuid: string;
@@ -34,22 +43,27 @@ export interface TProduct {
   published_at: string | null;
 }
 
-/* ================= COMPONENT ================= */
 const ProductsList = () => {
   const router = useRouter();
 
   const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>();
-  const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt" | "updatedAt">("createdAt");
+  const [sortBy, setSortBy] = useState<
+    "name" | "price" | "createdAt" | "updatedAt"
+  >("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const swal = useSwal();
 
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
   const limit = 5;
 
-  const { data: products, isLoading, isFetching } = useProductsQuery(businessId, {
+  const {
+    data: products,
+    isLoading,
+    isFetching,
+  } = useProductsQuery(businessId, {
     page: currentPage,
     limit,
     search,
@@ -60,20 +74,17 @@ const ProductsList = () => {
 
   const { removeProduct } = useProductMutation(businessId);
 
-  // pagination
   const total = products?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   const handleDelete = async (id: string) => {
     try {
       await removeProduct.mutateAsync(id);
-      swal.success('Product has been deleted');
+      swal.success("Product has been deleted");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
-  }
-
-  // create attribute
+  };
 
   const columns: Column<ResponseProduct>[] = [
     {
@@ -81,7 +92,6 @@ const ProductsList = () => {
       label: "Image",
       render: (row) => {
         const image = row.images?.[0];
-
         return image?.imageUrl ? (
           <Image
             src={imageUrlSet(image.imageUrl)}
@@ -162,7 +172,6 @@ const ProductsList = () => {
       key: "actions",
       label: "Actions",
       render: (row) => {
-
         const items: MenuProps["items"] = [
           {
             key: "view",
@@ -194,20 +203,20 @@ const ProductsList = () => {
 
         return (
           <Dropdown
-            // trigger={["click"]}
+            trigger={["click"]}
             placement="bottomRight"
             menu={{
               items,
               onClick: ({ key }) => {
                 if (key === "view") {
                   router.push(
-                    `/admin/dashboard/product-catalog/products/detail/${row.id}`
+                    `/admin/dashboard/product-catalog/products/detail/${row.id}`,
                   );
                 }
 
                 if (key === "edit") {
                   router.push(
-                    `/admin/dashboard/product-catalog/products/edit/${row.id}`
+                    `/admin/dashboard/product-catalog/products/edit/${row.id}`,
                   );
                 }
               },
@@ -222,7 +231,7 @@ const ProductsList = () => {
 
   /* ================= UI ================= */
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       <PageHeader
         title="Products"
         subtitle="Manage your product catalog, images, categories, brands, units, tags, and product status."
@@ -283,7 +292,9 @@ const ProductsList = () => {
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={() =>
-                  router.push("/admin/dashboard/product-catalog/products/create")
+                  router.push(
+                    "/admin/dashboard/product-catalog/products/create",
+                  )
                 }
               >
                 New Product
@@ -295,10 +306,7 @@ const ProductsList = () => {
             setSearch(value);
             setCurrentPage(1);
           }}
-          loading={
-            isLoading ||
-            isFetching
-          }
+          loading={isLoading || isFetching}
           pagination={{
             currentPage,
             onPageChange: setCurrentPage,
@@ -306,7 +314,6 @@ const ProductsList = () => {
           }}
         />
       </Card>
-
     </div>
   );
 };

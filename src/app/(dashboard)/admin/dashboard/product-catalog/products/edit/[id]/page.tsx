@@ -1,23 +1,25 @@
 "use client";
 
+import { App } from "antd";
 import { useParams, useRouter } from "next/navigation";
-import ProductForm from "../../_components/product-form";
-import { useAuthStore } from "@/stores/auth.store";
+import { useState } from "react";
+
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useProduct, useProductMutation } from "@/lib/api/hooks/product";
 import { useVariantMutation } from "@/lib/api/hooks/product-variant";
 import { apiQueryKeys } from "@/lib/api/query-keys";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
 import { ProductPayload } from "@/types/product/product";
-import { App } from "antd";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   BulkUpdateVariantItemPayload,
   ResponseVariant,
   VariantPayload,
 } from "@/types/product/variant";
+import { useQueryClient } from "@tanstack/react-query";
+
+import ProductForm from "../../_components/product-form";
 
 type ExistingVariantUpdatePayload = BulkUpdateVariantItemPayload & {
   variantId: string;
@@ -75,7 +77,9 @@ const sameImages = (
         isThumbnail: Boolean(image.isThumbnail),
       }));
 
-  return JSON.stringify(normalize(current)) === JSON.stringify(normalize(original));
+  return (
+    JSON.stringify(normalize(current)) === JSON.stringify(normalize(original))
+  );
 };
 
 const findDuplicateVariantKey = (variants: BulkUpdateVariantItemPayload[]) => {
@@ -105,7 +109,9 @@ const getChangedExistingVariantPayload = (
     payload.title = variant.title?.trim();
   }
 
-  if (numberValue(variant.priceOverride) !== numberValue(original.priceOverride)) {
+  if (
+    numberValue(variant.priceOverride) !== numberValue(original.priceOverride)
+  ) {
     payload.priceOverride = Number(variant.priceOverride ?? 0);
   }
 

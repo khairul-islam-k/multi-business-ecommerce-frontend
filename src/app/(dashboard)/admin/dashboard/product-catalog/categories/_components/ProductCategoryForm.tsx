@@ -1,24 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Card,
   Form,
   Input,
   InputNumber,
+  message,
   Select,
   Space,
-  message,
 } from "antd";
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import { useEffect, useMemo, useState } from "react";
+
 import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
-import { useAuthStore } from "@/stores/auth.store";
 import {
   buildCategoryOptions,
   flattenCategories,
   getCategoryDescendantIds,
 } from "@/lib/product/category-options";
+import { useAuthStore } from "@/stores/auth.store";
+
+import ImageSelectModal from "../../../_components/ImageSelectModal";
 
 const { TextArea } = Input;
 
@@ -43,14 +45,8 @@ export type ProductCategoryFormValues = {
   sortOrder: number;
 };
 
-type ParentCategoryOption = {
-  label: string;
-  value: string;
-};
-
 type ProductCategoryFormProps = {
   initialData?: ProductCategory | null;
-  parentCategories?: ParentCategoryOption[];
   onSubmit: (values: ProductCategoryFormValues) => Promise<void>;
 };
 

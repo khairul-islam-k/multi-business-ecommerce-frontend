@@ -1,20 +1,22 @@
 "use client";
 
-import { useAuthStore } from "@/stores/auth.store";
-import ProductForm from "../_components/product-form";
+import { App } from "antd";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useProductMutation } from "@/lib/api/hooks/product";
 import { useVariantMutation } from "@/lib/api/hooks/product-variant";
 import { getApiErrorMessage } from "@/lib/axios";
-import { useRouter } from "next/navigation";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useAuthStore } from "@/stores/auth.store";
 import { ProductPayload } from "@/types/product/product";
-import { App } from "antd";
-import { useState } from "react";
 import {
   BulkUpdateVariantItemPayload,
   VariantPayload,
 } from "@/types/product/variant";
+
+import ProductForm from "../_components/product-form";
 
 const getVariantAttributeKey = (
   attributes:
