@@ -37,7 +37,7 @@ const WebsiteLayout = async ({ children, params }: WebsiteLayoutProps) => {
   return (
     <div>
       <CartProvider>
-        {isElectronic ? <ElectronicNavBar site={site} /> : null}
+        {isElectronic ? <ElectronicNavBar /> : null}
         {isFashion ? <FashionNavbar /> : null}
 
         {children}

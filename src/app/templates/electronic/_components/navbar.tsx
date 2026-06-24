@@ -7,15 +7,7 @@ import { useState } from "react";
 
 import { useCart } from "../../../store/_components/contex/CartContex";
 
-type Props = {
-  site: {
-    name: string;
-    logo?: string;
-    templateName: string;
-  };
-};
-
-export function ElectronicNavBar({ site }: Props) {
+export function ElectronicNavBar() {
   const pathname = usePathname();
   const { count } = useCart();
   const params = useParams();
@@ -26,19 +18,19 @@ export function ElectronicNavBar({ site }: Props) {
 
   const links = [
     {
-      href: `/store/${store}`,
+      href: `/store`,
       label: "Home",
     },
     {
-      href: `/store/${store}/products`,
+      href: `/store/products`,
       label: "Products",
     },
     {
-      href: `/store/${store}/about`,
+      href: `/store/about`,
       label: "About Us",
     },
     {
-      href: `/store/${store}/contact`,
+      href: `/store/contact`,
       label: "Contact Us",
     },
   ];
@@ -46,10 +38,6 @@ export function ElectronicNavBar({ site }: Props) {
   const isActiveLink = (href: string) => {
     return pathname === href;
   };
-
-  if (site.templateName !== "electronic") {
-    return null;
-  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-lg">
@@ -64,7 +52,7 @@ export function ElectronicNavBar({ site }: Props) {
             <Zap className="h-4 w-4 text-white" />
           </span>
 
-          <span>{site.name}</span>
+          <span>Etectro</span>
         </Link>
 
         {/* Desktop Navigation */}

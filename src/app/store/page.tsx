@@ -14,13 +14,6 @@ const Homepage = async () => {
     }
   })
 
-
-  const site = {
-    name: "Onecomm Store",
-    templateName: "fashion",
-    logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-  };
-
   if (res?.data?.data?.template === "ELECTRONIC") {
     return <ElectronicHomePage />;
   }

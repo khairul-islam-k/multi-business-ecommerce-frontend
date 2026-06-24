@@ -13,7 +13,7 @@ import {
 
 import { allProducts } from "../_components/productData";
 import ProductCard from "../_components/product-card";
-import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
+import { useProductCategoryQuery, useTemplateProductQuery } from "@/lib/api/hooks/public-website";
 import Loader from "@/components/shared/loader";
 
 type ProductProps = {
@@ -85,9 +85,8 @@ const CategorySidebarItem = ({
       <button
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
-        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${
-          isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-        }`}
+        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+          }`}
       >
         <span>{item.category.name}</span>
 
@@ -124,57 +123,30 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
+  console.log('id', categoryId);
+
+  const { data: products } = useTemplateProductQuery({
+    // tagId: activeTab
+    categoryId,
+  });
+
   // all categories
-  const {data: categories, isLoading, isFetching} = useProductCategoryQuery();
+  const { data: categories, isLoading, isFetching } = useProductCategoryQuery();
 
   const [sortBy, setSortBy] = useState("latest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
 
-  const selectedCategory = useMemo(() => {
-    return findCategoryById(categories ?? [], categoryId);
-  }, [categories, categoryId]);
-
-  const filterCategoryIds = useMemo(() => {
-    if (!selectedCategory) return [];
-
-    return [
-      selectedCategory.category.id,
-      ...getChildrenIds(selectedCategory),
-    ];
-  }, [selectedCategory]);
-
-  const filteredProducts = useMemo(() => {
-    let products = [...allProducts];
-
-    if (categoryId && filterCategoryIds.length > 0) {
-      products = products.filter((product) =>
-        filterCategoryIds.includes(product.categoryId),
-      );
-    }
-
-    if (sortBy === "price-low") {
-      products.sort((a, b) => Number(a.price) - Number(b.price));
-    }
-
-    if (sortBy === "price-high") {
-      products.sort((a, b) => Number(b.price) - Number(a.price));
-    }
-
-    if (sortBy === "name") {
-      products.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return products;
-  }, [categoryId, filterCategoryIds, sortBy]);
-
   const handleCategoryClick = (id: string) => {
+    console.log('id', id)
     router.push(`${pathname}?categoryId=${id}`);
   };
 
   const handleClearCategory = () => {
     router.push(pathname);
   };
+
+  const productItems = products?.items ?? [];
 
   if (isLoading || isFetching) return <Loader />
 
@@ -196,9 +168,8 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           <button
             type="button"
             onClick={handleClearCategory}
-            className={`mt-5 block w-full text-left text-sm font-medium transition ${
-              !categoryId ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-            }`}
+            className={`mt-5 block w-full text-left text-sm font-medium transition ${!categoryId ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+              }`}
           >
             All Products
           </button>
@@ -220,7 +191,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           {/* Top Filter Bar */}
           <div className="mb-8 flex flex-col gap-4 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
             <h1 className="text-xl font-bold text-gray-950 md:text-2xl">
-              Total Products Found: {filteredProducts.length}
+              Total Products Found: {products?.items.length}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -246,11 +217,10 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "list"
-                    ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "list"
+                  ? "border-[#f16d59] bg-[#f16d59] text-white"
+                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                  }`}
               >
                 <List className="h-6 w-6" />
               </button>
@@ -258,11 +228,10 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "grid"
-                    ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "grid"
+                  ? "border-[#f16d59] bg-[#f16d59] text-white"
+                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                  }`}
               >
                 <Grid2X2 className="h-6 w-6" />
               </button>
@@ -270,7 +239,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           </div>
 
           {/* Selected Category Text */}
-          {selectedCategory && (
+          {/* {selectedCategory && (
             <div className="mb-5 flex items-center justify-between rounded-xl bg-white px-5 py-3 shadow-sm">
               <p className="text-sm text-gray-600">
                 Showing products for:{" "}
@@ -287,10 +256,10 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 Clear
               </button>
             </div>
-          )}
+          )} */}
 
           {/* Product Grid */}
-          {filteredProducts.length > 0 ? (
+          {productItems.length > 0 ? (
             <div
               className={
                 viewMode === "grid"
@@ -298,11 +267,14 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   : "grid grid-cols-1 gap-6"
               }
             >
-              {filteredProducts.map((product) => (
-                <ProductCard 
-                viewMode={viewMode}
-                key={product.id} 
-                product={product} />
+
+              {/* check filteredProducts */}
+
+              {products?.items.map((product) => (
+                <ProductCard
+                  viewMode={viewMode}
+                  key={product.id}
+                  product={product} />
               ))}
             </div>
           ) : (

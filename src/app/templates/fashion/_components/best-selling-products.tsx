@@ -3,20 +3,19 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-import { allProducts } from "./productData";
 import ProductCard from "./product-card";
+import { useTemplateProductQuery } from "@/lib/api/hooks/public-website";
 
 const BestSellingProducts = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const {data: products} = useTemplateProductQuery({
+      // tagId: activeTab
+    });
 
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
 
-  const bestSellingProducts = allProducts.filter(
-    (product) => product.tag.name === "BEST SELLING",
-  );
 
   const handleScrollLeft = () => {
     scrollRef.current?.scrollBy({
@@ -59,8 +58,6 @@ const BestSellingProducts = () => {
   const handlePointerLeave = () => {
     isDraggingRef.current = false;
   };
-
-  if (!bestSellingProducts.length) return null;
 
   return (
     <section className="bg-[#f6f6f6] py-16">
@@ -108,7 +105,8 @@ const BestSellingProducts = () => {
           onPointerLeave={handlePointerLeave}
           className="flex cursor-grab select-none gap-6 overflow-x-auto scroll-smooth pb-4 active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {bestSellingProducts.map((product, index) => (
+          {
+          products?.items.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, x: 40 }}

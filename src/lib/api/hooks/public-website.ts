@@ -2,13 +2,27 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { BrandPayload } from "@/types/product/brands";
-import { productBrandApi } from "../product-brand";
 import { publicWebsiteApi } from "../public-website";
+import { ProductQuery } from "@/types/template/template-product";
 
 export function useProductCategoryQuery( query?: CategoriesQuery) {
   return useQuery({
     queryKey: apiQueryKeys.publicWebsite.list(query),
     queryFn: () => publicWebsiteApi.categories(),
+  });
+}
+
+export function useProductTagsQuery( query?: CategoriesQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.publicWebsite.listTag(query),
+    queryFn: () => publicWebsiteApi.tags(),
+  });
+}
+
+export function useTemplateProductQuery(query?: ProductQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.publicWebsite.listProducts(query),
+    queryFn: () => publicWebsiteApi.products(query),
   });
 }
 
