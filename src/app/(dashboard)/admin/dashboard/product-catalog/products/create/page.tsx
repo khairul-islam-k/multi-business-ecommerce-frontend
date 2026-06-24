@@ -16,6 +16,33 @@ import {
   VariantPayload,
 } from "@/types/product/variant";
 
+const getVariantAttributeKey = (
+  attributes:
+    | Array<{
+        attributeId: string;
+        attributeValueId: string;
+      }>
+    | undefined,
+) =>
+  attributes
+    ?.map((attribute) => attribute.attributeValueId)
+    .filter(Boolean)
+    .sort()
+    .join("|") ?? "";
+
+const hasDuplicateVariant = (variants: BulkUpdateVariantItemPayload[]) => {
+  const seen = new Set<string>();
+
+  for (const variant of variants) {
+    const key = getVariantAttributeKey(variant.attributes);
+    if (!key) continue;
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+
+  return false;
+};
+
 const CreateProductPage = () => {
   const router = useRouter();
   const business = useAuthStore((s) => s.selectedBusiness);
@@ -30,12 +57,17 @@ const CreateProductPage = () => {
     values: ProductPayload,
     variants: BulkUpdateVariantItemPayload[],
   ) => {
+    if (hasDuplicateVariant(variants)) {
+      message.error("Each variant attribute combination must be unique.");
+      return;
+    }
+
     setIsSubmitting(true);
     const payload: ProductPayload = {
       images: values.images,
       name: values.name.trim(),
       price: values.price,
-      weight: values.weight,
+      weight: values.weight ?? 0,
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,

@@ -30,6 +30,7 @@ import { imageUrlSet } from "./image-url";
 import { ProductPayload, ResponseProduct } from "@/types/product/product";
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { ResponseProductAttribute } from "@/types/product/attribute";
+import { buildCategoryOptions } from "@/lib/product/category-options";
 import {
   BulkUpdateVariantItemPayload,
   ResponseVariant,
@@ -104,9 +105,9 @@ type VariantOptionRowProps = {
 const getVariantKey = (
   attributes:
     | {
-      attributeId: string;
-      attributeValueId: string;
-    }[]
+        attributeId: string;
+        attributeValueId: string;
+      }[]
     | undefined,
 ) => {
   const valueIds = attributes
@@ -156,11 +157,11 @@ const getInitialVariantOptions = (
   return options.length
     ? options
     : [
-      {
-        attributeId: undefined,
-        attributeValueIds: [],
-      },
-    ];
+        {
+          attributeId: undefined,
+          attributeValueIds: [],
+        },
+      ];
 };
 
 const getInitialVariants = (
@@ -368,6 +369,9 @@ const VariantOptionRow = ({
 
 const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const { data: attributes, isLoading } = useProductAttributeQuery(businessId);
+  const [variantImageIndex, setVariantImageIndex] = useState<number | null>(
+    null,
+  );
   const watchedOptions = Form.useWatch("variantOptions", form);
   const watchedVariants = Form.useWatch("variants", form);
   const watchedRemovedVariantKeys = Form.useWatch("removedVariantKeys", form);
@@ -375,14 +379,12 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const weight = Form.useWatch("weight", form);
 
   const attributeItems = useMemo(() => attributes?.items ?? [], [attributes]);
-  const selectedOptions = useMemo(
-    () => watchedOptions ?? [],
-    [watchedOptions],
-  );
-  const variantRows = useMemo(
-    () => watchedVariants ?? [],
-    [watchedVariants],
-  );
+  const selectedOptions = useMemo(() => watchedOptions ?? [], [watchedOptions]);
+  const variantRows = useMemo(() => watchedVariants ?? [], [watchedVariants]);
+  const selectedVariantImageUrl =
+    variantImageIndex !== null
+      ? variantRows[variantImageIndex]?.images?.[0]?.imageUrl
+      : undefined;
   const removedVariantKeys = useMemo(
     () => new Set(watchedRemovedVariantKeys ?? []),
     [watchedRemovedVariantKeys],
@@ -444,12 +446,16 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   }, [attributeItems.length, form, previews, removedVariantKeys]);
 
   const handleRemoveVariant = (variant: ProductFormVariant | undefined) => {
-    const variantKey = variant?.variantKey || getVariantKey(variant?.attributes);
+    const variantKey =
+      variant?.variantKey || getVariantKey(variant?.attributes);
 
     if (!variantKey) return;
 
     const nextRemovedVariantKeys = Array.from(
-      new Set([...(form.getFieldValue("removedVariantKeys") ?? []), variantKey]),
+      new Set([
+        ...(form.getFieldValue("removedVariantKeys") ?? []),
+        variantKey,
+      ]),
     );
     const nextVariants = (form.getFieldValue("variants") ?? []).filter(
       (item: ProductFormVariant) =>
@@ -475,6 +481,30 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
         return value?.value ?? item.attributeValueId;
       })
       .filter(Boolean) ?? [];
+
+  const handleSelectVariantImage = (url: string) => {
+    if (variantImageIndex === null) return;
+
+    const title =
+      form.getFieldValue(["variants", variantImageIndex, "title"]) ??
+      "Variant image";
+
+    form.setFieldValue(
+      ["variants", variantImageIndex, "images"],
+      [
+        {
+          imageUrl: url,
+          altText: title,
+          isThumbnail: true,
+        },
+      ],
+    );
+    setVariantImageIndex(null);
+  };
+
+  const handleClearVariantImage = (index: number) => {
+    form.setFieldValue(["variants", index, "images"], []);
+  };
 
   return (
     <div className="space-y-4">
@@ -546,13 +576,38 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                         </Button>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <Form.Item name={[field.name, "variantId"]} hidden>
                           <Input />
                         </Form.Item>
 
                         <Form.Item name={[field.name, "variantKey"]} hidden>
                           <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Image"
+                          name={[field.name, "images", 0, "imageUrl"]}
+                        >
+                          <Input
+                            readOnly
+                            placeholder="Select image"
+                            onClick={() => setVariantImageIndex(field.name)}
+                            addonAfter={
+                              row?.images?.[0]?.imageUrl ? (
+                                <button
+                                  type="button"
+                                  className="border-0 bg-transparent p-0 text-xs text-red-500"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleClearVariantImage(field.name);
+                                  }}
+                                >
+                                  Clear
+                                </button>
+                              ) : null
+                            }
+                          />
                         </Form.Item>
 
                         <Form.Item
@@ -622,14 +677,16 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
           }
         </Form.List>
       </div>
+
+      <ImageSelectModal
+        open={variantImageIndex !== null}
+        selectedUrl={selectedVariantImageUrl}
+        onClose={() => setVariantImageIndex(null)}
+        onSelect={handleSelectVariantImage}
+      />
     </div>
   );
 };
-
-
-
-
-
 
 const ProductForm = ({
   mode,
@@ -639,7 +696,7 @@ const ProductForm = ({
   onCancel,
 }: ProductFormProps) => {
   const [form] = Form.useForm<ProductFormValues>();
-  console.log('init', initialValues);
+  console.log("init", initialValues);
 
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [multiOpen, setMultiOpen] = useState(false);
@@ -661,15 +718,12 @@ const ProductForm = ({
     return initialValues?.tags?.map((tag) => tag.tagId);
   }, [initialValues]);
 
-  const { data: categories } = useProductCategoriesQuery(businessId);
+  const { data: categories } = useProductCategoriesQuery(businessId, {
+    limit: 100,
+  });
   const categoryOptions: SelectOption[] = useMemo(() => {
-    return (
-      categories?.items?.map((category) => ({
-        label: category.name,
-        value: category.id,
-      })) ?? []
-    );
-  }, [categories]);
+    return buildCategoryOptions(categories?.items ?? []);
+  }, [categories?.items]);
 
   const { data: brands } = useProductBrandQuery(businessId);
   const brandOptions: SelectOption[] = useMemo(() => {
@@ -733,17 +787,17 @@ const ProductForm = ({
 
     const nextThumbnailImage = thumbnail?.imageUrl
       ? {
-        imageUrl: thumbnail.imageUrl,
-        altText: thumbnail.altText ?? "",
-        isThumbnail: true,
-      }
+          imageUrl: thumbnail.imageUrl,
+          altText: thumbnail.altText ?? "",
+          isThumbnail: true,
+        }
       : null;
 
     const nextMultipleImage = mediaImages.map((image) => ({
-        imageUrl: image.imageUrl,
-        altText: image.altText ?? "",
-        isThumbnail: false,
-      }));
+      imageUrl: image.imageUrl,
+      altText: image.altText ?? "",
+      isThumbnail: false,
+    }));
 
     let cancelled = false;
     queueMicrotask(() => {
@@ -794,11 +848,13 @@ const ProductForm = ({
   const handleFinish = (values: ProductFormValues) => {
     const finalImages: ProductImage[] = [
       ...(thumbnailImage?.imageUrl
-        ? [{
-            imageUrl: thumbnailImage.imageUrl,
-            altText: thumbnailImage.altText || values.name.trim(),
-            isThumbnail: true,
-          }]
+        ? [
+            {
+              imageUrl: thumbnailImage.imageUrl,
+              altText: thumbnailImage.altText || values.name.trim(),
+              isThumbnail: true,
+            },
+          ]
         : []),
 
       ...multipleImage
@@ -827,31 +883,33 @@ const ProductForm = ({
     const removedVariantKeys = new Set(
       form.getFieldValue("removedVariantKeys") ?? [],
     );
-    const formVariants = ((form.getFieldValue("variants") ?? []) as ProductFormVariant[])
-      .filter((variant) => {
-        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+    const formVariants = (
+      (form.getFieldValue("variants") ?? []) as ProductFormVariant[]
+    ).filter((variant) => {
+      const variantKey =
+        variant.variantKey || getVariantKey(variant.attributes);
 
-        return (
-          variantKey &&
-          !removedVariantKeys.has(variantKey) &&
-          isVariantSelectedByOptions(variant, values.variantOptions)
-        );
-      });
+      return (
+        variantKey &&
+        !removedVariantKeys.has(variantKey) &&
+        isVariantSelectedByOptions(variant, values.variantOptions)
+      );
+    });
 
     const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
       ? formVariants.map((variant: ProductFormVariant) => ({
-        variantId: variant.variantId,
-        images: normalizeVariantImages(variant.images),
-        title: variant.title.trim(),
-        priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
-        weight: Number(variant.weight ?? values.weight ?? 0),
-        status: variant.status ?? "ACTIVE",
-        attributes:
-          variant.attributes?.map((attribute) => ({
-            attributeId: attribute.attributeId,
-            attributeValueId: attribute.attributeValueId,
-          })) ?? [],
-      }))
+          variantId: variant.variantId,
+          images: normalizeVariantImages(variant.images),
+          title: variant.title.trim(),
+          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+          weight: Number(variant.weight ?? values.weight ?? 0),
+          status: variant.status ?? "ACTIVE",
+          attributes:
+            variant.attributes?.map((attribute) => ({
+              attributeId: attribute.attributeId,
+              attributeValueId: attribute.attributeValueId,
+            })) ?? [],
+        }))
       : [];
 
     const initialVariants = getInitialVariants(
@@ -859,7 +917,8 @@ const ProductForm = ({
     );
     const deletedVariantIds = initialVariants
       .filter((variant) => {
-        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+        const variantKey =
+          variant.variantKey || getVariantKey(variant.attributes);
 
         return (
           variant.variantId &&
@@ -948,7 +1007,10 @@ const ProductForm = ({
               <Card
                 title="Thumbnail Image"
                 extra={
-                  <Button type="primary" onClick={() => setImageModalOpen(true)}>
+                  <Button
+                    type="primary"
+                    onClick={() => setImageModalOpen(true)}
+                  >
                     Choose Thumbnail
                   </Button>
                 }

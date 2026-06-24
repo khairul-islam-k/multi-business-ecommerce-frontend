@@ -24,9 +24,19 @@ const normalizeCategory = (
 ): ResponseCategory => {
   if (!isCategoryTreeNode(value)) return value;
 
+  const childMap = new Map<string, ResponseCategory>();
+
+  value.category.children?.forEach((child) => {
+    childMap.set(child.id, child as ResponseCategory);
+  });
+
+  value.children?.map(normalizeCategory).forEach((child) => {
+    childMap.set(child.id, child);
+  });
+
   return {
     ...value.category,
-    children: value.children?.map(normalizeCategory) ?? value.category.children ?? [],
+    children: Array.from(childMap.values()),
   };
 };
 

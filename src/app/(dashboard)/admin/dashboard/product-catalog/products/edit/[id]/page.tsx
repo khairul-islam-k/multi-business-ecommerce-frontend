@@ -15,8 +15,118 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BulkUpdateVariantItemPayload,
+  ResponseVariant,
   VariantPayload,
 } from "@/types/product/variant";
+
+type ExistingVariantUpdatePayload = BulkUpdateVariantItemPayload & {
+  variantId: string;
+};
+
+const numberValue = (value?: string | number | null) => Number(value ?? 0);
+
+const getVariantAttributeKey = (
+  attributes:
+    | Array<{
+        attributeId: string;
+        attributeValueId: string;
+      }>
+    | undefined,
+) =>
+  attributes
+    ?.map((attribute) => attribute.attributeValueId)
+    .filter(Boolean)
+    .sort()
+    .join("|") ?? "";
+
+const sameAttributes = (
+  current: BulkUpdateVariantItemPayload["attributes"],
+  original: ResponseVariant["attributes"],
+) => {
+  const currentKey = getVariantAttributeKey(current);
+  const originalKey = getVariantAttributeKey(
+    original?.map((attribute) => ({
+      attributeId: attribute.attributeId,
+      attributeValueId: attribute.attributeValueId,
+    })),
+  );
+
+  return currentKey === originalKey;
+};
+
+const sameImages = (
+  current: BulkUpdateVariantItemPayload["images"],
+  original: ResponseVariant["images"],
+) => {
+  const normalize = (
+    images:
+      | Array<{
+          imageUrl?: string;
+          altText?: string;
+          isThumbnail?: boolean;
+        }>
+      | undefined,
+  ) =>
+    (images ?? [])
+      .filter((image) => image.imageUrl)
+      .map((image) => ({
+        imageUrl: image.imageUrl ?? "",
+        altText: image.altText ?? "",
+        isThumbnail: Boolean(image.isThumbnail),
+      }));
+
+  return JSON.stringify(normalize(current)) === JSON.stringify(normalize(original));
+};
+
+const findDuplicateVariantKey = (variants: BulkUpdateVariantItemPayload[]) => {
+  const seen = new Set<string>();
+
+  for (const variant of variants) {
+    const key = getVariantAttributeKey(variant.attributes);
+    if (!key) continue;
+    if (seen.has(key)) return key;
+    seen.add(key);
+  }
+
+  return null;
+};
+
+const getChangedExistingVariantPayload = (
+  variant: BulkUpdateVariantItemPayload & { variantId: string },
+  original?: ResponseVariant,
+): ExistingVariantUpdatePayload | null => {
+  if (!original) return variant;
+
+  const payload: ExistingVariantUpdatePayload = {
+    variantId: variant.variantId,
+  };
+
+  if ((variant.title ?? "").trim() !== (original.title ?? "")) {
+    payload.title = variant.title?.trim();
+  }
+
+  if (numberValue(variant.priceOverride) !== numberValue(original.priceOverride)) {
+    payload.priceOverride = Number(variant.priceOverride ?? 0);
+  }
+
+  if (numberValue(variant.weight) !== numberValue(original.weight)) {
+    payload.weight = Number(variant.weight ?? 0);
+  }
+
+  if ((variant.status ?? "ACTIVE") !== (original.status ?? "ACTIVE")) {
+    payload.status = variant.status;
+  }
+
+  if (!sameImages(variant.images, original.images)) {
+    payload.images = variant.images ?? [];
+  }
+
+  if (!sameAttributes(variant.attributes, original.attributes)) {
+    payload.attributes = variant.attributes ?? [];
+  }
+
+  return Object.keys(payload).length > 1 ? payload : null;
+};
 
 const UpdateProductPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -37,6 +147,13 @@ const UpdateProductPage = () => {
     variants: BulkUpdateVariantItemPayload[],
     deletedVariantIds: string[],
   ) => {
+    const duplicateVariantKey = findDuplicateVariantKey(variants);
+
+    if (duplicateVariantKey) {
+      message.error("Each variant attribute combination must be unique.");
+      return;
+    }
+
     setIsSubmitting(true);
     const payload: ProductPayload = {
       images: values.images,
@@ -58,13 +175,54 @@ const UpdateProductPage = () => {
         payload,
       });
 
-      const existingVariants = variants.filter(
-        (
-          variant,
-        ): variant is BulkUpdateVariantItemPayload & { variantId: string } =>
-          Boolean(variant.variantId),
+      const originalVariants = product?.variants ?? [];
+      const originalVariantById = new Map(
+        originalVariants.map((variant) => [variant.id, variant]),
       );
-      const newVariants: VariantPayload[] = variants
+      const originalVariantIdByKey = new Map(
+        originalVariants.map((variant) => [
+          getVariantAttributeKey(
+            variant.attributes?.map((attribute) => ({
+              attributeId: attribute.attributeId,
+              attributeValueId: attribute.attributeValueId,
+            })),
+          ),
+          variant.id,
+        ]),
+      );
+      const deletedVariantIdSet = new Set(deletedVariantIds);
+      const resolvedVariants = variants.map((variant) => {
+        if (variant.variantId) return variant;
+
+        const existingVariantId = originalVariantIdByKey.get(
+          getVariantAttributeKey(variant.attributes),
+        );
+
+        if (existingVariantId && !deletedVariantIdSet.has(existingVariantId)) {
+          return {
+            ...variant,
+            variantId: existingVariantId,
+          };
+        }
+
+        return variant;
+      });
+
+      const existingVariants = resolvedVariants
+        .filter(
+          (
+            variant,
+          ): variant is BulkUpdateVariantItemPayload & { variantId: string } =>
+            Boolean(variant.variantId),
+        )
+        .map((variant) =>
+          getChangedExistingVariantPayload(
+            variant,
+            originalVariantById.get(variant.variantId),
+          ),
+        )
+        .filter(Boolean) as ExistingVariantUpdatePayload[];
+      const newVariants: VariantPayload[] = resolvedVariants
         .filter((variant) => !variant.variantId)
         .map((variant) => ({
           images: variant.images ?? [],

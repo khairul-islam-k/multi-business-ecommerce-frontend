@@ -80,11 +80,7 @@ const TagForm = ({
           <Input placeholder="New Arrival" />
         </Form.Item>
 
-        <Form.Item
-          label="Featured"
-          name="isFeatured"
-          valuePropName="checked"
-        >
+        <Form.Item label="Featured" name="isFeatured" valuePropName="checked">
           <Switch checkedChildren="Featured" unCheckedChildren="Regular" />
         </Form.Item>
 
