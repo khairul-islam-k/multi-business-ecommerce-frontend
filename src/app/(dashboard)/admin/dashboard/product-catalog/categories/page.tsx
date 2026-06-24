@@ -7,16 +7,19 @@ import { getApiErrorMessage } from '@/lib/axios';
 import { useAuthStore } from '@/stores/auth.store';
 import { ResponseCategory } from '@/types/product/product';
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
-import { App, Button, Card, Popconfirm, Select, Tag } from 'antd';
+import { App, Button, Card, Popconfirm, Select, Space, Tag, Typography } from 'antd';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const imageUrlSet = (url: string) => {
+    if (url.startsWith("http")) return url;
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
     const image = `${baseUrl}${url}`;
     return image;
 }
+
+const { Text } = Typography;
 
 const Categories = () => {
     const router = useRouter();
@@ -36,19 +39,17 @@ const Categories = () => {
         isFetching,
     } = useProductCategoriesQuery(businessId, {
         page: currentPage,
-        limit: 5,
+        limit: 10,
         search,
         status: statusFilter,
         sortOrder: "desc",
     });
 
-    console.log('category', category);
-
     const { removeCategories } = useProductCategoriesMutation(businessId);
 
     // pagination
     const total = category?.meta?.total || 0;
-    const limit = 5;
+    const limit = 10;
     const totalPages = Math.ceil(total / limit);
 
     const handleDelete = async (id: string) => {
@@ -82,7 +83,18 @@ const Categories = () => {
             key: "name",
             label: "Name",
             type: "primary",
-            render: (row) => <strong>{row.name}</strong>,
+            render: (row) => (
+                <div className="min-w-0">
+                    <Text strong className="block max-w-[260px]" ellipsis={{ tooltip: row.name }}>
+                        {row.name}
+                    </Text>
+                    {row.description ? (
+                        <Text type="secondary" className="block max-w-[260px] text-xs" ellipsis={{ tooltip: row.description }}>
+                            {row.description}
+                        </Text>
+                    ) : null}
+                </div>
+            ),
         },
         {
             key: "status",
@@ -97,12 +109,40 @@ const Categories = () => {
         {
             key: "parent",
             label: "Parent",
-            render: (row) => row.parent?.name,
+            type: "secondary",
+            render: (row) => row.parent?.name ?? "Root category",
+        },
+        {
+            key: "children",
+            label: "Children",
+            render: (row) => (
+                <Space size={4} wrap>
+                    <Tag>{row._count?.children ?? row.children?.length ?? 0}</Tag>
+                    {row.children?.slice(0, 2).map((child) => (
+                        <Tag key={child.id} color="blue">
+                            {child.name}
+                        </Tag>
+                    ))}
+                    {(row.children?.length ?? 0) > 2 ? (
+                        <Tag>+{(row.children?.length ?? 0) - 2}</Tag>
+                    ) : null}
+                </Space>
+            ),
+        },
+        {
+            key: "products",
+            label: "Products",
+            render: (row) => row._count?.products ?? 0,
+        },
+        {
+            key: "sortOrder",
+            label: "Sort",
+            render: (row) => row.sortOrder,
         },
         {
             key: "createdAt",
-            label: "Created At",
-            render: (row) => new Date(row.createdAt).toLocaleDateString(),
+            label: "Updated",
+            render: (row) => new Date(row.updatedAt ?? row.createdAt).toLocaleDateString(),
         },
         {
             key: "actions",
@@ -154,14 +194,17 @@ const Categories = () => {
                 <DataTable
                     data={category?.items ?? []}
                     toolbarEnd={
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-3 mb-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-center gap-3">
                             <div className="flex gap-3">
 
                                 <Select
                                     placeholder="Filter by status"
                                     allowClear
                                     style={{ width: 180 }}
-                                    onChange={(v) => setStatusFilter(v)}
+                                    onChange={(v) => {
+                                        setStatusFilter(v);
+                                        setCurrentPage(1);
+                                    }}
                                     options={[
                                         { label: "Active", value: "ACTIVE" },
                                         { label: "Inactive", value: "INACTIVE" },
@@ -183,6 +226,7 @@ const Categories = () => {
                     columns={columns}
                     onSearch={(value) => {
                         setSearch(value);
+                        setCurrentPage(1);
                     }}
                     loading={
                         isLoading ||

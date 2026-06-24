@@ -1,4 +1,8 @@
-import type { PermissionAction, RbacFeature, SystemUserType } from "@/lib/api/types";
+import type {
+  PermissionAction,
+  RbacFeature,
+  SystemUserType,
+} from "@/lib/api/types";
 
 export const ADMIN_DASHBOARD_PATH = "/super-admin/dashboard";
 export const TENANT_DASHBOARD_PATH = "/admin/dashboard";
@@ -53,7 +57,10 @@ export const PERMISSIONS = {
   financeRead: { feature: "FINANCE_MANAGEMENT", action: "READ" },
   financeUpdate: { feature: "FINANCE_MANAGEMENT", action: "UPDATE" },
   financeDelete: { feature: "FINANCE_MANAGEMENT", action: "DELETE" },
+  websiteCreate: { feature: "WEBSITE_MANAGEMENT", action: "CREATE" },
   websiteRead: { feature: "WEBSITE_MANAGEMENT", action: "READ" },
+  websiteUpdate: { feature: "WEBSITE_MANAGEMENT", action: "UPDATE" },
+  websiteDelete: { feature: "WEBSITE_MANAGEMENT", action: "DELETE" },
 } satisfies Record<string, PermissionRequirement>;
 
 export function getDashboardPath(userType?: SystemUserType | null) {
@@ -91,6 +98,23 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
 
   if (pathname.startsWith(`${TENANT_DASHBOARD_PATH}/billing`)) {
     return PERMISSIONS.packageRead;
+  }
+
+  const websiteBuilderPath = `${TENANT_DASHBOARD_PATH}/website-builder`;
+  if (pathname.startsWith(websiteBuilderPath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.websiteCreate;
+    if (
+      pathname.includes("/edit/") ||
+      pathname.includes("/section-editor") ||
+      pathname.includes("/page-builder") ||
+      pathname.includes("/menu-builder") ||
+      pathname.includes("/domains") ||
+      pathname.includes("/publish-setting")
+    ) {
+      return PERMISSIONS.websiteUpdate;
+    }
+
+    return PERMISSIONS.websiteRead;
   }
 
   const productCatalogPath = `${TENANT_DASHBOARD_PATH}/product-catalog`;

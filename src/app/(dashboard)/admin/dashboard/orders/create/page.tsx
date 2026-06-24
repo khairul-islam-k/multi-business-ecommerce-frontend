@@ -6,24 +6,23 @@ import {
   App,
   Button,
   Card,
-  Col,
   Divider,
-  Form,
+  Empty,
   Input,
   InputNumber,
-  Modal,
+  Pagination,
   Radio,
-  Row,
   Select,
   Space,
+  Switch,
+  Table,
   Typography,
 } from "antd";
-import { CreditCardOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import {
   useCustomerQuery,
   useOrderMutations,
@@ -31,128 +30,133 @@ import {
   useTaxQuery,
   useWarehousesQuery,
 } from "@/lib/api";
-import type { OrderPaymentPayload, OrderPayload } from "@/lib/api";
+import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
+import type {
+  OrderPaymentMethod,
+  OrderPaymentPayload,
+  OrderPayload,
+} from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
-import type { ResponseVariant } from "@/types/product/variant";
+import { ProductPicker } from "../../pos/_components/product-picker";
+import { VariantSelector } from "../../pos/_components/variant-selector";
+import type { PosCartItem } from "../../pos/_components/types";
 
 const { Text, Title } = Typography;
 
-type OrderFormValues = Omit<OrderPayload, "items"> & {
+const PAGE_LIMIT = 8;
+
+type OrderDraftValues = {
   customerMode?: "existing" | "walk-in";
-  items: Array<{
-    productId?: string;
-    variantId?: string;
-    quantity?: number;
-    discountAmount?: number;
-  }>;
+  customerId?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerEmail?: string;
+  warehouseId?: string;
+  shippingCharge?: number;
+  note?: string;
+  isCod?: boolean;
+  paymentMethod?: OrderPaymentMethod;
+  financeAccountId?: string;
 };
+
+const paymentMethodOptions: Array<{
+  label: string;
+  value: OrderPaymentMethod;
+}> = [
+  { label: "Cash", value: "CASH" },
+  { label: "COD", value: "COD" },
+  { label: "bKash", value: "BKASH" },
+  { label: "Nagad", value: "NAGAD" },
+  { label: "Card", value: "CARD" },
+  { label: "Bank Transfer", value: "BANK_TRANSFER" },
+  { label: "Other", value: "OTHER" },
+];
+
+const createCartId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random()}`;
 
 const trimOrUndefined = (value?: string | null) => {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
 };
 
-const toNumber = (value?: string | number | null) => Number(value ?? 0);
-
-const getVariantLabel = (variant: ResponseVariant) => {
-  const attributes = variant.attributes
-    ?.map((item) => item.attributeValue?.value)
-    .filter(Boolean)
-    .join(" / ");
-
-  return attributes
-    ? `${variant.title || variant.sku || "Variant"} - ${attributes}`
-    : variant.title || variant.sku || "Variant";
-};
-
-const getVariantPrice = (variant: ResponseVariant | undefined) =>
-  toNumber(variant?.effectivePrice ?? variant?.priceOverride);
-
 const money = (value: number) => `BDT ${value.toLocaleString()}`;
 
 export default function CreateOrder() {
-  const [form] = Form.useForm<OrderFormValues>();
-  const [paymentForm] = Form.useForm<OrderPaymentPayload>();
   const router = useRouter();
   const { message } = App.useApp();
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [paymentValues, setPaymentValues] = useState<OrderPaymentPayload>();
   const businessId = useActiveBusinessId();
-  const products = useProductsQuery(businessId ?? "", { page: 1, limit: 100 });
-  const customers = useCustomerQuery(businessId ?? "", { page: 1, limit: 100 });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [selectedProductId, setSelectedProductId] = useState<string>();
+  const [cart, setCart] = useState<PosCartItem[]>([]);
+  const [values, setValues] = useState<OrderDraftValues>({
+    customerMode: "walk-in",
+    shippingCharge: 0,
+    isCod: false,
+  });
+
+  const products = useProductsQuery(businessId ?? "", {
+    page: currentPage,
+    limit: PAGE_LIMIT,
+    search,
+    status: "ACTIVE",
+    sortOrder: "desc",
+  });
+  const customers = useCustomerQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
+    status: "ACTIVE",
+  });
   const warehouses = useWarehousesQuery(businessId ?? "", {
     page: 1,
     limit: 100,
+    status: "ACTIVE",
   });
-  const taxes = useTaxQuery(businessId ?? "", { page: 1, limit: 100 });
+  const taxes = useTaxQuery(businessId ?? "", { status: "ACTIVE" });
   const accounts = useFinanceAccountQuery(businessId ?? "", {
     page: 1,
     limit: 100,
     status: "ACTIVE",
   });
   const mutations = useOrderMutations(businessId ?? "");
-  const watchedItems = Form.useWatch("items", form);
-  const customerMode = Form.useWatch("customerMode", form) ?? "walk-in";
-  const shippingCharge = Form.useWatch("shippingCharge", form);
-  const orderItems = useMemo(() => watchedItems ?? [], [watchedItems]);
 
-  const productItems = useMemo(() => products.data?.items ?? [], [products.data?.items]);
-
-  const productOptions = useMemo(
-    () =>
-      productItems.map((product) => ({
-        label: product.name,
-        value: product.id,
-      })),
-    [productItems],
+  const productItems = useMemo(
+    () => products.data?.items ?? [],
+    [products.data?.items],
+  );
+  const selectedProduct = useMemo(
+    () => productItems.find((product) => product.id === selectedProductId),
+    [productItems, selectedProductId],
   );
 
-  const getVariantOptions = (productId?: string) =>
-    productItems
-      .find((product) => product.id === productId)
-      ?.variants?.map((variant) => ({
-        label: getVariantLabel(variant),
-        value: variant.id,
-      })) ?? [];
-
   const totals = useMemo(() => {
-    const subtotal = orderItems.reduce((total, item) => {
-      const product = productItems.find((entry) => entry.id === item?.productId);
-      if (!product) return total;
-
-      const variant = product.variants?.find(
-        (entry) => entry.id === item?.variantId,
-      );
-      const unitPrice = variant ? getVariantPrice(variant) : toNumber(product.price);
-
-      return total + unitPrice * toNumber(item?.quantity);
-    }, 0);
-    const discountTotal = orderItems.reduce(
-      (total, item) => total + toNumber(item?.discountAmount),
+    const subtotal = cart.reduce(
+      (total, item) => total + item.unitPrice * item.quantity,
       0,
     );
-    const taxTotal = orderItems.reduce((total, item) => {
-      const product = productItems.find((entry) => entry.id === item?.productId);
-      if (!product) return total;
-
+    const discountTotal = cart.reduce(
+      (total, item) => total + Number(item.discountAmount ?? 0),
+      0,
+    );
+    const taxTotal = cart.reduce((total, item) => {
       const selectedTax = taxes.data?.items?.find(
-        (tax) => tax.id === product.taxId,
+        (tax) => tax.id === item.product.taxId,
       );
-      const taxRate = toNumber(selectedTax?.rate);
-      const variant = product.variants?.find(
-        (entry) => entry.id === item?.variantId,
-      );
-      const unitPrice = variant ? getVariantPrice(variant) : toNumber(product.price);
-      const lineSubtotal = unitPrice * toNumber(item?.quantity);
+      const taxRate = Number(selectedTax?.rate ?? 0);
+      const lineSubtotal = item.unitPrice * item.quantity;
       const lineTaxableAmount = Math.max(
-        lineSubtotal - toNumber(item?.discountAmount),
+        lineSubtotal - Number(item.discountAmount ?? 0),
         0,
       );
 
       return total + lineTaxableAmount * (taxRate / 100);
     }, 0);
     const taxableAmount = Math.max(subtotal - discountTotal, 0);
-    const shipping = toNumber(shippingCharge);
+    const shipping = Number(values.shippingCharge ?? 0);
 
     return {
       subtotal,
@@ -161,58 +165,103 @@ export default function CreateOrder() {
       shipping,
       total: taxableAmount + taxTotal + shipping,
     };
-  }, [orderItems, productItems, shippingCharge, taxes.data?.items]);
+  }, [cart, taxes.data?.items, values.shippingCharge]);
 
-  const onFinish = async (values: OrderFormValues) => {
+  const updateValues = (nextValues: Partial<OrderDraftValues>) => {
+    setValues((current) => ({ ...current, ...nextValues }));
+  };
+
+  const handleAddItem = (item: Omit<PosCartItem, "id">) => {
+    setCart((current) => [
+      ...current,
+      {
+        ...item,
+        id: createCartId(),
+      },
+    ]);
+  };
+
+  const handleItemChange = (
+    itemId: string,
+    nextValues: Partial<PosCartItem>,
+  ) => {
+    setCart((current) =>
+      current.map((item) =>
+        item.id === itemId ? { ...item, ...nextValues } : item,
+      ),
+    );
+  };
+
+  const resolvePayment = (): OrderPaymentPayload | undefined => {
+    if (values.isCod) {
+      return {
+        paymentMethod: "COD",
+      };
+    }
+
+    if (!values.paymentMethod) return undefined;
+
+    return {
+      paymentMethod: values.paymentMethod,
+      financeAccountId: values.financeAccountId,
+    };
+  };
+
+  const handleCreateOrder = async () => {
     if (!businessId) return;
 
-    const items = values.items
-      .filter((item) => item.productId && item.quantity)
-      .map((item) => ({
-        productId: item.productId as string,
-        variantId: item.variantId || undefined,
-        quantity: Number(item.quantity),
-        discountAmount: Number(item.discountAmount ?? 0),
-      }));
+    const customerMode = values.customerMode ?? "walk-in";
 
-    if (!items.length) {
-      message.error("Add at least one order item.");
+    if (!values.warehouseId) {
+      message.error("Select a warehouse.");
       return;
     }
 
-    const resolvedCustomerMode = values.customerMode ?? "walk-in";
-
-    if (resolvedCustomerMode === "existing" && !values.customerId) {
+    if (customerMode === "existing" && !values.customerId) {
       message.error("Select an existing customer.");
       return;
     }
 
-    try {
-      const payload: OrderPayload = {
-        customerId:
-          resolvedCustomerMode === "existing" ? values.customerId : undefined,
-        warehouseId: values.warehouseId,
-        payment: paymentValues,
-        orderType: values.orderType ?? "ADMIN",
-        orderSource: values.orderSource ?? "ADMIN_PANEL",
-        customerName:
-          resolvedCustomerMode === "walk-in"
-            ? trimOrUndefined(values.customerName)
-            : undefined,
-        customerPhone:
-          resolvedCustomerMode === "walk-in"
-            ? trimOrUndefined(values.customerPhone)
-            : undefined,
-        customerEmail:
-          resolvedCustomerMode === "walk-in"
-            ? trimOrUndefined(values.customerEmail)
-            : undefined,
-        shippingCharge: Number(values.shippingCharge ?? 0),
-        note: trimOrUndefined(values.note),
-        isCod: Boolean(values.isCod),
-        items,
-      };
+    if (!cart.length) {
+      message.error("Add at least one order item.");
+      return;
+    }
 
+    if (values.paymentMethod && values.paymentMethod !== "COD" && !values.financeAccountId) {
+      message.error("Select a finance account for this payment method.");
+      return;
+    }
+
+    const payload: OrderPayload = {
+      customerId: customerMode === "existing" ? values.customerId : undefined,
+      warehouseId: values.warehouseId,
+      payment: resolvePayment(),
+      orderType: "ADMIN",
+      orderSource: "ADMIN_PANEL",
+      customerName:
+        customerMode === "walk-in"
+          ? trimOrUndefined(values.customerName)
+          : undefined,
+      customerPhone:
+        customerMode === "walk-in"
+          ? trimOrUndefined(values.customerPhone)
+          : undefined,
+      customerEmail:
+        customerMode === "walk-in"
+          ? trimOrUndefined(values.customerEmail)
+          : undefined,
+      shippingCharge: Number(values.shippingCharge ?? 0),
+      note: trimOrUndefined(values.note),
+      isCod: Boolean(values.isCod),
+      items: cart.map((item) => ({
+        productId: item.product.id,
+        variantId: item.variant?.id,
+        quantity: Number(item.quantity),
+        discountAmount: Number(item.discountAmount ?? 0),
+      })),
+    };
+
+    try {
       await mutations.createOrder.mutateAsync(payload);
       message.success("Order created.");
       router.push("/admin/dashboard/orders");
@@ -221,321 +270,356 @@ export default function CreateOrder() {
     }
   };
 
-  const openPaymentModal = () => {
-    if (paymentValues) {
-      paymentForm.setFieldsValue(paymentValues);
-    } else {
-      paymentForm.resetFields();
-    }
-    setIsPaymentModalOpen(true);
-  };
-
-  const handlePaymentModalOk = async () => {
-    const values = await paymentForm.validateFields();
-    setPaymentValues(values);
-    setIsPaymentModalOpen(false);
-    message.success("Payment details added to this order.");
-  };
+  const customerMode = values.customerMode ?? "walk-in";
+  const totalProducts = products.data?.meta?.total ?? 0;
+  const canSubmit = Boolean(values.warehouseId && cart.length);
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Create Order" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Create Order"
+        subtitle="Search products, resolve variants by attributes, then build the order from a cart-style checkout panel."
+        breadcrumb={adminBreadcrumb}
+      />
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{
-          customerMode: "walk-in",
-          orderType: "ADMIN",
-          orderSource: "ADMIN_PANEL",
-          shippingCharge: 0,
-          isCod: false,
-          items: [{ quantity: 1, discountAmount: 0 }],
-        }}
-      >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={16}>
-            <Card title="Order Details">
-              <Row gutter={12}>
-                <Col xs={24}>
-                  <Form.Item name="customerMode" label="Customer">
-                    <Radio.Group
-                      optionType="button"
-                      buttonStyle="solid"
-                      onChange={() =>
-                        form.setFieldsValue({
-                          customerId: undefined,
-                          customerName: undefined,
-                          customerPhone: undefined,
-                          customerEmail: undefined,
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_460px]">
+        <div className="space-y-4">
+          <ProductPicker
+            products={productItems}
+            loading={products.isLoading || products.isFetching}
+            search={search}
+            selectedProductId={selectedProductId}
+            onSearch={(value) => {
+              setSearch(value);
+              setCurrentPage(1);
+            }}
+            onSelect={(product) => setSelectedProductId(product.id)}
+          />
+
+          {totalProducts > PAGE_LIMIT ? (
+            <Card>
+              <Pagination
+                current={currentPage}
+                pageSize={PAGE_LIMIT}
+                total={totalProducts}
+                showSizeChanger={false}
+                onChange={setCurrentPage}
+              />
+            </Card>
+          ) : null}
+
+          <VariantSelector
+            key={selectedProduct?.id ?? "no-product"}
+            businessId={businessId ?? ""}
+            product={selectedProduct}
+            onAdd={handleAddItem}
+          />
+        </div>
+
+        <Card title="Order & Checkout">
+          <Space direction="vertical" size="middle" className="w-full">
+            <Table<PosCartItem>
+              size="small"
+              rowKey="id"
+              dataSource={cart}
+              pagination={false}
+              locale={{ emptyText: <Empty description="No items added" /> }}
+              columns={[
+                {
+                  title: "Item",
+                  key: "item",
+                  width: 190,
+                  render: (_, item) => (
+                    <div className="min-w-0 max-w-[180px]">
+                      <Text
+                        strong
+                        className="block"
+                        ellipsis={{ tooltip: item.product.name }}
+                      >
+                        {item.product.name}
+                      </Text>
+                      <div className="truncate text-xs text-gray-500">
+                        {item.variant?.title ?? "No variant"}
+                      </div>
+                    </div>
+                  ),
+                },
+                {
+                  title: "Qty",
+                  width: 100,
+                  render: (_, item) => (
+                    <InputNumber
+                      min={1}
+                      max={item.availableQuantity}
+                      value={item.quantity}
+                      onChange={(quantity) =>
+                        handleItemChange(item.id, {
+                          quantity: Number(quantity ?? 1),
                         })
                       }
-                      options={[
-                        { label: "Walk-in", value: "walk-in" },
-                        { label: "Existing customer", value: "existing" },
-                      ]}
                     />
-                  </Form.Item>
-                </Col>
-
-                {customerMode === "existing" ? (
-                  <Col xs={24} md={12}>
-                    <Form.Item
-                      name="customerId"
-                      label="Customer"
-                      rules={[{ required: true }]}
-                    >
-                      <Select
-                        allowClear
-                        showSearch
-                        optionFilterProp="label"
-                        placeholder="Select customer"
-                        options={(customers.data?.items ?? []).map((customer) => ({
-                          label: `${customer.name}${customer.phone ? ` (${customer.phone})` : ""}`,
-                          value: customer.id,
-                        }))}
-                      />
-                    </Form.Item>
-                  </Col>
-                ) : (
-                  <>
-                    <Col xs={24} md={12}>
-                      <Form.Item name="customerName" label="Walk-in customer name">
-                        <Input maxLength={150} />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={12}>
-                      <Form.Item name="customerPhone" label="Customer phone">
-                        <Input maxLength={30} />
-                      </Form.Item>
-                    </Col>
-                    <Col xs={24} md={12}>
-                      <Form.Item name="customerEmail" label="Customer email">
-                        <Input maxLength={150} />
-                      </Form.Item>
-                    </Col>
-                  </>
-                )}
-
-                <Col xs={24} md={12}>
-                  <Form.Item name="warehouseId" label="Warehouse">
-                    <Select
-                      allowClear
-                      showSearch
-                      optionFilterProp="label"
-                      placeholder="Select warehouse"
-                      options={(warehouses.data?.items ?? []).map((warehouse) => ({
-                        label: warehouse.name,
-                        value: warehouse.id,
-                      }))}
+                  ),
+                },
+                {
+                  title: "Discount",
+                  width: 120,
+                  render: (_, item) => (
+                    <InputNumber
+                      min={0}
+                      max={item.unitPrice * item.quantity}
+                      value={item.discountAmount}
+                      onChange={(discountAmount) =>
+                        handleItemChange(item.id, {
+                          discountAmount: Number(discountAmount ?? 0),
+                        })
+                      }
                     />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="note" label="Note">
-                    <Input.TextArea rows={3} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
+                  ),
+                },
+                {
+                  title: "",
+                  width: 48,
+                  render: (_, item) => (
+                    <Button
+                      danger
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() =>
+                        setCart((current) =>
+                          current.filter((entry) => entry.id !== item.id),
+                        )
+                      }
+                    />
+                  ),
+                },
+              ]}
+              scroll={{ x: "max-content" }}
+            />
 
-            <Card title="Items" className="mt-4">
-              <Form.List name="items">
-                {(fields, { add, remove }) => (
-                  <Space direction="vertical" className="w-full" size={12}>
-                    {fields.map((field) => (
-                      <Row gutter={12} key={field.key} align="middle">
-                        <Col xs={24} md={8}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "productId"]}
-                            label="Product"
-                            rules={[{ required: true }]}
-                          >
-                            <Select
-                              showSearch
-                              optionFilterProp="label"
-                              options={productOptions}
-                              onChange={() =>
-                                form.setFieldValue(
-                                  ["items", field.name, "variantId"],
-                                  undefined,
-                                )
-                              }
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24} md={6}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "variantId"]}
-                            label="Variant"
-                          >
-                            <Select
-                              allowClear
-                              showSearch
-                              optionFilterProp="label"
-                              placeholder="No variant"
-                              disabled={
-                                !orderItems[field.name]?.productId ||
-                                getVariantOptions(
-                                  orderItems[field.name]?.productId,
-                                ).length === 0
-                              }
-                              options={getVariantOptions(
-                                orderItems[field.name]?.productId,
-                              )}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={12} md={4}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "quantity"]}
-                            label="Quantity"
-                            rules={[{ required: true }]}
-                          >
-                            <InputNumber min={0.001} style={{ width: "100%" }} />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={12} md={4}>
-                          <Form.Item
-                            {...field}
-                            name={[field.name, "discountAmount"]}
-                            label="Discount"
-                          >
-                            <InputNumber min={0} style={{ width: "100%" }} />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24} md={2}>
-                          <Button
-                            danger
-                            title="Remove item"
-                            icon={<DeleteOutlined />}
-                            onClick={() => remove(field.name)}
-                          />
-                        </Col>
-                      </Row>
-                    ))}
-                    <Button icon={<PlusOutlined />} onClick={() => add()}>
-                      Add item
-                    </Button>
-                  </Space>
-                )}
-              </Form.List>
-            </Card>
-          </Col>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <Text type="secondary">Customer</Text>
+                <br />
+                <Radio.Group
+                  className="mt-1"
+                  optionType="button"
+                  buttonStyle="solid"
+                  value={customerMode}
+                  options={[
+                    { label: "Walk-in", value: "walk-in" },
+                    { label: "Existing", value: "existing" },
+                  ]}
+                  onChange={(event) =>
+                    updateValues({
+                      customerMode: event.target.value,
+                      customerId: undefined,
+                      customerName: undefined,
+                      customerPhone: undefined,
+                      customerEmail: undefined,
+                    })
+                  }
+                />
+              </div>
 
-          <Col xs={24} lg={8}>
-            <Card title="Charges">
-              <Form.Item name="shippingCharge" label="Shipping charge">
-                <InputNumber min={0} style={{ width: "100%" }} />
-              </Form.Item>
+              {customerMode === "existing" ? (
+                <div className="md:col-span-2">
+                  <Text type="secondary">Existing Customer</Text>
+                  <Select
+                    allowClear
+                    showSearch
+                    className="mt-1 w-full"
+                    placeholder="Select customer"
+                    optionFilterProp="label"
+                    value={values.customerId}
+                    options={(customers.data?.items ?? []).map((customer) => ({
+                      label: `${customer.name}${customer.phone ? ` (${customer.phone})` : ""}`,
+                      value: customer.id,
+                    }))}
+                    onChange={(customerId) => updateValues({ customerId })}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <Text type="secondary">Customer Name</Text>
+                    <Input
+                      className="mt-1"
+                      placeholder="Walk-in Customer"
+                      value={values.customerName}
+                      onChange={(event) =>
+                        updateValues({ customerName: event.target.value })
+                      }
+                    />
+                  </div>
 
-              <Divider className="my-3" />
+                  <div>
+                    <Text type="secondary">Customer Phone</Text>
+                    <Input
+                      className="mt-1"
+                      placeholder="+880..."
+                      value={values.customerPhone}
+                      onChange={(event) =>
+                        updateValues({ customerPhone: event.target.value })
+                      }
+                    />
+                  </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Text type="secondary">Subtotal</Text>
-                  <Text>{money(totals.subtotal)}</Text>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Text type="secondary">Discount</Text>
-                  <Text>{money(totals.discountTotal)}</Text>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Text type="secondary">Product tax estimate</Text>
-                  <Text>{money(totals.taxTotal)}</Text>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Text type="secondary">Shipping</Text>
-                  <Text>{money(totals.shipping)}</Text>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Title level={5} className="m-0">
-                    Total
-                  </Title>
-                  <Title level={5} className="m-0">
-                    {money(totals.total)}
-                  </Title>
+                  <div className="md:col-span-2">
+                    <Text type="secondary">Customer Email</Text>
+                    <Input
+                      className="mt-1"
+                      placeholder="customer@example.com"
+                      value={values.customerEmail}
+                      onChange={(event) =>
+                        updateValues({ customerEmail: event.target.value })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              <div>
+                <Text type="secondary">Warehouse</Text>
+                <Select
+                  allowClear
+                  showSearch
+                  className="mt-1 w-full"
+                  placeholder="Select warehouse"
+                  optionFilterProp="label"
+                  value={values.warehouseId}
+                  options={(warehouses.data?.items ?? []).map((warehouse) => ({
+                    label: warehouse.name,
+                    value: warehouse.id,
+                  }))}
+                  onChange={(warehouseId) => updateValues({ warehouseId })}
+                />
+              </div>
+
+              <div>
+                <Text type="secondary">Shipping Charge</Text>
+                <InputNumber
+                  min={0}
+                  className="mt-1 w-full"
+                  value={values.shippingCharge}
+                  onChange={(shippingCharge) =>
+                    updateValues({ shippingCharge: Number(shippingCharge ?? 0) })
+                  }
+                />
+              </div>
+
+              <div>
+                <Text type="secondary">COD</Text>
+                <div className="mt-1">
+                  <Switch
+                    checked={values.isCod}
+                    checkedChildren="Yes"
+                    unCheckedChildren="No"
+                    onChange={(isCod) =>
+                      updateValues({
+                        isCod,
+                        paymentMethod: isCod ? "COD" : undefined,
+                        financeAccountId: undefined,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
-              <Button
-                className="mt-4"
-                block
-                icon={<CreditCardOutlined />}
-                onClick={openPaymentModal}
-              >
-                {paymentValues ? "Edit payment details" : "Add payment details"}
-              </Button>
+              <div>
+                <Text type="secondary">Payment Method</Text>
+                <Select
+                  allowClear
+                  disabled={values.isCod}
+                  className="mt-1 w-full"
+                  placeholder="Optional payment"
+                  value={values.paymentMethod}
+                  options={paymentMethodOptions.filter(
+                    (option) => option.value !== "COD",
+                  )}
+                  onChange={(paymentMethod) =>
+                    updateValues({
+                      paymentMethod,
+                      financeAccountId: undefined,
+                    })
+                  }
+                />
+              </div>
 
-              {paymentValues && (
-                <div className="mt-2 text-xs text-gray-500">
-                  {paymentValues.paymentMethod} payment will be attached.
-                </div>
-              )}
+              <div className="md:col-span-2">
+                <Text type="secondary">Finance Account</Text>
+                <Select
+                  allowClear
+                  showSearch
+                  disabled={!values.paymentMethod || values.isCod}
+                  className="mt-1 w-full"
+                  placeholder="Select account for payment"
+                  optionFilterProp="label"
+                  value={values.financeAccountId}
+                  options={(accounts.data?.items ?? []).map((account) => ({
+                    label: `${account.name} (${account.accountType})`,
+                    value: account.id,
+                  }))}
+                  onChange={(financeAccountId) =>
+                    updateValues({ financeAccountId })
+                  }
+                />
+              </div>
 
-              <Button
-                className="mt-4"
-                type="primary"
-                block
-                htmlType="submit"
-                loading={mutations.createOrder.isPending}
-              >
-                Create order
-              </Button>
-            </Card>
-          </Col>
-        </Row>
-      </Form>
+              <div className="md:col-span-2">
+                <Text type="secondary">Note</Text>
+                <Input.TextArea
+                  className="mt-1"
+                  rows={3}
+                  placeholder="Internal order note"
+                  value={values.note}
+                  onChange={(event) => updateValues({ note: event.target.value })}
+                />
+              </div>
+            </div>
 
-      <Modal
-        title="Order payment"
-        open={isPaymentModalOpen}
-        okText="Save payment"
-        onOk={handlePaymentModalOk}
-        onCancel={() => setIsPaymentModalOpen(false)}
-        destroyOnHidden
-      >
-        <Form form={paymentForm} layout="vertical" className="mt-4">
-          <Form.Item
-            name="paymentMethod"
-            label="Payment method"
-            rules={[{ required: true }]}
-          >
-            <Select
-              placeholder="Select method"
-              options={[
-                "CASH",
-                "COD",
-                "BKASH",
-                "NAGAD",
-                "CARD",
-                "BANK_TRANSFER",
-                "OTHER",
-              ].map((method) => ({ label: method, value: method }))}
-            />
-          </Form.Item>
+            <Divider className="my-2" />
 
-          <Form.Item
-            name="financeAccountId"
-            label="Finance account"
-            rules={[{ required: true }]}
-          >
-            <Select
-              showSearch
-              optionFilterProp="label"
-              placeholder="Select finance account"
-              options={(accounts.data?.items ?? []).map((account) => ({
-                label: `${account.name} (${account.accountType})`,
-                value: account.id,
-              }))}
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Text type="secondary">Subtotal</Text>
+                <Text>{money(totals.subtotal)}</Text>
+              </div>
+              <div className="flex items-center justify-between">
+                <Text type="secondary">Discount</Text>
+                <Text>{money(totals.discountTotal)}</Text>
+              </div>
+              <div className="flex items-center justify-between">
+                <Text type="secondary">Product tax estimate</Text>
+                <Text>{money(totals.taxTotal)}</Text>
+              </div>
+              <div className="flex items-center justify-between">
+                <Text type="secondary">Shipping</Text>
+                <Text>{money(totals.shipping)}</Text>
+              </div>
+              <div className="flex items-center justify-between">
+                <Title level={5} className="m-0">
+                  Total
+                </Title>
+                <Title level={5} className="m-0">
+                  {money(totals.total)}
+                </Title>
+              </div>
+            </div>
+
+            <Button
+              type="primary"
+              block
+              size="large"
+              icon={<ShoppingCartOutlined />}
+              disabled={!canSubmit}
+              loading={mutations.createOrder.isPending}
+              onClick={handleCreateOrder}
+            >
+              Create Order
+            </Button>
+          </Space>
+        </Card>
+      </div>
     </div>
   );
 }

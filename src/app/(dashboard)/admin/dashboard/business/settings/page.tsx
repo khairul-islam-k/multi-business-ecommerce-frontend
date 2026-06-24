@@ -49,20 +49,56 @@ const prefixFields: Array<{
   { name: "invoicePrefix", label: "Invoice prefix", placeholder: "INV" },
   { name: "paymentPrefix", label: "Payment prefix", placeholder: "PAY" },
   { name: "shipmentPrefix", label: "Shipment prefix", placeholder: "SHP" },
-  { name: "purchaseOrderPrefix", label: "Purchase order prefix", placeholder: "PO" },
-  { name: "purchaseReturnPrefix", label: "Purchase return prefix", placeholder: "RET" },
-  { name: "stockAdjustmentPrefix", label: "Stock adjustment prefix", placeholder: "ADJ" },
-  { name: "stockTransferPrefix", label: "Stock transfer prefix", placeholder: "TRF" },
+  {
+    name: "purchaseOrderPrefix",
+    label: "Purchase order prefix",
+    placeholder: "PO",
+  },
+  {
+    name: "purchaseReturnPrefix",
+    label: "Purchase return prefix",
+    placeholder: "RET",
+  },
+  {
+    name: "stockAdjustmentPrefix",
+    label: "Stock adjustment prefix",
+    placeholder: "ADJ",
+  },
+  {
+    name: "stockTransferPrefix",
+    label: "Stock transfer prefix",
+    placeholder: "TRF",
+  },
   { name: "expensePrefix", label: "Expense prefix", placeholder: "EXP" },
-  { name: "supplierInvoicePrefix", label: "Supplier invoice prefix", placeholder: "SIN" },
-  { name: "supplierPaymentPrefix", label: "Supplier payment prefix", placeholder: "SPAY" },
+  {
+    name: "supplierInvoicePrefix",
+    label: "Supplier invoice prefix",
+    placeholder: "SIN",
+  },
+  {
+    name: "supplierPaymentPrefix",
+    label: "Supplier payment prefix",
+    placeholder: "SPAY",
+  },
   { name: "receivablePrefix", label: "Receivable prefix", placeholder: "REC" },
   { name: "payablePrefix", label: "Payable prefix", placeholder: "PAYB" },
-  { name: "transactionPrefix", label: "Transaction prefix", placeholder: "TXN" },
+  {
+    name: "transactionPrefix",
+    label: "Transaction prefix",
+    placeholder: "TXN",
+  },
   { name: "productSkuPrefix", label: "Product SKU prefix", placeholder: "SKU" },
-  { name: "productBarcodePrefix", label: "Product barcode prefix", placeholder: "BAR" },
+  {
+    name: "productBarcodePrefix",
+    label: "Product barcode prefix",
+    placeholder: "BAR",
+  },
   { name: "variantSkuPrefix", label: "Variant SKU prefix", placeholder: "SKU" },
-  { name: "variantBarcodePrefix", label: "Variant barcode prefix", placeholder: "BAR" },
+  {
+    name: "variantBarcodePrefix",
+    label: "Variant barcode prefix",
+    placeholder: "BAR",
+  },
 ];
 
 type BusinessSettingsValues = {
@@ -124,11 +160,9 @@ export default function BusinessSettingsPage() {
         payablePrefix: business.settings?.payablePrefix ?? "PAYB",
         transactionPrefix: business.settings?.transactionPrefix ?? "TXN",
         productSkuPrefix: business.settings?.productSkuPrefix ?? "SKU",
-        productBarcodePrefix:
-          business.settings?.productBarcodePrefix ?? "BAR",
+        productBarcodePrefix: business.settings?.productBarcodePrefix ?? "BAR",
         variantSkuPrefix: business.settings?.variantSkuPrefix ?? "SKU",
-        variantBarcodePrefix:
-          business.settings?.variantBarcodePrefix ?? "BAR",
+        variantBarcodePrefix: business.settings?.variantBarcodePrefix ?? "BAR",
         lowStockThreshold: business.settings?.lowStockThreshold ?? 5,
         allowBackorder: business.settings?.allowBackorder ?? false,
         autoConfirmOrder: business.settings?.autoConfirmOrder ?? false,
@@ -151,7 +185,6 @@ export default function BusinessSettingsPage() {
           country: values.country?.trim() || undefined,
           currencyCode: values.currencyCode || undefined,
           timezone: values.timezone || undefined,
-          status: values.status,
           settings: values.settings,
         },
       });
@@ -171,7 +204,6 @@ export default function BusinessSettingsPage() {
       swal.error(getApiErrorMessage(error));
     }
   };
-
 
   const handleDeleteBusiness = (targetBusiness: AuthBusiness) => {
     if (targetBusiness.id === businessId) return;

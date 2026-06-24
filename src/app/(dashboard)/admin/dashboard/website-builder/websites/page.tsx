@@ -32,6 +32,8 @@ import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useState } from "react";
 import WebsiteDomainCreateForm from "./_components/website-domain-create-form";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 
 const { Text, Title, Paragraph } = Typography;
@@ -69,6 +71,9 @@ const WebsiteList = () => {
   const business = useAuthStore((state) => state.selectedBusiness);
   const businessId = business?.id ?? "";
   const swal = useSwal();
+  const createAccess = usePermissionAccess(PERMISSIONS.websiteCreate);
+  const updateAccess = usePermissionAccess(PERMISSIONS.websiteUpdate);
+  const deleteAccess = usePermissionAccess(PERMISSIONS.websiteDelete);
 
   // domain modal
   const [openDomainModal, setOpenDomainModal] = useState<boolean>(false);
@@ -172,17 +177,19 @@ const WebsiteList = () => {
           </Text>
         </div>
 
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() =>
-            router.push(
-              "/admin/dashboard/website-builder/websites/create-website",
-            )
-          }
-        >
-          Create Website
-        </Button>
+        {createAccess.allowed ? (
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() =>
+              router.push(
+                "/admin/dashboard/website-builder/websites/create-website",
+              )
+            }
+          >
+            Create Website
+          </Button>
+        ) : null}
       </div>
 
       {isLoading || isFetching ? (
@@ -195,17 +202,19 @@ const WebsiteList = () => {
             description="No website found"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           >
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() =>
-                router.push(
-                  "/admin/dashboard/website-builder/websites/create-website",
-                )
-              }
-            >
-              Create Website
-            </Button>
+            {createAccess.allowed ? (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() =>
+                  router.push(
+                    "/admin/dashboard/website-builder/websites/create-website",
+                  )
+                }
+              >
+                Create Website
+              </Button>
+            ) : null}
           </Empty>
         </Card>
       ) : (
@@ -265,55 +274,60 @@ const WebsiteList = () => {
                 </Descriptions>
 
                 <Space wrap>
+                  {updateAccess.allowed ? (
+                    <>
+                      <Button
+                        onClick={() =>
+                          router.push(
+                            `/admin/dashboard/website-builder/websites/edit/${website.id}`,
+                          )
+                        }
+                      >
+                        Edit
+                      </Button>
 
-                  <Button
-                    onClick={() =>
-                      router.push(
-                        `/admin/dashboard/website-builder/websites/edit/${website.id}`,
-                      )
-                    }
-                  >
-                    Edit
-                  </Button>
+                      {website.status === "PUBLISHED" ? (
+                        <Button
+                          danger
+                          icon={<StopOutlined />}
+                          loading={updateUnPublish.isPending}
+                          onClick={() => handleUnpublishWebsite(website.id)}
+                        >
+                          Unpublish
+                        </Button>
+                      ) : (
+                        <Button
+                          type="primary"
+                          icon={<CheckCircleOutlined />}
+                          loading={updatePublish.isPending}
+                          disabled={website.status === "ARCHIVED"}
+                          onClick={() => handlePublishWebsite(website.id)}
+                        >
+                          Publish
+                        </Button>
+                      )}
 
-                  <Button
-                    onClick={() => handleDeleteWebsite(website.id)}
-                    danger>
-                    Delete
-                  </Button>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => {
+                          setOpenDomainModal(true);
+                          setWebsiteId(website.id);
+                        }}
+                      >
+                        Add Domain
+                      </Button>
+                    </>
+                  ) : null}
 
-                  {website.status === "PUBLISHED" ? (
+                  {deleteAccess.allowed ? (
                     <Button
+                      onClick={() => handleDeleteWebsite(website.id)}
                       danger
-                      icon={<StopOutlined />}
-                      loading={updateUnPublish.isPending}
-                      onClick={() => handleUnpublishWebsite(website.id)}
                     >
-                      Unpublish
+                      Delete
                     </Button>
-                  ) : (
-                    <Button
-                      type="primary"
-                      icon={<CheckCircleOutlined />}
-                      loading={updatePublish.isPending}
-                      disabled={website.status === "ARCHIVED"}
-                      onClick={() => handlePublishWebsite(website.id)}
-                    >
-                      Publish
-                    </Button>
-                  )}
-
-                  <Button
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => {
-                      setOpenDomainModal(true);
-                      setWebsiteId(website.id);
-                    }}
-                  >
-                    Add Domain
-                  </Button>
-
+                  ) : null}
                 </Space>
               </div>
             </Card>

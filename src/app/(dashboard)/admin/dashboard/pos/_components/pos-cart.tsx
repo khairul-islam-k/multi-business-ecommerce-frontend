@@ -107,6 +107,9 @@ export function PosCart({
         <Table<PosCartItem>
           size="small"
           rowKey="id"
+          scroll={{
+            x: true,
+          }}
           dataSource={cart}
           loading={loading}
           pagination={false}
@@ -117,10 +120,17 @@ export function PosCart({
             {
               title: "Item",
               key: "item",
+              width: 190,
               render: (_, item) => (
-                <div>
-                  <Text strong>{item.product.name}</Text>
-                  <div className="text-xs text-gray-500">
+                <div className="min-w-0 max-w-[180px]">
+                  <Text
+                    strong
+                    className="block"
+                    ellipsis={{ tooltip: item.product.name }}
+                  >
+                    {item.product.name}
+                  </Text>
+                  <div className="truncate text-xs text-gray-500">
                     {item.variant?.title ?? "No variant"}
                   </div>
                 </div>

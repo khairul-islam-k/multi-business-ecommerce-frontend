@@ -5,6 +5,7 @@ export type VariantStatus = "ACTIVE" | "INACTIVE";
 export type VariantImagePayload = {
   imageUrl: string;
   altText: string;
+  isThumbnail: boolean;
 };
 
 

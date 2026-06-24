@@ -1,66 +1,80 @@
 "use client";
 
-import type { UploadProps } from "antd";
-import { Button, Upload, message } from "antd";
+import { DeleteOutlined, PictureOutlined } from "@ant-design/icons";
+import { Button, Card, Space, Typography } from "antd";
+import Image from "next/image";
+import { useState } from "react";
 
-import api, { getApiErrorMessage } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
-import { useMediaMutations } from "@/lib/api";
+import ImageSelectModal from "../../_components/ImageSelectModal";
+import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
+
+const { Text } = Typography;
 
 type ImageUploadProps = {
   value?: string;
   onChange?: (imageUrl: string) => void;
 };
 
-
-export default function ImageUpload({ onChange }: ImageUploadProps) {
-  const businessId = useAuthStore((s) => s.selectedBusiness?.id);
-  const {uploadMedia} = useMediaMutations(businessId);
-
-  const uploadProps: UploadProps = {
-    accept: "image/*",
-    maxCount: 1,
-    showUploadList: true,
-
-    beforeUpload: async (file) => {
-      try {
-        if (!businessId) {
-          message.error("Business ID not found");
-          return Upload.LIST_IGNORE;
-        }
-
-        if (!file.type.startsWith("image/")) {
-          message.error("Only image files are allowed");
-          return Upload.LIST_IGNORE;
-        }
-
-        const response = await uploadMedia.mutateAsync({file});
-
-        const imageUrl = response?.fileUrl;
-
-        if (!imageUrl) {
-          throw new Error("Image URL not found");
-        }
-
-        onChange?.(imageUrl);
-        message.success("Image uploaded successfully");
-      } catch (error) {
-        message.error(getApiErrorMessage(error));
-        onChange?.("");
-      }
-
-      return false;
-    },
-
-    onRemove: () => {
-      onChange?.("");
-      return true;
-    },
-  };
+export default function ImageUpload({ value, onChange }: ImageUploadProps) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <Upload {...uploadProps} style={{ width: "100%" }} >
-      <Button className="w-full">Upload Image</Button>
-    </Upload>
+    <>
+      <Card
+        size="small"
+        styles={{
+          body: {
+            padding: 12,
+          },
+        }}
+      >
+        <Space align="center" className="w-full justify-between">
+          <Space align="center">
+            {value ? (
+              <Image
+                src={imageUrlSet(value)}
+                alt="Profile image"
+                width={48}
+                height={48}
+                className="rounded-md object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 text-gray-400">
+                <PictureOutlined />
+              </div>
+            )}
+
+            <div>
+              <Text strong>{value ? "Profile image selected" : "No image selected"}</Text>
+              <div className="text-xs text-gray-500">
+                Use an image from the shared media library.
+              </div>
+            </div>
+          </Space>
+
+          <Space>
+            {value ? (
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => onChange?.("")}
+              />
+            ) : null}
+
+            <Button onClick={() => setOpen(true)}>
+              {value ? "Change" : "Select Image"}
+            </Button>
+          </Space>
+        </Space>
+      </Card>
+
+      <ImageSelectModal
+        open={open}
+        selectedUrl={value}
+        onClose={() => setOpen(false)}
+        onSelect={(url) => onChange?.(url)}
+      />
+    </>
   );
 }

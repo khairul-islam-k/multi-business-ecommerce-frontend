@@ -120,9 +120,11 @@ const getVariantKey = (
 const normalizeVariantImages = (images: VariantPayload["images"] | undefined) =>
   images
     ?.filter((image) => image.imageUrl?.trim())
+    .slice(0, 1)
     .map((image) => ({
       imageUrl: image.imageUrl.trim(),
       altText: image.altText?.trim() || "",
+      isThumbnail: true,
     })) ?? [];
 
 const getProductVariants = (
@@ -178,6 +180,7 @@ const getInitialVariants = (
         variant.images?.map((image) => ({
           imageUrl: image.imageUrl ?? "",
           altText: image.altText ?? "",
+          isThumbnail: image.isThumbnail,
         })),
       ),
       title: variant.title ?? "",
