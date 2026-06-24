@@ -23,10 +23,10 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type UpdatePurchaseOrderFormValues = {
-  expectedDeliveryDate: Dayjs;
-  status: PurchaseOrderStatus;
-  shippingCost: number;
-  note: string;
+  expectedDeliveryDate?: Dayjs;
+  status?: PurchaseOrderStatus;
+  shippingCost?: number;
+  note?: string;
 };
 
 // type UpdatePurchaseOrderPayload = {
@@ -56,14 +56,14 @@ const UpdatePurchaseOrder = () => {
       setIsSubmitting(true);
 
       const payload: UpdatePurchaseOrderPayload = {
-        expectedDeliveryDate: values.expectedDeliveryDate.toISOString(),
+        expectedDeliveryDate: values.expectedDeliveryDate?.toISOString(),
         status: values.status,
         shippingCost: Number(values.shippingCost ?? 0),
-        note: values.note ?? "",
+        note: values.note?.trim() || undefined,
       };
 
       console.log("payload", payload);
-      const res = await updatePurchase.mutateAsync({
+      await updatePurchase.mutateAsync({
         purchaseId: id,
         payload
       })
@@ -121,24 +121,11 @@ const UpdatePurchaseOrder = () => {
           }}
         >
           <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
-            <Form.Item
-              label="Expected Delivery Date"
-              name="expectedDeliveryDate"
-              rules={[
-                {
-                  required: true,
-                  message: "Expected delivery date is required",
-                },
-              ]}
-            >
+            <Form.Item label="Expected Delivery Date" name="expectedDeliveryDate">
               <DatePicker className="w-full" />
             </Form.Item>
 
-            <Form.Item
-              label="Status"
-              name="status"
-              rules={[{ required: true, message: "Status is required" }]}
-            >
+            <Form.Item label="Status" name="status">
               <Select
                 placeholder="Select status"
                 options={[
@@ -148,16 +135,7 @@ const UpdatePurchaseOrder = () => {
               />
             </Form.Item>
 
-            <Form.Item
-              label="Shipping Cost"
-              name="shippingCost"
-              rules={[
-                {
-                  required: true,
-                  message: "Shipping cost is required",
-                },
-              ]}
-            >
+            <Form.Item label="Shipping Cost" name="shippingCost">
               <InputNumber min={0}
                 style={{
                   width: '100%'

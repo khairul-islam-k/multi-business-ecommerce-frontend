@@ -139,7 +139,6 @@ const PayPayable = ({ payableId, payModalOpen }: PayPayableProps) => {
                 initialValues={{
                     amount: dueAmount,
                     paymentMethod: "CASH",
-                    note: "Paid supplier invoice",
                 }}
             >
                 <Form.Item

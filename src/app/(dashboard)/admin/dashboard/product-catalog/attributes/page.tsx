@@ -1,7 +1,6 @@
 "use client";
 import { DeleteOutlined, EditOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import { App, Button, Card, Modal, Popconfirm, Tag } from 'antd';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import CreateAttributesPage from './_components/attributes-page';
 import { useAttributeMutation, useProductAttributeQuery } from '@/lib/api/hooks/product-attribute';
@@ -181,11 +180,19 @@ const AttributesPage = () => {
             </Card>
 
             <Modal
-                title="Basic Modal"
+                title={
+                    productKey === "createAttribute"
+                        ? "Create Attribute"
+                        : productKey === "updateAttribute"
+                            ? "Edit Attribute"
+                            : "View Attribute"
+                }
                 closable={{ 'aria-label': 'Custom Close Button' }}
                 open={isModalOpen}
                 footer={null}
                 onCancel={() => setIsModalOpen(false)}
+                width={760}
+                destroyOnHidden
             >
                 {
                     productKey === "createAttribute" && <CreateAttributesPage

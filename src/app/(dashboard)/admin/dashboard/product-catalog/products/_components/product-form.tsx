@@ -25,6 +25,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { useProductBrandQuery } from "@/lib/api/hooks/product-brand";
 import { useProductUnitQuery } from "@/lib/api/hooks/product-unit";
 import { useProductTagQuery } from "@/lib/api/hooks/product-tags";
+import { useTaxQuery } from "@/lib/api/hooks/tax";
 import { imageUrlSet } from "./image-url";
 import { ProductPayload, ResponseProduct } from "@/types/product/product";
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
@@ -119,9 +120,11 @@ const getVariantKey = (
 const normalizeVariantImages = (images: VariantPayload["images"] | undefined) =>
   images
     ?.filter((image) => image.imageUrl?.trim())
+    .slice(0, 1)
     .map((image) => ({
       imageUrl: image.imageUrl.trim(),
       altText: image.altText?.trim() || "",
+      isThumbnail: true,
     })) ?? [];
 
 const getProductVariants = (
@@ -177,6 +180,7 @@ const getInitialVariants = (
         variant.images?.map((image) => ({
           imageUrl: image.imageUrl ?? "",
           altText: image.altText ?? "",
+          isThumbnail: image.isThumbnail,
         })),
       ),
       title: variant.title ?? "",
@@ -697,6 +701,16 @@ const ProductForm = ({
     );
   }, [tags]);
 
+  const { data: taxes } = useTaxQuery(businessId, { status: "ACTIVE" });
+  const taxOptions: SelectOption[] = useMemo(() => {
+    return (
+      taxes?.items?.map((tax) => ({
+        label: `${tax.name} (${tax.rate}%)`,
+        value: tax.id,
+      })) ?? []
+    );
+  }, [taxes]);
+
   useEffect(() => {
     if (!initialValues) return;
 
@@ -717,21 +731,27 @@ const ProductForm = ({
       return !image.isThumbnail;
     });
 
-    if (thumbnail?.imageUrl) {
-      setThumbnailImage({
+    const nextThumbnailImage = thumbnail?.imageUrl
+      ? {
         imageUrl: thumbnail.imageUrl,
         altText: thumbnail.altText ?? "",
         isThumbnail: true,
-      });
-    }
+      }
+      : null;
 
-    setMultipleImage(
-      mediaImages.map((image) => ({
+    const nextMultipleImage = mediaImages.map((image) => ({
         imageUrl: image.imageUrl,
         altText: image.altText ?? "",
         isThumbnail: false,
-      })),
-    );
+      }));
+
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+
+      setThumbnailImage(nextThumbnailImage);
+      setMultipleImage(nextMultipleImage);
+    });
 
     form.setFieldsValue({
       name: initialValues.name ?? "",
@@ -741,6 +761,7 @@ const ProductForm = ({
       categoryId: initialValues.categoryId,
       brandId: initialValues.brandId,
       unitId: initialValues.unitId,
+      taxId: initialValues.taxId,
       status: initialValues.status ?? "DRAFT",
       tagIds: arrayTagId ?? [],
       enableVariants: initialVariants.length > 0,
@@ -748,6 +769,10 @@ const ProductForm = ({
       variants: getInitialVariants(initialVariants),
       removedVariantKeys: [],
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [form, initialValues, arrayTagId]);
 
   const handleSelectThumbnail = (url: string) => {
@@ -794,6 +819,7 @@ const ProductForm = ({
       categoryId: values.categoryId,
       brandId: values.brandId,
       unitId: values.unitId,
+      taxId: values.taxId,
       status: values.status,
       tagIds: values.tagIds ?? [],
     };
@@ -1067,6 +1093,24 @@ const ProductForm = ({
                 showSearch
                 placeholder="Select unit"
                 options={unitOptions}
+                optionFilterProp="label"
+              />
+            </Form.Item>
+
+            <Form.Item
+              label="Tax"
+              name="taxId"
+              rules={[
+                {
+                  required: true,
+                  message: "Tax is required",
+                },
+              ]}
+            >
+              <Select
+                showSearch
+                placeholder="Select product tax"
+                options={taxOptions}
                 optionFilterProp="label"
               />
             </Form.Item>

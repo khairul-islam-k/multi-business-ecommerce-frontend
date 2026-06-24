@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { UnitPayload } from "@/types/product/unit";
 import { productTagApi } from "../product-tags";
+import { ProductTagPayload } from "@/types/product/product";
 
 export function useProductTagQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -38,7 +38,7 @@ export function useTagsMutation(businessId: ApiId) {
 
   return {
     createTags: useMutation({
-      mutationFn: (payload: UnitPayload) =>
+      mutationFn: (payload: ProductTagPayload) =>
         productTagApi.create(businessId, payload),
       onSuccess: invalidate,
     }),
@@ -49,7 +49,7 @@ export function useTagsMutation(businessId: ApiId) {
         payload,
       }: {
         tagId: ApiId;
-        payload: UnitPayload;
+        payload: ProductTagPayload;
       }) => productTagApi.update(businessId, tagId, payload),
       onSuccess: invalidate,
     }),

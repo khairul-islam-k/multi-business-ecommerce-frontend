@@ -108,7 +108,7 @@ const PosOrder = () => {
 
   const handleCheckout = async () => {
     if (
-      !checkoutValues.taxId ||
+      !checkoutValues.warehouseId ||
       !checkoutValues.paymentMethod ||
       !checkoutValues.financeAccountId ||
       cartPos.length === 0
@@ -125,7 +125,6 @@ const PosOrder = () => {
     }
 
     const payload: CreatePosSalePayload = {
-      taxId: checkoutValues.taxId,
       warehouseId: checkoutValues.warehouseId,
       customerId:
         customerMode === "existing" ? checkoutValues.customerId : undefined,

@@ -1,4 +1,3 @@
-import { ApiId } from "@/lib/api";
 import { SupplierResponse } from "./supplier";
 import { TaxResponse } from "../finance/tax";
 import { WarehouseResponse } from "../product/warehouse";
@@ -13,21 +12,20 @@ export type PurchaseOrderStatus =
 
 export type PurchaseOrderItemPayload = {
   productId: string;
-  variantId: string;
+  variantId?: string;
   quantityOrdered: number;
   unitCost: number;
-  discountAmount: number;
+  discountAmount?: number;
 };
 
 
 export type PurchaseOrderPayload = {
   supplierId: string;
   warehouseId: string;
-  taxId: string;
-  expectedDeliveryDate: string;
-  status: PurchaseOrderStatus;
-  shippingCost: number;
-  note: string;
+  expectedDeliveryDate?: string;
+  status?: PurchaseOrderStatus;
+  shippingCost?: number;
+  note?: string;
   items: PurchaseOrderItemPayload[]
 };
 
@@ -98,10 +96,10 @@ export type PurchaseOrderItemResponse = {
 };
 
 export type UpdatePurchaseOrderPayload = {
-  expectedDeliveryDate: string;
-  status: PurchaseOrderStatus;
-  shippingCost: number;
-  note: string;
+  expectedDeliveryDate?: string;
+  status?: PurchaseOrderStatus;
+  shippingCost?: number;
+  note?: string;
 };
 
 export type Note = {

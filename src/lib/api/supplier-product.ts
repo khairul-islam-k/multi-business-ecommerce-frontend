@@ -2,10 +2,23 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { SupplierProductPayload, SupplierProductResponse } from "@/types/suppliers/supplier-product";
+import {
+    SupplierProductPayload,
+    SupplierProductQuery,
+    SupplierProductResponse,
+} from "@/types/suppliers/supplier-product";
 
 const basePath = (businessId: ApiId, supplierId: ApiId) => `/suppliers/businesses/${businessId}/${supplierId}/products`;
+const businessProductsPath = (businessId: ApiId) => `/suppliers/businesses/${businessId}/products`;
 export const SupplierProductApi = {
+    listAll(businessId: ApiId, query?: SupplierProductQuery) {
+        return api
+            .get<ApiPaginatedResponse<SupplierProductResponse>>(
+                `${businessProductsPath(businessId)}${buildQueryString(query)}`,
+            )
+            .then((res) => normalizePaginatedResponse(res.data));
+    },
+
     list(businessId: ApiId, supplierId: ApiId, query?: CategoriesQuery) {
         return api
             .get<ApiPaginatedResponse<SupplierProductResponse>>(

@@ -1,6 +1,6 @@
 "use client";
 
-import { UnitPayload } from "@/types/product/unit";
+import { ProductTagPayload } from "@/types/product/product";
 import TagForm from "../../_components/TagForm";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
@@ -21,9 +21,10 @@ const UpdateTagPage = () => {
     const { data: tag } = useTags(businessId, id);
     const { updateTags } = useTagsMutation(businessId);
 
-    const handleUpdateTag = async (values: UnitPayload) => {
-        const payload: UnitPayload = {
+    const handleUpdateTag = async (values: ProductTagPayload) => {
+        const payload: ProductTagPayload = {
             name: values.name.trim(),
+            isFeatured: values.isFeatured,
             status: values.status,
         };
 

@@ -121,6 +121,7 @@ export type ProductPayload = {
   categoryId: string;
   brandId: string;
   unitId: string;
+  taxId: string;
   status: ProductStatus;
   tagIds: string[];
 };
@@ -132,6 +133,7 @@ type Tag = {
   businessId: string;
   name: string;
   status: MediaStatus;
+  isFeatured: boolean;
 
   createdBy: string | null;
   updatedBy: string | null;
@@ -173,6 +175,7 @@ export type ResponseProduct = {
   categoryId: string;
   brandId: string;
   unitId: string;
+  taxId: string;
 
   name: string;
   sku?: string;
@@ -206,4 +209,33 @@ export type ResponseProduct = {
 
 export type ProductQuery = ListQuery & {
   status?: ProductStatus;
+  categoryId?: string;
+  brandId?: string;
+  tagId?: string;
+  warehouseId?: string;
+  sortBy?: "name" | "price" | "createdAt" | "updatedAt";
+};
+
+export type ProductTagStatus = "ACTIVE" | "INACTIVE";
+
+export type ProductTagPayload = {
+  name: string;
+  isFeatured: boolean;
+  status?: ProductTagStatus;
+};
+
+export type ResponseProductTag = {
+  id: string;
+  businessId: string;
+  name: string;
+  status: ProductTagStatus;
+  isFeatured: boolean;
+  createdBy: string | null;
+  updatedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  _count?: {
+    products: number;
+  };
 };

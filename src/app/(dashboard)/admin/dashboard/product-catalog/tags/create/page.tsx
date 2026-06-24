@@ -19,11 +19,12 @@ const CreateTagPage = () => {
     const handleCreateTag = async (values: TagPayload) => {
         const payload: TagPayload = {
             name: values.name.trim(),
+            isFeatured: values.isFeatured,
             status: values.status,
         };
 
         try {
-            const res = await createTags.mutateAsync(payload);
+            await createTags.mutateAsync(payload);
             message.success('Tag Created successfully');
             router.push("/admin/dashboard/product-catalog/tags");
         } catch (error) {

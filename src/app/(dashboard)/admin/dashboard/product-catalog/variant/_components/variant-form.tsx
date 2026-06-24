@@ -24,6 +24,7 @@ export type VariantPayload = {
   images: {
     imageUrl: string;
     altText: string;
+    isThumbnail: boolean;
   }[];
   title: string;
   priceOverride: number;
@@ -142,7 +143,6 @@ const VariantForm = ({
 }: VariantFormProps) => {
   const [form] = Form.useForm<VariantFormValues>();
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -154,9 +154,7 @@ const VariantForm = ({
 
   const attributeItems = attributes?.items ?? [];
   const images = Form.useWatch("images", form);
-
-  const selectedImageUrl =
-    activeImageIndex !== null ? images?.[activeImageIndex]?.imageUrl : undefined;
+  const selectedImageUrl = images?.[0]?.imageUrl;
 
   // only create 
   useEffect(() => {
@@ -169,11 +167,18 @@ const VariantForm = ({
 
   useEffect(() => {
     if (!initialValues) return;
+    const initialImage =
+      initialValues.images?.find((image) => image.isThumbnail) ??
+      initialValues.images?.[0];
 
     form.setFieldsValue({
-      images: initialValues.images?.length
-        ? initialValues.images
-        : [{ imageUrl: "", altText: "" }],
+      images: [
+        {
+          imageUrl: initialImage?.imageUrl ?? "",
+          altText: initialImage?.altText ?? "",
+          isThumbnail: true,
+        },
+      ],
       title: initialValues.title ?? "",
       priceOverride: Number(initialValues.priceOverride ?? 0),
       weight: Number(initialValues.weight ?? 0),
@@ -185,11 +190,17 @@ const VariantForm = ({
   }, [form, initialValues]);
 
   const handleFinish = (values: VariantFormValues) => {
+    const image = values.images?.[0];
     const payload: VariantPayload = {
-      images: values.images.map((image) => ({
-        imageUrl: image.imageUrl.trim(),
-        altText: image.altText.trim(),
-      })),
+      images: image?.imageUrl?.trim()
+        ? [
+            {
+              imageUrl: image.imageUrl.trim(),
+              altText: image.altText?.trim() || values.title.trim(),
+              isThumbnail: true,
+            },
+          ]
+        : [],
       title: values.title.trim(),
       priceOverride: Number(values.priceOverride),
       weight: Number(values.weight),
@@ -210,7 +221,7 @@ const VariantForm = ({
         layout="vertical"
         onFinish={handleFinish}
         initialValues={{
-          images: [{ imageUrl: "", altText: "" }],
+          images: [{ imageUrl: "", altText: "", isThumbnail: true }],
           title: "",
           priceOverride: 0,
           weight: 0,
@@ -218,73 +229,39 @@ const VariantForm = ({
           attributes: [{ attributeId: "", attributeValueId: "" }],
         }}
       >
-        <Form.List name="images">
-          {(fields, { add, remove }) => (
-            <div className="space-y-4">
-              {fields.map((field, index) => (
-                <Card
-                  key={field.key}
-                  size="small"
-                  title={`Image ${index + 1}`}
-                  extra={
-                    fields.length > 1 && (
-                      <Button
-                        danger
-                        size="small"
-                        icon={<DeleteOutlined />}
-                        onClick={() => remove(field.name)}
-                      />
-                    )
-                  }
-                >
-                  <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
-                    <Form.Item
-                      label="Image URL"
-                      name={[field.name, "imageUrl"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Image URL is required",
-                        },
-                      ]}
-                    >
-                      <Input
-                        readOnly
-                        placeholder="Select image"
-                        onClick={() => {
-                          setActiveImageIndex(index);
-                          setImageModalOpen(true);
-                        }}
-                      />
-                    </Form.Item>
+        <Card size="small" title="Variant Thumbnail">
+          <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
+            <Form.Item
+              label="Image URL"
+              name={["images", 0, "imageUrl"]}
+              rules={[
+                {
+                  required: true,
+                  message: "Image URL is required",
+                },
+              ]}
+            >
+              <Input
+                readOnly
+                placeholder="Select image"
+                onClick={() => setImageModalOpen(true)}
+              />
+            </Form.Item>
 
-                    <Form.Item
-                      label="Alt Text"
-                      name={[field.name, "altText"]}
-                      rules={[
-                        {
-                          required: true,
-                          message: "Alt text is required",
-                        },
-                      ]}
-                    >
-                      <Input placeholder="Front view" />
-                    </Form.Item>
-                  </div>
-                </Card>
-              ))}
-
-              <Button
-                type="dashed"
-                icon={<PlusOutlined />}
-                onClick={() => add({ imageUrl: "", altText: "" })}
-                block
-              >
-                Add Image
-              </Button>
-            </div>
-          )}
-        </Form.List>
+            <Form.Item
+              label="Alt Text"
+              name={["images", 0, "altText"]}
+              rules={[
+                {
+                  required: true,
+                  message: "Alt text is required",
+                },
+              ]}
+            >
+              <Input placeholder="Front view" />
+            </Form.Item>
+          </div>
+        </Card>
 
         <div className="mt-6 grid grid-cols-1 gap-x-4 md:grid-cols-2">
           <Form.Item
@@ -380,14 +357,11 @@ const VariantForm = ({
         selectedUrl={selectedImageUrl ?? undefined}
         onClose={() => {
           setImageModalOpen(false);
-          setActiveImageIndex(null);
         }}
         onSelect={(url) => {
-          if (activeImageIndex === null) return;
-
-          form.setFieldValue(["images", activeImageIndex, "imageUrl"], url);
+          form.setFieldValue(["images", 0, "imageUrl"], url);
+          form.setFieldValue(["images", 0, "isThumbnail"], true);
           setImageModalOpen(false);
-          setActiveImageIndex(null);
         }}
       />
     </Card>

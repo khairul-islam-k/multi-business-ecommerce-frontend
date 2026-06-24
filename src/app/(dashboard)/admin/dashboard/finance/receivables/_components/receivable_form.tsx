@@ -142,7 +142,6 @@ const ReceiveReceivable = ({
         onFinish={handleReceive}
         initialValues={{
           amount: dueAmount,
-          note: "Received supplier return refund",
         }}
       >
         <Form.Item

@@ -1,9 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { SupplierApi } from "../supplier";
 import { SupplierProductApi } from "../supplier-product";
-import { SupplierProductPayload } from "@/types/suppliers/supplier-product";
+import {
+  SupplierProductPayload,
+  SupplierProductQuery,
+} from "@/types/suppliers/supplier-product";
+
+export function useAllSupplierProductsQuery(businessId: ApiId, query?: SupplierProductQuery) {
+  return useQuery({
+    queryKey: [...apiQueryKeys.supplierProduct.all(businessId), "all", query],
+    queryFn: () => SupplierProductApi.listAll(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
 
 export function useSupplierProductsQuery(businessId: ApiId, supplierId: ApiId, query?: CategoriesQuery) {
   return useQuery({

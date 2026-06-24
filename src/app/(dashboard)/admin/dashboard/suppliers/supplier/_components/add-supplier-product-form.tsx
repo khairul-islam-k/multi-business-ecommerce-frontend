@@ -6,6 +6,7 @@ import {
     Card,
     Col,
     Form,
+    Input,
     InputNumber,
     Row,
     Select,
@@ -27,6 +28,7 @@ type SelectOption = {
 type SupplierProductFormValues = {
     productId: string;
     variantId?: string;
+    supplierSku?: string;
     lastPurchasePrice: number;
     minOrderQuantity?: number;
     leadTimeDays?: number;
@@ -98,6 +100,7 @@ export default function SupplierProductForm({
         form.setFieldsValue({
             productId: supplierProduct.productId,
             variantId: supplierProduct.variantId ?? undefined,
+            supplierSku: supplierProduct.supplierSku ?? undefined,
             lastPurchasePrice: Number(supplierProduct.lastPurchasePrice),
             minOrderQuantity: supplierProduct.minOrderQuantity ?? undefined,
             leadTimeDays: supplierProduct.leadTimeDays ?? undefined,
@@ -109,6 +112,7 @@ export default function SupplierProductForm({
         const payload: SupplierProductPayload = {
             productId: values.productId,
             variantId: values.variantId || null,
+            supplierSku: values.supplierSku?.trim() || undefined,
             lastPurchasePrice: values.lastPurchasePrice,
             minOrderQuantity: values.minOrderQuantity ?? null,
             leadTimeDays: values.leadTimeDays ?? null,
@@ -165,6 +169,12 @@ export default function SupplierProductForm({
                                 optionFilterProp="label"
                                 options={variantOptions}
                             />
+                        </Form.Item>
+                    </Col>
+
+                    <Col xs={24} md={12}>
+                        <Form.Item label="Supplier SKU" name="supplierSku">
+                            <Input placeholder="SUP-SKU-01" maxLength={100} />
                         </Form.Item>
                     </Col>
 

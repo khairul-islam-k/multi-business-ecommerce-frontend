@@ -58,7 +58,6 @@ export type OrderCourierPayload = {
 export type OrderPayload = {
   customerId?: ApiId;
   warehouseId?: ApiId;
-  taxId: ApiId;
   orderType?: OrderType;
   orderSource?: OrderSource;
   customerName?: string;

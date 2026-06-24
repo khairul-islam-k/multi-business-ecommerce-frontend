@@ -1,175 +1,156 @@
 "use client";
 
-import { LayoutOutlined, SearchOutlined } from "@ant-design/icons";
-import { Card, Flex, Grid, Input, Select, Space, Table, Tag } from "antd";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { Button, Card, Select, Space, Tag } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+import Link from "next/link";
 
-const products = [
-  {
-    id: 1,
-    Product: "Cotton T-Shirt",
-    Supplier: "ABC Textiles",
-    SKU: "ABC-TS-001",
-    Price: "Rs 350",
-    "Lead Time": "7 days",
-    "Min Qty": 50,
-    Status: "active",
-  },
-  {
-    id: 2,
-    Product: "Denim Jeans",
-    Supplier: "BlueWear Ltd",
-    SKU: "BW-JN-014",
-    Price: "Rs 1,850",
-    "Lead Time": "12 days",
-    "Min Qty": 30,
-    Status: "active",
-  },
-  {
-    id: 3,
-    Product: "Leather Jacket",
-    Supplier: "Urban Leather Co",
-    SKU: "UL-JK-220",
-    Price: "Rs 6,500",
-    "Lead Time": "20 days",
-    "Min Qty": 10,
-    Status: "inactive",
-  },
-  {
-    id: 4,
-    Product: "Formal Shirt",
-    Supplier: "Prime Apparel",
-    SKU: "PA-FS-089",
-    Price: "Rs 1,250",
-    "Lead Time": "10 days",
-    "Min Qty": 40,
-    Status: "active",
-  },
-  {
-    id: 5,
-    Product: "Sports Hoodie",
-    Supplier: "FlexFit Sports",
-    SKU: "FF-HD-332",
-    Price: "Rs 2,400",
-    "Lead Time": "15 days",
-    "Min Qty": 25,
-    Status: "pending",
-  },
-];
+import { Column, DataTable } from "@/components/shared/data-table";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
+import { useAllSupplierProductsQuery } from "@/lib/api/hooks/supplier-product";
+import {
+  CommonStatus,
+  SupplierProductResponse,
+} from "@/types/suppliers/supplier-product";
 
-const SupplierProductsTable = () => {
-  const screens = Grid.useBreakpoint();
+const money = (value?: string | number | null) =>
+  `BDT ${Number(value ?? 0).toLocaleString()}`;
 
-  const handleSearch = (data: string) => {
-    console.log("data", data);
-  };
+export default function SupplierProductsTable() {
+  const businessId = useActiveBusinessId() ?? "";
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<CommonStatus | undefined>();
+  const [supplierId, setSupplierId] = useState<string | undefined>();
+  const limit = 10;
 
-  const [filterProduct, setFilterProduct] = useState<string>("All");
+  const query = useMemo(
+    () => ({
+      page: currentPage,
+      limit,
+      search,
+      status,
+      supplierId,
+    }),
+    [currentPage, search, status, supplierId],
+  );
 
-  const columns = [
+  const supplierProducts = useAllSupplierProductsQuery(businessId, query);
+  const suppliers = useSuppliersQuery(businessId, { page: 1, limit: 100 });
+
+  const columns: Column<SupplierProductResponse>[] = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
+      key: "product",
+      label: "Product",
+      type: "primary",
+      render: (row) => (
+        <div>
+          <strong>{row.product.name}</strong>
+          <p className="m-0 text-xs text-gray-500">
+            {row.variant?.title ?? "No variant"}
+          </p>
+        </div>
+      ),
     },
     {
-      title: "Product",
-      dataIndex: "Product",
-      key: "Product",
+      key: "supplier",
+      label: "Supplier",
+      render: (row) => row.supplier.name,
     },
     {
-      title: "Supplier",
-      dataIndex: "Supplier",
-      key: "Supplier",
+      key: "supplierSku",
+      label: "Supplier SKU",
+      render: (row) => row.supplierProduct.supplierSku ?? "-",
     },
     {
-      title: "SKU",
-      dataIndex: "SKU",
-      key: "SKU",
+      key: "lastPurchasePrice",
+      label: "Last Price",
+      render: (row) => money(row.supplierProduct.lastPurchasePrice),
     },
     {
-      title: "Price",
-      dataIndex: "Price",
-      key: "Price",
+      key: "leadTimeDays",
+      label: "Lead Time",
+      render: (row) =>
+        row.supplierProduct.leadTimeDays == null
+          ? "-"
+          : `${row.supplierProduct.leadTimeDays} days`,
     },
     {
-      title: "Lead Time",
-      dataIndex: "Lead Time",
-      key: "Lead Time",
+      key: "minOrderQuantity",
+      label: "Min Qty",
+      render: (row) => row.supplierProduct.minOrderQuantity ?? "-",
     },
     {
-      title: "Min Qty",
-      dataIndex: "Min Qty",
-      key: "Min Qty",
-      // sorter: (a: any, b: any) => a["Min Qty"] - b["Min Qty"],
-    },
-    {
-      title: "Status",
-      dataIndex: "Status",
-      key: "Status",
-      render: (status: string) => {
-        const colors: Record<string, string> = {
-          active: "green",
-          inactive: "red",
-          pending: "orange",
-        };
-        return <Tag color={colors[status]}>{status.toUpperCase()}</Tag>;
-      },
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={row.supplierProduct.status === "ACTIVE" ? "green" : "red"}>
+          {row.supplierProduct.status}
+        </Tag>
+      ),
     },
   ];
 
   return (
-    <div>
-      <Card>
-        <Flex
-          justify="space-between"
-          wrap="wrap"
-          style={{ marginBottom: "10px" }}
-        >
-          <div>
-            <h3
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              <LayoutOutlined /> Product Catalog
-            </h3>
-          </div>
-
-          <Space style={{ marginBottom: 16 }}>
-            <Input
-              style={{
-                width: screens.lg ? "330px" : "100%",
-              }}
-              prefix={<SearchOutlined />}
-              placeholder="Search packages..."
-              onChange={(e) => handleSearch(e.target.value)}
-            />
-
+    <Card>
+      <DataTable
+        data={supplierProducts.data?.items ?? []}
+        columns={columns}
+        loading={supplierProducts.isLoading || supplierProducts.isFetching}
+        onSearch={(value) => {
+          setSearch(value);
+          setCurrentPage(1);
+        }}
+        extra={
+          <Space wrap>
             <Select
-              value={filterProduct}
-              style={{ width: 140 }}
-              onChange={setFilterProduct}
-            >
-              <option value="All">Status All</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </Select>
+              allowClear
+              showSearch
+              placeholder="Supplier"
+              optionFilterProp="label"
+              value={supplierId}
+              style={{ width: 220 }}
+              loading={suppliers.isLoading}
+              onChange={(value) => {
+                setSupplierId(value);
+                setCurrentPage(1);
+              }}
+              options={(suppliers.data?.items ?? []).map((supplier) => ({
+                label: supplier.name,
+                value: supplier.id,
+              }))}
+            />
+            <Select
+              allowClear
+              placeholder="Status"
+              value={status}
+              style={{ width: 150 }}
+              onChange={(value) => {
+                setStatus(value);
+                setCurrentPage(1);
+              }}
+              options={[
+                { label: "Active", value: "ACTIVE" },
+                { label: "Inactive", value: "INACTIVE" },
+              ]}
+            />
           </Space>
-        </Flex>
-
-        <div style={{ overflow: "auto" }}>
-          <Table
-            columns={columns}
-            dataSource={products}
-            rowKey="id"
-            pagination={{ pageSize: 5 }}
-          />
-        </div>
-      </Card>
-    </div>
+        }
+        actions={(row) => (
+          <Link
+            href={`/admin/dashboard/suppliers/supplier/product/${row.supplier.id}`}
+          >
+            <Button type="text" icon={<EyeOutlined />} />
+          </Link>
+        )}
+        pagination={{
+          currentPage,
+          onPageChange: setCurrentPage,
+          totalPages: supplierProducts.data?.meta.totalPages ?? 1,
+        }}
+      />
+    </Card>
   );
-};
-
-export default SupplierProductsTable;
+}

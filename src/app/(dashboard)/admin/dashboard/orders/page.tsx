@@ -11,7 +11,7 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { useOrdersQuery } from "@/lib/api";
-import type { OrderResponse, OrderStatus } from "@/lib/api";
+import type { OrderPaymentStatus, OrderResponse, OrderStatus, OrderType } from "@/lib/api";
 
 const statusColor: Record<OrderStatus, string> = {
   CANCELLED: "red",
@@ -31,6 +31,10 @@ export default function OrdersList() {
   const businessId = useActiveBusinessId();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<OrderStatus | undefined>();
+  const [paymentStatus, setPaymentStatus] = useState<OrderPaymentStatus | undefined>();
+  const [orderType, setOrderType] = useState<OrderType | undefined>();
+  const [sortBy, setSortBy] = useState<"orderNo" | "totalAmount" | "createdAt" | "updatedAt">("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
 
   const query = useMemo(
@@ -39,9 +43,12 @@ export default function OrdersList() {
       limit: 10,
       search,
       status,
-      sortOrder: "desc" as const,
+      paymentStatus,
+      orderType,
+      sortBy,
+      sortOrder,
     }),
-    [currentPage, search, status],
+    [currentPage, orderType, paymentStatus, search, sortBy, sortOrder, status],
   );
 
   const orders = useOrdersQuery(businessId ?? "", query);
@@ -115,25 +122,85 @@ export default function OrdersList() {
           setCurrentPage(1);
         }}
         extra={
-          <Select
-            allowClear
-            placeholder="Status"
-            value={status}
-            style={{ width: 160 }}
-            onChange={(value) => {
-              setStatus(value);
-              setCurrentPage(1);
-            }}
-            options={[
-              "PENDING",
-              "CONFIRMED",
-              "PROCESSING",
-              "SHIPPED",
-              "DELIVERED",
-              "CANCELLED",
-              "RETURNED",
-            ].map((item) => ({ label: item, value: item }))}
-          />
+          <Space wrap>
+            <Select
+              allowClear
+              placeholder="Status"
+              value={status}
+              style={{ width: 160 }}
+              onChange={(value) => {
+                setStatus(value);
+                setCurrentPage(1);
+              }}
+              options={[
+                "PENDING",
+                "CONFIRMED",
+                "PROCESSING",
+                "SHIPPED",
+                "DELIVERED",
+                "CANCELLED",
+                "RETURNED",
+              ].map((item) => ({ label: item, value: item }))}
+            />
+            <Select
+              allowClear
+              placeholder="Payment"
+              value={paymentStatus}
+              style={{ width: 180 }}
+              onChange={(value) => {
+                setPaymentStatus(value);
+                setCurrentPage(1);
+              }}
+              options={[
+                "UNPAID",
+                "PARTIALLY_PAID",
+                "PAID",
+                "FAILED",
+                "REFUNDED",
+                "PARTIALLY_REFUNDED",
+              ].map((item) => ({ label: item, value: item }))}
+            />
+            <Select
+              allowClear
+              placeholder="Type"
+              value={orderType}
+              style={{ width: 140 }}
+              onChange={(value) => {
+                setOrderType(value);
+                setCurrentPage(1);
+              }}
+              options={["ONLINE", "POS", "ADMIN"].map((item) => ({
+                label: item,
+                value: item,
+              }))}
+            />
+            <Select
+              value={sortBy}
+              style={{ width: 160 }}
+              onChange={(value) => {
+                setSortBy(value);
+                setCurrentPage(1);
+              }}
+              options={[
+                { label: "Sort: Created", value: "createdAt" },
+                { label: "Sort: Updated", value: "updatedAt" },
+                { label: "Sort: Order No", value: "orderNo" },
+                { label: "Sort: Total", value: "totalAmount" },
+              ]}
+            />
+            <Select
+              value={sortOrder}
+              style={{ width: 120 }}
+              onChange={(value) => {
+                setSortOrder(value);
+                setCurrentPage(1);
+              }}
+              options={[
+                { label: "Desc", value: "desc" },
+                { label: "Asc", value: "asc" },
+              ]}
+            />
+          </Space>
         }
         actions={(order) => (
           <Space>

@@ -21,7 +21,6 @@ export type PosPaymentInput = {
 
 export type CreatePosSalePayload = {
   warehouseId?: string;
-  taxId: string;
   customerId?: string;
   customerName?: string;
   customerPhone?: string;

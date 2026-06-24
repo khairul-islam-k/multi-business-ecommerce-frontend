@@ -1,19 +1,18 @@
 "use client";
 
-import { Button, Card, Form, Input, Select, Space } from "antd";
+import { Button, Card, Form, Input, Select, Space, Switch } from "antd";
 import { useEffect } from "react";
+import { ProductTagPayload } from "@/types/product/product";
 
 export type TagStatus = "ACTIVE" | "INACTIVE";
 
 export type TagFormValues = {
   name: string;
+  isFeatured: boolean;
   status: TagStatus;
 };
 
-export type TagPayload = {
-  name: string;
-  status: TagStatus;
-};
+export type TagPayload = ProductTagPayload;
 
 type TagFormProps = {
   mode: "create" | "update";
@@ -36,6 +35,7 @@ const TagForm = ({
     if (initialValues) {
       form.setFieldsValue({
         name: initialValues.name ?? "",
+        isFeatured: initialValues.isFeatured ?? false,
         status: initialValues.status ?? "ACTIVE",
       });
     }
@@ -44,6 +44,7 @@ const TagForm = ({
   const handleFinish = (values: TagFormValues) => {
     const payload: TagPayload = {
       name: values.name.trim(),
+      isFeatured: values.isFeatured ?? false,
       status: values.status,
     };
 
@@ -58,6 +59,7 @@ const TagForm = ({
         onFinish={handleFinish}
         initialValues={{
           name: "",
+          isFeatured: false,
           status: "ACTIVE",
         }}
       >
@@ -76,6 +78,14 @@ const TagForm = ({
           ]}
         >
           <Input placeholder="New Arrival" />
+        </Form.Item>
+
+        <Form.Item
+          label="Featured"
+          name="isFeatured"
+          valuePropName="checked"
+        >
+          <Switch checkedChildren="Featured" unCheckedChildren="Regular" />
         </Form.Item>
 
         <Form.Item
