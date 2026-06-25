@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useState } from "react";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   ChevronDown,
   GitCompareArrows,
@@ -13,7 +13,9 @@ import {
   ShoppingBag,
   X,
 } from "lucide-react";
-import SmallNavbar from "./small-navbar";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
+import Loader from "@/components/shared/loader";
+
 
 type Category = {
   id: string;
@@ -31,78 +33,6 @@ type CategoryTreeItem = {
   children: CategoryTreeItem[];
 };
 
-export const categoryData: CategoryTreeItem[] = [
-  {
-    category: {
-      id: "906334a0-7d01-4f57-8df8-0fa89a4fcac8",
-      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-      parentId: null,
-      name: "cloth",
-      description: "asda",
-      imageUrl:
-        "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/76e99769-bc16-466c-87df-34c0f41e5b24.jpg",
-      status: "ACTIVE",
-      sortOrder: 0,
-    },
-    children: [],
-  },
-  {
-    category: {
-      id: "1d89ed6e-cdde-4896-a664-56f5bb88fb60",
-      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-      parentId: null,
-      name: "electric",
-      description: "safs",
-      imageUrl:
-        "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/3b9f910c-184e-446c-baa5-b2b6c7bf4750.jpg",
-      status: "ACTIVE",
-      sortOrder: 0,
-    },
-    children: [
-      {
-        category: {
-          id: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-          businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-          parentId: "1d89ed6e-cdde-4896-a664-56f5bb88fb60",
-          name: "paper",
-          description: null,
-          imageUrl:
-            "/uploads/media/295c869a-f81e-4966-ad9b-bfe8ae742585/e084ace5-f27d-48c3-89c7-0baff069b20e.png",
-          status: "ACTIVE",
-          sortOrder: 0,
-        },
-        children: [
-          {
-            category: {
-              id: "295c8s9a-f81e-49df-ad9b-bfe8ae742585",
-              businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-              parentId: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-              name: "A4 Paper",
-              description: null,
-              imageUrl: null,
-              status: "ACTIVE",
-              sortOrder: 0,
-            },
-            children: [],
-          },
-          {
-            category: {
-              id: "paper-child-2",
-              businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-              parentId: "28935f2a-25ba-4322-a6eb-84fc57331e8c",
-              name: "Color Paper",
-              description: null,
-              imageUrl: null,
-              status: "ACTIVE",
-              sortOrder: 1,
-            },
-            children: [],
-          },
-        ],
-      },
-    ],
-  },
-];
 
 const pageLinks = [
   {
@@ -244,34 +174,27 @@ const MobileCategoryItem = ({
   );
 };
 
-type Props = {
-  site: {
-    name: string;
-    logo?: string;
-    templateName: string;
-  };
-};
 
-const FashionNavbar = ({ site }: Props) => {
+const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { store } = useParams<{ store: string }>();
 
-  console.log('store', store);
+  const {data: categories} = useProductCategoryQuery();
+  // console.log('data', categoriesData);
 
   const cartCount = 3;
   const compareCount = 2;
   const favoriteCount = 5;
 
-  const categories = categoryData;
 
   const handleCategoryClick = (categoryId: string) => {
     console.log("Clicked category id:", categoryId);
 
     setMobileMenuOpen(false);
 
-    router.push(`/store/${store}/products?categoryId=${categoryId}`);
+    router.push(`/store/products?categoryId=${categoryId}`);
   };
+
 
   return (
     <>
@@ -287,7 +210,7 @@ const FashionNavbar = ({ site }: Props) => {
           {/* Center Navigation */}
           <div className="hidden items-center justify-center gap-8 lg:flex">
             <Link
-              href={`/store/${store}`}
+              href={`/store`}
               className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
             >
               Home
@@ -305,7 +228,7 @@ const FashionNavbar = ({ site }: Props) => {
 
               <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
                 <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
-                  {categories.map((item, index) => (
+                  {categories?.map((item, index) => (
                     <CategoryMenuItem
                       key={`${item.category.id}-${index}`}
                       item={item}
@@ -349,7 +272,7 @@ const FashionNavbar = ({ site }: Props) => {
             </Link>
 
             <Link
-              href="/contact"
+              href="/store/contact"
               className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
             >
               Contact Us
@@ -385,7 +308,7 @@ const FashionNavbar = ({ site }: Props) => {
             </IconButton>
 
             <Link
-              href="/login"
+              href="/store/login"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
             >
               <LogIn className="hidden h-4 w-4 sm:block" />
@@ -412,7 +335,7 @@ const FashionNavbar = ({ site }: Props) => {
           <div className="border-t border-gray-200 bg-white px-4 py-4 lg:hidden">
             <div className="space-y-2">
               <Link
-                href={`/store/${store}`}
+                href={`/store`}
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
               >
@@ -426,7 +349,7 @@ const FashionNavbar = ({ site }: Props) => {
                 </summary>
 
                 <div className="mt-2 space-y-1 rounded-xl bg-gray-50 p-3">
-                  {categories.map((item, index) => (
+                  {categories?.map((item, index) => (
                     <MobileCategoryItem
                       key={`${item.category.id}-${index}`}
                       item={item}
@@ -465,7 +388,7 @@ const FashionNavbar = ({ site }: Props) => {
               </Link>
 
               <Link
-                href="/contact"
+                href="/store/contact"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
               >
@@ -525,7 +448,7 @@ const FashionNavbar = ({ site }: Props) => {
                 </div>
 
                 <Link
-                  href="/login"
+                  href="/store/login"
                   onClick={() => setMobileMenuOpen(false)}
                   className="mt-3 flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f16d59] px-5 text-sm font-semibold text-white transition hover:bg-gray-950"
                 >

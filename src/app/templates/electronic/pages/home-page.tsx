@@ -48,10 +48,8 @@ type Props = {
     };
 };
 
-export default function HomePage({ site }: Props) {
+export default function HomePage() {
   const featured = products.slice(0, 4);
-
-  console.log('site', site);
 
   const categories = Array.from(
     new Set(products.map((product) => product.category)),
@@ -152,7 +150,7 @@ export default function HomePage({ site }: Props) {
           </h2>
 
           <Link
-            href={`/store/${site?.store}/products`}
+            href={`/store/products`}
             className="text-sm font-medium text-blue-600 hover:underline"
           >
             View all →
@@ -168,7 +166,7 @@ export default function HomePage({ site }: Props) {
             return (
               <Link
                 key={category}
-                href={`/store/${site.store}/products`}
+                href={`/store/products`}
                 className="group relative aspect-[4/5] overflow-hidden rounded-2xl"
               >
                 <img
@@ -205,7 +203,7 @@ export default function HomePage({ site }: Props) {
           </div>
 
           <Link
-            href={`/store/${site.store}/products`}
+            href={`/store/products`}
             className="text-sm font-medium text-blue-600 hover:underline"
           >
             Shop all →

@@ -50,6 +50,11 @@ export type ListQuery = {
   includeDeleted?: boolean;
 };
 
+export type ApiArrayResponse<T> = {
+  message?: string;
+  data: T[] | null;
+}
+
 export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
 export type BusinessStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED";

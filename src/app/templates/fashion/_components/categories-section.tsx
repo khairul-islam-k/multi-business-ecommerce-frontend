@@ -1,122 +1,34 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
+import { StorefrontCategory, StorefrontCategoryTreeItem } from "@/types/template/public-website";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
-import men_top_1 from "@/assets/fashion/products/men-top-1.png";
-import men_top_2 from "@/assets/fashion/products/men-top-2.png";
-import men_top_3 from "@/assets/fashion/products/men-top-3.jpg";
-import men_top_4 from "@/assets/fashion/products/men-top-4.jpg";
-import women_top_1 from "@/assets/fashion/products/women-tops-1.png";
-import women_top_2 from "@/assets/fashion/products/women-top-2.png";
-import women_top_3 from "@/assets/fashion/products/women-top-3.png";
 
-type Category = {
-  id: number;
-  parentId: string | null;
-  name: string;
-  description: string;
-  imageUrl: StaticImageData;
-  status: "ACTIVE" | "INACTIVE";
-  sortOrder: number;
-  productCount: number;
-};
+function flattenCategoryTree(
+  tree: StorefrontCategoryTreeItem[],
+): StorefrontCategory[] {
+  const result: StorefrontCategory[] = [];
 
-const categories: Category[] = [
-  {
-    id: 1,
-    parentId: null,
-    name: "Men's Clothing",
-    description: "Clothing collection for men",
-    imageUrl: men_top_1,
-    status: "ACTIVE",
-    sortOrder: 1,
-    productCount: 24,
-  },
-  {
-    id: 2,
-    parentId: null,
-    name: "Women's Clothing",
-    description: "Clothing collection for women",
-    imageUrl: men_top_2,
-    status: "ACTIVE",
-    sortOrder: 2,
-    productCount: 32,
-  },
-  {
-    id: 3,
-    parentId: null,
-    name: "Kids Clothing",
-    description: "Clothing collection for boys and girls",
-    imageUrl: men_top_3,
-    status: "ACTIVE",
-    sortOrder: 3,
-    productCount: 18,
-  },
-  {
-    id: 4,
-    parentId: null,
-    name: "Unisex Clothing",
-    description: "Clothing collection for everyone",
-    imageUrl: men_top_4,
-    status: "ACTIVE",
-    sortOrder: 4,
-    productCount: 15,
-  },
-  {
-    id: 5,
-    parentId: null,
-    name: "Men's Shoes",
-    description: "Shoes collection for men",
-    imageUrl: women_top_1,
-    status: "ACTIVE",
-    sortOrder: 5,
-    productCount: 20,
-  },
-  {
-    id: 6,
-    parentId: null,
-    name: "Women's Shoes",
-    description: "Shoes collection for women",
-    imageUrl: women_top_2,
-    status: "ACTIVE",
-    sortOrder: 6,
-    productCount: 22,
-  },
-  {
-    id: 7,
-    parentId: null,
-    name: "Fashion Tops",
-    description: "Trendy tops collection",
-    imageUrl: women_top_3,
-    status: "ACTIVE",
-    sortOrder: 7,
-    productCount: 14,
-  },
-  {
-    id: 8,
-    parentId: null,
-    name: "Casual Wear",
-    description: "Daily casual wear collection",
-    imageUrl: men_top_3,
-    status: "ACTIVE",
-    sortOrder: 8,
-    productCount: 28,
-  },
-  {
-    id: 9,
-    parentId: null,
-    name: "Activewear",
-    description: "Comfortable activewear collection",
-    imageUrl: men_top_4,
-    status: "ACTIVE",
-    sortOrder: 9,
-    productCount: 12,
-  },
-];
+  const walk = (items: StorefrontCategoryTreeItem[]) => {
+    items.forEach((item) => {
+      result.push(item.category);
+
+      if (item.children?.length) {
+        walk(item.children);
+      }
+    });
+  };
+
+  walk(tree);
+
+  return result;
+}
 
 const ITEMS_PER_SLIDE = 5;
 
@@ -129,9 +41,15 @@ const chunkArray = <T,>(array: T[], size: number): T[][] => {
 const CategoriesSection = () => {
   const [activeSlide, setActiveSlide] = useState(0);
 
+  const { data: categoriesData } = useProductCategoryQuery();
+
+  const singleArrayCategory = flattenCategoryTree(categoriesData ?? []);
+  const categories = new Set([...singleArrayCategory]).values().toArray();
+
+
   const categorySlides = useMemo(() => {
-    return chunkArray(categories, ITEMS_PER_SLIDE);
-  }, []);
+    return chunkArray(categories , ITEMS_PER_SLIDE);
+  }, [categories]);
 
   const handleNext = () => {
     setActiveSlide((prev) =>
@@ -196,18 +114,19 @@ const CategoriesSection = () => {
               {categorySlides[activeSlide]?.map((category) => (
                 <Link
                   key={category.id}
-                  href={`/products?category=${category.id}`}
+                  href={`/store/products?categoryId=${category.id}`}
                   className="group text-center"
                 >
                   {/* Image */}
                   <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full border border-gray-200 bg-white p-2 transition-all delay-75 duration-300 ease-in-out group-hover:border-[#f16d59] group-hover:shadow-lg sm:h-40 sm:w-40">
                     <div className="relative h-full w-full overflow-hidden rounded-full">
                       <Image
-                        src={category.imageUrl}
+                        src={imageUrlSet(category.imageUrl)}
                         alt={category.name}
                         fill
                         sizes="160px"
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        unoptimized
                       />
                     </div>
                   </div>
@@ -219,7 +138,7 @@ const CategoriesSection = () => {
                     </h3>
 
                     <p className="mt-1 text-xs text-gray-500">
-                      {category.productCount} Products
+                      {category?._count?.products} Products
                     </p>
                   </div>
                 </Link>
@@ -256,11 +175,10 @@ const CategoriesSection = () => {
               key={index}
               type="button"
               onClick={() => setActiveSlide(index)}
-              className={`h-2.5 rounded-full transition-all duration-300 ${
-                activeSlide === index
+              className={`h-2.5 rounded-full transition-all duration-300 ${activeSlide === index
                   ? "w-8 bg-[#f16d59]"
                   : "w-2.5 bg-gray-300 hover:bg-gray-400"
-              }`}
+                }`}
               aria-label={`Go to category slide ${index + 1}`}
             />
           ))}

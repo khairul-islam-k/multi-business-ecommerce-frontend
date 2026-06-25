@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  ArrowDownAZ,
+  ArrowUpAZ,
   ChevronDown,
   Grid2X2,
   List,
@@ -11,9 +13,10 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 
-import { allProducts } from "../_components/productData";
-import { categoryData } from "../_components/navbar";
 import ProductCard from "../_components/product-card";
+import { useProductCategoryQuery, useTemplateProductQuery } from "@/lib/api/hooks/public-website";
+import Loader from "@/components/shared/loader";
+import { SortOrder } from "@/lib/api";
 
 type ProductProps = {
   categoryId?: string;
@@ -35,35 +38,7 @@ type CategoryTreeItem = {
   children: CategoryTreeItem[];
 };
 
-const getChildrenIds = (item: CategoryTreeItem): string[] => {
-  const childIds = item.children.flatMap((child) => [
-    child.category.id,
-    ...getChildrenIds(child),
-  ]);
 
-  return childIds;
-};
-
-const findCategoryById = (
-  items: CategoryTreeItem[],
-  categoryId?: string,
-): CategoryTreeItem | null => {
-  if (!categoryId) return null;
-
-  for (const item of items) {
-    if (item.category.id === categoryId) {
-      return item;
-    }
-
-    const found = findCategoryById(item.children, categoryId);
-
-    if (found) {
-      return found;
-    }
-  }
-
-  return null;
-};
 
 const CategorySidebarItem = ({
   item,
@@ -84,9 +59,8 @@ const CategorySidebarItem = ({
       <button
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
-        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${
-          isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-        }`}
+        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+          }`}
       >
         <span>{item.category.name}</span>
 
@@ -123,55 +97,34 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const { data: products } = useTemplateProductQuery({
+    // tagId: activeTab
+    categoryId,
+    sortBy,
+    sortOrder
+  });
+
+  // all categories
+  const { data: categories, isLoading, isFetching } = useProductCategoryQuery();
+
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const categories = categoryData as CategoryTreeItem[];
-
-  const selectedCategory = useMemo(() => {
-    return findCategoryById(categories, categoryId);
-  }, [categories, categoryId]);
-
-  const filterCategoryIds = useMemo(() => {
-    if (!selectedCategory) return [];
-
-    return [
-      selectedCategory.category.id,
-      ...getChildrenIds(selectedCategory),
-    ];
-  }, [selectedCategory]);
-
-  const filteredProducts = useMemo(() => {
-    let products = [...allProducts];
-
-    if (categoryId && filterCategoryIds.length > 0) {
-      products = products.filter((product) =>
-        filterCategoryIds.includes(product.categoryId),
-      );
-    }
-
-    if (sortBy === "price-low") {
-      products.sort((a, b) => Number(a.price) - Number(b.price));
-    }
-
-    if (sortBy === "price-high") {
-      products.sort((a, b) => Number(b.price) - Number(a.price));
-    }
-
-    if (sortBy === "name") {
-      products.sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return products;
-  }, [categoryId, filterCategoryIds, sortBy]);
 
   const handleCategoryClick = (id: string) => {
+    console.log('id', id)
     router.push(`${pathname}?categoryId=${id}`);
   };
 
   const handleClearCategory = () => {
     router.push(pathname);
   };
+
+  const productItems = products?.items ?? [];
+
+  if (isLoading || isFetching) return <Loader />
 
   return (
     <section className="bg-[#f6f6f6] py-8">
@@ -191,15 +144,14 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           <button
             type="button"
             onClick={handleClearCategory}
-            className={`mt-5 block w-full text-left text-sm font-medium transition ${
-              !categoryId ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-            }`}
+            className={`mt-5 block w-full text-left text-sm font-medium transition ${!categoryId ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+              }`}
           >
             All Products
           </button>
 
           <div className="mt-3 space-y-1">
-            {categories.map((item) => (
+            {categories?.map((item) => (
               <CategorySidebarItem
                 key={item.category.id}
                 item={item}
@@ -215,7 +167,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           {/* Top Filter Bar */}
           <div className="mb-8 flex flex-col gap-4 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
             <h1 className="text-xl font-bold text-gray-950 md:text-2xl">
-              Total Products Found: {filteredProducts.length}
+              Total Products Found: {products?.items.length}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -229,10 +181,9 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   onChange={(event) => setSortBy(event.target.value)}
                   className="h-12 w-48 appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-sm text-gray-700 outline-none focus:border-[#f16d59]"
                 >
-                  <option value="latest">Latest Product</option>
-                  <option value="price-low">Price Low to High</option>
-                  <option value="price-high">Price High to Low</option>
-                  <option value="name">Name A to Z</option>
+                  <option value="name">Name</option>
+                  <option value="price">Price</option>
+                  <option value="createdAt">CreatedAt</option>
                 </select>
 
                 <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
@@ -240,12 +191,29 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
 
               <button
                 type="button"
+                onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+              >
+                {sortOrder === "desc" ? (
+                  <>
+                    <ArrowUpAZ className="size-4" />
+                    ASC
+                  </>
+                ) : (
+                  <>
+                    <ArrowDownAZ className="size-4" />
+                    DESC
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
                 onClick={() => setViewMode("list")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "list"
-                    ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "list"
+                  ? "border-[#f16d59] bg-[#f16d59] text-white"
+                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                  }`}
               >
                 <List className="h-6 w-6" />
               </button>
@@ -253,39 +221,20 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "grid"
-                    ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "grid"
+                  ? "border-[#f16d59] bg-[#f16d59] text-white"
+                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                  }`}
               >
                 <Grid2X2 className="h-6 w-6" />
               </button>
             </div>
+
           </div>
 
-          {/* Selected Category Text */}
-          {selectedCategory && (
-            <div className="mb-5 flex items-center justify-between rounded-xl bg-white px-5 py-3 shadow-sm">
-              <p className="text-sm text-gray-600">
-                Showing products for:{" "}
-                <span className="font-semibold text-[#f16d59]">
-                  {selectedCategory.category.name}
-                </span>
-              </p>
-
-              <button
-                type="button"
-                onClick={handleClearCategory}
-                className="text-sm font-semibold text-gray-900 hover:text-[#f16d59]"
-              >
-                Clear
-              </button>
-            </div>
-          )}
 
           {/* Product Grid */}
-          {filteredProducts.length > 0 ? (
+          {productItems.length > 0 ? (
             <div
               className={
                 viewMode === "grid"
@@ -293,11 +242,14 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   : "grid grid-cols-1 gap-6"
               }
             >
-              {filteredProducts.map((product) => (
-                <ProductCard 
-                viewMode={viewMode}
-                key={product.id} 
-                product={product} />
+
+              {/* check filteredProducts */}
+
+              {products?.items.map((product) => (
+                <ProductCard
+                  viewMode={viewMode}
+                  key={product.id}
+                  product={product} />
               ))}
             </div>
           ) : (

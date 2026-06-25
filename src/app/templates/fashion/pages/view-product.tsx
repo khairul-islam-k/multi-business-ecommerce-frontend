@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,6 +15,9 @@ import {
 
 import product_1 from "@/assets/fashion/products/product-1.jpg";
 import ProductReviewForm from "../_components/product_review_form";
+import { useParams } from "next/navigation";
+import { useTemplateProduct } from "@/lib/api/hooks/public-website";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
 const fashionDetail = {
     id: "product-1",
@@ -94,8 +97,8 @@ const RatingStars = ({ rating }: { rating: number }) => {
                 <Star
                     key={index}
                     className={`h-4 w-4 ${index < rating
-                            ? "fill-[#f16d59] text-[#f16d59]"
-                            : "text-gray-300"
+                        ? "fill-[#f16d59] text-[#f16d59]"
+                        : "text-gray-300"
                         }`}
                 />
             ))}
@@ -104,13 +107,22 @@ const RatingStars = ({ rating }: { rating: number }) => {
 };
 
 const ViewFashionProduct = () => {
+    const { productSlug } = useParams<{ productSlug: string }>();
     const [quantity, setQuantity] = useState(1);
-    const [selectedImage, setSelectedImage] = useState(
-        fashionDetail.images[0]?.imageUrl,
-    );
-    const [selectedVariantId, setSelectedVariantId] = useState(
-        fashionDetail.variants[0]?.id,
-    );
+    const [selectedImage, setSelectedImage] = useState<string>('');
+    const [selectedVariantId, setSelectedVariantId] = useState('');
+
+    // fetch product
+    const { data: product } = useTemplateProduct(productSlug);
+
+    console.log('product', product);
+
+    // select initial image
+    useEffect(() => {
+        if (product?.images) {
+            setSelectedImage(product?.images[0]?.imageUrl)
+        }
+    }, [product])
 
     const selectedVariant = fashionDetail.variants.find(
         (variant) => variant.id === selectedVariantId,
@@ -127,6 +139,11 @@ const ViewFashionProduct = () => {
         });
     };
 
+    const productImages = product?.images ?? [];
+    const variants = product?.variants ?? [];
+    const averageRating = product?.reviewSummary.averageRating ?? 0;
+    const reviews = product?.reviews ?? [];
+
     return (
         <section className="bg-[#f6f6f6] py-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -140,7 +157,7 @@ const ViewFashionProduct = () => {
                         Products
                     </Link>
                     <span className="mx-2">/</span>
-                    <span className="text-gray-900">{fashionDetail.name}</span>
+                    <span className="text-gray-900">{product?.name}</span>
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-8">
@@ -149,8 +166,8 @@ const ViewFashionProduct = () => {
                         <div className="relative h-[420px] overflow-hidden bg-[#f8f5f1] sm:h-[520px]">
                             {selectedImage && (
                                 <Image
-                                    src={selectedImage}
-                                    alt={fashionDetail.name}
+                                    src={imageUrlSet(selectedImage)}
+                                    alt={product?.name ?? ''}
                                     fill
                                     priority
                                     sizes="(max-width: 1024px) 100vw, 50vw"
@@ -159,25 +176,25 @@ const ViewFashionProduct = () => {
                             )}
 
                             <span className="absolute left-5 top-5 rounded-full bg-[#f16d59] px-4 py-1.5 text-xs font-bold text-white">
-                                {fashionDetail.tag.name}
+                                {product?.tags[0].name}
                             </span>
                         </div>
 
                         {/* Thumbnail Images */}
                         <div className="mt-4 flex gap-3">
-                            {fashionDetail.images.map((image) => (
+                            {productImages.map((image) => (
                                 <button
                                     key={image.id}
                                     type="button"
                                     onClick={() => setSelectedImage(image.imageUrl)}
-                                    className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${selectedImage === image.imageUrl
+                                    className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${selectedImage === image?.imageUrl
                                         ? "border-[#f16d59]"
                                         : "border-gray-200"
                                         }`}
                                 >
                                     <Image
-                                        src={image.imageUrl}
-                                        alt={image.altText}
+                                        src={imageUrlSet(image.imageUrl)}
+                                        alt={image.altText ?? ''}
                                         fill
                                         sizes="96px"
                                         className="object-cover"
@@ -185,14 +202,14 @@ const ViewFashionProduct = () => {
                                 </button>
                             ))}
 
-                            {fashionDetail.variants.map((variant) =>
+                            {variants.map((variant) =>
                                 variant.images.map((image) => (
                                     <button
                                         key={image.id}
                                         type="button"
                                         onClick={() => {
                                             setSelectedImage(image.imageUrl);
-                                            setSelectedVariantId(variant.id);
+                                            // setSelectedVariantId(variant.id);
                                         }}
                                         className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${selectedImage === image.imageUrl
                                             ? "border-[#f16d59]"
@@ -201,7 +218,7 @@ const ViewFashionProduct = () => {
                                     >
                                         <Image
                                             src={image.imageUrl}
-                                            alt={image.altText}
+                                            alt={image.altText ?? ''}
                                             fill
                                             sizes="96px"
                                             className="object-cover"
@@ -215,11 +232,11 @@ const ViewFashionProduct = () => {
                     {/* Right Text Side */}
                     <div className="flex flex-col justify-center">
                         <p className="mb-3 inline-flex w-fit items-center rounded-full bg-[#f16d59]/10 px-4 py-1.5 text-xs font-bold text-[#f16d59]">
-                            {fashionDetail.tag.name}
+                            {product?.tags[0].name}
                         </p>
 
                         <h1 className="text-3xl font-bold text-gray-950 sm:text-4xl">
-                            {fashionDetail.name}
+                            {product?.name}
                         </h1>
 
                         <div className="mt-4 flex items-center gap-2">
@@ -227,7 +244,7 @@ const ViewFashionProduct = () => {
                                 {Array.from({ length: 5 }).map((_, index) => (
                                     <Star
                                         key={index}
-                                        className={`h-5 w-5 ${index < fashionDetail.reviewSummary.averageRating
+                                        className={`h-5 w-5 ${index < averageRating
                                             ? "fill-[#f16d59] text-[#f16d59]"
                                             : "text-gray-300"
                                             }`}
@@ -236,63 +253,69 @@ const ViewFashionProduct = () => {
                             </div>
 
                             <span className="text-sm text-gray-500">
-                                ({fashionDetail.reviewSummary.reviewCount} Review)
+                                ({product?.reviewSummary?.reviewCount} Review)
                             </span>
                         </div>
 
                         <p className="mt-5 text-3xl font-bold text-[#f16d59]">
-                            ৳{selectedVariant?.price || fashionDetail.price}
+                            ৳{selectedVariant?.price || product?.price}
                         </p>
 
                         <p className="mt-5 text-base leading-7 text-gray-600">
-                            {fashionDetail.description}
+                            {product?.description}
                         </p>
 
                         <div className="mt-5 flex flex-wrap items-center gap-3">
                             <span
-                                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${fashionDetail.stockSummary.inStock
+                                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${product?.stockSummary?.inStock
                                     ? "bg-green-50 text-green-600"
                                     : "bg-red-50 text-red-500"
                                     }`}
                             >
                                 <Check className="h-4 w-4" />
-                                {fashionDetail.stockSummary.inStock
+                                {product?.stockSummary?.inStock
                                     ? "In Stock"
                                     : "Out of Stock"}
                             </span>
 
                             <span className="text-sm text-gray-500">
-                                Available: {fashionDetail.stockSummary.availableQuantity}
+                                Available: {product?.stockSummary.availableQuantity}
                             </span>
                         </div>
 
                         {/* Variant */}
-                        {fashionDetail.variants.length > 0 && (
+                        {variants?.length > 0 && (
                             <div className="mt-6">
                                 <h3 className="mb-3 text-sm font-bold text-gray-950">
                                     Select Variant
                                 </h3>
 
                                 <div className="flex flex-wrap gap-3">
-                                    {fashionDetail.variants.map((variant) => (
-                                        <button
-                                            key={variant.id}
-                                            type="button"
-                                            onClick={() => {
-                                                setSelectedVariantId(variant.id);
-                                                setSelectedImage(
-                                                    variant.images[0]?.imageUrl ||
-                                                    fashionDetail.images[0]?.imageUrl,
-                                                );
-                                            }}
-                                            className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${selectedVariantId === variant.id
-                                                ? "border-[#f16d59] bg-[#f16d59] text-white"
-                                                : "border-gray-300 text-gray-700 hover:border-[#f16d59] hover:text-[#f16d59]"
-                                                }`}
-                                        >
-                                            {variant.title}
-                                        </button>
-                                    ))}
+                                    {variants?.map((variant) => {
+                                        const oneVariantImage = variant?.images[0]?.imageUrl ?? '';
+                                        const oneProductImage = product?.images[0].imageUrl ?? '';
+                                        return (
+                                            <button
+                                                key={variant?.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    // setSelectedVariantId(variant.id);
+                                                    setSelectedImage(
+                                                        oneVariantImage ||
+                                                        oneProductImage
+                                                    );
+                                                }}
+                                                className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${selectedVariantId === variant.id
+                                                    ? "border-[#f16d59] bg-[#f16d59] text-white"
+                                                    : "border-gray-300 text-gray-700 hover:border-[#f16d59] hover:text-[#f16d59]"
+                                                    }`}
+                                            >
+                                                {variant.title}
+                                            </button>
+                                        )
+                                    }
+
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -365,20 +388,20 @@ const ViewFashionProduct = () => {
 
                                 <p>
                                     <span className="font-bold text-gray-950">Status:</span>{" "}
-                                    <span className="text-gray-600">{fashionDetail.status}</span>
+                                    <span className="text-gray-600">{product?.status}</span>
                                 </p>
 
                                 <p>
                                     <span className="font-bold text-gray-950">Total Stock:</span>{" "}
                                     <span className="text-gray-600">
-                                        {fashionDetail.stockSummary.totalQuantity}
+                                        {product?.stockSummary.totalQuantity}
                                     </span>
                                 </p>
 
                                 <p>
                                     <span className="font-bold text-gray-950">Reserved:</span>{" "}
                                     <span className="text-gray-600">
-                                        {fashionDetail.stockSummary.quantityReserved}
+                                        {product?.stockSummary.quantityReserved}
                                     </span>
                                 </p>
                             </div>
@@ -397,22 +420,22 @@ const ViewFashionProduct = () => {
                     <div>
                         <h2 className="text-2xl font-bold text-gray-950">Customer Reviews</h2>
                         <p className="mt-1 text-sm text-gray-500">
-                            Total Reviews: {fashionDetail.reviews.length}
+                            Total Reviews: {product?.reviews.length}
                         </p>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <RatingStars rating={fashionDetail.reviewSummary.averageRating} />
+                        <RatingStars rating={product?.reviewSummary.averageRating ?? 0} />
 
                         <span className="text-sm font-semibold text-gray-700">
-                            {fashionDetail.reviewSummary.averageRating} out of 5
+                            {product?.reviewSummary.averageRating} out of 5
                         </span>
                     </div>
                 </div>
 
-                {fashionDetail.reviews.length > 0 ? (
+                {reviews.length > 0 ? (
                     <div className="space-y-5">
-                        {fashionDetail.reviews.map((review) => (
+                        {reviews.map((review) => (
                             <div
                                 key={review.id}
                                 className="rounded-xl border border-gray-200 p-5 transition hover:border-[#f16d59] hover:shadow-sm"
@@ -421,12 +444,12 @@ const ViewFashionProduct = () => {
                                     <div>
                                         <div className="flex items-center gap-3">
                                             <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f16d59]/10 text-sm font-bold text-[#f16d59]">
-                                                {review.reviewerName.charAt(0).toUpperCase()}
+                                                {review?.reviewerName?.charAt(0).toUpperCase()}
                                             </div>
 
                                             <div>
                                                 <h3 className="font-bold text-gray-950">
-                                                    {review.reviewerName}
+                                                    {review?.reviewerName}
                                                 </h3>
 
                                                 <p className="text-xs text-gray-500">

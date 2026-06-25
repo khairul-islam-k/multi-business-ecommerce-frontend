@@ -1,18 +1,7 @@
 import Link from "next/link";
 
-type Props = {
-  site: {
-    name: string;
-    logo?: string;
-    templateName: string;
-  };
-};
 
-export function ElectronicFooter({ site }: Props) {
-
-  if (site.templateName !== "electronic") {
-    return null;
-  }
+export function ElectronicFooter() {
 
 
   return (

@@ -1,38 +1,26 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { allProducts } from "./productData";
 import ProductCard from "./product-card";
+import { useProductTagsQuery, useTemplateProductQuery } from "@/lib/api/hooks/public-website";
 
-const productTabs = [
-  {
-    id: "new-arrival",
-    label: "NEW ARRIVAL",
-  },
-  {
-    id: "trending",
-    label: "TRENDING",
-  },
-  {
-    id: "best-selling",
-    label: "BEST SELLING",
-  },
-  {
-    id: "popular",
-    label: "POPULAR",
-  },
-];
 
 const ExploreOurProduct = () => {
-  const [activeTab, setActiveTab] = useState(productTabs[0].id);
+  const { data: productTabs } = useProductTagsQuery();
+  const [activeTab, setActiveTab] = useState('');
 
-  const activeTabData = productTabs.find((tab) => tab.id === activeTab);
+  const {data: products, isLoading, isFetching} = useTemplateProductQuery({
+    tagId: activeTab
+  });
 
-  const filteredProducts = allProducts.filter(
-    (product) => product.tag.name === activeTabData?.label,
-  );
+
+  useEffect(() => {
+    if (productTabs) {
+      setActiveTab(productTabs[0].id);
+    }
+  }, [productTabs]);
 
   return (
     <section className="bg-[#f6f6f6] py-16">
@@ -49,31 +37,31 @@ const ExploreOurProduct = () => {
         </div>
 
         {/* Tabs */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-8">
-          {productTabs.map((tab) => {
-            const isActive = activeTab === tab.id;
+        <div className="mt-8 w-full overflow-x-auto overflow-y-hidden">
+          <div className="flex w-max min-w-full items-center justify-start gap-8 px-4 md:justify-center">
+            {productTabs?.map((tab) => {
+              const isActive = activeTab === tab.id;
 
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative pb-2 text-sm font-semibold transition-all duration-300 ${
-                  isActive
-                    ? "text-[#f16d59]"
-                    : "text-gray-600 hover:text-[#f16d59]"
-                }`}
-              >
-                {tab.label}
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative pb-2 whitespace-nowrap text-sm font-semibold transition-all duration-300 ${isActive
+                      ? "text-[#f16d59]"
+                      : "text-gray-600 hover:text-[#f16d59]"
+                    }`}
+                >
+                  {tab.name}
 
-                <span
-                  className={`absolute bottom-0 left-0 h-[2px] bg-[#f16d59] transition-all duration-300 ${
-                    isActive ? "w-full" : "w-0"
-                  }`}
-                />
-              </button>
-            );
-          })}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-[#f16d59] transition-all duration-300 ${isActive ? "w-full" : "w-0"
+                      }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Products */}
@@ -87,13 +75,15 @@ const ExploreOurProduct = () => {
               transition={{ duration: 0.35, ease: "easeOut" }}
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
             >
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {products?.items.map((product) => (
+                <ProductCard key={product.id}
+                activeId={activeTab}
+                product={product} />
               ))}
             </motion.div>
           </AnimatePresence>
 
-          {filteredProducts.length === 0 && (
+          {products?.items.length === 0 && (
             <div className="mt-10 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
               <p className="text-base font-medium text-gray-500">
                 No products found.

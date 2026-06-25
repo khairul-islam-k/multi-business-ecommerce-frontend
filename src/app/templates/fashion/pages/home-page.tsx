@@ -8,16 +8,7 @@ import PartnerSection from '../_components/partner-section';
 import BestSellingProducts from '../_components/best-selling-products';
 import PolicyLabel from '../_components/policy-label';
 
-type Props = {
-    site: {
-        name: string;
-        logo?: string;
-        templateName: string;
-        store: string;
-    };
-};
-
-const FashionHomePage = ({ site }: Props) => {
+const FashionHomePage = () => {
     return (
         <div>
             <HeroSection />
