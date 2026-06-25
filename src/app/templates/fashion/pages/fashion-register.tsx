@@ -11,6 +11,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import z from "zod";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { CustomerRegisterPayload } from "@/types/template/auth";
+import { templateAuthApi } from "@/lib/api/template-auth";
+import OtpVerifyModal from "@/app/store/_components/otp-verify-modal";
 
 
 export const customerRegisterSchema = z.object({
@@ -38,22 +42,28 @@ export const customerRegisterSchema = z.object({
 
   phone: z
     .string()
-    .min(1, "Phone number is required")
-    .regex(
-      /^(\+8801|01)[3-9]\d{8}$/,
-      "Please enter a valid Bangladeshi phone number",
+    .trim()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (value) => {
+        if (!value) return true;
+
+        return /^(\+8801|01)[3-9]\d{8}$/.test(value);
+      },
+      {
+        message: "Please enter a valid Bangladeshi phone number",
+      },
     ),
 });
 
-export type CustomerRegisterPayload = {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-};
-
 export default function FashionRegisterPage() {
   const router = useRouter();
+  const message = useMessage();
+
+  // otp
+  const [openOtpModal, setOpenOtpModal] = useState<boolean>(false);
+  const [otpEmail, setOtpEmail] = useState<string>('');
 
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -77,13 +87,13 @@ export default function FashionRegisterPage() {
     try {
       setServerError(null);
 
-    //   const response = await customerAuthApi.register(data);
+      const response = await templateAuthApi.register(data);
+      setOtpEmail(response?.customer?.email)
+      setOpenOtpModal(true);
+      message.success('Registered successfully');
 
-    //   console.log("register response", response);
+      // reset();
 
-      reset();
-
-      router.push("/store/login");
     } catch (error) {
       console.log("register error", error);
 
@@ -278,6 +288,15 @@ export default function FashionRegisterPage() {
           </div>
         </div>
       </div>
+
+      <OtpVerifyModal
+        open={openOtpModal}
+        email={otpEmail}
+        onClose={() => setOpenOtpModal(false)}
+        onVerified={() => {
+          router.push('/store/login')
+        }}
+      />
     </main>
   );
 }

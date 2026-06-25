@@ -6,6 +6,7 @@ import FashionFooter from "@/app/templates/fashion/_components/fashion-footer";
 import FashionNavbar from "@/app/templates/fashion/_components/navbar";
 import React from "react";
 import { publicApi } from "@/lib/axios";
+import ToastProviders from "./_components/message/toast-provider";
 
 
 const WebsiteLayout = async ({
@@ -31,7 +32,9 @@ const WebsiteLayout = async ({
         {isElectronic ? <ElectronicNavBar /> : null}
         {isFashion ? <FashionNavbar /> : null}
 
-        {children}
+        <ToastProviders >
+          {children}
+        </ToastProviders>
 
         {isElectronic ? <ElectronicFooter /> : null}
         {isFashion ? <FashionFooter /> : null}

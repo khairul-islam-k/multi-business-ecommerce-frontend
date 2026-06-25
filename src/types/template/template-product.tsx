@@ -91,6 +91,34 @@ export type ProductReview = AuditFields & {
   status: ReviewStatus;
 };
 
+// variant 
+
+export type ProductVariant = {
+  id: string;
+  businessId: string;
+  productId: string;
+
+  sku: string;
+  barcode: string;
+  title: string;
+
+  priceOverride: string;
+  weight: string;
+  status: "ACTIVE" | "INACTIVE";
+
+  createdBy: string | null;
+  updatedBy: string | null;
+  deletedBy: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  effectivePrice: string;
+
+  images: ProductImage[];
+};
+
 export type StorefrontProduct = AuditFields & {
   id: string;
   businessId: string;
@@ -118,7 +146,7 @@ export type StorefrontProduct = AuditFields & {
   tags: ProductTag[];
   images: ProductImage[];
 
-  variants: unknown[];
+  variants: ProductVariant[];
 
   stockSummary: ProductStockSummary;
   reviewSummary: ProductReviewSummary;

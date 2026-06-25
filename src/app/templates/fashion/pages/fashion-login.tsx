@@ -4,9 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import { templateAuthApi } from "@/lib/api/template-auth";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { useRouter } from "next/navigation";
+import OtpVerifyModal from "@/app/store/_components/otp-verify-modal";
+import ForgotOtpVerifyModal from "@/app/store/_components/forgot-otp-verify-modal";
 
 export type CustomerLoginPayload = {
     email: string;
@@ -28,10 +33,21 @@ export const customerLoginSchema = z.object({
 export default function FashionLoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [serverError, setServerError] = useState<string | null>(null);
+    const message = useMessage();
+    const router = useRouter();
+
+    // forget modal 
+    const [forgetOpen, setForgetOpen] = useState<boolean>(false);
+    const [verifyEmail, setVerifyEmail] = useState<string>('');
+
+    // Email verified 
+    const [otpOpen, setOtpOpen] = useState<boolean>(false);
+
 
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors, isSubmitting },
     } = useForm<CustomerLoginPayload>({
         resolver: zodResolver(customerLoginSchema),
@@ -41,18 +57,50 @@ export default function FashionLoginPage() {
         },
     });
 
+    const emailValue = useWatch({ control, name: "email" });
+
     const onSubmit = async (data: CustomerLoginPayload) => {
         try {
             setServerError(null);
 
-            // const res = await customerAuthApi.login(data);
+            const res = await templateAuthApi.login(data);
+            message.success('Login Successfully');
 
-            console.log("login response", data);
+            console.log('res', res);
+
+            router.push('/store')
         } catch (error) {
             console.log("login error", error);
             setServerError("Invalid email or password");
         }
     };
+
+    const handleForget = async () => {
+
+        const email = emailValue?.trim().toLowerCase();
+
+        if (!email) return;
+
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+        if (!isValidEmail) {
+            message.error("Invalid Email");
+            return;
+        }
+
+        console.log(email, 'email');
+
+        try {
+            const res = await templateAuthApi.forgetOtpSend(email);
+            console.log('res', res);
+            setVerifyEmail(email)
+            setForgetOpen(true);
+
+        } catch (error) {
+            console.log(error);
+            message.error('something went wrong');
+        }
+    }
 
     return (
         <main className="min-h-screen bg-gray-100">
@@ -168,12 +216,12 @@ export default function FashionLoginPage() {
                                     Remember me
                                 </label>
 
-                                <Link
-                                    href="/forgot-password"
-                                    className="text-sm font-medium text-[#f16d59] hover:underline"
+                                <span
+                                    onClick={handleForget}
+                                    className="text-sm font-medium text-[#f16d59] hover:underline cursor-pointer"
                                 >
                                     Forgot password?
-                                </Link>
+                                </span>
                             </div>
 
                             <button
@@ -194,9 +242,38 @@ export default function FashionLoginPage() {
                                 Create account
                             </Link>
                         </p>
+
+                        <p className="mt-5 text-center text-sm text-muted-foreground">
+                            Email not verified?{" "}
+                            <span
+                                onClick={() => setOtpOpen(true)}
+                                className="font-semibold text-foreground underline-offset-4 hover:underline cursor-pointer"
+                            >
+                                Email Verify
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
+
+            <ForgotOtpVerifyModal
+                open={forgetOpen}
+                email={verifyEmail}
+                onClose={() => setForgetOpen(false)}
+                onVerified={() => {
+                    console.log("Password reset done");
+                }}
+            />
+
+
+            <OtpVerifyModal
+                open={otpOpen}
+                email=''
+                onClose={() => setOtpOpen(false)}
+                onVerified={() => {
+                    router.push('/store/login')
+                }}
+            />
         </main>
     );
 }

@@ -24,19 +24,13 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
         }
     })
 
-    const site = {
-        name: "Onecomm Store",
-        templateName: "fashion",
-        logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-    };
-
-    if (site.templateName === 'ELECTRONIC') {
+    if (res?.data?.data?.template === "ELECTRONIC") {
         return (
             <ElectronicProductsPage />
         );
     }
 
-    if (site.templateName === 'fashion') {
+    if (res?.data?.data?.template === "FASHION") {
         return (
             <FashionProduct categoryId={categoryId} />
         );

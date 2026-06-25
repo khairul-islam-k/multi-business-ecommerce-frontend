@@ -26,21 +26,21 @@ export function useTemplateProductQuery(query?: ProductQuery) {
   });
 }
 
-// export function useBrand(businessId: ApiId, brandId: ApiId) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductCategories.detail(businessId, brandId),
+export function useTemplateProduct(slug: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.publicWebsite.detail(slug),
 
-//     queryFn: () => {
-//       if (!businessId || !brandId) {
-//         throw new Error("Business ID and Category ID are required");
-//       }
+    queryFn: () => {
+      if (!slug) {
+        throw new Error("Business ID and Category ID are required");
+      }
 
-//       return productBrandApi.get(businessId, brandId);
-//     },
+      return publicWebsiteApi.product(slug);
+    },
 
-//     enabled: Boolean(businessId && brandId),
-//   });
-// }
+    enabled: Boolean(slug),
+  });
+}
 
 // export function useBrandMutation(businessId: ApiId) {
 //   const queryClient = useQueryClient();

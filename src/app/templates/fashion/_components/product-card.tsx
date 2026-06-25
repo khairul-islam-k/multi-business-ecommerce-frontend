@@ -97,7 +97,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
           </button>
 
           <Link
-            href={`/store/${store}/products/details/${product.id}`}
+            href={`/store/products/details/${product.slug}`}
             className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
             aria-label="View product"
           >
