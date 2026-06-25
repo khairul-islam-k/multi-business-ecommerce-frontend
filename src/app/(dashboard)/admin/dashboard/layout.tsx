@@ -26,7 +26,11 @@ export default function AdminDashboardLayout({
 
   return (
     
-      <Layout hasSider style={{ maxHeight: "100vh", overflow: "hidden" }}>
+      <Layout
+        className="dashboard-shell"
+        hasSider
+        style={{ maxHeight: "100vh", overflow: "hidden" }}
+      >
         {/* Desktop Sidebar */}
         {!screens.xs && (
           <Sider
@@ -34,7 +38,7 @@ export default function AdminDashboardLayout({
             collapsed={collapsed}
             breakpoint="md"
             trigger={null}
-            style={{ background: token.colorBgContainer }}
+            style={{ background: "var(--dashboard-sidebar-background-color)" }}
           >
             <Sidebar collapsed={collapsed} />
           </Sider>
@@ -60,7 +64,8 @@ export default function AdminDashboardLayout({
           <Header
             style={{
               padding: 0,
-              background: token.colorBgContainer,
+              background: "var(--dashboard-header-background-color)",
+              color: "var(--dashboard-header-text-color)",
               display: "flex",
               alignItems: "center",
               borderLeft: `1px solid ${token.colorBorderSecondary}`,
@@ -81,7 +86,8 @@ export default function AdminDashboardLayout({
               overflowY: "auto",
               overflowX: "hidden",
               padding: screens.xs ? "10px" : "24px",
-              background: token.colorBgLayout,
+              background: "var(--dashboard-dashboard-background-color)",
+              color: "var(--dashboard-text-primary-color)",
             }}
           >
             {routePermission === "DENY" ? (

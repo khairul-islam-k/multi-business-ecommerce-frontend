@@ -1,14 +1,15 @@
 "use client";
 
+import {
+  Check,
+  ChevronDown,
+  CirclePlus,
+  Landmark,
+} from "lucide-react";
+
+
 import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  BankOutlined,
-  CheckOutlined,
-  DownOutlined,
-  PlusOutlined,
-  ShopOutlined,
-} from "@ant-design/icons";
 import {
   App,
   Avatar,
@@ -29,7 +30,8 @@ import {
 
 import { useBusinessMutations } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
-import type { AuthBusiness, BusinessPayload } from "@/lib/api";
+import type { AuthBusiness, Business, BusinessPayload } from "@/lib/api";
+import { useBusinesses } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   countryOptions,
@@ -53,6 +55,14 @@ const defaultValues: Partial<BusinessFormValues> = {
 const businessInitial = (business?: AuthBusiness | null) =>
   business?.name?.trim()?.charAt(0).toUpperCase() || "B";
 
+const resolveAssetUrl = (url?: string | null) => {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  return baseUrl ? `${baseUrl}${url}` : url;
+};
+
 export default function BusinessDropdown() {
   const [form] = Form.useForm<BusinessFormValues>();
   const [open, setOpen] = useState(false);
@@ -66,6 +76,7 @@ export default function BusinessDropdown() {
   const setBusinesses = useAuthStore((state) => state.setBusinesses);
   const selectBusiness = useAuthStore((state) => state.selectBusiness);
   const { createBusiness } = useBusinessMutations();
+  const richBusinesses = useBusinesses({ page: 1, limit: 100 });
 
   const canCreateBusiness = userType === "TENANT";
 
@@ -78,6 +89,18 @@ export default function BusinessDropdown() {
       }),
     [businesses, selectedBusiness?.id],
   );
+
+  const businessDetailsById = useMemo(() => {
+    const records = new Map<string, Business>();
+    (richBusinesses.data?.items ?? []).forEach((business) => {
+      records.set(business.id, business);
+    });
+    return records;
+  }, [richBusinesses.data?.items]);
+
+  const selectedBusinessDetails = selectedBusiness
+    ? businessDetailsById.get(selectedBusiness.id)
+    : undefined;
 
   const handleSelect = async (businessId: string) => {
     if (businessId === selectedBusiness?.id) return;
@@ -138,7 +161,13 @@ export default function BusinessDropdown() {
       label: (
         <Flex align="center" justify="space-between" gap={16}>
           <Space size={10}>
-            <Avatar size="small" style={{ background: token.colorPrimary }}>
+            <Avatar
+              size="small"
+              src={resolveAssetUrl(
+                businessDetailsById.get(business.id)?.branding?.logoUrl,
+              )}
+              style={{ background: token.colorPrimary }}
+            >
               {businessInitial(business)}
             </Avatar>
             <div className="min-w-0">
@@ -154,7 +183,7 @@ export default function BusinessDropdown() {
               )}
             </div>
           </Space>
-          {business.id === selectedBusiness?.id && <CheckOutlined />}
+          {business.id === selectedBusiness?.id && <Check />}
         </Flex>
       ),
       onClick: () => handleSelect(business.id),
@@ -169,7 +198,7 @@ export default function BusinessDropdown() {
         <Button
           block
           type="text"
-          icon={<PlusOutlined />}
+          icon={<CirclePlus />}
           disabled={!canCreateBusiness}
           onClick={(event) => {
             event.stopPropagation();
@@ -199,13 +228,17 @@ export default function BusinessDropdown() {
           }}
         >
           <Space size={10}>
-            <Avatar size="small" icon={<ShopOutlined />}>
+            <Avatar
+              size="small"
+              src={resolveAssetUrl(selectedBusinessDetails?.branding?.logoUrl)}
+              style={{ background: token.colorPrimary }}
+            >
               {businessInitial(selectedBusiness)}
             </Avatar>
             <span className="hidden max-w-40 truncate text-left font-medium sm:inline-block">
               {selectedBusiness?.name ?? "Select business"}
             </span>
-            <DownOutlined />
+            <ChevronDown />
           </Space>
         </Button>
       </Dropdown>
@@ -232,7 +265,7 @@ export default function BusinessDropdown() {
                 label="Business name"
                 rules={[{ required: true, min: 2 }]}
               >
-                <Input prefix={<BankOutlined />} placeholder="Acme Store" />
+                <Input prefix={<Landmark />} placeholder="Acme Store" />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>

@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  CirclePlus,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
+import {
   Button,
   Card,
   Dropdown,
@@ -21,13 +30,6 @@ import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ProductStatus, ResponseProduct } from "@/types/product/product";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  MoreOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 
 import { imageUrlSet } from "./_components/image-url";
 
@@ -175,18 +177,18 @@ const ProductsList = () => {
         const items: MenuProps["items"] = [
           {
             key: "view",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
             label: "View",
           },
           {
             key: "edit",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
             label: "Edit",
           },
           {
             key: "delete",
             danger: true,
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             label: (
               <Popconfirm
                 title="Delete product?"
@@ -222,7 +224,7 @@ const ProductsList = () => {
               },
             }}
           >
-            <Button size="small" icon={<MoreOutlined />} />
+            <Button size="small" icon={<MoreHorizontal />} />
           </Dropdown>
         );
       },
@@ -290,7 +292,7 @@ const ProductsList = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push(
                     "/admin/dashboard/product-catalog/products/create",

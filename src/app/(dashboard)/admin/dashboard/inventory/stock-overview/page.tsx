@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  Eye,
+  Pencil
+} from "lucide-react";
+
+
 import { App, Button, Card, Col, Form, InputNumber, Modal, Row, Select, Tag } from "antd";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -181,7 +186,7 @@ export default function StockOverviewPage() {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(`/admin/dashboard/inventory/stock-overview/details/${row.id}`)
             }
@@ -189,7 +194,7 @@ export default function StockOverviewPage() {
 
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() => {
               setIsModalOpen(true);
               setStockId(row.id);

@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Pencil
+} from "lucide-react";
+
+
 import React from "react";
 import {
   Button,
@@ -13,7 +19,6 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { useParams, useRouter } from "next/navigation";
 
 import { useExpense } from "@/lib/api/hooks/expense";
@@ -113,7 +118,7 @@ const ViewExpense = () => {
 
           <Space>
             <Button
-              icon={<ArrowLeftOutlined />}
+              icon={<ArrowLeft />}
               onClick={() => router.push("/admin/dashboard/finance/expenses")}
             >
               Back
@@ -121,7 +126,7 @@ const ViewExpense = () => {
 
             <Button
               type="primary"
-              icon={<EditOutlined />}
+              icon={<Pencil />}
               onClick={() =>
                 router.push(`/admin/dashboard/finance/expenses/update/${item.id}`)
               }

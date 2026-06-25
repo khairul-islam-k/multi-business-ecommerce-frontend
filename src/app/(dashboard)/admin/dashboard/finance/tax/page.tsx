@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  CirclePlus,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -7,7 +14,6 @@ import { useTaxMutation, useTaxQuery } from "@/lib/api/hooks/tax";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { TaxResponse } from "@/types/finance/tax";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Button, Popconfirm, Select, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -80,7 +86,7 @@ const FinanceTax = () => {
 
                     <Button
                         size="small"
-                        icon={<EditOutlined />}
+                        icon={<Pencil />}
                         onClick={() =>
                             router.push(`/admin/dashboard/finance/tax/edit/${row.id}`)
                         }
@@ -93,7 +99,7 @@ const FinanceTax = () => {
                         cancelText="No"
                         onConfirm={() => handleDelete(row.id)}
                     >
-                        <Button danger size="small" icon={<DeleteOutlined />} />
+                        <Button danger size="small" icon={<Trash2 />} />
                     </Popconfirm>
                 </div>
             ),
@@ -126,7 +132,7 @@ const FinanceTax = () => {
 
                         <Button
                             type="primary"
-                            icon={<PlusOutlined />}
+                            icon={<CirclePlus />}
                             onClick={() =>
                                 router.push("/admin/dashboard/finance/tax/create")
                             }

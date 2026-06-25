@@ -1,32 +1,44 @@
 "use client";
 
-import { Card, Table } from "antd";
-import { notFound, useParams } from "next/navigation";
-import { CreditCardOutlined } from "@ant-design/icons";
+import { Card, Empty, Table } from "antd";
+import { useParams } from "next/navigation";
+import { CreditCard } from "lucide-react";
 
-import { mockOrders, mockPayments } from "../../data";
-import { PaymentStatusBadge } from "../../_components/badge";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useOrder } from "@/lib/api";
 
-export default function OrderPaymentHistory({}: {
-  params: Promise<{ id: string }>;
-}) {
+function money(value: string | number | null | undefined) {
+  return `BDT ${Number(value ?? 0).toLocaleString()}`;
+}
+
+export default function OrderPaymentHistory() {
   const { id } = useParams();
-  const order = mockOrders.find((order) => order.id === id);
-  const payments = mockPayments.filter((payment) => payment.order_id === id);
+  const businessId = useActiveBusinessId();
+  const orderId = String(id ?? "");
+  const order = useOrder(businessId ?? "", orderId);
 
-  if (!order) return notFound();
+  if (!businessId) return <Empty description="No active business selected" />;
+  if (order.isLoading) return <Loader label="Loading payment history" />;
+  if (!order.data) return <Empty description="Order not found" />;
+
+  const payments = order.data.payments ?? [];
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Payment History" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Payment History"
+        subtitle={order.data.orderNo ?? order.data.id}
+        breadcrumb={adminBreadcrumb}
+      />
 
       <Card
         title={
-          <>
-            <CreditCardOutlined /> Transactions
-          </>
+          <span className="inline-flex items-center gap-2">
+            <CreditCard size={16} /> Transactions
+          </span>
         }
       >
         <Table
@@ -35,38 +47,47 @@ export default function OrderPaymentHistory({}: {
           pagination={false}
           columns={[
             {
+              title: "Payment No",
+              dataIndex: "paymentNo",
+              key: "paymentNo",
+              render: (value) => value ?? "-",
+            },
+            {
               title: "Method",
-              dataIndex: "payment_method",
-              key: "payment_method",
-              render: (v) => <span className="font-medium">{v}</span>,
+              dataIndex: "paymentMethod",
+              key: "paymentMethod",
+              render: (value) => (
+                <span className="font-medium">{value ?? "-"}</span>
+              ),
             },
             {
               title: "Transaction Ref",
-              dataIndex: "transaction_ref",
-              key: "transaction_ref",
-              render: (v) => v || "—",
+              dataIndex: "transactionReference",
+              key: "transactionReference",
+              render: (value) => value || "-",
               className: "font-mono text-sm text-gray-500",
             },
             {
               title: "Status",
-              dataIndex: "payment_status",
-              key: "payment_status",
-              render: (status) => <PaymentStatusBadge status={status} />,
+              dataIndex: "paymentStatus",
+              key: "paymentStatus",
+              render: (status) => status ?? "-",
             },
             {
               title: "Amount",
               dataIndex: "amount",
               key: "amount",
               align: "right",
-              render: (amt) => (
-                <span className="font-mono">${amt.toFixed(2)}</span>
+              render: (amount) => (
+                <span className="font-mono">{money(amount)}</span>
               ),
             },
             {
               title: "Date",
-              dataIndex: "paid_at",
-              key: "paid_at",
-              render: (d) => new Date(d).toDateString(),
+              dataIndex: "paidAt",
+              key: "paidAt",
+              render: (date) =>
+                date ? new Date(String(date)).toLocaleString() : "-",
               className: "text-gray-500",
             },
           ]}

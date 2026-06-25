@@ -1,120 +1,158 @@
 "use client";
 
-import { useState } from "react";
-import { notFound, useParams } from "next/navigation";
-import { Card, Table, Input, Button, Form, Select, Typography } from "antd";
+import { Alert, Card, Empty, Table, Tag, Typography } from "antd";
+import { useParams } from "next/navigation";
 
-import { useSwal } from "@/hooks/use-swal";
-import useSubmit from "@/hooks/use-submit";
-import { mockOrders, mockReturns } from "../../data";
-import { ReturnStatusBadge } from "../../_components/badge";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import {
+  useOrder,
+  useOrderReturnsQuery,
+  type OrderReturnStatus,
+} from "@/lib/api";
 
-const { TextArea } = Input;
 const { Text } = Typography;
 
-export default function OrderReturnForm() {
-  const swal = useSwal();
+const statusColor: Record<OrderReturnStatus, string> = {
+  APPROVED: "blue",
+  CANCELLED: "default",
+  COMPLETED: "green",
+  REJECTED: "red",
+  REQUESTED: "orange",
+};
+
+function money(value: string | number | null | undefined) {
+  return `BDT ${Number(value ?? 0).toLocaleString()}`;
+}
+
+export default function OrderReturnHistory() {
   const { id } = useParams();
-
-  const [reason, setReason] = useState("");
-  const [condition, setCondition] = useState("Unopened");
-  const [refundAmount, setRefundAmount] = useState("");
-
-  const order = mockOrders.find((order) => order.id === id);
-  const returns = mockReturns.filter((_return) => _return.order_id === id);
-
-  const { handler, loading } = useSubmit(async () => {
-    await Promise.resolve(setTimeout(() => {}, 1000));
-    swal.success("Return request submitted");
-    setReason("");
-    setCondition("Unopened");
-    setRefundAmount("");
+  const businessId = useActiveBusinessId();
+  const orderId = String(id ?? "");
+  const order = useOrder(businessId ?? "", orderId);
+  const returns = useOrderReturnsQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
+    orderId,
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
 
-  if (!order) return notFound();
+  if (!businessId) return <Empty description="No active business selected" />;
+  if (order.isLoading || returns.isLoading) {
+    return <Loader label="Loading return history" />;
+  }
+  if (!order.data) return <Empty description="Order not found" />;
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Return History" breadcrumb={adminBreadcrumb} />
+      <PageHeader
+        title="Return History"
+        subtitle={order.data.orderNo ?? order.data.id}
+        breadcrumb={adminBreadcrumb}
+      />
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Existing Returns */}
-        <Card title="Return History">
-          {returns.length > 0 ? (
-            <Table
-              dataSource={returns}
-              rowKey="id"
-              pagination={false}
-              columns={[
-                {
-                  title: "Return #",
-                  dataIndex: "return_no",
-                  key: "return_no",
-                  render: (v) => <Text code>{v}</Text>,
-                },
-                { title: "Reason", dataIndex: "reason", key: "reason" },
-                {
-                  title: "Status",
-                  dataIndex: "status",
-                  key: "status",
-                  render: (status) => <ReturnStatusBadge status={status} />,
-                },
-                {
-                  title: "Refund",
-                  dataIndex: "refund_amount",
-                  key: "refund_amount",
-                  align: "right",
-                  render: (amt) => <Text code>${amt.toFixed(2)}</Text>,
-                },
-              ]}
-            />
-          ) : (
-            <div className="text-center py-6 text-gray-500 text-sm">
-              No returns for this order.
-            </div>
-          )}
-        </Card>
+      <Alert
+        type="info"
+        showIcon
+        message="Dashboard return creation is not available in the current API."
+        description="This page shows return requests that already exist for the order. The dashboard API currently supports viewing returns and updating return status."
+      />
 
-        {/* New Return Form */}
-        <Card title="New Return Request">
-          <Form layout="vertical" onFinish={handler}>
-            <Form.Item label="Reason" required>
-              <TextArea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Describe the return reason..."
-                autoSize={{ minRows: 3, maxRows: 6 }}
+      <Card title="Returns">
+        <Table
+          dataSource={returns.data?.items ?? []}
+          rowKey="id"
+          pagination={false}
+          loading={returns.isFetching}
+          columns={[
+            {
+              title: "Return No",
+              dataIndex: "returnNo",
+              key: "returnNo",
+              render: (value, record) => (
+                <Text code>{value ?? record.id}</Text>
+              ),
+            },
+            {
+              title: "Reason",
+              dataIndex: "reason",
+              key: "reason",
+              render: (value) => value ?? "-",
+            },
+            {
+              title: "Items",
+              dataIndex: "items",
+              key: "items",
+              render: (items) => Array.isArray(items) ? items.length : 0,
+            },
+            {
+              title: "Amount",
+              dataIndex: "totalAmount",
+              key: "totalAmount",
+              align: "right",
+              render: (amount) => money(amount),
+            },
+            {
+              title: "Status",
+              dataIndex: "status",
+              key: "status",
+              render: (status) => {
+                const currentStatus = status as OrderReturnStatus | undefined;
+                return currentStatus ? (
+                  <Tag color={statusColor[currentStatus]}>{currentStatus}</Tag>
+                ) : (
+                  "-"
+                );
+              },
+            },
+            {
+              title: "Created",
+              dataIndex: "createdAt",
+              key: "createdAt",
+              render: (date) =>
+                date ? new Date(String(date)).toLocaleString() : "-",
+            },
+          ]}
+          expandable={{
+            expandedRowRender: (record) => (
+              <Table
+                rowKey="id"
+                dataSource={record.items ?? []}
+                pagination={false}
+                size="small"
+                columns={[
+                  {
+                    title: "Order item",
+                    dataIndex: "orderItemId",
+                    key: "orderItemId",
+                  },
+                  {
+                    title: "Qty",
+                    dataIndex: "quantity",
+                    key: "quantity",
+                  },
+                  {
+                    title: "Reason",
+                    dataIndex: "reason",
+                    key: "reason",
+                    render: (value) => value ?? "-",
+                  },
+                  {
+                    title: "Line total",
+                    dataIndex: "lineTotal",
+                    key: "lineTotal",
+                    align: "right",
+                    render: (value) => money(value),
+                  },
+                ]}
               />
-            </Form.Item>
-
-            <Form.Item label="Condition" required>
-              <Select value={condition} onChange={setCondition}>
-                <Select.Option value="Unopened">Unopened</Select.Option>
-                <Select.Option value="Used">Used</Select.Option>
-                <Select.Option value="Damaged">Damaged</Select.Option>
-              </Select>
-            </Form.Item>
-
-            <Form.Item label="Refund Amount" required>
-              <Input
-                type="number"
-                step="0.01"
-                value={refundAmount}
-                onChange={(e) => setRefundAmount(e.target.value)}
-                placeholder={`Max: $${order.total.toFixed(2)}`}
-              />
-            </Form.Item>
-
-            <Form.Item>
-              <Button type="primary" htmlType="submit" loading={loading}>
-                Submit Return
-              </Button>
-            </Form.Item>
-          </Form>
-        </Card>
-      </div>
+            ),
+          }}
+        />
+      </Card>
     </div>
   );
 }

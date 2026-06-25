@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  CirclePlus,
+  Eye,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
@@ -12,12 +20,6 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ResponseVariant } from "@/types/product/variant";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 import {
   App,
   Button,
@@ -171,7 +173,7 @@ const VariantManagement = () => {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/product-catalog/variant/details/${row.productId}/variant/${row.id}`
@@ -181,7 +183,7 @@ const VariantManagement = () => {
 
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/product-catalog/variant/update/${row.productId}/variants/${row.id}`
@@ -196,7 +198,7 @@ const VariantManagement = () => {
             cancelText="No"
             onConfirm={() => handleDelete(row.id)}
           >
-            <Button danger size="small" icon={<DeleteOutlined />} />
+            <Button danger size="small" icon={<Trash2 />} />
           </Popconfirm>
         </div>
       ),
@@ -240,7 +242,7 @@ const VariantManagement = () => {
           <div>
             <Button
               type="primary"
-              icon={<PlusOutlined />}
+              icon={<CirclePlus />}
               disabled={!selectedProductId}
               onClick={() => {
                 router.push(

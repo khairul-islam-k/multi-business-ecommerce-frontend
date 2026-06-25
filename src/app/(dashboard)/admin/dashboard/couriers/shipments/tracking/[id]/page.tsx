@@ -1,6 +1,10 @@
 "use client";
 
-import { BookOutlined } from "@ant-design/icons";
+import {
+  BookOpen
+} from "lucide-react";
+
+
 import { Card, Col, Flex, Row, theme } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
@@ -97,7 +101,7 @@ const ShipmentTracking = () => {
                   borderRadius: "100%",
                 }}
               >
-                <BookOutlined />
+                <BookOpen />
               </div>
               <div>
                 <h3
@@ -128,7 +132,7 @@ const ShipmentTracking = () => {
                   borderRadius: "100%",
                 }}
               >
-                <BookOutlined />
+                <BookOpen />
               </div>
               <div>
                 <h3
@@ -159,7 +163,7 @@ const ShipmentTracking = () => {
                   borderRadius: "100%",
                 }}
               >
-                <BookOutlined />
+                <BookOpen />
               </div>
               <div>
                 <h3
@@ -190,7 +194,7 @@ const ShipmentTracking = () => {
                   borderRadius: "100%",
                 }}
               >
-                <BookOutlined />
+                <BookOpen />
               </div>
               <div>
                 <h3
@@ -221,7 +225,7 @@ const ShipmentTracking = () => {
                   borderRadius: "100%",
                 }}
               >
-                <BookOutlined />
+                <BookOpen />
               </div>
               <div>
                 <h3

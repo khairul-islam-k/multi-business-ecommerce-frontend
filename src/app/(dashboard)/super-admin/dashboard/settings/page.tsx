@@ -1,17 +1,19 @@
 "use client";
 
+import {
+  Bell,
+  Cable,
+  Globe,
+  Link as LinkIcon,
+  Mail,
+  Palette,
+  Settings,
+  Shield
+} from "lucide-react";
+
+
 import { Card, Tabs } from "antd";
 
-import {
-  SettingOutlined,
-  SafetyOutlined,
-  BellOutlined,
-  ApiOutlined,
-  LinkOutlined,
-  BgColorsOutlined,
-  GlobalOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
 
 import ThemeForm from "./_components/theme-form";
 import ApiKeysForm from "./_components/api-keys-form";
@@ -38,7 +40,7 @@ export default function SettingsPage() {
               key: "general",
               label: (
                 <>
-                  <SettingOutlined /> General
+                  <Settings /> General
                 </>
               ),
               children: <GeneralSettingsForm />,
@@ -47,7 +49,7 @@ export default function SettingsPage() {
               key: "security",
               label: (
                 <>
-                  <SafetyOutlined /> Security
+                  <Shield /> Security
                 </>
               ),
               children: <SecuritySettingsForm />,
@@ -56,7 +58,7 @@ export default function SettingsPage() {
               key: "notifications",
               label: (
                 <>
-                  <BellOutlined /> Notifications
+                  <Bell /> Notifications
                 </>
               ),
               children: <NotificationSettingsForm />,
@@ -65,7 +67,7 @@ export default function SettingsPage() {
               key: "api",
               label: (
                 <>
-                  <ApiOutlined /> API Keys
+                  <Cable /> API Keys
                 </>
               ),
               children: <ApiKeysForm />,
@@ -74,7 +76,7 @@ export default function SettingsPage() {
               key: "webhooks",
               label: (
                 <>
-                  <LinkOutlined /> Webhooks
+                  <LinkIcon /> Webhooks
                 </>
               ),
               children: <WebhooksForm />,
@@ -83,7 +85,7 @@ export default function SettingsPage() {
               key: "branding",
               label: (
                 <>
-                  <BgColorsOutlined /> Branding
+                  <Palette /> Branding
                 </>
               ),
               children: <BrandingForm />,
@@ -92,7 +94,7 @@ export default function SettingsPage() {
               key: "language",
               label: (
                 <>
-                  <GlobalOutlined /> Language
+                  <Globe /> Language
                 </>
               ),
               children: <LanguageForm />,
@@ -101,7 +103,7 @@ export default function SettingsPage() {
               key: "theme",
               label: (
                 <>
-                  <BgColorsOutlined /> Appearance
+                  <Palette /> Appearance
                 </>
               ),
               children: <ThemeForm />,
@@ -110,7 +112,7 @@ export default function SettingsPage() {
               key: "email",
               label: (
                 <>
-                  <MailOutlined /> Email
+                  <Mail /> Email
                 </>
               ),
               children: <EmailSettingsForm />,

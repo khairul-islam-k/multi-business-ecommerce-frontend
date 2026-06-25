@@ -38,7 +38,7 @@ export default function CreateRole() {
         permissions,
       });
 
-      message.success("Role created.");
+      message.success("Role created successfully.");
       router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
       message.error(getApiErrorMessage(error));

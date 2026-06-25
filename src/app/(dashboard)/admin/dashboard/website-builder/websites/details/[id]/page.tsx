@@ -1,178 +1,165 @@
 "use client";
 
-import api from "@/lib/axios";
+import { Button, Card, Col, Empty, Row, Tabs, Tag, Typography } from "antd";
+import { FileText, Globe, LayoutTemplate, LinkIcon, Repeat2 } from "lucide-react";
+import { useParams } from "next/navigation";
+
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  FileTextOutlined,
-  GlobalOutlined,
-  LayoutOutlined,
-  RetweetOutlined,
-  LinkOutlined,
-} from "@ant-design/icons";
-import { Button, Card, Col, Row, Tabs, Spin, Empty, Typography } from "antd";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-
-import WebsitePage from "../_components/website-page";
-import WebsiteMenu from "../_components/website-menu";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useWebsite } from "@/lib/api";
 import WebsiteDomain from "../_components/website-domain";
+import WebsiteMenu from "../_components/website-menu";
+import WebsitePage from "../_components/website-page";
 
 const { Text } = Typography;
 
+const buildWebsiteUrl = (domain?: string | null, subdomain?: string | null) => {
+  const host = domain ?? subdomain;
+  if (!host) return undefined;
+  const protocol = host.includes("localhost") ? "http" : "https";
+  return `${protocol}://${host}`;
+};
+
 export default function WebsiteDetails() {
   const { id } = useParams();
+  const businessId = useActiveBusinessId();
+  const websiteId = String(id ?? "");
+  const website = useWebsite(businessId ?? "", websiteId);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["website", id],
-    queryFn: async () => {
-      const res = await api.get(`/websites/${id}`);
-      return res.data?.data;
-    },
-    enabled: !!id,
-  });
+  if (!businessId) return <Empty description="No active business selected" />;
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spin />
-      </div>
-    );
+  if (website.isLoading) {
+    return <Loader label="Loading website" />;
   }
 
-  if (isError || !data) {
+  if (website.isError || !website.data) {
     return <Empty description="Website not found" />;
   }
 
+  const data = website.data;
+  const primaryDomain = data.domains?.find((domain) => domain.isPrimary);
+  const siteUrl = buildWebsiteUrl(primaryDomain?.domain, primaryDomain?.subdomain);
   const detailData = [
     {
       id: 1,
-      Icon: FileTextOutlined,
-      count: data.pages_count ?? 0,
-      title: "Pages",
+      Icon: FileText,
+      count: data.config ? 1 : 0,
+      title: "Config",
     },
     {
       id: 2,
-      Icon: LayoutOutlined,
-      count: data.menus_count ?? 0,
-      title: "Menus",
+      Icon: LayoutTemplate,
+      count: Object.keys(data.config?.navigationConfig ?? {}).length,
+      title: "Navigation",
     },
     {
       id: 3,
-      Icon: RetweetOutlined,
-      count: data.domains_count ?? 0,
+      Icon: Repeat2,
+      count: data.domains?.length ?? 0,
       title: "Domains",
     },
     {
       id: 4,
-      Icon: GlobalOutlined,
-      count: data.template_id ? 1 : 0,
+      Icon: Globe,
+      count: data.template ? 1 : 0,
       title: "Template",
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <PageHeader title={data.name} breadcrumb={adminBreadcrumb} />
 
-      {/* TOP ACTION */}
       <div style={{ textAlign: "right" }}>
         <Button
-          icon={<LinkOutlined />}
-          href={
-            data.domain
-              ? `https://${data.domain}`
-              : `https://${data.subdomain}.yourdomain.com`
-          }
+          icon={<LinkIcon size={16} />}
+          href={siteUrl}
           target="_blank"
+          disabled={!siteUrl}
         >
           Visit Site
         </Button>
       </div>
 
-      {/* BASIC INFO CARD */}
       <Card>
         <Row gutter={[16, 16]}>
           <Col xs={24} md={12}>
             <Text type="secondary">Domain</Text>
-            <div>{data.domain || "—"}</div>
+            <div>{primaryDomain?.domain ?? "-"}</div>
           </Col>
 
           <Col xs={24} md={12}>
             <Text type="secondary">Subdomain</Text>
-            <div>{data.subdomain || "—"}</div>
+            <div>{primaryDomain?.subdomain ?? "-"}</div>
           </Col>
 
           <Col xs={24} md={12}>
             <Text type="secondary">Status</Text>
-            <div>{data.status}</div>
+            <div>
+              <Tag>{data.status}</Tag>
+            </div>
           </Col>
 
           <Col xs={24} md={12}>
             <Text type="secondary">Published</Text>
             <div>
-              {data.published_at
-                ? new Date(data.published_at).toLocaleDateString()
-                : "—"}
+              {data.currentVersion?.publishedAt
+                ? new Date(data.currentVersion.publishedAt).toLocaleDateString()
+                : "-"}
             </div>
           </Col>
         </Row>
       </Card>
 
-      {/* STATS */}
       <Row gutter={[16, 16]}>
-        {detailData.map((item) => {
-          const Icon = item.Icon;
-
-          return (
-            <Col xs={24} md={6} key={item.id}>
-              <Card>
-                <div className="flex items-center gap-3">
-                  <div
-                    style={{
-                      background: "#f5f5f5",
-                      height: 50,
-                      width: 50,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 10,
-                    }}
-                  >
-                    <Icon style={{ fontSize: 24 }} />
-                  </div>
-
-                  <div>
-                    <h3 style={{ margin: 0 }}>{item.count}</h3>
-                    <p style={{ margin: 0 }}>{item.title}</p>
-                  </div>
+        {detailData.map(({ Icon, ...item }) => (
+          <Col xs={24} md={6} key={item.id}>
+            <Card>
+              <div className="flex items-center gap-3">
+                <div
+                  style={{
+                    background: "var(--brand-secondary-color, var(--dashboard-disabled-background-color))",
+                    height: 50,
+                    width: 50,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderRadius: 8,
+                  }}
+                >
+                  <Icon size={24} />
                 </div>
-              </Card>
-            </Col>
-          );
-        })}
+
+                <div>
+                  <h3 style={{ margin: 0 }}>{item.count}</h3>
+                  <p style={{ margin: 0 }}>{item.title}</p>
+                </div>
+              </div>
+            </Card>
+          </Col>
+        ))}
       </Row>
 
-      {/* TABS */}
       <Card>
         <Tabs
-          defaultActiveKey="pages"
+          defaultActiveKey="config"
           items={[
             {
-              key: "pages",
-              label: "Pages",
-              children: <WebsitePage websiteId={id as string} />,
+              key: "config",
+              label: "Config",
+              children: <WebsitePage website={data} />,
             },
             {
-              key: "menus",
-              label: "Menus",
-              children: <WebsiteMenu websiteId={id as string} />,
+              key: "navigation",
+              label: "Navigation",
+              children: <WebsiteMenu website={data} />,
             },
             {
               key: "domains",
               label: "Domains",
-              children: <WebsiteDomain websiteId={id as string} />,
+              children: <WebsiteDomain website={data} />,
             },
           ]}
         />

@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
 import {
-  ArrowLeftOutlined,
-  EditOutlined,
-  EnvironmentOutlined,
-} from "@ant-design/icons";
+  ArrowLeft,
+  MapPin,
+  Pencil
+} from "lucide-react";
+
+
+import React from "react";
 import {
   Button,
   Card,
@@ -142,7 +144,7 @@ const CustomerDetails = () => {
 
           <Space wrap>
             <Button
-              icon={<ArrowLeftOutlined />}
+              icon={<ArrowLeft />}
               onClick={() =>
                 router.push("/admin/dashboard/customers/customer-list")
               }
@@ -151,7 +153,7 @@ const CustomerDetails = () => {
             </Button>
 
             <Button
-              icon={<EnvironmentOutlined />}
+              icon={<MapPin />}
               onClick={() =>
                 router.push(
                   `/admin/dashboard/customers/customer-list/address/${id}`
@@ -163,7 +165,7 @@ const CustomerDetails = () => {
 
             <Button
               type="primary"
-              icon={<EditOutlined />}
+              icon={<Pencil />}
               onClick={() =>
                 router.push(
                   `/admin/dashboard/customers/customer-list/update/${item.id}`

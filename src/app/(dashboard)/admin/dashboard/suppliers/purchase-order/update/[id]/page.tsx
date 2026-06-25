@@ -1,4 +1,9 @@
 "use client";
+
+import {
+  ArrowLeft
+} from "lucide-react";
+
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -6,7 +11,6 @@ import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purc
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseOrderStatus, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   App,
   Button,
@@ -105,7 +109,7 @@ const UpdatePurchaseOrder = () => {
       <Card
         title="Update Purchase Order"
         extra={
-          <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+          <Button icon={<ArrowLeft />} onClick={() => router.back()}>
             Back
           </Button>
         }

@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  CirclePlus,
+  Download
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button } from "antd";
-import { PlusOutlined, DownloadOutlined } from "@ant-design/icons";
 
 import { mockStats } from "./data";
 import { mockInvoices } from "./data";
@@ -18,10 +23,10 @@ export default function InvoiceList() {
       <PageHeader title="Invoices" breadcrumb={adminBreadcrumb} />
 
       <div className="flex items-center justify-end gap-3">
-        <Button icon={<DownloadOutlined />}>Export</Button>
+        <Button icon={<Download />}>Export</Button>
 
         <Link href="/admin/dashboard/invoices/create">
-          <Button type="primary" icon={<PlusOutlined />}>
+          <Button type="primary" icon={<CirclePlus />}>
             Create Invoice
           </Button>
         </Link>

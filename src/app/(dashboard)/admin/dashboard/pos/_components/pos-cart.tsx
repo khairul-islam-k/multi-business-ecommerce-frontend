@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  ShoppingCart,
+  Trash2
+} from "lucide-react";
+
+
+import {
   Alert,
   Button,
   Card,
@@ -14,7 +20,6 @@ import {
   Table,
   Typography,
 } from "antd";
-import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { CustomerResponse } from "@/types/customer/customer";
 import { FinanceAccountResponse } from "@/types/finance/account";
 import { TaxResponse } from "@/types/finance/tax";
@@ -188,7 +193,7 @@ export function PosCart({
                 <Button
                   danger
                   size="small"
-                  icon={<DeleteOutlined />}
+                  icon={<Trash2 />}
                   onClick={() => onRemoveItem(item.id)}
                 />
               ),
@@ -354,7 +359,7 @@ export function PosCart({
           type="primary"
           block
           size="large"
-          icon={<ShoppingCartOutlined />}
+          icon={<ShoppingCart />}
           disabled={!canCheckout}
           loading={submitting}
           onClick={onCheckout}

@@ -1,13 +1,15 @@
 "use client";
 
+import {
+  Clock,
+  Eye,
+  Globe,
+  ShieldCheck
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  ClockCircleFilled,
-  EyeOutlined,
-  GlobalOutlined,
-  VerifiedOutlined,
-} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -96,7 +98,7 @@ const PublishSetting = () => {
             gap: "5px",
           }}
         >
-          <ClockCircleFilled />
+          <Clock />
           <p
             style={{
               margin: 0,
@@ -130,7 +132,7 @@ const PublishSetting = () => {
                 gap: "5px",
               }}
             >
-              <GlobalOutlined />
+              <Globe />
               <Text strong>Maintenance Mode</Text>
             </Flex>
             <p>Show a maintenance page to visitors</p>
@@ -149,7 +151,7 @@ const PublishSetting = () => {
                 gap: "5px",
               }}
             >
-              <VerifiedOutlined />
+              <ShieldCheck />
               <Text strong>Password Protection</Text>
             </Flex>
             <p>Require a password to access the site</p>
@@ -168,7 +170,7 @@ const PublishSetting = () => {
                 gap: "5px",
               }}
             >
-              <EyeOutlined />
+              <Eye />
               <Text strong>Search Engine Indexing</Text>
             </Flex>
             <p>Allow search engines to index this site</p>

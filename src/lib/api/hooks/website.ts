@@ -12,6 +12,14 @@ export function useWebsiteQuery(businessId: ApiId, query?: CategoriesQuery) {
   });
 }
 
+export function useWebsiteTemplates(businessId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.website.templates(businessId),
+    queryFn: () => websiteApi.templates(businessId),
+    enabled: Boolean(businessId),
+  });
+}
+
 export function useWebsite(businessId: ApiId, websiteId: ApiId) {
   return useQuery({
     queryKey: apiQueryKeys.website.detail(businessId, websiteId),

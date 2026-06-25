@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Search
+} from "lucide-react";
+
+
 import React, { useState } from "react";
 import { Card, Input, Table, Tag } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -84,7 +88,7 @@ const StatusHistory: React.FC = () => {
       <Card>
         <Input
           placeholder="Filter product name..."
-          prefix={<SearchOutlined />}
+          prefix={<Search />}
           style={{ maxWidth: 280, marginBottom: "8px" }}
           value={search}
           onChange={(e) => setSearch(e.target.value)}

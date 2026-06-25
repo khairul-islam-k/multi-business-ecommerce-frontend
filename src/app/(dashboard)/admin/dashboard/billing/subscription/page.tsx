@@ -1,13 +1,12 @@
 "use client";
 
 import { Button, Card, Col, Empty, Flex, Row, Tag, Typography } from "antd";
-import {
-  useTenantCurrentSubscription,
-  useTenantPackageUsage,
-} from "@/lib/api";
+
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
+import { useTenantCurrentSubscription, useTenantPackageUsage } from "@/lib/api";
+
 import UsageCard from "../_components/usage-card";
 import {
   dateText,
@@ -134,7 +133,6 @@ export default function SubscriptionPage() {
           </Col>
         )}
       </Row>
-
     </div>
   );
 }

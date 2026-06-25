@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import { ArrowLeft } from "lucide-react";
 import NextImage from "next/image";
 import { useParams, useRouter } from "next/navigation";
 
@@ -8,7 +9,6 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCategory } from "@/lib/api/hooks/product-categories";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 
 import type { ReactNode } from "react";
 
@@ -51,7 +51,7 @@ const ViewCategoryDetails = () => {
         breadcrumb={adminBreadcrumb}
       />
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
       </div>

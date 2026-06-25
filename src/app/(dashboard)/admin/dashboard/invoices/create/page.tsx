@@ -1,8 +1,14 @@
 "use client";
 
+import {
+  CirclePlus,
+  Save,
+  Trash2
+} from "lucide-react";
+
+
 import { useState } from "react";
 import { Button, Input, Card } from "antd";
-import { SaveOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -26,8 +32,8 @@ export default function CreateInvoice() {
       <PageHeader title="Create Invoice" breadcrumb={adminBreadcrumb} />
 
       <div className="flex items-center justify-end gap-3">
-        <Button icon={<SaveOutlined />}>Save Draft</Button>
-        <Button type="primary" icon={<SaveOutlined />}>
+        <Button icon={<Save />}>Save Draft</Button>
+        <Button type="primary" icon={<Save />}>
           Create & Send
         </Button>
       </div>
@@ -45,7 +51,7 @@ export default function CreateInvoice() {
                     ৳{(item.qty * item.rate).toLocaleString()}
                   </div>
                   <Button
-                    icon={<DeleteOutlined />}
+                    icon={<Trash2 />}
                     onClick={() => removeItem(item.id)}
                   />
                 </div>
@@ -54,7 +60,7 @@ export default function CreateInvoice() {
 
             <div className="my-2" />
 
-            <Button icon={<PlusOutlined />} onClick={addItem}>
+            <Button icon={<CirclePlus />} onClick={addItem}>
               Add Item
             </Button>
           </Card>

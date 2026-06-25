@@ -1,7 +1,14 @@
 "use client";
 
+import {
+  Check,
+  CirclePlus,
+  Eye,
+  X
+} from "lucide-react";
+
+
 import { Button, Card, Select, Tag, Tooltip } from "antd";
-import { CheckOutlined, CloseOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -191,7 +198,7 @@ export default function StockAdjustmentListPage() {
           <Tooltip title="View">
             <Button
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() =>
                 router.push(
                   `/admin/dashboard/inventory/stock-adjustments/details/${row.id}`,
@@ -204,7 +211,7 @@ export default function StockAdjustmentListPage() {
             <Button
               size="small"
               type="primary"
-              icon={<CheckOutlined />}
+              icon={<Check />}
               disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
               onClick={() => handleApprove(row.id)}
             />
@@ -214,7 +221,7 @@ export default function StockAdjustmentListPage() {
             <Button
               size="small"
               danger
-              icon={<CloseOutlined />}
+              icon={<X />}
               disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
               onClick={() => handleCancel(row.id)}
             />
@@ -255,7 +262,7 @@ export default function StockAdjustmentListPage() {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/inventory/stock-adjustments/create")
                 }

@@ -13,7 +13,7 @@ import { useAuthStore } from "@/stores/auth.store";
 
 import ProductCategoryForm, {
   ProductCategoryFormValues,
-} from "../../_components/ProductCategoryForm";
+} from "../../_components/product-category-form";
 
 const UpdateProductCategoryPage = () => {
   const { message } = App.useApp();

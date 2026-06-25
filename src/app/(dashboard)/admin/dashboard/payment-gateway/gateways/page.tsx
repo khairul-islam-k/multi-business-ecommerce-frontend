@@ -1,9 +1,14 @@
 "use client";
 
+import {
+  CirclePlus,
+  Settings
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button } from "antd";
 import { useState } from "react";
-import { PlusOutlined, SettingOutlined } from "@ant-design/icons";
 
 import { mockGateways } from "./data";
 import StatusBadge from "../_components/badge";
@@ -21,12 +26,12 @@ export default function PaymentGatewayList() {
 
       <div className="flex items-center justify-end gap-4">
         <Link href="/admin/dashboard/payment-gateway/configurations">
-          <Button icon={<SettingOutlined />}>Configurations</Button>
+          <Button icon={<Settings />}>Configurations</Button>
         </Link>
 
         <Button
           type="primary"
-          icon={<PlusOutlined />}
+          icon={<CirclePlus />}
           onClick={() => setOpen(true)}
         >
           Add Gateway

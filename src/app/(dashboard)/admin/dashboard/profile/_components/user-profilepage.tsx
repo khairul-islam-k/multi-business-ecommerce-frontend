@@ -1,5 +1,14 @@
 "use client";
 
+import {
+  IdCard,
+  Landmark,
+  Mail,
+  Phone,
+  UserRound
+} from "lucide-react";
+
+
 import type { ReactNode } from "react";
 import {
     Avatar,
@@ -13,13 +22,6 @@ import {
     Typography,
     theme,
 } from "antd";
-import {
-    BankOutlined,
-    IdcardOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    UserOutlined,
-} from "@ant-design/icons";
 
 import { useAuthStore } from "@/stores/auth.store";
 
@@ -96,7 +98,7 @@ export default function UserProfilePage() {
                     <Flex align="center" gap={18} wrap>
                         <Avatar
                             size={76}
-                            icon={<UserOutlined />}
+                            icon={<UserRound />}
                             style={{
                                 background: token.colorPrimary,
                                 color: token.colorWhite,
@@ -180,42 +182,42 @@ export default function UserProfilePage() {
                         <Row gutter={[12, 12]}>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<IdcardOutlined />}
+                                    icon={<IdCard />}
                                     label="User ID"
                                     value={user.id}
                                 />
                             </Col>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<UserOutlined />}
+                                    icon={<UserRound />}
                                     label="Name"
                                     value={user.name}
                                 />
                             </Col>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<MailOutlined />}
+                                    icon={<Mail />}
                                     label="Email"
                                     value={user.email}
                                 />
                             </Col>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<PhoneOutlined />}
+                                    icon={<Phone />}
                                     label="Phone"
                                     value={user.phone}
                                 />
                             </Col>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<IdcardOutlined />}
+                                    icon={<IdCard />}
                                     label="User ID"
                                     value={user.id}
                                 />
                             </Col>
                             <Col xs={24} md={12}>
                                 <FieldRow
-                                    icon={<UserOutlined />}
+                                    icon={<UserRound />}
                                     label="Last updated"
                                     value={user.updatedAt}
                                 />
@@ -241,7 +243,7 @@ export default function UserProfilePage() {
                                     >
                                         <Avatar
                                             size="small"
-                                            icon={<BankOutlined />}
+                                            icon={<Landmark />}
                                             style={{ background: token.colorPrimary }}
                                         >
                                             {business.name?.charAt(0).toUpperCase()}

@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  Settings,
+  Trash2
+} from "lucide-react";
+
+
 import { Collapse, Input, Button, Space } from "antd";
-import { SettingOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
 const { TextArea } = Input;
@@ -11,7 +16,7 @@ export default function ConfigCollapse() {
     `{
   "heading": "Welcome to Main Store",
   "subheading": "Shop the best deals",
-  "bg_color": "#f0f0f0"
+  "bg_color": "var(--dashboard-border-subtle-color)"
    }`,
   );
 
@@ -55,13 +60,13 @@ export default function ConfigCollapse() {
             background: "white",
           }}
         >
-          <SettingOutlined />
+          <Settings />
           <strong>hero</strong>
-          <span style={{ color: "#999" }}>hero-banner</span>
-          <span style={{ color: "#999" }}>Order: 1</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>hero-banner</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>Order: 1</span>
         </Space>
       ),
-      extra: <DeleteOutlined style={{ color: "red" }} />,
+      extra: <Trash2 style={{ color: "red" }} />,
       children: (
         <>
           <div style={{ marginBottom: 8, fontWeight: 500 }}>Config JSON</div>
@@ -97,13 +102,13 @@ export default function ConfigCollapse() {
             background: "white",
           }}
         >
-          <SettingOutlined />
+          <Settings />
           <strong>featured_products</strong>
-          <span style={{ color: "#999" }}>featured-grid</span>
-          <span style={{ color: "#999" }}>Order: 2</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>featured-grid</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>Order: 2</span>
         </Space>
       ),
-      extra: <DeleteOutlined style={{ color: "red" }} />,
+      extra: <Trash2 style={{ color: "red" }} />,
       children: (
         <>
           <div style={{ marginBottom: 8, fontWeight: 500 }}>Config JSON</div>
@@ -139,13 +144,13 @@ export default function ConfigCollapse() {
             background: "white",
           }}
         >
-          <SettingOutlined />
+          <Settings />
           <strong>testimonials</strong>
-          <span style={{ color: "#999" }}>reviews</span>
-          <span style={{ color: "#999" }}>Order: 3</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>reviews</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>Order: 3</span>
         </Space>
       ),
-      extra: <DeleteOutlined style={{ color: "red" }} />,
+      extra: <Trash2 style={{ color: "red" }} />,
       children: (
         <>
           <div style={{ marginBottom: 8, fontWeight: 500 }}>Config JSON</div>
@@ -181,13 +186,13 @@ export default function ConfigCollapse() {
             background: "white",
           }}
         >
-          <SettingOutlined />
+          <Settings />
           <strong>newsletter</strong>
-          <span style={{ color: "#999" }}>newsletter-signup</span>
-          <span style={{ color: "#999" }}>Order: 4</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>newsletter-signup</span>
+          <span style={{ color: "var(--dashboard-text-muted-color)" }}>Order: 4</span>
         </Space>
       ),
-      extra: <DeleteOutlined style={{ color: "red" }} />,
+      extra: <Trash2 style={{ color: "red" }} />,
       children: (
         <>
           <div style={{ marginBottom: 8, fontWeight: 500 }}>Config JSON</div>

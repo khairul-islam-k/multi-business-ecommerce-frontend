@@ -1,13 +1,15 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Download,
+  Printer
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Badge, Button, Typography } from "antd";
-import {
-  DownloadOutlined,
-  ArrowLeftOutlined,
-  PrinterOutlined,
-} from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -46,14 +48,14 @@ export default function InvoicePreview() {
       <div className="mb-6 flex justify-between">
         <Link href="/admin/dashboard/invoices">
           <span className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
-            <ArrowLeftOutlined /> Back
+            <ArrowLeft /> Back
           </span>
         </Link>
 
         <div className="flex gap-2">
-          <Button icon={<PrinterOutlined />}>Print</Button>
+          <Button icon={<Printer />}>Print</Button>
 
-          <Button type="primary" icon={<DownloadOutlined />}>
+          <Button type="primary" icon={<Download />}>
             Download PDF
           </Button>
         </div>

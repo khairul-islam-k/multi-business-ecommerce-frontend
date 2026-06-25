@@ -1,15 +1,17 @@
 "use client";
 
+import {
+  Banknote,
+  ChartBar,
+  FileText,
+  ShoppingBag,
+  TrendingUp,
+  Truck
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Card, Row, Col, Typography } from "antd";
-import {
-  BarChartOutlined,
-  RiseOutlined,
-  ShoppingOutlined,
-  FileTextOutlined,
-  DollarOutlined,
-  TruckOutlined,
-} from "@ant-design/icons";
 
 import StatCard, { Stat } from "@/components/shared/stat-card";
 
@@ -21,28 +23,28 @@ const stats: Stat[] = [
     value: "₹32,45,000",
     change: "+12.5% vs last month",
     up: true,
-    icon: DollarOutlined,
+    icon: Banknote,
   },
   {
     label: "Total Orders",
     value: "2,450",
     change: "+8.3% vs last month",
     up: true,
-    icon: ShoppingOutlined,
+    icon: ShoppingBag,
   },
   {
     label: "Avg Order Value",
     value: "₹1,325",
     change: "-2.1% vs last month",
     up: false,
-    icon: BarChartOutlined,
+    icon: ChartBar,
   },
   {
     label: "Net Profit Margin",
     value: "18.2%",
     change: "+1.5% vs last month",
     up: true,
-    icon: RiseOutlined,
+    icon: TrendingUp,
   },
 ];
 
@@ -50,63 +52,63 @@ const reportModules = [
   {
     title: "Sales Reports",
     path: "/admin/dashboard/reports/sales",
-    icon: RiseOutlined,
+    icon: TrendingUp,
     description: "Revenue, top products, and sales trends",
     stat: "₹32.4L",
   },
   {
     title: "Order Reports",
     path: "/admin/dashboard/reports/orders",
-    icon: FileTextOutlined,
+    icon: FileText,
     description: "Order volume, status, and fulfillment",
     stat: "2,450",
   },
   {
     title: "Inventory Reports",
     path: "/admin/dashboard/reports/inventory",
-    icon: ShoppingOutlined,
+    icon: ShoppingBag,
     description: "Stock levels, turnover, and dead stock",
     stat: "12,800 SKUs",
   },
   {
     title: "Supplier Reports",
     path: "/admin/dashboard/reports/suppliers",
-    icon: TruckOutlined,
+    icon: Truck,
     description: "Supplier performance and procurement",
     stat: "34 Suppliers",
   },
   {
     title: "Courier Reports",
     path: "/admin/dashboard/reports/couriers",
-    icon: TruckOutlined,
+    icon: Truck,
     description: "Delivery times and courier performance",
     stat: "5 Partners",
   },
   {
     title: "Expense Reports",
     path: "/admin/dashboard/reports/expenses",
-    icon: DollarOutlined,
+    icon: Banknote,
     description: "Operating expenses and cost analysis",
     stat: "₹8.2L",
   },
   {
     title: "Financial Reports",
     path: "/admin/dashboard/reports/financial",
-    icon: BarChartOutlined,
+    icon: ChartBar,
     description: "P&L, balance sheet, and cash flow",
     stat: "₹24.2L Net",
   },
   {
     title: "Revenue Reports",
     path: "/admin/dashboard/reports/revenue",
-    icon: RiseOutlined,
+    icon: TrendingUp,
     description: "Revenue breakdown and growth trends",
     stat: "+12.5%",
   },
   {
     title: "Profit Reports",
     path: "/admin/dashboard/reports/profit",
-    icon: DollarOutlined,
+    icon: Banknote,
     description: "Margins, COGS, and net profit",
     stat: "18.2%",
   },
@@ -154,13 +156,13 @@ export default function ReportsOverview() {
                   <div style={{ display: "flex", gap: 12 }}>
                     <div
                       style={{
-                        background: "#f0f5ff",
+                        background: "var(--dashboard-sidebar-active-background-color)",
                         padding: 10,
                         borderRadius: 8,
                         height: "fit-content",
                       }}
                     >
-                      <Icon style={{ fontSize: 18, color: "#1677ff" }} />
+                      <Icon style={{ fontSize: 18, color: "var(--dashboard-primary-color)" }} />
                     </div>
 
                     <div style={{ flex: 1 }}>

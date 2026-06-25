@@ -1,18 +1,20 @@
 "use client";
 
-import { useBrandMutation } from "@/lib/api/hooks/product-brand";
-import BrandForm, { BrandFormValues } from "../_components/BrandForm";
-import { useAuthStore } from "@/stores/auth.store";
-import { BrandPayload } from "@/types/product/brands";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { App } from "antd";
-import { getApiErrorMessage } from "@/lib/axios";
 import { useRouter } from "next/navigation";
 
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useBrandMutation } from "@/lib/api/hooks/product-brand";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { BrandPayload } from "@/types/product/brands";
+
+import BrandForm, { BrandFormValues } from "../_components/brand-form";
+
 const CreateBrandPage = () => {
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const { createBrand } = useBrandMutation(businessId);
   const { message } = App.useApp();
   const router = useRouter();
@@ -28,12 +30,11 @@ const CreateBrandPage = () => {
 
     try {
       await createBrand.mutateAsync(payload);
-      message.success('Brand created successfully');
-      router.push('/admin/dashboard/product-catalog/brands')
+      message.success("Brand created successfully");
+      router.push("/admin/dashboard/product-catalog/brands");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
-
   };
 
   return (
@@ -44,10 +45,7 @@ const CreateBrandPage = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <BrandForm
-        mode="create"
-        onSubmit={handleCreateBrand}
-      />
+      <BrandForm mode="create" onSubmit={handleCreateBrand} />
     </div>
   );
 };

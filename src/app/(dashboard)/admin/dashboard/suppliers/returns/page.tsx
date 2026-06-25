@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  CircleCheck,
+  CircleX,
+  Eye
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -10,11 +17,6 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseReturnResponse, PurchaseReturnStatus } from "@/types/suppliers/return";
-import {
-    CheckCircleOutlined,
-    CloseCircleOutlined,
-    EyeOutlined,
-} from "@ant-design/icons";
 import { App, Button, Card, Popconfirm, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
@@ -151,7 +153,7 @@ const ReturnPage = () => {
                         <Tooltip title="View">
                             <Button
                                 size="small"
-                                icon={<EyeOutlined />}
+                                icon={<Eye />}
                                 onClick={() =>
                                     router.push(`/admin/dashboard/suppliers/returns/view/${row.id}`)
                                 }
@@ -170,7 +172,7 @@ const ReturnPage = () => {
                                 <Button
                                     size="small"
                                     type="primary"
-                                    icon={<CheckCircleOutlined />}
+                                    icon={<CircleCheck />}
                                     disabled={!canAction}
                                 />
                             </Tooltip>
@@ -188,7 +190,7 @@ const ReturnPage = () => {
                                 <Button
                                     danger
                                     size="small"
-                                    icon={<CloseCircleOutlined />}
+                                    icon={<CircleX />}
                                     disabled={!canAction}
                                 />
                             </Tooltip>

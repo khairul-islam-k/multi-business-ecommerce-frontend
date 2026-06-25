@@ -1,9 +1,7 @@
-// src/app/internal-error/page.tsx
-
 "use client";
 
-import Link from "next/link";
 import { AlertTriangle, Home, RefreshCcw } from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {

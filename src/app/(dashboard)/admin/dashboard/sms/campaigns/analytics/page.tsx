@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  CircleCheck,
+  CircleX,
+  Send,
+  UserRound
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { Card } from "antd";
 import {
@@ -15,16 +23,10 @@ import {
   Legend,
   CartesianGrid,
 } from "recharts";
-import {
-  SendOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 import { mockCampaigns } from "../data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
-const COLORS = ["#1677ff", "#52c41a", "#ff4d4f", "#faad14"];
+const COLORS = ["var(--dashboard-primary-color)", "var(--dashboard-success-color)", "var(--dashboard-error-color)", "var(--dashboard-warning-color)"];
 
 export default function CampaignAnalytics() {
   const stats = mockCampaigns.reduce(
@@ -55,22 +57,22 @@ export default function CampaignAnalytics() {
     {
       label: "Total Recipients",
       value: stats.recipients,
-      icon: <UserOutlined />,
+      icon: <UserRound />,
     },
     {
       label: "Total Sent",
       value: stats.sent,
-      icon: <SendOutlined />,
+      icon: <Send />,
     },
     {
       label: "Delivered",
       value: stats.sent,
-      icon: <CheckCircleOutlined />,
+      icon: <CircleCheck />,
     },
     {
       label: "Failed",
       value: stats.failed,
-      icon: <CloseCircleOutlined />,
+      icon: <CircleX />,
     },
   ];
 
@@ -104,8 +106,8 @@ export default function CampaignAnalytics() {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="sent" fill="#1677ff" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="failed" fill="#ff4d4f" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="sent" fill="var(--dashboard-primary-color)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="failed" fill="var(--dashboard-error-color)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </Card>

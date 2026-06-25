@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Save
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button, Card, Input, Switch } from "antd";
-import { ArrowLeftOutlined, SaveOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -14,9 +19,9 @@ export default function CODSettings() {
 
       <div className="flex items-center justify-end gap-3">
         <Link href="/admin/dashboard/payment-gateway/gateways">
-          <Button icon={<ArrowLeftOutlined />}>Back to Gateways</Button>
+          <Button icon={<ArrowLeft />}>Back to Gateways</Button>
         </Link>
-        <Button type="primary" icon={<SaveOutlined />}>
+        <Button type="primary" icon={<Save />}>
           Save Settings
         </Button>
       </div>

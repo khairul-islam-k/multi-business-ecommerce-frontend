@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import {
-  SendOutlined,
-  UserOutlined,
-  SettingOutlined,
-  MessageOutlined,
-} from "@ant-design/icons";
+  MessageCircle,
+  Send,
+  Settings,
+  UserRound
+} from "lucide-react";
+
+
+import { useState, type ReactNode } from "react";
 import {
   Card,
   Input,
@@ -18,16 +20,28 @@ import {
   Typography,
 } from "antd";
 
-import { mockNotes } from "../../data";
 import { useSwal } from "@/hooks/use-swal";
 
 const { Text } = Typography;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const noteTypeConfig: Record<string, any> = {
-  internal: { icon: <SettingOutlined />, label: "Internal", color: "blue" },
-  customer: { icon: <UserOutlined />, label: "Customer", color: "green" },
-  system: { icon: <MessageOutlined />, label: "System", color: "gray" },
+type OrderNote = {
+  id: string;
+  order_id: string;
+  note_type: "internal" | "customer" | "system";
+  created_by: string;
+  created_at: string;
+  note: string;
+};
+
+const mockNotes: OrderNote[] = [];
+
+const noteTypeConfig: Record<
+  OrderNote["note_type"],
+  { icon: ReactNode; label: string; color: string }
+> = {
+  internal: { icon: <Settings />, label: "Internal", color: "blue" },
+  customer: { icon: <UserRound />, label: "Customer", color: "green" },
+  system: { icon: <MessageCircle />, label: "System", color: "gray" },
 };
 
 export function OrderNotesPanel({ orderId }: { orderId: string }) {
@@ -63,7 +77,7 @@ export function OrderNotesPanel({ orderId }: { orderId: string }) {
           />
           <Button
             type="primary"
-            icon={<SendOutlined />}
+            icon={<Send />}
             onClick={handleAdd}
             disabled={!newNote.trim()}
           >

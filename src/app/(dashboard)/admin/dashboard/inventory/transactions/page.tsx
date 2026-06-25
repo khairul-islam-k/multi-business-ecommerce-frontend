@@ -1,7 +1,11 @@
 "use client";
 
+import {
+  Eye
+} from "lucide-react";
+
+
 import { Button, Card, Tag } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -190,7 +194,7 @@ export default function InventoryTransactionsPage() {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/inventory/stock-overview/details/${row.stockId}`

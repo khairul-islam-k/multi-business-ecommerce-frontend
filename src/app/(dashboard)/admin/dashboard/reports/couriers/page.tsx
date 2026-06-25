@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  CarOutlined,
-  ClockCircleOutlined,
-  CheckCircleOutlined,
-  DollarOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  CircleCheck,
+  Clock,
+  Truck
+} from "lucide-react";
+
+
 
 import ReportPage from "../_components/report-page";
 
@@ -20,28 +22,28 @@ export default function CourierReports() {
           value: "5",
           change: "Partners",
           up: true,
-          icon: CarOutlined,
+          icon: Truck,
         },
         {
           label: "Avg Delivery Time",
           value: "3.8 days",
           change: "-0.5 days",
           up: false,
-          icon: ClockCircleOutlined,
+          icon: Clock,
         },
         {
           label: "Delivery Success",
           value: "96.2%",
           change: "+0.8%",
           up: true,
-          icon: CheckCircleOutlined,
+          icon: CircleCheck,
         },
         {
           label: "Shipping Cost",
           value: "₹2,40,000",
           change: "-3%",
           up: false,
-          icon: DollarOutlined,
+          icon: Banknote,
         },
       ]}
       chartData={[

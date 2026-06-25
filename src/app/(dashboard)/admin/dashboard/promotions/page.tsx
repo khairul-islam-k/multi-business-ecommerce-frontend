@@ -1,10 +1,16 @@
 "use client";
 
+import {
+  Eye,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Space, Modal, Descriptions } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import { mockPromotions, Promotion } from "./data";
 import StatusBadge from "./_components/status-badge";
@@ -78,17 +84,17 @@ export default function PromotionList() {
           <Space>
             <Button
               type="text"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() => handleView(row)}
             />
             <Button
               type="text"
-              icon={<EditOutlined />}
+              icon={<Pencil />}
               onClick={() =>
                 router.push(`/admin/dashboard/promotions/${row.id}/edit`)
               }
             />
-            <Button type="text" danger icon={<DeleteOutlined />} />
+            <Button type="text" danger icon={<Trash2 />} />
           </Space>
         )}
       />

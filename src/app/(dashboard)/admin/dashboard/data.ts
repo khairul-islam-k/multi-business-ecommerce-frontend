@@ -1,9 +1,9 @@
 import {
-  ShoppingCartOutlined,
-  TeamOutlined,
-  AppstoreOutlined,
-  DollarCircleOutlined,
-} from "@ant-design/icons";
+  CircleDollarSign,
+  LayoutDashboard,
+  ShoppingCart,
+  Users
+} from "lucide-react";
 
 export const mockStats = [
   {
@@ -11,28 +11,28 @@ export const mockStats = [
     value: "1,482",
     change: "+2.1%",
     up: true,
-    icon: ShoppingCartOutlined,
+    icon: ShoppingCart,
   },
   {
     label: "Active Customers",
     value: "1,247",
     change: "+3.4%",
     up: true,
-    icon: TeamOutlined,
+    icon: Users,
   },
   {
     label: "Total Products",
     value: "384",
     change: "+1.8%",
     up: true,
-    icon: AppstoreOutlined,
+    icon: LayoutDashboard,
   },
   {
     label: "Total Revenue",
     value: "$128,430",
     change: "+5.2%",
     up: true,
-    icon: DollarCircleOutlined,
+    icon: CircleDollarSign,
   },
 ];
 

@@ -1,4 +1,7 @@
-import { LayoutOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  LayoutDashboard,
+  Search
+} from "lucide-react";
 import { Card, Flex, Grid, Input, Space, Table } from "antd";
 
 const dataSource = [
@@ -103,7 +106,7 @@ const PaymentTable = () => {
                 fontWeight: "bold",
               }}
             >
-              <LayoutOutlined /> Payment Records
+              <LayoutDashboard /> Payment Records
             </h3>
           </div>
 
@@ -112,7 +115,7 @@ const PaymentTable = () => {
               style={{
                 width: screens.lg ? "330px" : "100%",
               }}
-              prefix={<SearchOutlined />}
+              prefix={<Search />}
               placeholder="Search packages..."
               onChange={(e) => handleSearch(e.target.value)}
             />

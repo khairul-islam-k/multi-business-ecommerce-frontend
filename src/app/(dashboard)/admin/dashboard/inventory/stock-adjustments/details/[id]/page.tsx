@@ -1,16 +1,18 @@
 "use client";
 
+import {
+  ArrowLeft,
+  CircleCheck,
+  CircleX
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useStockAdjustment } from "@/lib/api/hooks/stock-adjustment";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockAdjustmentResponse } from "@/types/stock/adjustment";
 // import type { StockAdjustmentResponse } from "@/types/stock-adjustment/stock-adjustment";
-import {
-    ArrowLeftOutlined,
-    CheckCircleOutlined,
-    CloseCircleOutlined,
-} from "@ant-design/icons";
 import {
     Button,
     Card,
@@ -169,7 +171,7 @@ const AdjustmentDetails = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+            <Button icon={<ArrowLeft />} onClick={() => router.back()}>
                 Back
             </Button>
 
@@ -234,11 +236,11 @@ const AdjustmentDetails = () => {
 
                     <Descriptions.Item label="Approval Status">
                         {adjustment.approvedAt ? (
-                            <Tag icon={<CheckCircleOutlined />} color="green">
+                            <Tag icon={<CircleCheck />} color="green">
                                 Approved
                             </Tag>
                         ) : (
-                            <Tag icon={<CloseCircleOutlined />} color="default">
+                            <Tag icon={<CircleX />} color="default">
                                 Not Approved
                             </Tag>
                         )}

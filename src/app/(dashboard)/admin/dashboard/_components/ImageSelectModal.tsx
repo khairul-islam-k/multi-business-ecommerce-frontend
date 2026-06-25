@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  CircleCheck,
+  CirclePlus,
+  RefreshCw
+} from "lucide-react";
+
+
+import { useState } from "react";
 import {
   App,
   Button,
@@ -12,12 +19,8 @@ import {
   Spin,
   Typography,
   Upload,
+  theme,
 } from "antd";
-import {
-  CheckCircleFilled,
-  LoadingOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 import { useAuthStore } from "@/stores/auth.store";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
@@ -57,6 +60,7 @@ const ImageSelectModal = ({
   onSelect,
 }: ImageSelectModalProps) => {
   const { message } = App.useApp();
+  const { token } = theme.useToken();
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -69,12 +73,6 @@ const ImageSelectModal = ({
   const isUploading = uploadMedia.isPending;
 
   const images: MediaAsset[] = data?.items ?? [];
-
-  useEffect(() => {
-    if (open) {
-      setCurrentUrl(selectedUrl);
-    }
-  }, [open, selectedUrl]);
 
   const handleUploadImage = async (file: File) => {
     try {
@@ -113,6 +111,11 @@ const ImageSelectModal = ({
     <Modal
       title="Select Image"
       open={open}
+      afterOpenChange={(isOpen) => {
+        if (isOpen) {
+          setCurrentUrl(selectedUrl);
+        }
+      }}
       onCancel={isUploading ? undefined : onClose}
       width={900}
       centered
@@ -155,7 +158,7 @@ const ImageSelectModal = ({
               hoverable={!isUploading}
               style={{
                 height: 230,
-                border: "1px dashed #1677ff",
+                border: `1px dashed ${token.colorPrimary}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -171,10 +174,13 @@ const ImageSelectModal = ({
               }}
             >
               {isUploading ? (
-                <div className="flex flex-col items-center justify-center gap-3 text-blue-600">
+                <div
+                  className="flex flex-col items-center justify-center gap-3"
+                  style={{ color: token.colorPrimary }}
+                >
                   <Spin
                     indicator={
-                      <LoadingOutlined style={{ fontSize: 34 }} spin />
+                      <RefreshCw className="animate-spin" size={34} />
                     }
                   />
 
@@ -185,8 +191,11 @@ const ImageSelectModal = ({
                   </Text>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center gap-2 text-blue-600">
-                  <PlusOutlined style={{ fontSize: 34 }} />
+                <div
+                  className="flex flex-col items-center justify-center gap-2"
+                  style={{ color: token.colorPrimary }}
+                >
+                  <CirclePlus size={34} />
 
                   <Text strong>Upload Image</Text>
 
@@ -227,8 +236,8 @@ const ImageSelectModal = ({
                   }}
                   style={{
                     border: isSelected
-                      ? "2px solid #1677ff"
-                      : "1px solid #f0f0f0",
+                      ? `2px solid ${token.colorPrimary}`
+                      : `1px solid ${token.colorBorderSecondary}`,
                     position: "relative",
                     overflow: "hidden",
                     cursor: isUploading ? "not-allowed" : "pointer",
@@ -239,7 +248,7 @@ const ImageSelectModal = ({
                         height: 160,
                         position: "relative",
                         overflow: "hidden",
-                        background: "#f5f5f5",
+                        background: token.colorFillTertiary,
                       }}
                     >
                       <Image
@@ -257,16 +266,16 @@ const ImageSelectModal = ({
                       />
 
                       {isSelected ? (
-                        <CheckCircleFilled
+                        <CircleCheck
                           style={{
                             position: "absolute",
                             top: 10,
                             right: 10,
-                            fontSize: 24,
-                            color: "#1677ff",
-                            background: "#fff",
+                            color: token.colorPrimary,
+                            background: token.colorBgContainer,
                             borderRadius: "50%",
                           }}
+                          size={24}
                         />
                       ) : null}
                     </div>

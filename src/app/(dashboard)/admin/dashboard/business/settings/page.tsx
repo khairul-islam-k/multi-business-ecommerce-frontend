@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
   Button,
@@ -19,24 +17,27 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
+import { useEffect } from "react";
 
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useSwal } from "@/hooks/use-swal";
 import { useBusiness, useBusinessMutations } from "@/lib/api";
-import type { AuthBusiness, BusinessPayload } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth.store";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import { getApiErrorMessage } from "@/lib/axios";
 import {
   countryOptions,
   currencyOptions,
   timezoneOptions,
 } from "@/lib/business/options";
-import { usePermissionAccess } from "@/hooks/use-permission-access";
-import { PERMISSIONS } from "@/lib/auth/permissions";
-import Loader from "@/components/shared/loader";
+import { useAuthStore } from "@/stores/auth.store";
+import { useQueryClient } from "@tanstack/react-query";
+
+import type { AuthBusiness, BusinessPayload } from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -452,7 +453,7 @@ export default function BusinessSettingsPage() {
                   {deletePermission.allowed && (
                     <Button
                       danger
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 />}
                       loading={removeBusiness.isPending}
                       onClick={() => handleDeleteBusiness(item)}
                     >

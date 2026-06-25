@@ -1,5 +1,8 @@
+import {
+  MapPin,
+  Search
+} from "lucide-react";
 import { Card, Flex, Grid, Input, Space, Table, Tag } from "antd";
-import { EnvironmentOutlined, SearchOutlined } from "@ant-design/icons";
 
 const AddressTabla = () => {
   const screens = Grid.useBreakpoint();
@@ -120,7 +123,7 @@ const AddressTabla = () => {
                 fontWeight: "bold",
               }}
             >
-              <EnvironmentOutlined /> Addresses
+              <MapPin /> Addresses
             </h3>
           </div>
 
@@ -129,7 +132,7 @@ const AddressTabla = () => {
               style={{
                 width: screens.lg ? "330px" : "100%",
               }}
-              prefix={<SearchOutlined />}
+              prefix={<Search />}
               placeholder="Search packages..."
               onChange={(e) => handleSearch(e.target.value)}
             />

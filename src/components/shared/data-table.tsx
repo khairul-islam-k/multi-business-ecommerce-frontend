@@ -1,7 +1,7 @@
 "use client";
 
 import { useDebounce } from "use-debounce";
-import { SearchOutlined } from "@ant-design/icons";
+import { Search } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Card,
@@ -14,7 +14,6 @@ import {
   type TableProps,
 } from "antd";
 import Pagination from "./pagination";
-
 
 const { useBreakpoint } = Grid;
 
@@ -239,18 +238,18 @@ export function DataTable<T extends object>({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col items-start justify-between gap-2 md:flex-row md:items-center">
-        <div className="flex w-full flex-wrap items-center gap-2 md:w-auto">
-          {
-            isSearch && <Input
+      <div className="flex flex-col items-start justify-between gap-2 md:flex-row">
+        <div className="flex w-full flex-wrap items-start gap-2 md:w-auto">
+          {isSearch && (
+            <Input
               placeholder="Search..."
-              prefix={<SearchOutlined />}
+              prefix={<Search size={16} />}
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               allowClear
               className="w-full sm:w-64"
             />
-          }
+          )}
 
           {extra}
         </div>

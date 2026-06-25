@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  CirclePlus,
+  Save,
+  Trash2
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
@@ -10,11 +17,6 @@ import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockTransferPayload } from "@/types/stock/stock-tansfer";
-import {
-  DeleteOutlined,
-  PlusOutlined,
-  SaveOutlined,
-} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -310,7 +312,7 @@ export default function CreateStockTransferPage() {
                           <Button
                             danger
                             size="small"
-                            icon={<DeleteOutlined />}
+                            icon={<Trash2 />}
                             onClick={() => remove(field.name)}
                           >
                             Remove
@@ -330,7 +332,7 @@ export default function CreateStockTransferPage() {
 
                   <Button
                     type="dashed"
-                    icon={<PlusOutlined />}
+                    icon={<CirclePlus />}
                     onClick={() =>
                       add({
                         productId: undefined,
@@ -349,7 +351,7 @@ export default function CreateStockTransferPage() {
           <Space className="mt-4">
             <Button
             loading={createStockTransfer.isPending}
-            type="primary" htmlType="submit" icon={<SaveOutlined />}>
+            type="primary" htmlType="submit" icon={<Save />}>
               Create Transfer
             </Button>
 

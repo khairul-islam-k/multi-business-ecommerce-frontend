@@ -1,14 +1,15 @@
 "use client";
-import { Column, DataTable } from "@/components/shared/data-table";
+
 import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  MoreOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  TransactionOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  WalletCards
+} from "lucide-react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
 import {
   Button,
   Card,
@@ -192,22 +193,22 @@ const AccountsList = () => {
           {
             key: "view",
             label: "View account",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
           },
           {
             key: "edit",
             label: "Update account",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
           },
           {
             key: "add-money",
             label: "Add money",
-            icon: <PlusCircleOutlined />,
+            icon: <CirclePlus />,
           },
           {
             key: "transactions",
             label: "Transactions",
-            icon: <TransactionOutlined />,
+            icon: <WalletCards />,
           },
           {
             type: "divider",
@@ -215,7 +216,7 @@ const AccountsList = () => {
           {
             key: "delete",
             label: "Delete account",
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             danger: true,
             disabled: removeAccount.isPending,
           },
@@ -267,7 +268,7 @@ const AccountsList = () => {
             placement="bottomRight"
           >
             <Tooltip title="Actions">
-              <Button size="small" icon={<MoreOutlined />}>
+              <Button size="small" icon={<MoreHorizontal />}>
               </Button>
             </Tooltip>
           </Dropdown>
@@ -355,7 +356,7 @@ const AccountsList = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/finance/accounts/create")
                 }

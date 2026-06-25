@@ -1,12 +1,17 @@
 "use client";
 
+import {
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { DataTable, Column } from "@/components/shared/data-table";
 import { mockRules, mockPromotions, PromotionRule } from "../data";
 
 import { useState } from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Modal, Form, Input, Select, Space, Tag } from "antd";
 
 const promoMap = Object.fromEntries(mockPromotions.map((p) => [p.id, p.name]));
@@ -52,10 +57,10 @@ export default function PromotionRulesBuilder() {
           <Space>
             <Button
               type="text"
-              icon={<EditOutlined />}
+              icon={<Pencil />}
               onClick={() => handleOpen(row)}
             />
-            <Button type="text" danger icon={<DeleteOutlined />} />
+            <Button type="text" danger icon={<Trash2 />} />
           </Space>
         )}
       />

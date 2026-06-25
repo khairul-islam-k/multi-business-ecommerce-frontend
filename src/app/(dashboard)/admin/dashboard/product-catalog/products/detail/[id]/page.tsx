@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Pencil
+} from "lucide-react";
+
+
 import { Button, Card, Col, Empty, Row, Statistic, Tag } from "antd";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -10,7 +16,6 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useProduct } from "@/lib/api/hooks/product";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 
 import ViewVariantTable from "./_components/view-variant-table";
 
@@ -73,13 +78,13 @@ export default function ProductDetailPage() {
       />
 
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
 
         <Button
           type="primary"
-          icon={<EditOutlined />}
+          icon={<Pencil />}
           onClick={() =>
             router.push(
               `/admin/dashboard/product-catalog/products/edit/${product.id}`,

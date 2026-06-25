@@ -1,6 +1,16 @@
 "use client";
 
-import { CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, EditOutlined, EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CircleCheck,
+  CirclePlus,
+  CircleX,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -168,12 +178,12 @@ const handleCancel = (id: string) => {
         const items: MenuProps["items"] = [
           {
             key: "view",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
             label: "View",
           },
           {
             key: "edit",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
             label: "Edit",
           },
           {
@@ -181,13 +191,13 @@ const handleCancel = (id: string) => {
           },
           {
             key: "paid",
-            icon: <CheckCircleOutlined />,
+            icon: <CircleCheck />,
             label: "Mark as Paid",
             disabled: row.status === "PAID" || row.status === "CANCELLED",
           },
           {
             key: "cancel",
-            icon: <CloseCircleOutlined />,
+            icon: <CircleX />,
             label: "Cancel",
             danger: true,
             disabled: row.status === "CANCELLED" || row.status === "PAID",
@@ -197,7 +207,7 @@ const handleCancel = (id: string) => {
           },
           {
             key: "delete",
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             label: "Delete",
             danger: true,
           },
@@ -237,7 +247,7 @@ const handleCancel = (id: string) => {
             <Tooltip title="Actions">
               <Button
                 size="small"
-                icon={<MoreOutlined />}
+                icon={<MoreHorizontal />}
                 onClick={(e) => e.preventDefault()}
               />
             </Tooltip>
@@ -284,7 +294,7 @@ const handleCancel = (id: string) => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/finance/expenses/create")
                 }

@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  Home,
+  LogIn
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button } from "antd";
-import { HomeOutlined, LoginOutlined } from "@ant-design/icons";
 
 export default function NotFound() {
   return (
@@ -20,12 +25,12 @@ export default function NotFound() {
         </p>
         <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link href="/admin/dashboard">
-            <Button type="primary" icon={<HomeOutlined />}>
+            <Button type="primary" icon={<Home />}>
               Dashboard
             </Button>
           </Link>
           <Link href="/sign-in">
-            <Button icon={<LoginOutlined />}>Sign in</Button>
+            <Button icon={<LogIn />}>Sign in</Button>
           </Link>
         </div>
       </section>

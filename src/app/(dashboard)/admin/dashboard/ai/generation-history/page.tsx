@@ -1,7 +1,11 @@
 "use client";
 
+import {
+  Copy
+} from "lucide-react";
+
+
 import { Tag, Button, App } from "antd";
-import { CopyOutlined } from "@ant-design/icons";
 
 import { mockAiGenerations } from "../data";
 import PageHeader from "@/components/shared/page-header";
@@ -57,7 +61,7 @@ export default function AiGenerationHistory() {
         actions={(row) => (
           <Button
             type="text"
-            icon={<CopyOutlined />}
+            icon={<Copy />}
             onClick={() => {
               navigator.clipboard.writeText(row.generated_text);
               message.success("Copied!");

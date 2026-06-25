@@ -4,153 +4,49 @@ import type { ThemeConfig } from "antd";
 import { ConfigProvider, theme as antdTheme } from "antd";
 import React, { useEffect, useMemo } from "react";
 
-import { useThemeStore, type AppTheme } from "@/stores/theme.store";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useBusiness } from "@/lib/api";
+import { getDashboardThemeTokens } from "@/lib/theme/dashboard-theme";
+import type { AppTheme } from "@/stores/theme.store";
 
-const { defaultAlgorithm, darkAlgorithm } = antdTheme;
+const { defaultAlgorithm } = antdTheme;
+
+const hexToHslTriplet = (hex?: string | null) => {
+  if (!hex) return undefined;
+
+  const normalized = hex.replace("#", "");
+  if (!/^[0-9a-fA-F]{6}$/.test(normalized)) return undefined;
+
+  const r = Number.parseInt(normalized.slice(0, 2), 16) / 255;
+  const g = Number.parseInt(normalized.slice(2, 4), 16) / 255;
+  const b = Number.parseInt(normalized.slice(4, 6), 16) / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (max !== min) {
+    const delta = max - min;
+    s = l > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+    switch (max) {
+      case r:
+        h = (g - b) / delta + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / delta + 2;
+        break;
+      default:
+        h = (r - g) / delta + 4;
+    }
+    h /= 6;
+  }
+
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+};
 
 const lightTheme: ThemeConfig = {
   algorithm: defaultAlgorithm,
-  token: {
-    colorPrimary: "#1D4ED8",
-    colorInfo: "#0284C7",
-    colorSuccess: "#16A34A",
-    colorWarning: "#D97706",
-    colorError: "#DC2626",
-    colorBgBase: "#F8FAFC",
-    colorBgLayout: "#F1F5F9",
-    colorBgContainer: "#FFFFFF",
-    colorBgElevated: "#FFFFFF",
-    colorText: "#0F172A",
-    colorTextSecondary: "#475569",
-    colorTextTertiary: "#64748B",
-    colorBorder: "#CBD5E1",
-    colorBorderSecondary: "#E2E8F0",
-    borderRadius: 8,
-    controlHeight: 38,
-    controlItemBgActive: "#DBEAFE",
-    controlItemBgHover: "#EFF6FF",
-    colorFillSecondary: "#EEF2F7",
-    colorFillTertiary: "#F8FAFC",
-  },
-  components: {
-    Layout: {
-      bodyBg: "#F1F5F9",
-      headerBg: "#FFFFFF",
-      siderBg: "#FFFFFF",
-    },
-    Card: {
-      borderRadiusLG: 8,
-      boxShadowTertiary: "0 1px 2px rgba(15, 23, 42, 0.06)",
-      colorBorderSecondary: "#E2E8F0",
-    },
-    Dropdown: {
-      colorBgElevated: "#FFFFFF",
-      controlItemBgHover: "#EFF6FF",
-    },
-    Input: {
-      activeBorderColor: "#2563EB",
-      hoverBorderColor: "#2563EB",
-    },
-    Menu: {
-      itemHoverBg: "#F1F5F9",
-      itemSelectedBg: "#DBEAFE",
-      itemSelectedColor: "#1D4ED8",
-    },
-    Select: {
-      optionSelectedBg: "#DBEAFE",
-      optionActiveBg: "#EFF6FF",
-    },
-    Table: {
-      borderColor: "#E2E8F0",
-      headerBg: "#F1F5F9",
-      headerColor: "#334155",
-      rowHoverBg: "#F8FAFC",
-    },
-    Upload: {
-      actionsColor: "#475569",
-      colorFillAlter: "#F8FAFC",
-    },
-  },
-};
-
-const darkTheme: ThemeConfig = {
-  algorithm: darkAlgorithm,
-  token: {
-    colorPrimary: "#3B82F6",
-    colorInfo: "#38BDF8",
-    colorSuccess: "#22C55E",
-    colorWarning: "#F59E0B",
-    colorError: "#F87171",
-    colorBgBase: "#070A12",
-    colorBgLayout: "#0B1020",
-    colorBgContainer: "#111827",
-    colorBgElevated: "#172033",
-    colorText: "#E5EDF7",
-    colorTextSecondary: "#A8B3C7",
-    colorTextTertiary: "#7D8AA2",
-    colorBorder: "#334155",
-    colorBorderSecondary: "#243044",
-    borderRadius: 8,
-    controlHeight: 38,
-    controlItemBgActive: "#1E3A5F",
-    controlItemBgHover: "#172033",
-    colorFillSecondary: "#182235",
-    colorFillTertiary: "#111827",
-  },
-  components: {
-    Layout: {
-      bodyBg: "#0B1120",
-      headerBg: "#111827",
-      siderBg: "#111827",
-    },
-    Card: {
-      borderRadiusLG: 8,
-      colorBgContainer: "#111827",
-      colorBorderSecondary: "#243044",
-      boxShadowTertiary: "0 12px 30px rgba(0, 0, 0, 0.22)",
-    },
-    Dropdown: {
-      colorBgElevated: "#172033",
-      controlItemBgHover: "#1E293B",
-    },
-    Input: {
-      activeBg: "#111827",
-      activeBorderColor: "#3B82F6",
-      addonBg: "#172033",
-      hoverBg: "#111827",
-      hoverBorderColor: "#60A5FA",
-    },
-    Menu: {
-      darkItemBg: "#111827",
-      itemBg: "#111827",
-      itemColor: "#A8B3C7",
-      itemHoverBg: "#172033",
-      itemHoverColor: "#E5EDF7",
-      itemSelectedBg: "#1E3A5F",
-      itemSelectedColor: "#BFDBFE",
-      subMenuItemBg: "#111827",
-    },
-    Select: {
-      optionActiveBg: "#1E293B",
-      optionSelectedBg: "#1E3A5F",
-      selectorBg: "#111827",
-    },
-    Table: {
-      borderColor: "#243044",
-      headerBg: "#172033",
-      headerColor: "#E5E7EB",
-      rowExpandedBg: "#111827",
-      rowHoverBg: "#172033",
-    },
-    Tag: {
-      defaultBg: "#172033",
-      defaultColor: "#A8B3C7",
-    },
-    Upload: {
-      actionsColor: "#A8B3C7",
-      colorFillAlter: "#111827",
-    },
-  },
 };
 
 export default function AntdThemeProvider({
@@ -158,48 +54,183 @@ export default function AntdThemeProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const theme = useThemeStore((state) => state.theme);
-  console.log('theme', theme);
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
-  const setResolvedTheme = useThemeStore((state) => state.setResolvedTheme);
+  const businessId = useActiveBusinessId();
+  const business = useBusiness(businessId);
+  const branding = business.data?.branding;
 
   useEffect(() => {
     const root = document.documentElement;
-    root.classList.toggle("dark", resolvedTheme === "dark");
-    root.style.colorScheme = resolvedTheme;
-  }, [resolvedTheme]);
+    root.classList.remove("dark");
+    root.style.colorScheme = "light";
+  }, []);
 
   useEffect(() => {
-    if (theme !== "system") return;
+    const root = document.documentElement;
+    const tokens = getDashboardThemeTokens(branding);
 
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const syncSystemTheme = () =>
-      setResolvedTheme(media.matches ? "dark" : "light");
+    Object.entries(tokens).forEach(([key, value]) => {
+      root.style.setProperty(
+        `--dashboard-${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
+        String(value),
+      );
+    });
 
-    syncSystemTheme();
-    media.addEventListener("change", syncSystemTheme);
+    root.style.setProperty("--brand-primary-color", tokens.primaryColor);
+    root.style.setProperty("--brand-secondary-color", tokens.dashboardBackgroundColor);
+    root.style.setProperty("--brand-accent-color", tokens.accentColor);
+    root.style.setProperty("--brand-font-family", tokens.fontFamily);
 
-    return () => media.removeEventListener("change", syncSystemTheme);
-  }, [theme, setResolvedTheme]);
+    const primaryHsl = hexToHslTriplet(tokens.primaryColor);
+    const backgroundHsl = hexToHslTriplet(tokens.dashboardBackgroundColor);
+    const cardHsl = hexToHslTriplet(tokens.cardBackgroundColor);
+    const textHsl = hexToHslTriplet(tokens.textPrimaryColor);
+    const mutedHsl = hexToHslTriplet(tokens.textMutedColor);
+    const borderHsl = hexToHslTriplet(tokens.borderSubtleColor);
+    const accentHsl = hexToHslTriplet(tokens.accentColor);
+
+    if (primaryHsl) {
+      root.style.setProperty("--primary", primaryHsl);
+      root.style.setProperty("--ring", primaryHsl);
+      root.style.setProperty("--accent-foreground", primaryHsl);
+    }
+    if (backgroundHsl) {
+      root.style.setProperty("--background", backgroundHsl);
+      root.style.setProperty("--secondary", backgroundHsl);
+      root.style.setProperty("--muted", backgroundHsl);
+    }
+    if (cardHsl) {
+      root.style.setProperty("--card", cardHsl);
+      root.style.setProperty("--popover", cardHsl);
+    }
+    if (textHsl) {
+      root.style.setProperty("--foreground", textHsl);
+      root.style.setProperty("--card-foreground", textHsl);
+      root.style.setProperty("--popover-foreground", textHsl);
+      root.style.setProperty("--secondary-foreground", textHsl);
+    }
+    if (mutedHsl) {
+      root.style.setProperty("--muted-foreground", mutedHsl);
+    }
+    if (borderHsl) {
+      root.style.setProperty("--border", borderHsl);
+      root.style.setProperty("--input", borderHsl);
+    }
+    if (accentHsl) {
+      root.style.setProperty("--accent", accentHsl);
+      root.style.setProperty("--primary-glow", accentHsl);
+    }
+  }, [branding]);
 
   const config = useMemo<ThemeConfig>(() => {
-    return theme === "dark" ? darkTheme : lightTheme;
-  }, [theme]);
+    const baseTheme = lightTheme;
+    const tokens = getDashboardThemeTokens(branding);
+
+    return {
+      ...baseTheme,
+      token: {
+        ...baseTheme.token,
+        colorPrimary: tokens.primaryColor,
+        colorPrimaryHover: tokens.primaryHoverColor,
+        colorPrimaryActive: tokens.primaryActiveColor,
+        colorInfo: tokens.infoColor,
+        colorLink: tokens.accentColor,
+        colorSuccess: tokens.successColor,
+        colorWarning: tokens.warningColor,
+        colorError: tokens.errorColor,
+        colorBgBase: tokens.dashboardBackgroundColor,
+        colorBgLayout: tokens.dashboardBackgroundColor,
+        colorBgContainer: tokens.cardBackgroundColor,
+        colorBgElevated: tokens.elevatedBackgroundColor,
+        colorText: tokens.textPrimaryColor,
+        colorTextSecondary: tokens.textSecondaryColor,
+        colorTextTertiary: tokens.textMutedColor,
+        colorTextQuaternary: tokens.textMutedColor,
+        colorBorder: tokens.borderColor,
+        colorBorderSecondary: tokens.borderSubtleColor,
+        colorFillSecondary: tokens.disabledBackgroundColor,
+        colorFillTertiary: tokens.dashboardBackgroundColor,
+        colorFillQuaternary: tokens.inputBackgroundColor,
+        colorTextLightSolid: tokens.textInverseColor,
+        borderRadius: tokens.borderRadius,
+        borderRadiusLG: tokens.borderRadius,
+        borderRadiusSM: Math.max(tokens.borderRadius - 2, 2),
+        controlHeight: tokens.controlHeight,
+        controlItemBgActive: tokens.sidebarActiveBackgroundColor,
+        controlItemBgHover: tokens.sidebarHoverBackgroundColor,
+        fontFamily: tokens.fontFamily,
+      },
+      components: {
+        ...baseTheme.components,
+        Layout: {
+          bodyBg: tokens.dashboardBackgroundColor,
+          headerBg: tokens.headerBackgroundColor,
+          siderBg: tokens.sidebarBackgroundColor,
+        },
+        Button: {
+          primaryColor: tokens.textInverseColor,
+        },
+        Card: {
+          colorBgContainer: tokens.cardBackgroundColor,
+          colorBorderSecondary: tokens.borderSubtleColor,
+          borderRadiusLG: tokens.borderRadius,
+        },
+        Dropdown: {
+          colorBgElevated: tokens.elevatedBackgroundColor,
+          controlItemBgHover: tokens.sidebarHoverBackgroundColor,
+        },
+        Menu: {
+          ...baseTheme.components?.Menu,
+          itemBg: tokens.sidebarBackgroundColor,
+          subMenuItemBg: tokens.sidebarBackgroundColor,
+          itemColor: tokens.sidebarTextColor,
+          itemHoverBg: tokens.sidebarHoverBackgroundColor,
+          itemHoverColor: tokens.sidebarTextColor,
+          itemSelectedBg: tokens.sidebarActiveBackgroundColor,
+          itemSelectedColor: tokens.sidebarActiveTextColor,
+          itemActiveBg: tokens.sidebarActiveBackgroundColor,
+        },
+        Input: {
+          ...baseTheme.components?.Input,
+          activeBg: tokens.inputBackgroundColor,
+          activeBorderColor: tokens.focusRingColor,
+          hoverBg: tokens.inputBackgroundColor,
+          hoverBorderColor: tokens.focusRingColor,
+          colorBgContainer: tokens.inputBackgroundColor,
+          colorBgContainerDisabled: tokens.disabledBackgroundColor,
+        },
+        Select: {
+          ...baseTheme.components?.Select,
+          selectorBg: tokens.inputBackgroundColor,
+          optionActiveBg: tokens.sidebarHoverBackgroundColor,
+          optionSelectedBg: tokens.sidebarActiveBackgroundColor,
+        },
+        Table: {
+          borderColor: tokens.borderSubtleColor,
+          headerBg: tokens.tableHeaderBackgroundColor,
+          headerColor: tokens.textSecondaryColor,
+          rowHoverBg: tokens.tableRowHoverColor,
+        },
+        Modal: {
+          contentBg: tokens.elevatedBackgroundColor,
+          headerBg: tokens.elevatedBackgroundColor,
+        },
+        Tooltip: {
+          colorBgSpotlight: tokens.textPrimaryColor,
+          colorTextLightSolid: tokens.textInverseColor,
+        },
+      },
+    };
+  }, [branding]);
 
   return <ConfigProvider theme={config}>{children}</ConfigProvider>;
 }
 
 export function useTheme() {
-  const theme = useThemeStore((state) => state.theme);
-  const resolvedTheme = useThemeStore((state) => state.resolvedTheme);
-  const setTheme = useThemeStore((state) => state.setTheme);
-  const toggleTheme = useThemeStore((state) => state.toggleTheme);
-
   return {
-    theme,
-    resolvedTheme,
-    isDark: resolvedTheme === "dark",
-    setTheme: setTheme as (theme: AppTheme) => void,
-    toggleTheme,
+    theme: "light" as AppTheme,
+    resolvedTheme: "light",
+    isDark: false,
+    setTheme: (_theme: AppTheme) => undefined,
+    toggleTheme: () => undefined,
   };
 }

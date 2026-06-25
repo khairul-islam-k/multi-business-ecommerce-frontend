@@ -1,22 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { App, Col, Empty, Row } from "antd";
+import { useState } from "react";
 
-import { getApiErrorMessage } from "@/lib/axios";
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import Pagination from "@/components/shared/pagination";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 import {
   useTenantCurrentSubscription,
   useTenantPackageMutations,
   useTenantPackagePlans,
 } from "@/lib/api";
-import type { PackagePlan } from "@/lib/api";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Loader from "@/components/shared/loader";
-import Pagination from "@/components/shared/pagination";
-import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
+
 import PlanCard from "../_components/plan-card";
 import { money } from "../_utils/package-display";
+
+import type { PackagePlan } from "@/lib/api";
 
 export default function UpgradePlanPage() {
   const swal = useSwal();
@@ -27,44 +29,46 @@ export default function UpgradePlanPage() {
   const mutations = useTenantPackageMutations();
 
   const handleCheckout = (plan: PackagePlan) => {
-  modal.confirm({
-    title: "Create checkout?",
-    content: `A pending payment for ${money(
-      plan.price,
-      plan.currencyCode
-    )} will be created for ${plan.name}.`,
-    okText: "Create checkout",
-    cancelText: "Cancel",
-    async onOk() {
-      try {
-        const payment = await mutations.checkoutPlan.mutateAsync(plan.id);
-        console.log('paymentId',payment)
-        modal.confirm({
-          title: "Confirm mock payment?",
-          content: `Confirm payment ${money(
-            payment?.amount,
-            payment?.currencyCode
-          )} now?`,
-          okText: "Confirm payment",
-          cancelText: "Later",
-          async onOk() {
-            try {
-              await mutations.confirmMockPayment.mutateAsync(payment?.id);
-              message.success("Plan changed successfully.");
-            } catch (error) {
-              message.error(getApiErrorMessage(error));
-            }
-          },
-          onCancel() {
-            message.success("Checkout created. Confirm it before it expires.");
-          },
-        });
-      } catch (error) {
-        message.error(getApiErrorMessage(error));
-      }
-    },
-  });
-};
+    modal.confirm({
+      title: "Create checkout?",
+      content: `A pending payment for ${money(
+        plan.price,
+        plan.currencyCode,
+      )} will be created for ${plan.name}.`,
+      okText: "Create checkout",
+      cancelText: "Cancel",
+      async onOk() {
+        try {
+          const payment = await mutations.checkoutPlan.mutateAsync(plan.id);
+          console.log("paymentId", payment);
+          modal.confirm({
+            title: "Confirm mock payment?",
+            content: `Confirm payment ${money(
+              payment?.amount,
+              payment?.currencyCode,
+            )} now?`,
+            okText: "Confirm payment",
+            cancelText: "Later",
+            async onOk() {
+              try {
+                await mutations.confirmMockPayment.mutateAsync(payment?.id);
+                message.success("Plan changed successfully.");
+              } catch (error) {
+                message.error(getApiErrorMessage(error));
+              }
+            },
+            onCancel() {
+              message.success(
+                "Checkout created. Confirm it before it expires.",
+              );
+            },
+          });
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
 
   return (
     <div className="space-y-6">

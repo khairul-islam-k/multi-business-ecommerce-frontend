@@ -33,9 +33,13 @@ export default function PageHeader({
       className="w-full min-w-0 border-b pb-4"
       style={{ borderColor: token.colorBorderSecondary }}
     >
-      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0">
-          <Title level={4} style={{ marginBottom: 0, lineHeight: 1.25 }}>
+      <div className="flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0 flex-1">
+          <Title
+            level={4}
+            ellipsis={{ tooltip: title }}
+            style={{ marginBottom: 0, lineHeight: 1.25 }}
+          >
             {title}
           </Title>
 
@@ -49,7 +53,7 @@ export default function PageHeader({
           )}
         </div>
 
-        <div className="flex min-w-0 flex-col items-start gap-2 lg:items-end">
+        <div className="flex min-w-0 max-w-full flex-col items-start gap-2 lg:max-w-[52%] lg:items-end">
           <Breadcrumbs {...breadcrumb} maxItems={width > 512 ? 5 : 3} />
           {actions && (
             <div className="flex flex-wrap justify-end gap-2">{actions}</div>

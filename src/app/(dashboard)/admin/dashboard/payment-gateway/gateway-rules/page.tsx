@@ -1,9 +1,14 @@
 "use client";
 
+import {
+  ArrowLeft,
+  CirclePlus
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button } from "antd";
 import { useState } from "react";
-import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { mockRules } from "./data";
 import StatusBadge from "../_components/badge";
@@ -40,11 +45,11 @@ export default function GatewayRules() {
 
       <div className="flex items-center justify-end gap-3">
         <Link href="/admin/dashboard/payment-gateway/gateways">
-          <Button icon={<ArrowLeftOutlined />}>Back to Gateways</Button>
+          <Button icon={<ArrowLeft />}>Back to Gateways</Button>
         </Link>
         <Button
           type="primary"
-          icon={<PlusOutlined />}
+          icon={<CirclePlus />}
           onClick={() => {
             setEditing(null);
             setOpen(true);

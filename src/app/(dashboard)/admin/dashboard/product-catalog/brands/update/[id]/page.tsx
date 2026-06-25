@@ -1,19 +1,21 @@
 "use client";
 
+import { App } from "antd";
 import { useParams, useRouter } from "next/navigation";
-import BrandForm, { BrandFormValues } from "../../_components/BrandForm";
-import { useBrand, useBrandMutation } from "@/lib/api/hooks/product-brand";
-import { useAuthStore } from "@/stores/auth.store";
-import { BrandPayload } from "@/types/product/brands";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { App } from "antd";
+import { useBrand, useBrandMutation } from "@/lib/api/hooks/product-brand";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { BrandPayload } from "@/types/product/brands";
+
+import BrandForm, { BrandFormValues } from "../../_components/brand-form";
 
 const UpdateBrandPage = () => {
   const { id } = useParams<{ id: string }>();
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const { message } = App.useApp();
   const router = useRouter();
 
@@ -31,13 +33,12 @@ const UpdateBrandPage = () => {
     };
 
     try {
-      const res = await updateBrand.mutateAsync({ brandId: id, payload })
-      message.success('Brand update successfully');
-      router.push('/admin/dashboard/product-catalog/brands')
+      const res = await updateBrand.mutateAsync({ brandId: id, payload });
+      message.success("Brand update successfully");
+      router.push("/admin/dashboard/product-catalog/brands");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
-
   };
 
   return (

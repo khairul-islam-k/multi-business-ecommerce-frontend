@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  CirclePlus,
+  Eye,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -10,12 +18,6 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseOrderResponse } from "@/types/suppliers/purchase-order";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -121,7 +123,7 @@ const PurchaseOrder = () => {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/suppliers/purchase-order/detail/${row.id}`
@@ -131,7 +133,7 @@ const PurchaseOrder = () => {
 
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/suppliers/purchase-order/update/${row.id}`
@@ -146,7 +148,7 @@ const PurchaseOrder = () => {
             cancelText="No"
             onConfirm={() => handleDelete(row.id)}
           >
-            <Button danger size="small" icon={<DeleteOutlined />} />
+            <Button danger size="small" icon={<Trash2 />} />
           </Popconfirm>
         </div>
       ),
@@ -181,7 +183,7 @@ const PurchaseOrder = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/suppliers/purchase-order/create")
                 }

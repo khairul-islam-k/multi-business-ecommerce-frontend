@@ -48,7 +48,7 @@ export const useThemeStore = create<ThemeState>()(
         if (!state) return;
 
         if (state.theme === "system") {
-          state.setTheme("light");
+          state.setResolvedTheme(getSystemTheme());
           return;
         }
 

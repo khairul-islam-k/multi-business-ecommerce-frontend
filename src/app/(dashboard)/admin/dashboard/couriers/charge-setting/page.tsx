@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Pencil
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button, Card, Table } from "antd";
-import { EditOutlined } from "@ant-design/icons";
 import {
   BarChart,
   Bar,
@@ -144,7 +148,7 @@ const ChargeSetting = () => {
         <Link
           href={`/admin/dashboard/couriers/charge-setting/charge-update/${record.id}`}
         >
-          <Button icon={<EditOutlined />} type="text"></Button>
+          <Button icon={<Pencil />} type="text"></Button>
         </Link>
       ),
     },
@@ -171,9 +175,9 @@ const ChargeSetting = () => {
             <Tooltip formatter={(value) => `Rs ${value}`} />
             <Legend />
 
-            <Bar dataKey="inside" name="Inside City" fill="#5B4FDB" />
-            <Bar dataKey="sub" name="Sub City" fill="#3F7AE0" />
-            <Bar dataKey="outside" name="Outside City" fill="#E23B3B" />
+            <Bar dataKey="inside" name="Inside City" fill="var(--dashboard-primary-color)" />
+            <Bar dataKey="sub" name="Sub City" fill="var(--dashboard-info-color)" />
+            <Bar dataKey="outside" name="Outside City" fill="var(--dashboard-error-color)" />
           </BarChart>
         </ResponsiveContainer>
       </Card>

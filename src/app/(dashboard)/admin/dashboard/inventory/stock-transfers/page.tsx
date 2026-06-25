@@ -1,14 +1,16 @@
 "use client";
 
-import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import {
-  CloseOutlined,
-  DownOutlined,
-  EyeOutlined,
-  InboxOutlined,
-  PlusOutlined,
-  TruckOutlined,
-} from "@ant-design/icons";
+  ChevronDown,
+  CirclePlus,
+  Eye,
+  Inbox,
+  Truck,
+  X
+} from "lucide-react";
+
+
+import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -230,21 +232,21 @@ export default function StockTransferListPage() {
           {
             key: "ship",
             label: "Ship",
-            icon: <TruckOutlined />,
+            icon: <Truck />,
             disabled: !canShip,
             onClick: () => handleShip(row.id),
           },
           {
             key: "receive",
             label: "Receive",
-            icon: <InboxOutlined />,
+            icon: <Inbox />,
             disabled: !canReceive,
             onClick: () => handleReceive(row.id),
           },
           {
             key: "cancel",
             label: "Cancel",
-            icon: <CloseOutlined />,
+            icon: <X />,
             danger: true,
             disabled: !canCancel,
             onClick: () => handleCancel(row.id),
@@ -256,7 +258,7 @@ export default function StockTransferListPage() {
             <Tooltip title="View">
               <Button
                 size="small"
-                icon={<EyeOutlined />}
+                icon={<Eye />}
                 onClick={() =>
                   router.push(
                     `/admin/dashboard/inventory/stock-transfers/details/${row.id}`,
@@ -267,7 +269,7 @@ export default function StockTransferListPage() {
 
             <Dropdown menu={{ items: actionItems }} trigger={["click"]}>
               <Button size="small">
-                Actions <DownOutlined />
+                Actions <ChevronDown />
               </Button>
             </Dropdown>
           </div>
@@ -307,7 +309,7 @@ export default function StockTransferListPage() {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/inventory/stock-transfers/create")
                 }

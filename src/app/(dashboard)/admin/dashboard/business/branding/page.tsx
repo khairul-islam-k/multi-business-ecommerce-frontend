@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
 import {
   App,
   Button,
@@ -11,20 +9,30 @@ import {
   Form,
   Input,
   Row,
+  Select,
+  InputNumber,
   Space,
   Typography,
 } from "antd";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-import { getApiErrorMessage } from "@/lib/axios";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useBusiness, useBusinessMutations } from "@/lib/api";
-import type { BusinessBranding } from "@/lib/api";
-import Loader from "@/components/shared/loader";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useBusiness, useBusinessMutations } from "@/lib/api";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import { getApiErrorMessage } from "@/lib/axios";
+import {
+  defaultDashboardThemeTokens,
+  getDashboardThemeTokens,
+} from "@/lib/theme/dashboard-theme";
+
 import ImageSelectModal from "../../_components/ImageSelectModal";
+
+import type { BusinessBranding } from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -32,9 +40,58 @@ type BrandingValues = BusinessBranding;
 
 const colorFields = [
   ["primaryColor", "Primary color"],
-  ["secondaryColor", "Secondary color"],
+  ["primaryHoverColor", "Primary hover color"],
+  ["primaryActiveColor", "Primary active color"],
   ["accentColor", "Accent color"],
+  ["successColor", "Success color"],
+  ["warningColor", "Warning color"],
+  ["errorColor", "Error color"],
+  ["infoColor", "Info color"],
+  ["dashboardBackgroundColor", "Dashboard background"],
+  ["sidebarBackgroundColor", "Sidebar background"],
+  ["sidebarTextColor", "Sidebar text"],
+  ["sidebarMutedTextColor", "Sidebar muted text"],
+  ["sidebarActiveBackgroundColor", "Sidebar active background"],
+  ["sidebarActiveTextColor", "Sidebar active text"],
+  ["sidebarHoverBackgroundColor", "Sidebar hover background"],
+  ["headerBackgroundColor", "Header background"],
+  ["headerTextColor", "Header text"],
+  ["cardBackgroundColor", "Card background"],
+  ["elevatedBackgroundColor", "Elevated background"],
+  ["tableHeaderBackgroundColor", "Table header background"],
+  ["tableRowHoverColor", "Table row hover"],
+  ["inputBackgroundColor", "Input background"],
+  ["disabledBackgroundColor", "Disabled background"],
+  ["textPrimaryColor", "Primary text"],
+  ["textSecondaryColor", "Secondary text"],
+  ["textMutedColor", "Muted text"],
+  ["textInverseColor", "Inverse text"],
+  ["borderColor", "Border"],
+  ["borderSubtleColor", "Subtle border"],
+  ["focusRingColor", "Focus ring"],
 ] as const;
+
+const fontOptions = [
+  {
+    label: "Open Sans",
+    value: 'var(--font-open-sans), "Open Sans", sans-serif',
+  },
+  {
+    label: "Geist",
+    value: 'var(--font-sans), "Geist", sans-serif',
+  },
+  {
+    label: "System UI",
+    value:
+      'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+  },
+  { label: "Inter", value: 'Inter, "Segoe UI", sans-serif' },
+  { label: "Arial", value: 'Arial, "Helvetica Neue", sans-serif' },
+  { label: "Verdana", value: "Verdana, Geneva, sans-serif" },
+  { label: "Tahoma", value: "Tahoma, Geneva, sans-serif" },
+  { label: "Georgia", value: 'Georgia, "Times New Roman", serif' },
+  { label: "Courier New", value: '"Courier New", Courier, monospace' },
+];
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -74,13 +131,44 @@ export default function BusinessBrandingPage() {
   useEffect(() => {
     if (!business) return;
 
+    const themeTokens = getDashboardThemeTokens(business.branding);
+
     form.setFieldsValue({
       logoUrl: business.branding?.logoUrl ?? undefined,
       faviconUrl: business.branding?.faviconUrl ?? undefined,
-      primaryColor: business.branding?.primaryColor ?? "#0f766e",
-      secondaryColor: business.branding?.secondaryColor ?? "#f8fafc",
-      accentColor: business.branding?.accentColor ?? "#f59e0b",
-      fontFamily: business.branding?.fontFamily ?? "Inter",
+      primaryColor: themeTokens.primaryColor,
+      primaryHoverColor: themeTokens.primaryHoverColor,
+      primaryActiveColor: themeTokens.primaryActiveColor,
+      accentColor: themeTokens.accentColor,
+      successColor: themeTokens.successColor,
+      warningColor: themeTokens.warningColor,
+      errorColor: themeTokens.errorColor,
+      infoColor: themeTokens.infoColor,
+      dashboardBackgroundColor: themeTokens.dashboardBackgroundColor,
+      sidebarBackgroundColor: themeTokens.sidebarBackgroundColor,
+      sidebarTextColor: themeTokens.sidebarTextColor,
+      sidebarMutedTextColor: themeTokens.sidebarMutedTextColor,
+      sidebarActiveBackgroundColor: themeTokens.sidebarActiveBackgroundColor,
+      sidebarActiveTextColor: themeTokens.sidebarActiveTextColor,
+      sidebarHoverBackgroundColor: themeTokens.sidebarHoverBackgroundColor,
+      headerBackgroundColor: themeTokens.headerBackgroundColor,
+      headerTextColor: themeTokens.headerTextColor,
+      cardBackgroundColor: themeTokens.cardBackgroundColor,
+      elevatedBackgroundColor: themeTokens.elevatedBackgroundColor,
+      tableHeaderBackgroundColor: themeTokens.tableHeaderBackgroundColor,
+      tableRowHoverColor: themeTokens.tableRowHoverColor,
+      inputBackgroundColor: themeTokens.inputBackgroundColor,
+      disabledBackgroundColor: themeTokens.disabledBackgroundColor,
+      textPrimaryColor: themeTokens.textPrimaryColor,
+      textSecondaryColor: themeTokens.textSecondaryColor,
+      textMutedColor: themeTokens.textMutedColor,
+      textInverseColor: themeTokens.textInverseColor,
+      borderColor: themeTokens.borderColor,
+      borderSubtleColor: themeTokens.borderSubtleColor,
+      focusRingColor: themeTokens.focusRingColor,
+      fontFamily: themeTokens.fontFamily,
+      borderRadius: themeTokens.borderRadius,
+      density: themeTokens.density,
       seoTitle: business.branding?.seoTitle ?? business.name,
       seoDescription: business.branding?.seoDescription ?? undefined,
     });
@@ -147,9 +235,7 @@ export default function BusinessBrandingPage() {
               <Row gutter={12}>
                 <Col xs={24} md={12}>
                   <Form.Item name="logoUrl" label="Logo">
-                    <Input
-                      readOnly
-                      placeholder="/uploads/media/logo.png" />
+                    <Input readOnly placeholder="/uploads/media/logo.png" />
                   </Form.Item>
 
                   <div className="mb-4 rounded-lg border bg-gray-50 p-3">
@@ -176,9 +262,7 @@ export default function BusinessBrandingPage() {
 
                 <Col xs={24} md={12}>
                   <Form.Item name="faviconUrl" label="Favicon">
-                    <Input
-                      readOnly
-                      placeholder="/uploads/media/favicon.ico" />
+                    <Input readOnly placeholder="/uploads/media/favicon.ico" />
                   </Form.Item>
 
                   <div className="mb-4 rounded-lg border bg-gray-50 p-3">
@@ -199,10 +283,7 @@ export default function BusinessBrandingPage() {
                       )}
                     </div>
 
-                    <Button
-                      block
-                      onClick={() => openImageModal("faviconUrl")}
-                    >
+                    <Button block onClick={() => openImageModal("faviconUrl")}>
                       Select Favicon
                     </Button>
                   </div>
@@ -210,7 +291,27 @@ export default function BusinessBrandingPage() {
 
                 <Col xs={24} md={12}>
                   <Form.Item name="fontFamily" label="Font family">
-                    <Input placeholder="Inter" />
+                    <Select
+                      showSearch
+                      optionFilterProp="label"
+                      options={fontOptions}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item name="borderRadius" label="Border radius">
+                    <InputNumber min={0} max={24} className="w-full" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item name="density" label="Density">
+                    <Select
+                      options={[
+                        { label: "Compact", value: "COMPACT" },
+                        { label: "Default", value: "DEFAULT" },
+                        { label: "Comfortable", value: "COMFORTABLE" },
+                      ]}
+                    />
                   </Form.Item>
                 </Col>
               </Row>
@@ -248,13 +349,29 @@ export default function BusinessBrandingPage() {
               <div
                 className="mt-6 rounded-lg border p-5"
                 style={{
-                  borderColor: watchedValues.secondaryColor ?? "#e5e7eb",
-                  background: watchedValues.secondaryColor ?? "#f8fafc",
+                  borderColor:
+                    watchedValues.borderSubtleColor ??
+                    defaultDashboardThemeTokens.borderSubtleColor,
+                  background:
+                    watchedValues.cardBackgroundColor ??
+                    watchedValues.dashboardBackgroundColor ??
+                    defaultDashboardThemeTokens.cardBackgroundColor,
+                  color:
+                    watchedValues.textPrimaryColor ??
+                    defaultDashboardThemeTokens.textPrimaryColor,
+                  fontFamily: watchedValues.fontFamily ?? undefined,
+                  borderRadius:
+                    watchedValues.borderRadius ??
+                    defaultDashboardThemeTokens.borderRadius,
                 }}
               >
                 <Text
                   strong
-                  style={{ color: watchedValues.primaryColor ?? "#0f766e" }}
+                  style={{
+                    color:
+                      watchedValues.textPrimaryColor ??
+                      defaultDashboardThemeTokens.textPrimaryColor,
+                  }}
                 >
                   {watchedValues.seoTitle ||
                     business?.name ||
@@ -263,7 +380,11 @@ export default function BusinessBrandingPage() {
 
                 <p
                   className="mt-2 text-sm"
-                  style={{ color: watchedValues.primaryColor ?? "#0f766e" }}
+                  style={{
+                    color:
+                      watchedValues.textSecondaryColor ??
+                      defaultDashboardThemeTokens.textSecondaryColor,
+                  }}
                 >
                   {watchedValues.seoDescription ||
                     "Preview how the selected palette may feel across storefront surfaces."}
@@ -272,9 +393,15 @@ export default function BusinessBrandingPage() {
                 <Button
                   className="mt-3"
                   style={{
-                    background: watchedValues.accentColor ?? "#f59e0b",
-                    borderColor: watchedValues.accentColor ?? "#f59e0b",
-                    color: "#111827",
+                    background:
+                      watchedValues.primaryColor ??
+                      defaultDashboardThemeTokens.primaryColor,
+                    borderColor:
+                      watchedValues.primaryColor ??
+                      defaultDashboardThemeTokens.primaryColor,
+                    color:
+                      watchedValues.textInverseColor ??
+                      defaultDashboardThemeTokens.textInverseColor,
                   }}
                 >
                   Accent action

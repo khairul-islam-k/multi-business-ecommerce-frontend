@@ -10,6 +10,7 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -24,12 +25,6 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ResponseCategory } from "@/types/product/product";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
 
 const imageUrlSet = (url: string) => {
   if (url.startsWith("http")) return url;
@@ -179,7 +174,7 @@ const Categories = () => {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/product-catalog/categories/view/${row.id}`,
@@ -188,7 +183,7 @@ const Categories = () => {
           ></Button>
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/product-catalog/categories/update/${row.id}`,
@@ -203,7 +198,7 @@ const Categories = () => {
             cancelText="No"
             onConfirm={() => handleDelete(row.id)}
           >
-            <Button icon={<DeleteOutlined />} danger size="small"></Button>
+            <Button icon={<Trash2 />} danger size="small"></Button>
           </Popconfirm>
         </div>
       ),
@@ -241,7 +236,7 @@ const Categories = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push(
                     "/admin/dashboard/product-catalog/categories/create",

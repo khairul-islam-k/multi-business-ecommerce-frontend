@@ -1,9 +1,13 @@
 "use client";
 
+import {
+  Eye
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button, Select, Tag } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
@@ -105,7 +109,7 @@ export default function SupplierInvoicesPage() {
         }
         actions={(invoice) => (
           <Link href={`/admin/dashboard/suppliers/invoices/${invoice.id}`}>
-            <Button icon={<EyeOutlined />} />
+            <Button icon={<Eye />} />
           </Link>
         )}
         pagination={{

@@ -1,6 +1,11 @@
 "use client";
 
-import { DeleteOutlined, PictureOutlined } from "@ant-design/icons";
+import {
+  Image as ImageIcon,
+  Trash2
+} from "lucide-react";
+
+
 import { Button, Card, Space, Typography } from "antd";
 import Image from "next/image";
 import { useState } from "react";
@@ -41,7 +46,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
               />
             ) : (
               <div className="flex h-12 w-12 items-center justify-center rounded-md bg-gray-100 text-gray-400">
-                <PictureOutlined />
+                <ImageIcon />
               </div>
             )}
 
@@ -57,7 +62,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
             {value ? (
               <Button
                 danger
-                icon={<DeleteOutlined />}
+                icon={<Trash2 />}
                 onClick={() => onChange?.("")}
               />
             ) : null}

@@ -1,9 +1,9 @@
 import {
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  DollarOutlined,
-  BarChartOutlined,
-} from "@ant-design/icons";
+  ArrowDown,
+  ArrowUp,
+  Banknote,
+  ChartBar
+} from "lucide-react";
 
 export const mockStats = [
   {
@@ -11,28 +11,28 @@ export const mockStats = [
     value: "$301,000",
     up: true,
     change: "+18.2% vs last period",
-    icon: ArrowUpOutlined,
+    icon: ArrowUp,
   },
   {
     label: "Total Expenses",
     value: "$180,000",
     up: false,
     change: "+5.1% vs last period",
-    icon: ArrowDownOutlined,
+    icon: ArrowDown,
   },
   {
     label: "Net Profit",
     value: "$121,000",
     up: true,
     change: "+32.4%",
-    icon: DollarOutlined,
+    icon: Banknote,
   },
   {
     label: "Profit Margin",
     value: "40.2%",
     up: true,
     change: "+2.3pp",
-    icon: BarChartOutlined,
+    icon: ChartBar,
   },
 ];
 

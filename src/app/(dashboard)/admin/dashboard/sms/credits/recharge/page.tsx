@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  CreditCard,
+  Zap
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { Card, Button, InputNumber, Form, Tag } from "antd";
-import { CreditCardOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 
@@ -43,7 +48,7 @@ export default function RechargeSmsCredits() {
 
             <Button
               type={p.popular ? "primary" : "default"}
-              icon={<ThunderboltOutlined />}
+              icon={<Zap />}
               block
               onClick={() => purchase(p.credits)}
             >
@@ -57,7 +62,7 @@ export default function RechargeSmsCredits() {
       <Card
         title={
           <span className="flex items-center gap-2">
-            <CreditCardOutlined /> Custom Amount
+            <CreditCard /> Custom Amount
           </span>
         }
         className="max-w-md"

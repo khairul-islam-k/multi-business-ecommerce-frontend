@@ -11,7 +11,7 @@ import type {
   TenantSubscriptionQuery,
   CategoriesQuery,
 } from "@/lib/api/types";
-import type { OrderQuery } from "./orders";
+import type { OrderQuery, OrderReturnQuery } from "./orders";
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
 
@@ -291,9 +291,15 @@ export const apiQueryKeys = {
       ["orders", businessId, "list", query] as const,
     detail: (businessId: ApiId, orderId: ApiId) =>
       ["orders", businessId, "detail", orderId] as const,
+    returns: (businessId: ApiId, query?: OrderReturnQuery) =>
+      ["orders", businessId, "returns", query] as const,
+    returnDetail: (businessId: ApiId, returnId: ApiId) =>
+      ["orders", businessId, "returns", "detail", returnId] as const,
   },
   website: {
     all: (businessId: ApiId) => ["website", businessId] as const,
+    templates: (businessId: ApiId) =>
+      ["website", businessId, "templates"] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["website", businessId, "list", query] as const,
 

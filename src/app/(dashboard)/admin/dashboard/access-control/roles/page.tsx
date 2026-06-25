@@ -1,10 +1,16 @@
 "use client";
 
+import {
+  CirclePlus,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { App, Button, Card, Empty, Popconfirm, Tag } from "antd";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 
 import type { Role } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
@@ -90,7 +96,7 @@ export default function RolesPage() {
             createAccess.allowed ? (
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/access-control/roles/create")
                 }
@@ -105,7 +111,7 @@ export default function RolesPage() {
                 <Link
                   href={`/admin/dashboard/access-control/roles/edit/${row.id}`}
                 >
-                  <Button type="text" icon={<EditOutlined />} />
+                  <Button type="text" icon={<Pencil />} />
                 </Link>
               )}
               {deleteAccess.allowed && (
@@ -120,7 +126,7 @@ export default function RolesPage() {
                     }
                   }}
                 >
-                  <Button danger type="text" icon={<DeleteOutlined />} />
+                  <Button danger type="text" icon={<Trash2 />} />
                 </Popconfirm>
               )}
             </div>

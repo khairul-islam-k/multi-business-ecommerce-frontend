@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import {
-  SearchOutlined,
-  CheckCircleOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+  CircleCheck,
+  Eye,
+  Search
+} from "lucide-react";
+
+
+import { useState } from "react";
 import {
   Table,
   Input,
@@ -112,7 +114,7 @@ export default function NotificationsPage() {
             <Button
               type="link"
               size="small"
-              icon={<EyeOutlined style={{ fontSize: 18 }} />}
+              icon={<Eye style={{ fontSize: 18 }} />}
               onClick={() => openView(n)}
             />
           </Tooltip>
@@ -122,7 +124,7 @@ export default function NotificationsPage() {
               <Button
                 type="link"
                 size="small"
-                icon={<CheckCircleOutlined style={{ fontSize: 18 }} />}
+                icon={<CircleCheck style={{ fontSize: 18 }} />}
                 onClick={() => markAsRead(n.id)}
               />
             </Tooltip>
@@ -141,7 +143,7 @@ export default function NotificationsPage() {
           {/* Left Controls */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
             <Input
-              prefix={<SearchOutlined />}
+              prefix={<Search />}
               placeholder="Search notifications..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -163,7 +165,7 @@ export default function NotificationsPage() {
           {/* Right Action */}
           <div className="flex justify-start sm:justify-end">
             <Button
-              icon={<CheckCircleOutlined />}
+              icon={<CircleCheck />}
               onClick={markAllRead}
               className="w-full sm:w-auto"
             >

@@ -1,10 +1,15 @@
 "use client";
 
+import {
+  ArrowLeft,
+  Pencil
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useVariant } from "@/lib/api/hooks/product-variant";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Empty, Skeleton, Tag } from "antd";
 import JsBarcode from "jsbarcode";
 import Image from "next/image";
@@ -74,13 +79,13 @@ const VariantDetail = () => {
       />
 
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
 
         <Button
           type="primary"
-          icon={<EditOutlined />}
+          icon={<Pencil />}
           onClick={() =>
             router.push(
               `/admin/dashboard/product-catalog/variant/update/${productId}/variants/${variantId}`

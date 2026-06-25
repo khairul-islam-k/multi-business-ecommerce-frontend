@@ -7,7 +7,13 @@ import { apiQueryKeys } from "../query-keys";
 import type {
   ApiId,
 } from "../types";
-import type { OrderPayload, OrderPaymentPayload, OrderQuery } from "../orders";
+import type {
+  OrderPayload,
+  OrderPaymentPayload,
+  OrderQuery,
+  OrderReturnQuery,
+  OrderReturnStatus,
+} from "../orders";
 
 export function useOrdersQuery(businessId: ApiId, query?: OrderQuery) {
   return useQuery({
@@ -22,6 +28,25 @@ export function useOrder(businessId: ApiId, orderId: ApiId) {
     queryKey: apiQueryKeys.orders.detail(businessId, orderId),
     queryFn: () => ordersApi.get(businessId, orderId),
     enabled: Boolean(businessId && orderId),
+  });
+}
+
+export function useOrderReturnsQuery(
+  businessId: ApiId,
+  query?: OrderReturnQuery,
+) {
+  return useQuery({
+    queryKey: apiQueryKeys.orders.returns(businessId, query),
+    queryFn: () => ordersApi.listReturns(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
+
+export function useOrderReturn(businessId: ApiId, returnId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.orders.returnDetail(businessId, returnId),
+    queryFn: () => ordersApi.getReturn(businessId, returnId),
+    enabled: Boolean(businessId && returnId),
   });
 }
 
@@ -58,6 +83,16 @@ export function useOrderMutations(businessId: ApiId) {
     }),
     cancelOrder: useMutation({
       mutationFn: (orderId: ApiId) => ordersApi.cancel(businessId, orderId),
+      onSuccess: invalidate,
+    }),
+    updateReturnStatus: useMutation({
+      mutationFn: ({
+        returnId,
+        status,
+      }: {
+        returnId: ApiId;
+        status: OrderReturnStatus;
+      }) => ordersApi.updateReturnStatus(businessId, returnId, status),
       onSuccess: invalidate,
     }),
   };

@@ -33,6 +33,12 @@ export type OrderPaymentMethod =
   | "CARD"
   | "BANK_TRANSFER"
   | "OTHER";
+export type OrderReturnStatus =
+  | "REQUESTED"
+  | "APPROVED"
+  | "REJECTED"
+  | "COMPLETED"
+  | "CANCELLED";
 
 export type OrderItemPayload = {
   productId: ApiId;
@@ -78,6 +84,55 @@ export type OrderQuery = ListQuery & {
   orderType?: OrderType;
 };
 
+export type OrderReturnQuery = ListQuery & {
+  status?: OrderReturnStatus;
+  orderId?: ApiId;
+};
+
+export type OrderItemResponse = {
+  id: ApiId;
+  orderId: ApiId;
+  productId: ApiId;
+  variantId?: ApiId | null;
+  taxId?: ApiId | null;
+  quantity?: string | number;
+  unitPrice?: string | number;
+  discountAmount?: string | number;
+  taxAmount?: string | number;
+  taxRate?: string | number;
+  lineTotal?: string | number;
+  product?: unknown;
+  variant?: unknown;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type OrderPaymentResponse = {
+  id: ApiId;
+  businessId: ApiId;
+  orderId: ApiId;
+  financeAccountId?: ApiId | null;
+  paymentNo?: string;
+  amount?: string | number;
+  paymentMethod?: OrderPaymentMethod;
+  paymentStatus?: string;
+  transactionReference?: string | null;
+  paidAt?: string | null;
+  createdBy?: ApiId | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type OrderStatusLogResponse = {
+  id: ApiId;
+  orderId: ApiId;
+  fromStatus?: OrderStatus | null;
+  toStatus?: OrderStatus;
+  note?: string | null;
+  changedBy?: ApiId | null;
+  createdAt?: string;
+};
+
 export type OrderResponse = {
   id: ApiId;
   businessId: ApiId;
@@ -97,14 +152,53 @@ export type OrderResponse = {
   discountTotal?: string | number | null;
   taxTotal?: string | number | null;
   totalAmount?: string | number | null;
+  paidAmount?: string | number | null;
+  taxRate?: string | number | null;
   note?: string | null;
-  items?: unknown[];
-  payments?: unknown[];
+  shippingAddressSnapshot?: unknown;
+  items?: OrderItemResponse[];
+  payments?: OrderPaymentResponse[];
+  statusLogs?: OrderStatusLogResponse[];
+  existingCustomer?: unknown;
   customer?: unknown;
   warehouse?: unknown;
   tax?: unknown;
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type OrderReturnItemResponse = {
+  id: ApiId;
+  returnId: ApiId;
+  orderItemId: ApiId;
+  productId: ApiId;
+  variantId?: ApiId | null;
+  quantity?: string | number;
+  unitPrice?: string | number;
+  lineTotal?: string | number;
+  reason?: string | null;
+  orderItem?: OrderItemResponse;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type OrderReturnResponse = {
+  id: ApiId;
+  businessId: ApiId;
+  orderId: ApiId;
+  returnNo?: string;
+  status?: OrderReturnStatus;
+  reason?: string | null;
+  totalAmount?: string | number | null;
+  createdBy?: ApiId | null;
+  approvedBy?: ApiId | null;
+  deletedBy?: ApiId | null;
+  approvedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+  order?: OrderResponse;
+  items?: OrderReturnItemResponse[];
 };
 
 const basePath = (businessId: ApiId) =>
@@ -162,6 +256,35 @@ export const ordersApi = {
     return api
       .patch<ApiResponse<OrderResponse>>(
         `${basePath(businessId)}/${orderId}/cancel`,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  listReturns(businessId: ApiId, query?: OrderReturnQuery) {
+    return api
+      .get<ApiPaginatedResponse<OrderReturnResponse>>(
+        `${basePath(businessId)}/returns${buildQueryString(query)}`,
+      )
+      .then((res) => normalizePaginatedResponse(res.data));
+  },
+
+  getReturn(businessId: ApiId, returnId: ApiId) {
+    return api
+      .get<ApiResponse<OrderReturnResponse>>(
+        `${basePath(businessId)}/returns/${returnId}`,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  updateReturnStatus(
+    businessId: ApiId,
+    returnId: ApiId,
+    status: OrderReturnStatus,
+  ) {
+    return api
+      .patch<ApiResponse<OrderReturnResponse>>(
+        `${basePath(businessId)}/returns/${returnId}/status`,
+        { status },
       )
       .then((res) => unwrapApiResponse(res.data));
   },

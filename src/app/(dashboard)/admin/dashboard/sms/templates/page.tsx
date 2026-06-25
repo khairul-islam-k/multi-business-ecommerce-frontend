@@ -1,9 +1,15 @@
 "use client";
 
+import {
+  Eye,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, Column } from "@/components/shared/data-table";
 import { Tag, Button, Space } from "antd";
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { mockTemplates, SmsTemplate } from "./data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -57,11 +63,11 @@ export default function SmsTemplateList() {
         }
         actions={(row) => (
           <Space>
-            <Button icon={<EyeOutlined />} onClick={() => console.log(row)} />
-            <Button icon={<EditOutlined />} onClick={() => console.log(row)} />
+            <Button icon={<Eye />} onClick={() => console.log(row)} />
+            <Button icon={<Pencil />} onClick={() => console.log(row)} />
             <Button
               danger
-              icon={<DeleteOutlined />}
+              icon={<Trash2 />}
               onClick={() => console.log(row)}
             />
           </Space>

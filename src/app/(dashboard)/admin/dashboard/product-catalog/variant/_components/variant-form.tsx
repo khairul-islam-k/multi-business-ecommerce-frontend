@@ -1,9 +1,14 @@
 "use client";
 
+import {
+  CirclePlus,
+  Trash2
+} from "lucide-react";
+
+
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { useAuthStore } from "@/stores/auth.store";
 import type { ResponseProductAttribute } from "@/types/product/attribute";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -86,7 +91,7 @@ const AttributeRow = ({
           <Button
             danger
             size="small"
-            icon={<DeleteOutlined />}
+            icon={<Trash2 />}
             onClick={() => remove(fieldName)}
           />
         )
@@ -328,7 +333,7 @@ const VariantForm = ({
 
               <Button
                 type="dashed"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 loading={isLoading}
                 onClick={() => add({ attributeId: "", attributeValueId: "" })}
                 block

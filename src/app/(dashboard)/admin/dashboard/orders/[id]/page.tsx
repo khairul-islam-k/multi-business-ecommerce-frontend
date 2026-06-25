@@ -14,14 +14,17 @@ import {
   Space,
   Table,
   Tag,
+  Timeline,
   Typography,
 } from "antd";
 import {
-  CheckCircleOutlined,
-  CreditCardOutlined,
-  StopOutlined,
-  TruckOutlined,
-} from "@ant-design/icons";
+  ArrowRight,
+  CheckCircle,
+  CreditCard,
+  RotateCcw,
+  StopCircle,
+  Truck,
+} from "lucide-react";
 
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
@@ -29,8 +32,12 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
-import { useOrder, useOrderMutations } from "@/lib/api";
-import type { OrderPaymentPayload, OrderStatus } from "@/lib/api";
+import { useOrder, useOrderMutations, useOrderReturnsQuery } from "@/lib/api";
+import type {
+  OrderPaymentPayload,
+  OrderReturnStatus,
+  OrderStatus,
+} from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -44,14 +51,24 @@ const statusColor: Record<OrderStatus, string> = {
   SHIPPED: "geekblue",
 };
 
+const returnStatusColor: Record<OrderReturnStatus, string> = {
+  APPROVED: "blue",
+  CANCELLED: "default",
+  COMPLETED: "green",
+  REJECTED: "red",
+  REQUESTED: "orange",
+};
+
 function money(value: string | number | null | undefined) {
   return `BDT ${Number(value ?? 0).toLocaleString()}`;
 }
 
 function displayName(value: unknown) {
-  if (!value || typeof value !== "object") return "-";
+  if (!value || typeof value !== "object") return undefined;
   const record = value as { name?: unknown; title?: unknown; sku?: unknown };
-  return String(record.name ?? record.title ?? record.sku ?? "-");
+  return record.name ?? record.title ?? record.sku
+    ? String(record.name ?? record.title ?? record.sku)
+    : undefined;
 }
 
 export default function OrderDetails() {
@@ -61,6 +78,13 @@ export default function OrderDetails() {
   const [paymentForm] = Form.useForm<OrderPaymentPayload>();
   const orderId = String(id ?? "");
   const order = useOrder(businessId ?? "", orderId);
+  const orderReturns = useOrderReturnsQuery(businessId ?? "", {
+    page: 1,
+    limit: 100,
+    orderId,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
   const accounts = useFinanceAccountQuery(businessId ?? "", {
     page: 1,
     limit: 100,
@@ -153,6 +177,9 @@ export default function OrderDetails() {
 
   const current = order.data;
   const items = (current.items ?? []) as Array<Record<string, unknown>>;
+  const payments = current.payments ?? [];
+  const returns = orderReturns.data?.items ?? [];
+  const statusLogs = current.statusLogs ?? [];
 
   return (
     <div className="space-y-6">
@@ -184,6 +211,9 @@ export default function OrderDetails() {
               </Descriptions.Item>
               <Descriptions.Item label="Payment status">
                 {current.paymentStatus ?? "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="Paid amount">
+                {money(current.paidAmount)}
               </Descriptions.Item>
               <Descriptions.Item label="Note">
                 {current.note ?? "-"}
@@ -228,6 +258,143 @@ export default function OrderDetails() {
               ]}
             />
           </Card>
+
+          <Card title={`Payments (${payments.length})`} className="mt-4">
+            <Table
+              rowKey="id"
+              dataSource={payments}
+              pagination={false}
+              columns={[
+                {
+                  title: "Payment No",
+                  dataIndex: "paymentNo",
+                  key: "paymentNo",
+                  render: (value) => value ?? "-",
+                },
+                {
+                  title: "Method",
+                  dataIndex: "paymentMethod",
+                  key: "paymentMethod",
+                  render: (value) => value ?? "-",
+                },
+                {
+                  title: "Status",
+                  dataIndex: "paymentStatus",
+                  key: "paymentStatus",
+                  render: (value) => value ?? "-",
+                },
+                {
+                  title: "Amount",
+                  dataIndex: "amount",
+                  key: "amount",
+                  align: "right",
+                  render: (value) => money(value),
+                },
+                {
+                  title: "Paid at",
+                  dataIndex: "paidAt",
+                  key: "paidAt",
+                  render: (value) =>
+                    value ? new Date(String(value)).toLocaleString() : "-",
+                },
+              ]}
+            />
+          </Card>
+
+          <Card
+            title={`Returns (${returns.length})`}
+            className="mt-4"
+            extra={
+              <Button
+                size="small"
+                icon={<RotateCcw size={16} />}
+                href={`/admin/dashboard/orders/${orderId}/returns`}
+              >
+                View returns
+              </Button>
+            }
+          >
+            <Table
+              rowKey="id"
+              dataSource={returns}
+              loading={orderReturns.isFetching}
+              pagination={false}
+              columns={[
+                {
+                  title: "Return No",
+                  dataIndex: "returnNo",
+                  key: "returnNo",
+                  render: (value) => value ?? "-",
+                },
+                {
+                  title: "Status",
+                  dataIndex: "status",
+                  key: "status",
+                  render: (value: OrderReturnStatus | undefined) =>
+                    value ? (
+                      <Tag color={returnStatusColor[value]}>{value}</Tag>
+                    ) : (
+                      "-"
+                    ),
+                },
+                {
+                  title: "Reason",
+                  dataIndex: "reason",
+                  key: "reason",
+                  render: (value) => value ?? "-",
+                },
+                {
+                  title: "Amount",
+                  dataIndex: "totalAmount",
+                  key: "totalAmount",
+                  align: "right",
+                  render: (value) => money(value),
+                },
+                {
+                  title: "Created",
+                  dataIndex: "createdAt",
+                  key: "createdAt",
+                  render: (value) =>
+                    value ? new Date(String(value)).toLocaleString() : "-",
+                },
+              ]}
+            />
+          </Card>
+
+          <Card title={`Status History (${statusLogs.length})`} className="mt-4">
+            {statusLogs.length ? (
+              <Timeline
+                items={statusLogs.map((log) => ({
+                  color: log.toStatus ? statusColor[log.toStatus] : "blue",
+                  children: (
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Tag>{log.fromStatus ?? "CREATED"}</Tag>
+                        <ArrowRight size={14} className="text-gray-400" />
+                        {log.toStatus ? (
+                          <Tag color={statusColor[log.toStatus]}>
+                            {log.toStatus}
+                          </Tag>
+                        ) : (
+                          <Tag>UNKNOWN</Tag>
+                        )}
+                      </div>
+                      {log.note ? (
+                        <div className="text-sm text-gray-600">{log.note}</div>
+                      ) : null}
+                      <div className="text-xs text-gray-400">
+                        {log.createdAt
+                          ? new Date(log.createdAt).toLocaleString()
+                          : "No timestamp"}
+                      </div>
+                    </div>
+                  ),
+                }))}
+              />
+            ) : (
+              <Empty description="No status logs found" />
+            )}
+          </Card>
         </Col>
 
         <Col xs={24} lg={8}>
@@ -255,7 +422,7 @@ export default function OrderDetails() {
             <Space direction="vertical" className="w-full">
               <Button
                 block
-                icon={<CreditCardOutlined />}
+                icon={<CreditCard size={16} />}
                 onClick={openPaymentModal}
                 loading={mutations.addPayment.isPending}
               >
@@ -263,7 +430,7 @@ export default function OrderDetails() {
               </Button>
               <Button
                 block
-                icon={<TruckOutlined />}
+                icon={<Truck size={16} />}
                 onClick={() =>
                   runAction(
                     "Mark this order as shipped?",
@@ -277,7 +444,7 @@ export default function OrderDetails() {
               </Button>
               <Button
                 block
-                icon={<CheckCircleOutlined />}
+                icon={<CheckCircle size={16} />}
                 onClick={() =>
                   runAction(
                     "Mark this order as delivered?",
@@ -292,7 +459,7 @@ export default function OrderDetails() {
               <Button
                 block
                 danger
-                icon={<StopOutlined />}
+                icon={<StopCircle size={16} />}
                 onClick={() =>
                   runAction(
                     "Cancel this order?",

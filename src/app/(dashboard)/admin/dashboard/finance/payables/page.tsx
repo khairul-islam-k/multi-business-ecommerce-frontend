@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  Banknote,
+  Eye
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -10,10 +16,6 @@ import {
   PayableResponse,
   PayableStatus,
 } from "@/types/finance/payable";
-import {
-  DollarOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -154,7 +156,7 @@ const PayablePage = () => {
           <Tooltip title="View payable">
             <Button
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() =>
                 router.push(`/admin/dashboard/finance/payables/view/${row.id}`)
               }
@@ -166,7 +168,7 @@ const PayablePage = () => {
               <Button
                 size="small"
                 type="primary"
-                icon={<DollarOutlined />}
+                icon={<Banknote />}
                 onClick={() => {
                   setPayModalOpen(true);
                   setPayableId(row.id);

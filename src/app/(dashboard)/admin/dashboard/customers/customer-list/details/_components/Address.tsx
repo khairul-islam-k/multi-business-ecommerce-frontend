@@ -1,11 +1,16 @@
 "use client";
 
+import {
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { CustomerAddressResponse } from "@/types/customer/customerAddress";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Modal, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import UpdateAddress from "./update-address";
@@ -121,7 +126,7 @@ const Address = ({ address, customerId }: Props) => {
           <Tooltip title="Edit address">
             <Button
               size="small"
-              icon={<EditOutlined />}
+              icon={<Pencil />}
               onClick={() => {
                 setSingleAddress(row);
                 setOpenModal(true);
@@ -133,7 +138,7 @@ const Address = ({ address, customerId }: Props) => {
             <Button
               danger
               size="small"
-              icon={<DeleteOutlined />}
+              icon={<Trash2 />}
               onClick={() => handleDeleteAddress(row.id)}
             />
           </Tooltip>

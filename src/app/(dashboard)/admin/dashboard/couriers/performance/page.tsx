@@ -58,14 +58,14 @@ const Performance = () => {
             <Bar
               dataKey="TCS Express"
               name="TCS Express Delivery"
-              fill="#5B4FDB"
+              fill="var(--dashboard-primary-color)"
             />
             <Bar
               dataKey="Leopards Courier"
               name="Leopards Courier Delivery"
-              fill="#3F7AE0"
+              fill="var(--dashboard-info-color)"
             />
-            <Bar dataKey="PostEx" name="PostEx Delivery" fill="#E23B3B" />
+            <Bar dataKey="PostEx" name="PostEx Delivery" fill="var(--dashboard-error-color)" />
           </BarChart>
         </ResponsiveContainer>
       </Card>

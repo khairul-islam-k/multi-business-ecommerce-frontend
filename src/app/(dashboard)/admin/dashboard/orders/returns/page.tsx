@@ -1,118 +1,254 @@
 "use client";
 
-import { useState } from "react";
-import { Card, Col, Row, Table, Typography, Input, Select, Badge } from "antd";
+import Link from "next/link";
+import { useMemo, useState, type ReactNode } from "react";
+import {
+  App,
+  Button,
+  Card,
+  Empty,
+  Input,
+  Select,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+} from "antd";
+import { Ban, Check, CircleCheck, Eye, X } from "lucide-react";
 
-import { mockReturns } from "./data";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
+import Pagination from "@/components/shared/pagination";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { getApiErrorMessage } from "@/lib/axios";
+import {
+  useOrderMutations,
+  useOrderReturnsQuery,
+  type OrderReturnResponse,
+  type OrderReturnStatus,
+} from "@/lib/api";
 
 const { Search } = Input;
-const { Title, Text } = Typography;
+const returnStatuses: OrderReturnStatus[] = [
+  "REQUESTED",
+  "APPROVED",
+  "REJECTED",
+  "COMPLETED",
+  "CANCELLED",
+];
+
+const statusColor: Record<OrderReturnStatus, string> = {
+  APPROVED: "blue",
+  CANCELLED: "default",
+  COMPLETED: "green",
+  REJECTED: "red",
+  REQUESTED: "orange",
+};
+
+const statusActions: Array<{
+  status: OrderReturnStatus;
+  label: string;
+  icon: ReactNode;
+  danger?: boolean;
+}> = [
+  { status: "APPROVED", label: "Approve return", icon: <Check size={16} /> },
+  { status: "REJECTED", label: "Reject return", icon: <X size={16} />, danger: true },
+  {
+    status: "COMPLETED",
+    label: "Complete return",
+    icon: <CircleCheck size={16} />,
+  },
+  { status: "CANCELLED", label: "Cancel return", icon: <Ban size={16} />, danger: true },
+];
+
+function money(value: string | number | null | undefined) {
+  return `BDT ${Number(value ?? 0).toLocaleString()}`;
+}
 
 export default function OrderReturnsPage() {
+  const businessId = useActiveBusinessId();
+  const { message } = App.useApp();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string | undefined>();
+  const [status, setStatus] = useState<OrderReturnStatus | undefined>();
+  const [currentPage, setCurrentPage] = useState(1);
+  const returnsQuery = useMemo(
+    () => ({
+      page: currentPage,
+      limit: 10,
+      search,
+      status,
+      sortBy: "createdAt",
+      sortOrder: "desc" as const,
+    }),
+    [currentPage, search, status],
+  );
+  const returns = useOrderReturnsQuery(businessId ?? "", returnsQuery);
+  const mutations = useOrderMutations(businessId ?? "");
 
-  const filteredData = mockReturns.filter((r) => {
-    const matchesSearch =
-      r.return_no.toLowerCase().includes(search.toLowerCase()) ||
-      r.order_id.toLowerCase().includes(search.toLowerCase());
+  const updateStatus = async (
+    record: OrderReturnResponse,
+    nextStatus: OrderReturnStatus,
+  ) => {
+    try {
+      await mutations.updateReturnStatus.mutateAsync({
+        returnId: record.id,
+        status: nextStatus,
+      });
+      message.success(
+        `Return ${record.returnNo ?? record.id} marked as ${nextStatus}.`,
+      );
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    }
+  };
 
-    const matchesStatus = statusFilter ? r.status === statusFilter : true;
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const columns = [
-    {
-      title: "Return No",
-      dataIndex: "return_no",
-      render: (v: string) => <Text strong>{v}</Text>,
-    },
-    {
-      title: "Order ID",
-      dataIndex: "order_id",
-    },
-    {
-      title: "Reason",
-      dataIndex: "reason",
-    },
-    {
-      title: "Condition",
-      dataIndex: "condition",
-    },
-    {
-      title: "Refund",
-      dataIndex: "refund_amount",
-      align: "right" as const,
-      render: (v: number) => `$${v.toFixed(2)}`,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      render: (v: string) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const map: Record<string, any> = {
-          pending: "warning",
-          approved: "success",
-          rejected: "error",
-        };
-        return <Badge status={map[v] || "default"} text={v} />;
-      },
-    },
-    {
-      title: "Received At",
-      dataIndex: "received_at",
-      render: (v: string) => <Text type="secondary">{v}</Text>,
-    },
-  ];
+  if (!businessId) return <Empty description="No active business selected" />;
+  if (returns.isLoading && !returns.data) {
+    return <Loader label="Loading order returns" />;
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader title="Order Returns" breadcrumb={adminBreadcrumb} />
 
-      <Row gutter={[16, 16]} className="mb-4">
-        <Col xs={24} sm={12} md={8}>
+      <Card>
+        <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center">
           <Search
-            placeholder="Search return/order..."
+            placeholder="Search return or order"
             allowClear
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onSearch={(value) => {
+              setSearch(value);
+              setCurrentPage(1);
+            }}
+            className="w-full md:max-w-xs"
           />
-        </Col>
-
-        <Col xs={24} sm={12} md={8}>
           <Select
             placeholder="Filter status"
             allowClear
-            style={{ width: "100%", maxWidth: 200 }}
-            value={statusFilter}
-            onChange={setStatusFilter}
-            options={[
-              { label: "Pending", value: "pending" },
-              { label: "Approved", value: "approved" },
-              { label: "Rejected", value: "rejected" },
-            ]}
+            className="w-full md:max-w-52"
+            value={status}
+            onChange={(value) => {
+              setStatus(value);
+              setCurrentPage(1);
+            }}
+            options={returnStatuses.map((item) => ({
+              label: item,
+              value: item,
+            }))}
           />
-        </Col>
-      </Row>
+        </div>
 
-      <Row gutter={[24, 24]}>
-        <Col span={24}>
-          <Card>
-            <Title level={5}>Order Returns</Title>
-            <Table
-              columns={columns}
-              dataSource={filteredData}
-              rowKey="id"
-              size="small"
-              pagination={{ pageSize: 5 }}
-              scroll={{ x: "max-content" }}
-            />
-          </Card>
-        </Col>
-      </Row>
+        <Table<OrderReturnResponse>
+          columns={[
+            {
+              title: "Return No",
+              dataIndex: "returnNo",
+              key: "returnNo",
+              render: (value, record) => (
+                <span className="font-semibold">{value ?? record.id}</span>
+              ),
+            },
+            {
+              title: "Order",
+              key: "order",
+              render: (_, record) =>
+                record.orderId ? (
+                  <Link href={`/admin/dashboard/orders/${record.orderId}`}>
+                    {record.order?.orderNo ?? record.orderId}
+                  </Link>
+                ) : (
+                  "-"
+                ),
+            },
+            {
+              title: "Customer",
+              key: "customer",
+              render: (_, record) =>
+                record.order?.customerName ??
+                record.order?.customerEmail ??
+                "-",
+            },
+            {
+              title: "Reason",
+              dataIndex: "reason",
+              key: "reason",
+              render: (value) => value ?? "-",
+            },
+            {
+              title: "Amount",
+              dataIndex: "totalAmount",
+              key: "totalAmount",
+              align: "right",
+              render: (value) => money(value),
+            },
+            {
+              title: "Status",
+              dataIndex: "status",
+              key: "status",
+              render: (value) => {
+                const currentStatus = value as OrderReturnStatus | undefined;
+                return currentStatus ? (
+                  <Tag color={statusColor[currentStatus]}>{currentStatus}</Tag>
+                ) : (
+                  "-"
+                );
+              },
+            },
+            {
+              title: "Created",
+              dataIndex: "createdAt",
+              key: "createdAt",
+              render: (value) =>
+                value ? new Date(String(value)).toLocaleString() : "-",
+            },
+            {
+              title: "Actions",
+              key: "actions",
+              fixed: "right",
+              render: (_, record) => (
+                <Space size={4}>
+                  <Link
+                    href={`/admin/dashboard/orders/${record.orderId}/returns`}
+                  >
+                    <Tooltip title="View order returns">
+                      <Button size="small" type="text" icon={<Eye size={16} />} />
+                    </Tooltip>
+                  </Link>
+                  {statusActions.map((action) => (
+                    <Tooltip key={action.status} title={action.label}>
+                      <Button
+                        size="small"
+                        type="text"
+                        danger={action.danger}
+                        icon={action.icon}
+                        disabled={
+                          record.status === action.status ||
+                          mutations.updateReturnStatus.isPending
+                        }
+                        onClick={() => updateStatus(record, action.status)}
+                      />
+                    </Tooltip>
+                  ))}
+                </Space>
+              ),
+            },
+          ]}
+          dataSource={returns.data?.items ?? []}
+          rowKey="id"
+          loading={returns.isFetching}
+          pagination={false}
+          scroll={{ x: "max-content" }}
+        />
+
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={returns.data?.meta.totalPages ?? 1}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      </Card>
     </div>
   );
 }

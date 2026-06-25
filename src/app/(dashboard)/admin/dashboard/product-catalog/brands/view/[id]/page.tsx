@@ -1,13 +1,14 @@
 "use client";
 
+import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import { ArrowLeft, Pencil } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useBrand } from "@/lib/api/hooks/product-brand";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Card, Empty, Skeleton, Tag } from "antd";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
 
 const imageUrlSet = (url: string) => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -49,16 +50,16 @@ const BrandDetails = () => {
       />
 
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
 
         <Button
           type="primary"
-          icon={<EditOutlined />}
+          icon={<Pencil />}
           onClick={() =>
             router.push(
-              `/admin/dashboard/product-catalog/brands/update/${brand.id}`
+              `/admin/dashboard/product-catalog/brands/update/${brand.id}`,
             )
           }
         >
@@ -104,10 +105,7 @@ const BrandDetails = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <InfoItem label="Sort Order" value={brand.sortOrder} />
 
-              <InfoItem
-                label="Products"
-                value={brand._count?.products ?? 0}
-              />
+              <InfoItem label="Products" value={brand._count?.products ?? 0} />
 
               <InfoItem
                 label="Created At"

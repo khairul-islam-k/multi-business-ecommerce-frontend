@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  ShoppingCartOutlined,
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+  CircleCheck,
+  CircleX,
+  Clock,
+  ShoppingCart
+} from "lucide-react";
+
+
 
 import ReportPage from "../_components/report-page";
 
@@ -20,28 +22,28 @@ export default function OrderReports() {
           value: "2,450",
           change: "+8.3%",
           up: true,
-          icon: ShoppingCartOutlined,
+          icon: ShoppingCart,
         },
         {
           label: "Fulfilled",
           value: "2,180",
           change: "89%",
           up: true,
-          icon: CheckCircleOutlined,
+          icon: CircleCheck,
         },
         {
           label: "Pending",
           value: "185",
           change: "7.5%",
           up: false,
-          icon: ClockCircleOutlined,
+          icon: Clock,
         },
         {
           label: "Cancelled",
           value: "85",
           change: "3.5%",
           up: false,
-          icon: CloseCircleOutlined,
+          icon: CircleX,
         },
       ]}
       chartData={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(

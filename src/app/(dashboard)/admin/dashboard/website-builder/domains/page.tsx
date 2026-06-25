@@ -1,14 +1,16 @@
 "use client";
 
+import {
+  CircleCheck,
+  CircleX,
+  Clock
+} from "lucide-react";
+
+
 import DomainTable from "./_components/domain-table";
 import { Button, Card, Col, Form, Input, Row, Select, theme } from "antd";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
 import { useSwal } from "@/hooks/use-swal";
 
 const { Option } = Select;
@@ -21,19 +23,19 @@ const DomainManager = () => {
   const detailData = [
     {
       id: 1,
-      Icon: CheckCircleOutlined,
+      Icon: CircleCheck,
       count: 3,
       title: "Verified",
     },
     {
       id: 2,
-      Icon: ClockCircleOutlined,
+      Icon: Clock,
       count: 1,
       title: "Pending",
     },
     {
       id: 3,
-      Icon: CloseCircleOutlined,
+      Icon: CircleX,
       count: 1,
       title: "Failed",
     },

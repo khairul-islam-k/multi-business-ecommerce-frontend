@@ -1,17 +1,19 @@
 "use client";
 
+import {
+  Bell,
+  ChartBar,
+  Gauge,
+  Landmark,
+  LayoutDashboard,
+  Radar,
+  Settings
+} from "lucide-react";
+
+
 import type React from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { theme, Layout, Menu, Drawer, MenuProps } from "antd";
-import {
-  DashboardOutlined,
-  BankOutlined,
-  AppstoreOutlined,
-  BarChartOutlined,
-  BellOutlined,
-  RadarChartOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
 
 import Logo from "@/components/shared/logo";
 
@@ -30,18 +32,18 @@ const allNavItems: MenuProps["items"] = [
     type: "group",
     label: "Overview",
     children: [
-      { key: "/", icon: <DashboardOutlined />, label: "Dashboard" },
-      { key: "/reports", icon: <BarChartOutlined />, label: "Reports" },
+      { key: "/", icon: <Gauge />, label: "Dashboard" },
+      { key: "/reports", icon: <ChartBar />, label: "Reports" },
     ],
   },
   {
     type: "group",
     label: "Management",
     children: [
-      { key: "/tenants", icon: <BankOutlined />, label: "Tenants" },
+      { key: "/tenants", icon: <Landmark />, label: "Tenants" },
       {
         key: "/packages",
-        icon: <AppstoreOutlined />,
+        icon: <LayoutDashboard />,
         label: "Packages",
       },
     ],
@@ -50,9 +52,9 @@ const allNavItems: MenuProps["items"] = [
     type: "group",
     label: "System",
     children: [
-      { key: "/notifications", icon: <BellOutlined />, label: "Notifications" },
-      { key: "/monitoring", icon: <RadarChartOutlined />, label: "Monitoring" },
-      { key: "/settings", icon: <SettingOutlined />, label: "Settings" },
+      { key: "/notifications", icon: <Bell />, label: "Notifications" },
+      { key: "/monitoring", icon: <Radar />, label: "Monitoring" },
+      { key: "/settings", icon: <Settings />, label: "Settings" },
     ],
   },
 ];

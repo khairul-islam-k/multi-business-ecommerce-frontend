@@ -42,7 +42,7 @@ export default function OverviewPage() {
               <BarChart data={mockMonthlyData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(220 13% 91%)"
+                  stroke="var(--dashboard-border-subtle-color)"
                 />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -50,12 +50,12 @@ export default function OverviewPage() {
                 <Legend />
                 <Bar
                   dataKey="revenue"
-                  fill="hsl(220, 70%, 50%)"
+                  fill="var(--dashboard-primary-color)"
                   radius={[4, 4, 0, 0]}
                 />
                 <Bar
                   dataKey="expense"
-                  fill="hsl(0, 72%, 51%)"
+                  fill="var(--dashboard-error-color)"
                   radius={[4, 4, 0, 0]}
                 />
               </BarChart>
@@ -70,7 +70,7 @@ export default function OverviewPage() {
               <LineChart data={mockProfitData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(220 13% 91%)"
+                  stroke="var(--dashboard-border-subtle-color)"
                 />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -78,14 +78,14 @@ export default function OverviewPage() {
                 <Line
                   type="monotone"
                   dataKey="profit"
-                  stroke="hsl(160, 60%, 45%)"
+                  stroke="var(--dashboard-success-color)"
                   strokeWidth={2}
                   dot={{ r: 4 }}
                 />
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  stroke="hsl(220, 70%, 50%)"
+                  stroke="var(--dashboard-primary-color)"
                   strokeWidth={1}
                   strokeDasharray="5 5"
                 />

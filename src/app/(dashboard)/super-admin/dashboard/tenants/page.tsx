@@ -1,9 +1,15 @@
 "use client";
 
+import {
+  CirclePlus,
+  Eye,
+  MoreHorizontal
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useState } from "react";
 import { App, Button, Dropdown, Flex, Tag } from "antd";
-import { EyeOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
 import type { SystemUserStatus, Tenant } from "@/lib/api";
@@ -133,7 +139,7 @@ export default function TenantListPage() {
         }}
         toolbarEnd={
           <Link href="/super-admin/dashboard/tenants/create">
-            <Button type="primary" icon={<PlusOutlined />}>
+            <Button type="primary" icon={<CirclePlus />}>
               Create Tenant
             </Button>
           </Link>
@@ -141,7 +147,7 @@ export default function TenantListPage() {
         actions={(row) => (
           <Flex gap={16}>
             <Link href={`/super-admin/dashboard/tenants/${row.id}`}>
-              <Button icon={<EyeOutlined />} />
+              <Button icon={<Eye />} />
             </Link>
 
             <Dropdown
@@ -157,7 +163,7 @@ export default function TenantListPage() {
               <Button
                 type="text"
                 aria-label="Tenant actions"
-                icon={<MoreOutlined />}
+                icon={<MoreHorizontal />}
               />
             </Dropdown>
           </Flex>

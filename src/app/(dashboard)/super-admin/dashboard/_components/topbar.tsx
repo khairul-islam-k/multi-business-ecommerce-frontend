@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   App,
   Avatar,
@@ -15,19 +13,20 @@ import {
   theme,
 } from "antd";
 import {
-  MenuOutlined,
-  SearchOutlined,
-  CloseOutlined,
-  LogoutOutlined,
-  UserOutlined,
-  SettingOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-} from "@ant-design/icons";
+  LogOut,
+  Menu as MenuIcon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search as SearchIcon,
+  Settings,
+  UserRound,
+  X,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { useAuthStore } from "@/stores/auth.store";
-import ThemeToggle from "@/components/shared/antd-theme-toggle";
 import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
+import { useAuthStore } from "@/stores/auth.store";
 
 const { Search } = Input;
 const { useToken } = theme;
@@ -76,20 +75,20 @@ export default function Topbar({
   const items: MenuProps["items"] = [
     {
       key: "profile",
-      icon: <UserOutlined />,
+      icon: <UserRound />,
       label: "Profile",
       onClick: () => router.push("/super-admin/dashboard/settings"),
     },
     {
       key: "account",
-      icon: <SettingOutlined />,
+      icon: <Settings />,
       label: "Account Settings",
       onClick: () => router.push("/super-admin/dashboard/settings"),
     },
     { type: "divider" },
     {
       key: "logout",
-      icon: <LogoutOutlined />,
+      icon: <LogOut />,
       label: "Logout",
       onClick: handleLogout,
     },
@@ -111,11 +110,7 @@ export default function Topbar({
       }}
     >
       <div className="md:hidden">
-        <Button
-          type="text"
-          icon={<MenuOutlined />}
-          onClick={onMobileMenuToggle}
-        />
+        <Button type="text" icon={<MenuIcon />} onClick={onMobileMenuToggle} />
       </div>
 
       <Flex className="hidden md:flex" align="center" gap={12} flex="1 1 auto">
@@ -126,13 +121,13 @@ export default function Topbar({
             onClick={onSidebarToggle}
             icon={
               collapsed ? (
-                <MenuUnfoldOutlined
+                <PanelLeftOpen
                   style={{
                     fontSize: 20,
                   }}
                 />
               ) : (
-                <MenuFoldOutlined
+                <PanelLeftClose
                   style={{
                     fontSize: 20,
                   }}
@@ -158,7 +153,7 @@ export default function Topbar({
           {!mobileSearchOpen && (
             <Button
               type="text"
-              icon={<SearchOutlined />}
+              icon={<SearchIcon />}
               onClick={() => setMobileSearchOpen(true)}
             />
           )}
@@ -174,14 +169,12 @@ export default function Topbar({
 
               <Button
                 type="text"
-                icon={<CloseOutlined />}
+                icon={<X />}
                 onClick={() => setMobileSearchOpen(false)}
               />
             </div>
           )}
         </div>
-
-        <ThemeToggle />
 
         <Dropdown menu={{ items }} trigger={["click"]}>
           <div

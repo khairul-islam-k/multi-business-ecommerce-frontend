@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  DollarOutlined,
-  CloudOutlined,
-  ShopOutlined,
-  RiseOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  Cloud,
+  Store,
+  TrendingUp
+} from "lucide-react";
+
+
 
 import ReportPage from "../_components/report-page";
 
@@ -20,28 +22,28 @@ export default function RevenueReports() {
           value: "₹32,45,000",
           change: "+12.5%",
           up: true,
-          icon: DollarOutlined,
+          icon: Banknote,
         },
         {
           label: "Online Revenue",
           value: "₹28,20,000",
           change: "87% of total",
           up: true,
-          icon: CloudOutlined,
+          icon: Cloud,
         },
         {
           label: "Offline Revenue",
           value: "₹4,25,000",
           change: "13% of total",
           up: true,
-          icon: ShopOutlined,
+          icon: Store,
         },
         {
           label: "MoM Growth",
           value: "8.3%",
           change: "+2.1% vs prior",
           up: true,
-          icon: RiseOutlined,
+          icon: TrendingUp,
         },
       ]}
       chartData={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({

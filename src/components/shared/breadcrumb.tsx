@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Breadcrumb, Dropdown } from "antd";
 import { usePathname } from "next/navigation";
-import { HomeOutlined, RightOutlined } from "@ant-design/icons";
+import { ChevronRight, Home } from "lucide-react";
 import type { BreadcrumbProps as AntdBreadcrumbProps } from "antd";
 
 type BreadcrumbProps = {
@@ -47,7 +47,7 @@ export default function Breadcrumbs({
     {
       title: (
         <Link href={basePath}>
-          <HomeOutlined />
+          <Home size={16} />
         </Link>
       ),
     },
@@ -96,11 +96,11 @@ export default function Breadcrumbs({
   }
 
   return (
-    <div className="flex items-center h-6 overflow-hidden">
+    <div className="flex min-h-6 w-full min-w-0 items-center overflow-hidden">
       <Breadcrumb
         items={finalItems}
-        separator={<RightOutlined />}
-        className="m-0! p-0!"
+        separator={<ChevronRight size={14} />}
+        className="m-0! min-w-0 p-0! [&_.ant-breadcrumb-link]:inline-flex [&_.ant-breadcrumb-link]:max-w-36 [&_.ant-breadcrumb-link]:items-center [&_.ant-breadcrumb-link]:truncate [&_ol]:min-w-0 [&_ol]:flex-wrap [&_ol]:items-center"
       />
     </div>
   );

@@ -7,8 +7,12 @@ export type WebsiteStatus =
 
 export type WebsiteTemplate =
   | "ELECTRONIC"
-  | "FASHION"
-  | "GROCERY";
+  | "FASHION";
+
+export type WebsiteTemplateOption = {
+  key: WebsiteTemplate;
+  name: string;
+};
 
 export type HeaderSlide = {
   id?: number;
@@ -147,6 +151,7 @@ export type ResponseWebsiteVersion = {
   versionNo: number;
   snapshotData?: JsonObject;
   publishedBy?: string | null;
+  publishedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -155,6 +160,12 @@ export type ResponseWebsiteDomain = {
   id?: string;
   websiteId?: string;
   domain?: string;
+  subdomain?: string | null;
+  domainType?: WebsiteDomainType;
+  isPrimary?: boolean;
+  verificationStatus?: WebsiteDomainVerificationStatus;
+  sslStatus?: WebsiteDomainSslStatus;
+  verifiedAt?: string | null;
   status?: string;
   createdAt?: string;
   updatedAt?: string;

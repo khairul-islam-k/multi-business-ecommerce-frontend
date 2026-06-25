@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
+import React, { useState } from "react";
 import { Button, Card, FormInstance, Modal, Popconfirm, Select, Tag } from "antd";
 
 import ExpenseCategoryForm from "./_components/expense-category-form";
@@ -200,7 +202,7 @@ const ExpenseCategories = () => {
 
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() => openUpdateModal(row)}
           />
 
@@ -211,7 +213,7 @@ const ExpenseCategories = () => {
             cancelText="No"
             onConfirm={() => handleDeleteExpenseCategory(row.id)}
           >
-            <Button danger size="small" icon={<DeleteOutlined />} />
+            <Button danger size="small" icon={<Trash2 />} />
           </Popconfirm>
         </div>
       ),
@@ -254,7 +256,7 @@ const ExpenseCategories = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={openCreateModal}
               >
                 New Expense Category

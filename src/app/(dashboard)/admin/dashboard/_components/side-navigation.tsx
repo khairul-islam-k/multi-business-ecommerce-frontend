@@ -1,101 +1,112 @@
+import {
+  ArrowLeftRight,
+  ArrowUp,
+  Award,
+  BadgeInfo,
+  Banknote,
+  Bell,
+  BookOpen,
+  Bot,
+  Boxes,
+  Building,
+  Building2,
+  Calculator,
+  Calendar,
+  CalendarClock,
+  ChartBar,
+  ChartLine,
+  CircleDollarSign,
+  CircleHelp,
+  CirclePlus,
+  ClipboardList,
+  CloudUpload,
+  Copy,
+  ContactRound,
+  CreditCard,
+  ExternalLink,
+  FileCheck,
+  FileText,
+  Gauge,
+  GitBranch,
+  Globe,
+  Grid2X2Plus,
+  HandCoins,
+  Handshake,
+  History,
+  Home,
+  Image as ImageIcon,
+  KeyRound,
+  Landmark,
+  LayoutDashboard,
+  Lightbulb,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  MapPin,
+  Menu as MenuIcon,
+  MessageCircle,
+  Network,
+  Package as PackageIcon,
+  PackageCheck,
+  PackageSearch,
+  Palette,
+  Pencil,
+  RefreshCw,
+  RotateCcw,
+  Scale,
+  Send,
+  Settings,
+  Shield,
+  ShoppingBag,
+  ShoppingCart,
+  SlidersHorizontal,
+  SquarePlus,
+  Store,
+  Tags as TagsIcon,
+  TrendingUp,
+  TriangleAlert,
+  Truck,
+  Undo2,
+  CircleUserRound,
+  UserRound,
+  Users,
+  WalletCards,
+  Warehouse,
+  FolderTree,
+  Wrench,
+  Zap
+} from "lucide-react";
 import Link from "next/link";
 
-import {
-  AlertOutlined,
-  ApartmentOutlined,
-  AppstoreAddOutlined,
-  AppstoreOutlined,
-  ArrowUpOutlined,
-  BankOutlined,
-  BarChartOutlined,
-  BellOutlined,
-  BulbOutlined,
-  CalculatorOutlined,
-  CalendarOutlined,
-  CarOutlined,
-  CloudUploadOutlined,
-  CommentOutlined,
-  CopyOutlined,
-  CreditCardOutlined,
-  DashboardOutlined,
-  DeploymentUnitOutlined,
-  DollarCircleOutlined,
-  DollarOutlined,
-  EditOutlined,
-  EnvironmentOutlined,
-  ExportOutlined,
-  FileDoneOutlined,
-  FileTextOutlined,
-  GlobalOutlined,
-  HistoryOutlined,
-  HomeOutlined,
-  KeyOutlined,
-  LayoutOutlined,
-  LineChartOutlined,
-  LinkOutlined,
-  MenuOutlined,
-  MessageOutlined,
-  PictureOutlined,
-  PlusCircleOutlined,
-  PlusSquareOutlined,
-  ProductOutlined,
-  ProfileOutlined,
-  QuestionCircleOutlined,
-  ReadOutlined,
-  RiseOutlined,
-  RobotOutlined,
-  RollbackOutlined,
-  SafetyOutlined,
-  ScheduleOutlined,
-  SendOutlined,
-  SettingOutlined,
-  ShopOutlined,
-  ShoppingCartOutlined,
-  ShoppingOutlined,
-  SnippetsOutlined,
-  SwapOutlined,
-  SyncOutlined,
-  TagsOutlined,
-  TeamOutlined,
-  ThunderboltOutlined,
-  ToolOutlined,
-  TrademarkCircleOutlined,
-  TrophyOutlined,
-  TruckOutlined,
-  UnorderedListOutlined,
-  UserOutlined,
-  WalletOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
 
 import type { MenuProps } from "antd";
 
 const allItems: MenuProps["items"] = [
   {
     key: "dashboard",
-    icon: <DashboardOutlined />,
+    icon: <Gauge />,
     label: <Link href="/admin/dashboard">Dashboard</Link>,
   },
   {
     key: "pos",
-    icon: <ShoppingCartOutlined />,
+    icon: <ShoppingCart />,
     label: <Link href="/admin/dashboard/pos">POS</Link>,
   },
 
   {
     key: "media",
-    icon: <PictureOutlined />,
+    icon: <ImageIcon />,
     label: <Link href="/admin/dashboard/media">Media Library</Link>,
   },
 
   {
     key: "access-control",
-    icon: <SafetyOutlined />,
+    icon: <Shield />,
     label: "Employees & Roles",
     children: [
       {
         key: "employees",
-        icon: <UserOutlined />,
+        icon: <UserRound />,
         label: (
           <Link href="/admin/dashboard/access-control/employees">
             Employees
@@ -104,12 +115,12 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "roles",
-        icon: <TeamOutlined />,
+        icon: <Users />,
         label: <Link href="/admin/dashboard/access-control/roles">Roles</Link>,
       },
       {
         key: "permissions",
-        icon: <KeyOutlined />,
+        icon: <KeyRound />,
         label: (
           <Link href="/admin/dashboard/access-control/permissions">
             Permissions
@@ -121,12 +132,12 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "product-catalog",
-    icon: <ShoppingOutlined />,
+    icon: <ShoppingBag />,
     label: "Product",
     children: [
       {
         key: "categories",
-        icon: <AppstoreOutlined />,
+        icon: <Grid2X2Plus />,
         label: (
           <Link href="/admin/dashboard/product-catalog/categories">
             Categories
@@ -135,24 +146,24 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "brands",
-        icon: <TrademarkCircleOutlined />,
+        icon: <BadgeInfo />,
         label: (
           <Link href="/admin/dashboard/product-catalog/brands">Brands</Link>
         ),
       },
       {
         key: "units",
-        icon: <DeploymentUnitOutlined />,
+        icon: <Network />,
         label: <Link href="/admin/dashboard/product-catalog/units">Units</Link>,
       },
       {
         key: "tags",
-        icon: <TagsOutlined />,
+        icon: <TagsIcon />,
         label: <Link href="/admin/dashboard/product-catalog/tags">Tags</Link>,
       },
       {
         key: "attributes",
-        icon: <TagsOutlined />,
+        icon: <SlidersHorizontal />,
         label: (
           <Link href="/admin/dashboard/product-catalog/attributes">
             Attributes
@@ -161,14 +172,14 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "products",
-        icon: <ProductOutlined />,
+        icon: <PackageIcon />,
         label: (
           <Link href="/admin/dashboard/product-catalog/products">Products</Link>
         ),
       },
       {
         key: "variant",
-        icon: <DeploymentUnitOutlined />,
+        icon: <GitBranch />,
         label: (
           <Link href="/admin/dashboard/product-catalog/variant">
             Variant Manager
@@ -177,7 +188,7 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "reviews",
-        icon: <CommentOutlined />,
+        icon: <MessageCircle />,
         label: (
           <Link href="/admin/dashboard/product-catalog/reviews">Reviews</Link>
         ),
@@ -187,12 +198,12 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "inventory",
-    icon: <ShopOutlined />,
+    icon: <Store />,
     label: "Inventory",
     children: [
       {
         key: "stock-overview",
-        icon: <DashboardOutlined />,
+        icon: <Boxes />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-overview">
             Stock Overview
@@ -201,14 +212,14 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "warehouses",
-        icon: <ShopOutlined />,
+        icon: <Warehouse />,
         label: (
           <Link href="/admin/dashboard/inventory/warehouses">Warehouses</Link>
         ),
       },
       // {
       //   key: "warehouse-stocks",
-      //   icon: <HomeOutlined />,
+      //   icon: <Home />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/warehouse-stock">
       //       Warehouse Stocks
@@ -217,7 +228,7 @@ const allItems: MenuProps["items"] = [
       // },
       {
         key: "inventory-transactions",
-        icon: <SwapOutlined />,
+        icon: <ArrowLeftRight />,
         label: (
           <Link href="/admin/dashboard/inventory/transactions">
             Inventory Movements
@@ -226,14 +237,14 @@ const allItems: MenuProps["items"] = [
       },
       // {
       //   key: "stock-entry",
-      //   icon: <PlusSquareOutlined />,
+      //   icon: <SquarePlus />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/stock-entry">Stock Entry</Link>
       //   ),
       // },
       {
         key: "stock-adjustments",
-        icon: <SettingOutlined />,
+        icon: <Scale />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-adjustments">
             Stock Adjustments
@@ -242,7 +253,7 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "stock-transfers",
-        icon: <ExportOutlined />,
+        icon: <ExternalLink />,
         label: (
           <Link href="/admin/dashboard/inventory/stock-transfers">
             Stock Transfers
@@ -251,7 +262,7 @@ const allItems: MenuProps["items"] = [
       },
       // {
       //   key: "damaged-product",
-      //   icon: <WarningOutlined />,
+      //   icon: <TriangleAlert />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/damaged-products">
       //       Damaged Products
@@ -260,7 +271,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "low-stock",
-      //   icon: <AlertOutlined />,
+      //   icon: <TriangleAlert />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/low-stock-alert">
       //       Low Stocks
@@ -269,7 +280,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "inventory-value",
-      //   icon: <DollarOutlined />,
+      //   icon: <Banknote />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/value-report">
       //       Inventory Value
@@ -278,7 +289,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "missing-products",
-      //   icon: <QuestionCircleOutlined />,
+      //   icon: <CircleHelp />,
       //   label: (
       //     <Link href="/admin/dashboard/inventory/missing-products">
       //       Missing Products
@@ -290,17 +301,17 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "suppliers-procurement",
-    icon: <ShopOutlined />,
+    icon: <Handshake />,
     label: "Suppliers Procurement",
     children: [
       {
         key: "supplier",
-        icon: <ShopOutlined />,
+        icon: <Building />,
         label: <Link href="/admin/dashboard/suppliers/supplier">Supplier</Link>,
       },
       {
         key: "supplier-products",
-        icon: <AppstoreAddOutlined />,
+        icon: <PackageSearch />,
         label: (
           <Link href="/admin/dashboard/suppliers/supplier-products">
             Supplier Products
@@ -309,7 +320,7 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "purchase-order",
-        icon: <FileDoneOutlined />,
+        icon: <FileCheck />,
         label: (
           <Link href="/admin/dashboard/suppliers/purchase-order">
             Purchase Orders
@@ -318,12 +329,12 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "purchase-returns",
-        icon: <RollbackOutlined />,
+        icon: <Undo2 />,
         label: <Link href="/admin/dashboard/suppliers/returns">Returns</Link>,
       },
       {
         key: "supplier-invoices",
-        icon: <FileTextOutlined />,
+        icon: <FileText />,
         label: (
           <Link href="/admin/dashboard/suppliers/invoices">
             Supplier Invoices
@@ -332,12 +343,12 @@ const allItems: MenuProps["items"] = [
       },
       // {
       //   key: "supplier-payment",
-      //   icon: <DollarOutlined />,
+      //   icon: <Banknote />,
       //   label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
       // },
       // {
       //   key: "supplier-performance",
-      //   icon: <BarChartOutlined />,
+      //   icon: <ChartBar />,
       //   label: (
       //     <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
       //   ),
@@ -347,25 +358,32 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "orders",
-    icon: <ShopOutlined />,
+    icon: <ClipboardList />,
     label: "Orders",
     children: [
       {
         key: "all-orders",
-        icon: <UnorderedListOutlined />,
+        icon: <ListOrdered />,
         label: <Link href="/admin/dashboard/orders">All Orders</Link>,
+      },
+      {
+        key: "order-returns",
+        icon: <RotateCcw />,
+        label: (
+          <Link href="/admin/dashboard/orders/returns">Order Returns</Link>
+        ),
       },
     ],
   },
 
   {
     key: "customers",
-    icon: <TeamOutlined />, // Customers module
+    icon: <ContactRound />, // Customers module
     label: "Customers",
     children: [
       {
         key: "customer-list",
-        icon: <UserOutlined />, // Individual customers
+        icon: <CircleUserRound />, // Individual customers
         label: (
           <Link href="/admin/dashboard/customers/customer-list">
             Customer List
@@ -374,7 +392,7 @@ const allItems: MenuProps["items"] = [
       },
       // {
       //   key: "order-history",
-      //   icon: <ShoppingCartOutlined />, // Orders
+      //   icon: <ShoppingCart />, // Orders
       //   label: (
       //     <Link href="/admin/dashboard/customers/order-history">
       //       Order History
@@ -383,7 +401,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "address-book",
-      //   icon: <HomeOutlined />, // Addresses
+      //   icon: <Home />, // Addresses
       //   label: (
       //     <Link href="/admin/dashboard/customers/address-book">
       //       Address Book
@@ -392,7 +410,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "top-customers",
-      //   icon: <TrophyOutlined />, // Best customers
+      //   icon: <Award />, // Best customers
       //   label: (
       //     <Link href="/admin/dashboard/customers/top-customers">
       //       Top Customers
@@ -401,7 +419,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "reports",
-      //   icon: <LineChartOutlined />, // Analytics / reports
+      //   icon: <ChartLine />, // Analytics / reports
       //   label: (
       //     <Link href="/admin/dashboard/customers/reports">
       //       Acquisition Report
@@ -413,27 +431,27 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "finance-account",
-    icon: <BankOutlined />, // Finance / Accounts
+    icon: <Landmark />, // Finance / Accounts
     label: "Finance",
     children: [
       {
         key: "accounts",
-        icon: <BankOutlined />,
+        icon: <WalletCards />,
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
       },
       {
         key: "tax",
-        icon: <CalculatorOutlined />,
+        icon: <Calculator />,
         label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
       },
       {
         key: "expenses",
-        icon: <DollarOutlined />, // Expense list
+        icon: <Banknote />, // Expense list
         label: <Link href="/admin/dashboard/finance/expenses">Expenses</Link>,
       },
       {
         key: "expenses-category",
-        icon: <TagsOutlined />,
+        icon: <FolderTree />,
         label: (
           <Link href="/admin/dashboard/finance/expense-category">
             Expenses Categories
@@ -442,19 +460,19 @@ const allItems: MenuProps["items"] = [
       },
       {
         key: "payable",
-        icon: <CreditCardOutlined />,
+        icon: <HandCoins />,
         label: <Link href="/admin/dashboard/finance/payables">Payable</Link>,
       },
       {
         key: "receivable",
-        icon: <DollarCircleOutlined />,
+        icon: <CircleDollarSign />,
         label: (
           <Link href="/admin/dashboard/finance/receivables">Receivables</Link>
         ),
       },
       // {
       //   key: "overview",
-      //   icon: <DashboardOutlined />, // Overview
+      //   icon: <Gauge />, // Overview
       //   label: (
       //     <Link href="/admin/dashboard/finance/accounts/overview">
       //       Overview
@@ -463,7 +481,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "profit-loss",
-      //   icon: <LineChartOutlined />, // Profit & Loss
+      //   icon: <ChartLine />, // Profit & Loss
       //   label: (
       //     <Link href="/admin/dashboard/finance/accounts/profit-loss">
       //       Profit & Loss
@@ -475,12 +493,12 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "payment-gateway",
-  //   icon: <CreditCardOutlined />, // Main menu
+  //   icon: <CreditCard />, // Main menu
   //   label: "Payment Gateway",
   //   children: [
   //     {
   //       key: "gateway-list",
-  //       icon: <FileTextOutlined />,
+  //       icon: <FileText />,
   //       label: (
   //         <Link href="/admin/dashboard/payment-gateway/gateways">
   //           Gateway List
@@ -489,7 +507,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "configurations",
-  //       icon: <SettingOutlined />,
+  //       icon: <Settings />,
   //       label: (
   //         <Link href="/admin/dashboard/payment-gateway/configurations">
   //           Gateway Config
@@ -498,7 +516,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "gateway-rules",
-  //       icon: <SnippetsOutlined />,
+  //       icon: <ClipboardList />,
   //       label: (
   //         <Link href="/admin/dashboard/payment-gateway/gateway-rules">
   //           Gateway Rules
@@ -507,7 +525,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "cod-settings",
-  //       icon: <ToolOutlined />,
+  //       icon: <Wrench />,
   //       label: (
   //         <Link href="/admin/dashboard/payment-gateway/cod-settings">
   //           COD Settings
@@ -519,24 +537,24 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "invoices",
-  //   icon: <FileTextOutlined />, // Main menu (Invoices)
+  //   icon: <FileText />, // Main menu (Invoices)
   //   label: "Invoices",
   //   children: [
   //     {
   //       key: "invoice-list",
-  //       icon: <UnorderedListOutlined />,
+  //       icon: <List />,
   //       label: <Link href="/admin/dashboard/invoices">Invoice List</Link>,
   //     },
   //     {
   //       key: "create",
-  //       icon: <EditOutlined />,
+  //       icon: <Pencil />,
   //       label: (
   //         <Link href="/admin/dashboard/invoices/create">Create Invoice</Link>
   //       ),
   //     },
   //     {
   //       key: "templates",
-  //       icon: <CopyOutlined />,
+  //       icon: <Copy />,
   //       label: (
   //         <Link href="/admin/dashboard/invoices/templates">
   //           Invoice Templates
@@ -548,12 +566,12 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "couriers",
-  //   icon: <TruckOutlined />, // Couriers main
+  //   icon: <Truck />, // Couriers main
   //   label: "Couriers",
   //   children: [
   //     {
   //       key: "courier-companies",
-  //       icon: <ShopOutlined />, // Courier companies
+  //       icon: <Store />, // Courier companies
   //       label: (
   //         <Link href="/admin/dashboard/couriers/courier-companies">
   //           Courier Companies
@@ -562,7 +580,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "courier-config",
-  //       icon: <SettingOutlined />, // Config / API / setup
+  //       icon: <Settings />, // Config / API / setup
   //       label: (
   //         <Link href="/admin/dashboard/couriers/courier-config">
   //           Courier Config
@@ -571,7 +589,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "delivery-zones",
-  //       icon: <EnvironmentOutlined />, // Zones / areas
+  //       icon: <MapPin />, // Zones / areas
   //       label: (
   //         <Link href="/admin/dashboard/couriers/delivery-zones">
   //           Delivery Zones
@@ -580,14 +598,14 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "shipments",
-  //       icon: <ProfileOutlined />, // Shipments / tracking
+  //       icon: <FileText />, // Shipments / tracking
   //       label: (
   //         <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
   //       ),
   //     },
   //     {
   //       key: "charge-setting",
-  //       icon: <DollarOutlined />, // Charges / pricing
+  //       icon: <Banknote />, // Charges / pricing
   //       label: (
   //         <Link href="/admin/dashboard/couriers/charge-setting">
   //           Shipping Charge
@@ -596,7 +614,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "performances",
-  //       icon: <BarChartOutlined />, // Performance analytics
+  //       icon: <ChartBar />, // Performance analytics
   //       label: (
   //         <Link href="/admin/dashboard/couriers/performance">Performances</Link>
   //       ),
@@ -606,12 +624,12 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "website-builder",
-    icon: <AppstoreOutlined />, // Website Builder (main)
+    icon: <LayoutDashboard />, // Website Builder (main)
     label: "Website Builder",
     children: [
       {
         key: "websites",
-        icon: <GlobalOutlined />, // List of websites
+        icon: <Globe />, // List of websites
         label: (
           <Link href="/admin/dashboard/website-builder/websites">
             View Website
@@ -620,7 +638,7 @@ const allItems: MenuProps["items"] = [
       },
       // {
       //   key: "section-editor",
-      //   icon: <LayoutOutlined />, // Sections & layouts
+      //   icon: <LayoutDashboard />, // Sections & layouts
       //   label: (
       //     <Link href="/admin/dashboard/website-builder/section-editor">
       //       Section Editor
@@ -629,7 +647,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "page-builder",
-      //   icon: <FileTextOutlined />, // Pages / content
+      //   icon: <FileText />, // Pages / content
       //   label: (
       //     <Link href="/admin/dashboard/website-builder/page-builder">
       //       Page Builder
@@ -638,7 +656,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "menu-builder",
-      //   icon: <MenuOutlined />, // Navigation menus
+      //   icon: <MenuIcon />, // Navigation menus
       //   label: (
       //     <Link href="/admin/dashboard/website-builder/menu-builder">
       //       Menu Builder
@@ -647,14 +665,14 @@ const allItems: MenuProps["items"] = [
       // },
       {
         key: "template",
-        icon: <CopyOutlined />, // Templates
+        icon: <Copy />, // Templates
         label: (
           <Link href="/admin/dashboard/website-builder/template">Template</Link>
         ),
       },
       // {
       //   key: "domains",
-      //   icon: <LinkOutlined />, // Domains
+      //   icon: <LinkIcon />, // Domains
       //   label: (
       //     <Link href="/admin/dashboard/website-builder/domains">
       //       Domain Manager
@@ -663,7 +681,7 @@ const allItems: MenuProps["items"] = [
       // },
       // {
       //   key: "publish-setting",
-      //   icon: <CloudUploadOutlined />, // Publish settings
+      //   icon: <CloudUpload />, // Publish settings
       //   label: (
       //     <Link href="/admin/dashboard/website-builder/publish-setting">
       //       Publish Setting
@@ -675,17 +693,17 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "sms-marketing",
-  //   icon: <MessageOutlined />, // SMS / messaging
+  //   icon: <MessageCircle />, // SMS / messaging
   //   label: "SMS Marketing",
   //   children: [
   //     {
   //       key: "template-list",
-  //       icon: <FileTextOutlined />, // SMS templates
+  //       icon: <FileText />, // SMS templates
   //       label: <Link href="/admin/dashboard/sms/templates">Template List</Link>,
   //     },
   //     {
   //       key: "create-template",
-  //       icon: <PlusSquareOutlined />, // Create new template
+  //       icon: <SquarePlus />, // Create new template
   //       label: (
   //         <Link href="/admin/dashboard/sms/templates/create">
   //           Create Template
@@ -694,12 +712,12 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "campaigns",
-  //       icon: <SendOutlined />, // SMS campaigns
+  //       icon: <Send />, // SMS campaigns
   //       label: <Link href="/admin/dashboard/sms/campaigns">Campaigns</Link>,
   //     },
   //     {
   //       key: "create-campaign",
-  //       icon: <PlusSquareOutlined />, // Create campaign
+  //       icon: <SquarePlus />, // Create campaign
   //       label: (
   //         <Link href="/admin/dashboard/sms/campaigns/create">
   //           Create Campaign
@@ -708,7 +726,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "schedule-campaign",
-  //       icon: <ScheduleOutlined />, // Scheduled campaigns
+  //       icon: <CalendarClock />, // Scheduled campaigns
   //       label: (
   //         <Link href="/admin/dashboard/sms/campaigns/schedule">
   //           Schedule Campaign
@@ -717,7 +735,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "campaign-analytics",
-  //       icon: <BarChartOutlined />, // Campaign performance
+  //       icon: <ChartBar />, // Campaign performance
   //       label: (
   //         <Link href="/admin/dashboard/sms/campaigns/analytics">
   //           Campaign Analytics
@@ -726,7 +744,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "recipient-log",
-  //       icon: <TeamOutlined />, // Recipients / logs
+  //       icon: <Users />, // Recipients / logs
   //       label: (
   //         <Link href="/admin/dashboard/sms/campaigns/recipients">
   //           Recipient Log
@@ -735,12 +753,12 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "credit-balance",
-  //       icon: <WalletOutlined />, // SMS credits balance
+  //       icon: <WalletCards />, // SMS credits balance
   //       label: <Link href="/admin/dashboard/sms/credits">Credit Balance</Link>,
   //     },
   //     {
   //       key: "recharge-credits",
-  //       icon: <CreditCardOutlined />, // Recharge credits
+  //       icon: <CreditCard />, // Recharge credits
   //       label: (
   //         <Link href="/admin/dashboard/sms/credits/recharge">
   //           Recharge Credits
@@ -749,7 +767,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "gateway-settings",
-  //       icon: <SettingOutlined />, // SMS gateway config
+  //       icon: <Settings />, // SMS gateway config
   //       label: (
   //         <Link href="/admin/dashboard/sms/gateway-settings">
   //           Gateway Settings
@@ -761,17 +779,17 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "marketing-assistant",
-  //   icon: <RobotOutlined />, // AI / assistant
+  //   icon: <Bot />, // AI / assistant
   //   label: "Marketing Assistant",
   //   children: [
   //     {
   //       key: "marketing-chat",
-  //       icon: <CommentOutlined />, // AI chat
+  //       icon: <MessageCircle />, // AI chat
   //       label: <Link href="/admin/dashboard/ai/chat">Marketing Chat</Link>,
   //     },
   //     {
   //       key: "generated-product-descriptions",
-  //       icon: <FileTextOutlined />, // Product descriptions
+  //       icon: <FileText />, // Product descriptions
   //       label: (
   //         <Link href="/admin/dashboard/ai/descriptions">
   //           G Product Descriptions
@@ -780,19 +798,19 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "generated-promo-text",
-  //       icon: <ReadOutlined />, // Promo / ad copy
+  //       icon: <BookOpen />, // Promo / ad copy
   //       label: <Link href="/admin/dashboard/ai/promos">G Promo Text</Link>,
   //     },
   //     {
   //       key: "generated-slogans",
-  //       icon: <BulbOutlined />, // Creative slogans
+  //       icon: <Lightbulb />, // Creative slogans
   //       label: (
   //         <Link href="/admin/dashboard/ai/slogans">Generated Slogans</Link>
   //       ),
   //     },
   //     {
   //       key: "generation-history",
-  //       icon: <HistoryOutlined />, // Past generations
+  //       icon: <History />, // Past generations
   //       label: (
   //         <Link href="/admin/dashboard/ai/generation-history">
   //           Generation History
@@ -804,17 +822,17 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "promotion-automation",
-  //   icon: <ThunderboltOutlined />, // Automation / triggers
+  //   icon: <Zap />, // Automation / triggers
   //   label: "Promotion Automation",
   //   children: [
   //     {
   //       key: "promotions",
-  //       icon: <TagsOutlined />, // Discounts / offers
+  //       icon: <TagsIcon />, // Discounts / offers
   //       label: <Link href="/admin/dashboard/promotions">Promotions</Link>,
   //     },
   //     {
   //       key: "create-promotion",
-  //       icon: <PlusCircleOutlined />, // Create new promotion
+  //       icon: <CirclePlus />, // Create new promotion
   //       label: (
   //         <Link href="/admin/dashboard/promotions/create">
   //           Create Promotion
@@ -823,7 +841,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "promotion-rules-builder",
-  //       icon: <ApartmentOutlined />, // Rules / conditions builder
+  //       icon: <Building2 />, // Rules / conditions builder
   //       label: (
   //         <Link href="/admin/dashboard/promotions/rules-builders">
   //           Promotion Rules Builder
@@ -832,7 +850,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "promotion-calendar",
-  //       icon: <CalendarOutlined />, // Scheduling promotions
+  //       icon: <Calendar />, // Scheduling promotions
   //       label: (
   //         <Link href="/admin/dashboard/promotions/calendar">
   //           Promotion Calendar
@@ -841,7 +859,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "promotion-performance",
-  //       icon: <LineChartOutlined />, // Performance analytics
+  //       icon: <ChartLine />, // Performance analytics
   //       label: (
   //         <Link href="/admin/dashboard/promotions/performance">
   //           Promotion Performance
@@ -853,29 +871,29 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "reports-analytics",
-  //   icon: <BarChartOutlined />, // Reports & Analytics
+  //   icon: <ChartBar />, // Reports & Analytics
   //   label: "Reports & Analytics",
   //   children: [
   //     {
   //       key: "reports-overview",
-  //       icon: <DashboardOutlined />, // Summary dashboard
+  //       icon: <Gauge />, // Summary dashboard
   //       label: <Link href="/admin/dashboard/reports">Reports Overview</Link>,
   //     },
   //     {
   //       key: "sales-reports",
-  //       icon: <LineChartOutlined />, // Sales trend
+  //       icon: <ChartLine />, // Sales trend
   //       label: <Link href="/admin/dashboard/reports/sales">Sales Reports</Link>,
   //     },
   //     {
   //       key: "order-reports",
-  //       icon: <ShoppingCartOutlined />, // Orders
+  //       icon: <ShoppingCart />, // Orders
   //       label: (
   //         <Link href="/admin/dashboard/reports/orders">Order Reports</Link>
   //       ),
   //     },
   //     {
   //       key: "inventory-reports",
-  //       icon: <AppstoreOutlined />, // Inventory / stock
+  //       icon: <LayoutDashboard />, // Inventory / stock
   //       label: (
   //         <Link href="/admin/dashboard/reports/inventory">
   //           Inventory Reports
@@ -884,7 +902,7 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "supplier-reports",
-  //       icon: <TeamOutlined />, // Suppliers
+  //       icon: <Users />, // Suppliers
   //       label: (
   //         <Link href="/admin/dashboard/reports/suppliers">
   //           Supplier Reports
@@ -893,21 +911,21 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "courier-reports",
-  //       icon: <CarOutlined />, // Logistics
+  //       icon: <Truck />, // Logistics
   //       label: (
   //         <Link href="/admin/dashboard/reports/couriers">Courier Reports</Link>
   //       ),
   //     },
   //     {
   //       key: "expense-reports",
-  //       icon: <WalletOutlined />, // Expenses
+  //       icon: <WalletCards />, // Expenses
   //       label: (
   //         <Link href="/admin/dashboard/reports/expenses">Expense Reports</Link>
   //       ),
   //     },
   //     {
   //       key: "financial-reports",
-  //       icon: <DollarOutlined />, // Finance
+  //       icon: <Banknote />, // Finance
   //       label: (
   //         <Link href="/admin/dashboard/reports/financial">
   //           Financial Reports
@@ -916,14 +934,14 @@ const allItems: MenuProps["items"] = [
   //     },
   //     {
   //       key: "revenue-reports",
-  //       icon: <RiseOutlined />, // Revenue growth
+  //       icon: <TrendingUp />, // Revenue growth
   //       label: (
   //         <Link href="/admin/dashboard/reports/revenue">Revenue Reports</Link>
   //       ),
   //     },
   //     {
   //       key: "profit-reports",
-  //       icon: <RiseOutlined />, // Profit analysis
+  //       icon: <TrendingUp />, // Profit analysis
   //       label: (
   //         <Link href="/admin/dashboard/reports/profit">Profit Reports</Link>
   //       ),
@@ -933,30 +951,30 @@ const allItems: MenuProps["items"] = [
 
   // {
   //   key: "notifications",
-  //   icon: <BellOutlined />,
+  //   icon: <Bell />,
   //   label: <Link href="/admin/dashboard/notifications">Notifications</Link>,
   // },
 
   {
     key: "billing",
-    icon: <CreditCardOutlined />,
+    icon: <CreditCard />,
     label: "Billing",
     children: [
       {
         key: "history",
-        icon: <HistoryOutlined />,
+        icon: <History />,
         label: <Link href="/admin/dashboard/billing/history">History</Link>,
       },
       {
         key: "subscription",
-        icon: <SyncOutlined />,
+        icon: <RefreshCw />,
         label: (
           <Link href="/admin/dashboard/billing/subscription">Subscription</Link>
         ),
       },
       {
         key: "upgrade-plan",
-        icon: <ArrowUpOutlined />,
+        icon: <ArrowUp />,
         label: (
           <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>
         ),
@@ -966,17 +984,17 @@ const allItems: MenuProps["items"] = [
 
   {
     key: "business",
-    icon: <TeamOutlined />,
+    icon: <Building2 />,
     label: "Business Settings",
     children: [
       {
         key: "settings",
-        icon: <SettingOutlined />,
+        icon: <Settings />,
         label: <Link href="/admin/dashboard/business/settings">Settings</Link>,
       },
       {
         key: "branding",
-        icon: <AppstoreOutlined />,
+        icon: <Palette />,
         label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
       },
     ],

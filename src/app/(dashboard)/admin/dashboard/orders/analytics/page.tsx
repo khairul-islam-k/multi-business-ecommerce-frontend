@@ -24,12 +24,12 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 const { Title } = Typography;
 
 const COLORS = [
-  "hsl(220,60%,45%)",
-  "hsl(142,60%,40%)",
-  "hsl(45,93%,47%)",
-  "hsl(262,52%,50%)",
-  "hsl(0,72%,51%)",
-  "hsl(25,80%,50%)",
+  "var(--dashboard-primary-color)",
+  "var(--dashboard-success-color)",
+  "var(--dashboard-warning-color)",
+  "var(--dashboard-accent-color)",
+  "var(--dashboard-error-color)",
+  "var(--dashboard-info-color)",
 ];
 
 export default function OrderAnalytics() {
@@ -119,7 +119,7 @@ export default function OrderAnalytics() {
               <BarChart data={revenueData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(220,13%,90%)"
+                  stroke="var(--dashboard-border-subtle-color)"
                 />
                 <XAxis dataKey="name" fontSize={12} />
                 <YAxis fontSize={12} />
@@ -163,7 +163,7 @@ export default function OrderAnalytics() {
               <LineChart data={dailyData}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(220,13%,90%)"
+                  stroke="var(--dashboard-border-subtle-color)"
                 />
                 <XAxis dataKey="name" fontSize={12} />
                 <YAxis fontSize={12} />
@@ -216,7 +216,7 @@ export default function OrderAnalytics() {
               <BarChart data={regionChartData} layout="vertical">
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="hsl(220,13%,90%)"
+                  stroke="var(--dashboard-border-subtle-color)"
                 />
                 <XAxis type="number" fontSize={12} />
                 <YAxis

@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Search
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -144,7 +148,7 @@ const ShipmentPage = () => {
               style={{
                 width: screens.lg ? "330px" : "100%",
               }}
-              prefix={<SearchOutlined />}
+              prefix={<Search />}
               placeholder="Search packages..."
               onChange={(e) => handleSearch(e.target.value)}
             />

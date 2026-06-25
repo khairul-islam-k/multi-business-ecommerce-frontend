@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Pencil
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button, Card, Table, Tag } from "antd";
-import { EditOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -100,7 +104,7 @@ const CourierConfig = () => {
         <Link
           href={`/admin/dashboard/couriers/courier-config/update-courier/${record.id}`}
         >
-          <Button icon={<EditOutlined />} type="text"></Button>
+          <Button icon={<Pencil />} type="text"></Button>
         </Link>
       ),
     },

@@ -1,5 +1,16 @@
 "use client";
 
+import {
+  BadgeInfo,
+  Cable,
+  CircleX,
+  Clock,
+  Eye,
+  Search,
+  TriangleAlert
+} from "lucide-react";
+
+
 import { useState } from "react";
 import {
   Input,
@@ -11,15 +22,6 @@ import {
   Button,
   Modal,
 } from "antd";
-import {
-  SearchOutlined,
-  EyeOutlined,
-  InfoCircleOutlined,
-  WarningOutlined,
-  CloseCircleOutlined,
-  ApiOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
 
 const { Text, Paragraph } = Typography;
 
@@ -40,17 +42,17 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
   const levelConfig = {
     error: {
       color: "error",
-      icon: <CloseCircleOutlined />,
+      icon: <CircleX />,
       label: "Error",
     },
     warning: {
       color: "warning",
-      icon: <WarningOutlined />,
+      icon: <TriangleAlert />,
       label: "Warning",
     },
     info: {
       color: "processing",
-      icon: <InfoCircleOutlined />,
+      icon: <BadgeInfo />,
       label: "Info",
     },
   };
@@ -69,7 +71,7 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
     {
       title: (
         <Space>
-          <InfoCircleOutlined />
+          <BadgeInfo />
           Level
         </Space>
       ),
@@ -94,7 +96,7 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
     {
       title: (
         <Space>
-          <ApiOutlined />
+          <Cable />
           Service
         </Space>
       ),
@@ -111,7 +113,7 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
     {
       title: (
         <Space>
-          <ClockCircleOutlined />
+          <Clock />
           Timestamp
         </Space>
       ),
@@ -125,7 +127,7 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
       render: (_: any, record: Log) => (
         <Button
           size="small"
-          icon={<EyeOutlined />}
+          icon={<Eye />}
           onClick={() => {
             setSelected(record);
             setOpen(true);
@@ -141,7 +143,7 @@ export default function SystemLogsTable({ logs }: { logs: Log[] }) {
     <>
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<Search />}
           placeholder="Search logs..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}

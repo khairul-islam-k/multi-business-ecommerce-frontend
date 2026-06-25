@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  Landmark,
+  Mail,
+  Phone,
+  UserRound
+} from "lucide-react";
+
+
 import { useParams } from "next/navigation";
 import {
   Avatar,
@@ -14,12 +22,6 @@ import {
   Tag,
   Typography,
 } from "antd";
-import {
-  BankOutlined,
-  MailOutlined,
-  PhoneOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 
 import { useTenant } from "@/lib/api";
 import Loader from "@/components/shared/loader";
@@ -64,7 +66,7 @@ export default function TenantDetailPage() {
       <Card styles={{ body: { padding: 0 } }} style={{ overflow: "hidden" }}>
         <div className="p-6">
           <Flex align="center" gap={18} wrap>
-            <Avatar size={72} icon={<UserOutlined />}>
+            <Avatar size={72} icon={<UserRound />}>
               {tenant.name?.charAt(0).toUpperCase()}
             </Avatar>
             <div className="min-w-0 flex-1">
@@ -166,7 +168,7 @@ export default function TenantDetailPage() {
               <Col xs={24} md={12} xl={8} key={business.id}>
                 <Card size="small">
                   <Flex align="center" gap={12}>
-                    <Avatar icon={<BankOutlined />}>
+                    <Avatar icon={<Landmark />}>
                       {business.name?.charAt(0).toUpperCase()}
                     </Avatar>
                     <div className="min-w-0 flex-1 space-x-1">
@@ -191,10 +193,10 @@ export default function TenantDetailPage() {
                   </Flex>
                   <div className="mt-3 space-y-1 text-sm text-gray-500">
                     <div>
-                      <MailOutlined /> {business.email || "-"}
+                      <Mail /> {business.email || "-"}
                     </div>
                     <div>
-                      <PhoneOutlined /> {business.phone || "-"}
+                      <Phone /> {business.phone || "-"}
                     </div>
                   </div>
                 </Card>

@@ -1,8 +1,14 @@
 "use client";
 
+import {
+  CirclePlus,
+  Eye,
+  Pencil
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Table, Button, Tag, Space, Card, Input } from "antd";
-import { PlusOutlined, EyeOutlined, EditOutlined } from "@ant-design/icons";
 
 import { mockData } from "./data";
 import PageHeader from "@/components/shared/page-header";
@@ -43,9 +49,9 @@ export default function InvoiceTemplates() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (r: any) => (
         <Space>
-          <Button icon={<EyeOutlined />} />
+          <Button icon={<Eye />} />
           <Link href={`/admin/dashboard/invoices/templates/edit/${r.key}`}>
-            <Button icon={<EditOutlined />} />
+            <Button icon={<Pencil />} />
           </Link>
         </Space>
       ),
@@ -59,7 +65,7 @@ export default function InvoiceTemplates() {
       <div className="flex flex-col md:flex-row justify-between items-center gap-3">
         <Search placeholder="Search templates..." style={{ maxWidth: 300 }} />
 
-        <Button type="primary" icon={<PlusOutlined />}>
+        <Button type="primary" icon={<CirclePlus />}>
           New Template
         </Button>
       </div>

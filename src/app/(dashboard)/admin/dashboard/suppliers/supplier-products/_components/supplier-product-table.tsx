@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Eye
+} from "lucide-react";
+
+
 import { useMemo, useState } from "react";
 import { Button, Card, Select, Space, Tag } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
 import Link from "next/link";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -142,7 +146,7 @@ export default function SupplierProductsTable() {
           <Link
             href={`/admin/dashboard/suppliers/supplier/product/${row.supplier.id}`}
           >
-            <Button type="text" icon={<EyeOutlined />} />
+            <Button type="text" icon={<Eye />} />
           </Link>
         )}
         pagination={{

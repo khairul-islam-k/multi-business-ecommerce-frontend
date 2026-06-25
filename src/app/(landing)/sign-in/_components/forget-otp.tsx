@@ -63,7 +63,6 @@ const ForgerOtpVerify = ({
   onClose,
   onVerified,
 }: OtpVerifyDialogProps) => {
-
   const [otp, setOtp] = useState("");
   const [verificationId, setVerificationId] = useState("");
   const [otpError, setOtpError] = useState("");
@@ -98,12 +97,8 @@ const ForgerOtpVerify = ({
       return response.data;
     },
 
-    onSuccess: (data) => {
-      const id =
-        data?.data?.verificationId ??
-        data?.data?.id ??
-        data?.verificationId ??
-        data?.id;
+    onSuccess: (response) => {
+      const id = response.data.resetRequestId;
 
       if (!id) {
         setOtpError("Verification id not found from server response");
@@ -124,7 +119,7 @@ const ForgerOtpVerify = ({
   const resetPasswordMutation = useMutation({
     mutationFn: async (payload: ResetPasswordFormValues) => {
       const response = await api.post("/auth/forgot-password/reset", {
-        verificationId,
+        resetRequestId: verificationId,
         email,
         password: payload.newPassword,
       });
@@ -205,7 +200,10 @@ const ForgerOtpVerify = ({
             </div>
 
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-5"
+              >
                 <FormField
                   control={form.control}
                   name="newPassword"
@@ -230,9 +228,7 @@ const ForgerOtpVerify = ({
                                 ? "Hide new password"
                                 : "Show new password"
                             }
-                            onClick={() =>
-                              setShowNewPassword((prev) => !prev)
-                            }
+                            onClick={() => setShowNewPassword((prev) => !prev)}
                             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
                           >
                             {showNewPassword ? (

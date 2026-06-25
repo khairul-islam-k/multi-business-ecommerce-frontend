@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  CirclePlus
+} from "lucide-react";
+
+
 import { useMemo, useState } from "react";
 import {
   Alert,
@@ -14,7 +19,6 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
 import { useProductVariantOptionsQuery } from "@/lib/api/hooks/product-variant";
 import { ResponseProduct } from "@/types/product/product";
 import {
@@ -318,7 +322,7 @@ export function VariantSelector({
 
         <Button
           type="primary"
-          icon={<PlusOutlined />}
+          icon={<CirclePlus />}
           disabled={!canAdd}
           onClick={() => {
             onAdd({

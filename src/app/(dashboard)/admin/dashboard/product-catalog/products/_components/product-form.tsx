@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  CirclePlus,
+  Trash2
+} from "lucide-react";
+
+
+import {
   Button,
   Card,
   Col,
@@ -16,7 +22,6 @@ import {
   Tag,
 } from "antd";
 import type { FormInstance } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import ImageSelectModal from "../../../_components/ImageSelectModal";
@@ -301,7 +306,7 @@ const VariantOptionRow = ({
           <Button
             danger
             size="small"
-            icon={<DeleteOutlined />}
+            icon={<Trash2 />}
             onClick={() => remove(fieldName)}
           />
         ) : null}
@@ -525,7 +530,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
 
             <Button
               type="dashed"
-              icon={<PlusOutlined />}
+              icon={<CirclePlus />}
               loading={isLoading}
               disabled={fields.length >= attributeItems.length}
               onClick={() =>
@@ -569,7 +574,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                         <Button
                           danger
                           size="small"
-                          icon={<DeleteOutlined />}
+                          icon={<Trash2 />}
                           onClick={() => handleRemoveVariant(row)}
                         >
                           Remove
@@ -1034,7 +1039,7 @@ const ProductForm = ({
                       <Button
                         danger
                         size="small"
-                        icon={<DeleteOutlined />}
+                        icon={<Trash2 />}
                         onClick={() => setThumbnailImage(null)}
                       >
                         Remove
@@ -1081,7 +1086,7 @@ const ProductForm = ({
                         <Button
                           danger
                           size="small"
-                          icon={<DeleteOutlined />}
+                          icon={<Trash2 />}
                           onClick={() => handleRemoveMediaImage(index)}
                           style={{
                             position: "absolute",

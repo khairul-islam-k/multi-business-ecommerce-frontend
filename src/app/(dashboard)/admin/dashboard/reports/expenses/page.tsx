@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  BarChartOutlined,
-  DollarOutlined,
-  FundOutlined,
-  LineChartOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  ChartBar,
+  ChartLine,
+  ChartNoAxesColumnIncreasing
+} from "lucide-react";
+
+
 import ReportPage from "../_components/report-page";
 
 export default function ExpenseReports() {
@@ -19,28 +21,28 @@ export default function ExpenseReports() {
           value: "৳8,20,000",
           change: "+5.2%",
           up: false,
-          icon: DollarOutlined,
+          icon: Banknote,
         },
         {
           label: "Marketing",
           value: "৳2,40,000",
           change: "29% of total",
           up: true,
-          icon: BarChartOutlined,
+          icon: ChartBar,
         },
         {
           label: "Operations",
           value: "৳3,80,000",
           change: "46% of total",
           up: true,
-          icon: FundOutlined,
+          icon: ChartNoAxesColumnIncreasing,
         },
         {
           label: "Budget Utilization",
           value: "78%",
           change: "On track",
           up: true,
-          icon: LineChartOutlined,
+          icon: ChartLine,
         },
       ]}
       chartData={[

@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
 import {
-  DeleteOutlined,
-  EditOutlined,
-  EnvironmentOutlined,
-  EyeOutlined,
-  MoreOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  Eye,
+  MapPin,
+  MoreHorizontal,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
+import React, { useState } from "react";
 import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
 
@@ -131,17 +133,17 @@ const CustomerList = () => {
         const items: MenuProps["items"] = [
           {
             key: "view",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
             label: "View",
           },
           {
             key: "edit",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
             label: "Edit",
           },
           {
             key: "add-address",
-            icon: <EnvironmentOutlined />,
+            icon: <MapPin />,
             label: "Add Address",
           },
           {
@@ -149,7 +151,7 @@ const CustomerList = () => {
           },
           {
             key: "delete",
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             label: "Delete",
             danger: true,
           },
@@ -191,7 +193,7 @@ const CustomerList = () => {
             <Tooltip title="Actions">
               <Button
                 size="small"
-                icon={<MoreOutlined />}
+                icon={<MoreHorizontal />}
                 onClick={(e) => e.preventDefault()}
               />
             </Tooltip>
@@ -239,7 +241,7 @@ const CustomerList = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/customers/customer-list/create")
                 }

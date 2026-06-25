@@ -1,11 +1,13 @@
 "use client";
 
-import { Card, Progress } from "antd";
 import {
-  CreditCardOutlined,
-  ArrowDownOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+  ArrowDown,
+  Clock,
+  CreditCard
+} from "lucide-react";
+
+
+import { Card, Progress } from "antd";
 
 import { mockWallet } from "./data";
 import PageHeader from "@/components/shared/page-header";
@@ -22,17 +24,17 @@ export default function SmsCreditBalance() {
     {
       label: "Available Balance",
       value: w.balance,
-      icon: <CreditCardOutlined />,
+      icon: <CreditCard />,
     },
     {
       label: "Used This Month",
       value: w.used_this_month,
-      icon: <ArrowDownOutlined />,
+      icon: <ArrowDown />,
     },
     {
       label: "Last Updated",
       value: new Date(w.updated_at).toLocaleDateString(),
-      icon: <ClockCircleOutlined />,
+      icon: <Clock />,
     },
   ];
 

@@ -1,6 +1,10 @@
 "use client";
 
-import { SaveOutlined } from "@ant-design/icons";
+import {
+  Save
+} from "lucide-react";
+
+
 import { Form, Input, Select, Button } from "antd";
 
 import { useSwal } from "@/hooks/use-swal";
@@ -46,7 +50,7 @@ export default function SecuritySettingsForm() {
 
       <Button
         type="primary"
-        icon={<SaveOutlined />}
+        icon={<Save />}
         htmlType="submit"
         loading={loading}
       >
