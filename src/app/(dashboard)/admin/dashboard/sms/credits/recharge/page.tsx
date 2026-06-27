@@ -32,7 +32,14 @@ export default function RechargeSmsCredits() {
       {/* Plans */}
       <div className="grid md:grid-cols-3 gap-6 mb-6">
         {plans.map((p) => (
-          <Card key={p.credits} className={p.popular ? "border-blue-500" : ""}>
+          <Card
+            key={p.credits}
+            style={
+              p.popular
+                ? { borderColor: "var(--dashboard-primary-color)" }
+                : undefined
+            }
+          >
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold">
                 {p.credits.toLocaleString()} Credits

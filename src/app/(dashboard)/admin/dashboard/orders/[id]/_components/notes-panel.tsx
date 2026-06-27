@@ -97,7 +97,14 @@ export function OrderNotesPanel({ orderId }: { orderId: string }) {
           return (
             <List.Item key={note.id} className="p-2 bg-gray-50 rounded mb-2">
               <div className="flex gap-3">
-                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100">
+                <div
+                  className="w-8 h-8 flex items-center justify-center rounded-full"
+                  style={{
+                    backgroundColor:
+                      "var(--dashboard-sidebar-active-background-color)",
+                    color: "var(--dashboard-primary-color)",
+                  }}
+                >
                   {config.icon}
                 </div>
                 <div className="flex-1">

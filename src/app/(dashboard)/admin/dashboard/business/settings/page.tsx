@@ -26,7 +26,11 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { useSwal } from "@/hooks/use-swal";
-import { useBusiness, useBusinessMutations } from "@/lib/api";
+import {
+  useBusiness,
+  useBusinessMutations,
+  useWarehousesQuery,
+} from "@/lib/api";
 import { PERMISSIONS } from "@/lib/auth/permissions";
 import { getApiErrorMessage } from "@/lib/axios";
 import {
@@ -119,6 +123,14 @@ export default function BusinessSettingsPage() {
   const queryClient = useQueryClient();
   const businessId = useActiveBusinessId();
   const { data: business, isLoading } = useBusiness(businessId ?? undefined);
+  const { data: warehouses, isLoading: warehousesLoading } =
+    useWarehousesQuery(businessId ?? "", {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      sortBy: "name",
+      sortOrder: "asc",
+    });
   const { updateBusiness, removeBusiness } = useBusinessMutations();
   const setSelectedBusiness = useAuthStore(
     (state) => state.setSelectedBusiness,
@@ -128,6 +140,11 @@ export default function BusinessSettingsPage() {
   const deletableBusinesses = businesses.filter(
     (item) => item.id !== businessId,
   );
+  const warehouseOptions =
+    warehouses?.items.map((warehouse) => ({
+      label: `${warehouse.name}${warehouse.address ? ` - ${warehouse.address}` : ""}`,
+      value: warehouse.id,
+    })) ?? [];
   const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
   const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
@@ -169,6 +186,7 @@ export default function BusinessSettingsPage() {
         autoConfirmOrder: business.settings?.autoConfirmOrder ?? false,
         codEnabled: business.settings?.codEnabled ?? true,
         onlinePaymentEnabled: business.settings?.onlinePaymentEnabled ?? false,
+        defaultWarehouseId: business.settings?.defaultWarehouseId ?? undefined,
       },
     });
   }, [business, form]);
@@ -349,6 +367,21 @@ export default function BusinessSettingsPage() {
                       min={0}
                       max={999999}
                       style={{ width: "100%" }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    name={["settings", "defaultWarehouseId"]}
+                    label="Default warehouse"
+                  >
+                    <Select
+                      showSearch
+                      allowClear
+                      loading={warehousesLoading}
+                      placeholder="Select default warehouse"
+                      optionFilterProp="label"
+                      options={warehouseOptions}
                     />
                   </Form.Item>
                 </Col>

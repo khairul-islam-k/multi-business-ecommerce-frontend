@@ -89,7 +89,10 @@ export default function GalleryCard() {
 
             {/* Content */}
             <div className="p-5">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600">
+              <p
+                className="mb-2 text-xs font-semibold uppercase tracking-widest"
+                style={{ color: "var(--dashboard-primary-color)" }}
+              >
                 {template.category}
               </p>
 

@@ -126,9 +126,16 @@ export default function ProductDetailPage() {
                       key={image.id}
                       type="button"
                       onClick={() => setSelectedImageId(image.id)}
-                      className={`relative h-20 overflow-hidden rounded-lg border bg-gray-50 ${
-                        isSelected ? "border-blue-500 ring-2 ring-blue-200" : ""
-                      }`}
+                      className="relative h-20 overflow-hidden rounded-lg border bg-gray-50"
+                      style={
+                        isSelected
+                          ? {
+                              borderColor: "var(--dashboard-primary-color)",
+                              boxShadow:
+                                "0 0 0 2px var(--dashboard-focus-ring-color)",
+                            }
+                          : undefined
+                      }
                     >
                       <Image
                         src={imageUrlSet(image.imageUrl)}

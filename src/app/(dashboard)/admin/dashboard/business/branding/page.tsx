@@ -8,10 +8,9 @@ import {
   Empty,
   Form,
   Input,
+  InputNumber,
   Row,
   Select,
-  InputNumber,
-  Space,
   Typography,
 } from "antd";
 import Image from "next/image";
@@ -38,37 +37,62 @@ const { Text } = Typography;
 
 type BrandingValues = BusinessBranding;
 
-const colorFields = [
-  ["primaryColor", "Primary color"],
-  ["primaryHoverColor", "Primary hover color"],
-  ["primaryActiveColor", "Primary active color"],
-  ["accentColor", "Accent color"],
-  ["successColor", "Success color"],
-  ["warningColor", "Warning color"],
-  ["errorColor", "Error color"],
-  ["infoColor", "Info color"],
-  ["dashboardBackgroundColor", "Dashboard background"],
-  ["sidebarBackgroundColor", "Sidebar background"],
-  ["sidebarTextColor", "Sidebar text"],
-  ["sidebarMutedTextColor", "Sidebar muted text"],
-  ["sidebarActiveBackgroundColor", "Sidebar active background"],
-  ["sidebarActiveTextColor", "Sidebar active text"],
-  ["sidebarHoverBackgroundColor", "Sidebar hover background"],
-  ["headerBackgroundColor", "Header background"],
-  ["headerTextColor", "Header text"],
-  ["cardBackgroundColor", "Card background"],
-  ["elevatedBackgroundColor", "Elevated background"],
-  ["tableHeaderBackgroundColor", "Table header background"],
-  ["tableRowHoverColor", "Table row hover"],
-  ["inputBackgroundColor", "Input background"],
-  ["disabledBackgroundColor", "Disabled background"],
-  ["textPrimaryColor", "Primary text"],
-  ["textSecondaryColor", "Secondary text"],
-  ["textMutedColor", "Muted text"],
-  ["textInverseColor", "Inverse text"],
-  ["borderColor", "Border"],
-  ["borderSubtleColor", "Subtle border"],
-  ["focusRingColor", "Focus ring"],
+const colorGroups = [
+  {
+    title: "Brand Actions",
+    fields: [
+      ["primaryColor", "Primary"],
+      ["primaryHoverColor", "Primary hover"],
+      ["primaryActiveColor", "Primary active"],
+      ["accentColor", "Accent"],
+    ],
+  },
+  {
+    title: "Feedback",
+    fields: [
+      ["successColor", "Success"],
+      ["warningColor", "Warning"],
+      ["errorColor", "Error"],
+      ["infoColor", "Info"],
+    ],
+  },
+  {
+    title: "Dashboard Shell",
+    fields: [
+      ["dashboardBackgroundColor", "Dashboard background"],
+      ["sidebarBackgroundColor", "Sidebar background"],
+      ["sidebarTextColor", "Sidebar text"],
+      ["sidebarMutedTextColor", "Sidebar muted text"],
+      ["sidebarActiveBackgroundColor", "Sidebar active background"],
+      ["sidebarActiveTextColor", "Sidebar active text"],
+      ["sidebarHoverBackgroundColor", "Sidebar hover background"],
+      ["headerBackgroundColor", "Header background"],
+      ["headerTextColor", "Header text"],
+    ],
+  },
+  {
+    title: "Surfaces",
+    fields: [
+      ["cardBackgroundColor", "Card background"],
+      ["elevatedBackgroundColor", "Elevated background"],
+      ["tableHeaderBackgroundColor", "Table header background"],
+      ["tableRowHoverColor", "Table row hover"],
+      ["inputBackgroundColor", "Input background"],
+      ["disabledBackgroundColor", "Disabled background"],
+    ],
+  },
+  {
+    title: "Text And Borders",
+    fields: [
+      ["textPrimaryColor", "Primary text"],
+      ["textSecondaryColor", "Secondary text"],
+      ["textMutedColor", "Muted text"],
+      ["textInverseColor", "Inverse text"],
+      ["borderColor", "Border"],
+      ["borderSubtleColor", "Subtle border"],
+      ["focusRingColor", "Focus ring"],
+    ],
+  },
 ] as const;
 
 const fontOptions = [
@@ -219,7 +243,7 @@ export default function BusinessBrandingPage() {
     <div className="space-y-6">
       <PageHeader
         title="Business Branding"
-        subtitle="Manage visual identity, palette, and store metadata for the active business."
+        subtitle="Manage the dashboard visual identity, palette, and metadata for the active business."
         breadcrumb={adminBreadcrumb}
       />
 
@@ -229,125 +253,124 @@ export default function BusinessBrandingPage() {
         onFinish={onFinish}
         disabled={!updateAccess.allowed}
       >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={14}>
-            <Card title="Brand Assets">
-              <Row gutter={12}>
-                <Col xs={24} md={12}>
-                  <Form.Item name="logoUrl" label="Logo">
-                    <Input readOnly placeholder="/uploads/media/logo.png" />
-                  </Form.Item>
+        <div className="space-y-4">
+          <Card title="Brand Assets">
+            <Row gutter={16}>
+              <Col xs={24} md={12}>
+                <Form.Item name="logoUrl" label="Logo">
+                  <Input readOnly placeholder="/uploads/media/logo.png" />
+                </Form.Item>
 
-                  <div className="mb-4 rounded-lg border bg-gray-50 p-3">
-                    <div className="mb-3 flex h-[120px] items-center justify-center overflow-hidden rounded-md border bg-white">
-                      {logoUrl ? (
-                        <Image
-                          src={imageUrlSet(logoUrl)}
-                          alt="Logo"
-                          width={160}
-                          height={120}
-                          className="max-h-full max-w-full object-contain"
-                          unoptimized
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-400">No Logo</span>
-                      )}
-                    </div>
-
-                    <Button block onClick={() => openImageModal("logoUrl")}>
-                      Select Logo
-                    </Button>
+                <div className="mb-4 rounded-lg border bg-gray-50 p-3">
+                  <div className="mb-3 flex h-[120px] items-center justify-center overflow-hidden rounded-md border bg-white">
+                    {logoUrl ? (
+                      <Image
+                        src={imageUrlSet(logoUrl)}
+                        alt="Logo"
+                        width={160}
+                        height={120}
+                        className="max-h-full max-w-full object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-400">No Logo</span>
+                    )}
                   </div>
-                </Col>
 
-                <Col xs={24} md={12}>
-                  <Form.Item name="faviconUrl" label="Favicon">
-                    <Input readOnly placeholder="/uploads/media/favicon.ico" />
-                  </Form.Item>
+                  <Button block onClick={() => openImageModal("logoUrl")}>
+                    Select Logo
+                  </Button>
+                </div>
+              </Col>
 
-                  <div className="mb-4 rounded-lg border bg-gray-50 p-3">
-                    <div className="mb-3 flex h-[120px] items-center justify-center overflow-hidden rounded-md border bg-white">
-                      {faviconUrl ? (
-                        <Image
-                          src={imageUrlSet(faviconUrl)}
-                          alt="Favicon"
-                          width={80}
-                          height={80}
-                          className="max-h-full max-w-full object-contain"
-                          unoptimized
-                        />
-                      ) : (
-                        <span className="text-sm text-gray-400">
-                          No Favicon
-                        </span>
-                      )}
-                    </div>
+              <Col xs={24} md={12}>
+                <Form.Item name="faviconUrl" label="Favicon">
+                  <Input readOnly placeholder="/uploads/media/favicon.ico" />
+                </Form.Item>
 
-                    <Button block onClick={() => openImageModal("faviconUrl")}>
-                      Select Favicon
-                    </Button>
+                <div className="mb-4 rounded-lg border bg-gray-50 p-3">
+                  <div className="mb-3 flex h-[120px] items-center justify-center overflow-hidden rounded-md border bg-white">
+                    {faviconUrl ? (
+                      <Image
+                        src={imageUrlSet(faviconUrl)}
+                        alt="Favicon"
+                        width={80}
+                        height={80}
+                        className="max-h-full max-w-full object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="text-sm text-gray-400">No Favicon</span>
+                    )}
                   </div>
-                </Col>
 
-                <Col xs={24} md={12}>
-                  <Form.Item name="fontFamily" label="Font family">
-                    <Select
-                      showSearch
-                      optionFilterProp="label"
-                      options={fontOptions}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="borderRadius" label="Border radius">
-                    <InputNumber min={0} max={24} className="w-full" />
-                  </Form.Item>
-                </Col>
-                <Col xs={24} md={12}>
-                  <Form.Item name="density" label="Density">
-                    <Select
-                      options={[
-                        { label: "Compact", value: "COMPACT" },
-                        { label: "Default", value: "DEFAULT" },
-                        { label: "Comfortable", value: "COMFORTABLE" },
-                      ]}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
+                  <Button block onClick={() => openImageModal("faviconUrl")}>
+                    Select Favicon
+                  </Button>
+                </div>
+              </Col>
+            </Row>
+          </Card>
 
-            <Card title="SEO" className="mt-4">
-              <Form.Item name="seoTitle" label="SEO title">
-                <Input placeholder="Business title" maxLength={255} />
-              </Form.Item>
+          <Card title="SEO">
+            <Form.Item name="seoTitle" label="SEO title">
+              <Input placeholder="Business title" maxLength={255} />
+            </Form.Item>
 
-              <Form.Item name="seoDescription" label="SEO description">
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Short store description"
-                />
-              </Form.Item>
-            </Card>
-          </Col>
+            <Form.Item name="seoDescription" label="SEO description">
+              <Input.TextArea rows={4} placeholder="Short business summary" />
+            </Form.Item>
+          </Card>
 
-          <Col xs={24} lg={10}>
-            <Card title="Brand Palette">
-              <Space direction="vertical" size={16} className="w-full">
-                {colorFields.map(([name, label]) => (
-                  <Form.Item
-                    key={name}
-                    name={name}
-                    label={label}
-                    className="mb-0"
-                  >
-                    <Input type="color" style={{ height: 42 }} />
-                  </Form.Item>
-                ))}
-              </Space>
+          <Card title="Dashboard Appearance">
+            <Row gutter={16}>
+              <Col xs={24} md={8}>
+                <Form.Item name="fontFamily" label="Font family">
+                  <Select
+                    showSearch
+                    optionFilterProp="label"
+                    options={fontOptions}
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={8}>
+                <Form.Item name="borderRadius" label="Border radius">
+                  <InputNumber min={0} max={24} className="w-full" />
+                </Form.Item>
+              </Col>
+              <Col xs={24} md={8}>
+                <Form.Item name="density" label="Density">
+                  <Select
+                    options={[
+                      { label: "Compact", value: "COMPACT" },
+                      { label: "Default", value: "DEFAULT" },
+                      { label: "Comfortable", value: "COMFORTABLE" },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
+          </Card>
+
+          <Card title="Brand Color Schema">
+            <div className="space-y-5">
+              {colorGroups.map((group) => (
+                <section key={group.title}>
+                  <Text strong>{group.title}</Text>
+                  <Row gutter={[12, 12]} className="mt-3">
+                    {group.fields.map(([name, label]) => (
+                      <Col xs={24} sm={12} lg={8} key={name}>
+                        <Form.Item name={name} label={label} className="mb-0">
+                          <Input type="color" style={{ height: 42 }} />
+                        </Form.Item>
+                      </Col>
+                    ))}
+                  </Row>
+                </section>
+              ))}
 
               <div
-                className="mt-6 rounded-lg border p-5"
+                className="rounded-lg border p-5"
                 style={{
                   borderColor:
                     watchedValues.borderSubtleColor ??
@@ -387,7 +410,7 @@ export default function BusinessBrandingPage() {
                   }}
                 >
                   {watchedValues.seoDescription ||
-                    "Preview how the selected palette may feel across storefront surfaces."}
+                    "Preview how the selected palette will feel across dashboard surfaces."}
                 </p>
 
                 <Button
@@ -407,9 +430,9 @@ export default function BusinessBrandingPage() {
                   Accent action
                 </Button>
               </div>
-            </Card>
-          </Col>
-        </Row>
+            </div>
+          </Card>
+        </div>
 
         {updateAccess.allowed && (
           <div className="mt-4">

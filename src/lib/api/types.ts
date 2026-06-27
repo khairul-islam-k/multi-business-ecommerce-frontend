@@ -53,7 +53,7 @@ export type ListQuery = {
 export type ApiArrayResponse<T> = {
   message?: string;
   data: T[] | null;
-}
+};
 
 export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
@@ -156,6 +156,7 @@ export type BusinessSetting = {
   autoConfirmOrder?: boolean;
   codEnabled?: boolean;
   onlinePaymentEnabled?: boolean;
+  defaultWarehouseId?: ApiId | null;
 };
 
 export type BusinessBranding = {
@@ -636,8 +637,7 @@ export type PackageUsageSummaryItem = {
   remaining: number;
 };
 
-export type ConfirmPackagePaymentResult =
-  {
-    payment: PackageMockPayment;
-    subscription: TenantSubscription;
-  };
+export type ConfirmPackagePaymentResult = {
+  payment: PackageMockPayment;
+  subscription: TenantSubscription;
+};

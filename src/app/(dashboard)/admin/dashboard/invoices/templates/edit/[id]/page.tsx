@@ -91,7 +91,12 @@ export default function EditInvoiceTemplate() {
               </div>
 
               <div className="border-t mt-4 pt-4 flex justify-end">
-                <div className="h-4 w-24 bg-blue-300" />
+                <div
+                  className="h-4 w-24"
+                  style={{
+                    backgroundColor: "var(--dashboard-primary-color)",
+                  }}
+                />
               </div>
             </div>
           </Card>
