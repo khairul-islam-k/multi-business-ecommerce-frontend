@@ -531,6 +531,52 @@ body {
   color: var(--dashboard-sidebar-active-text-color) !important;
 }
 
+.dashboard-shell .ant-btn-primary,
+.dashboard-shell .ant-btn-color-primary.ant-btn-variant-solid,
+.admin-dashboard-theme .ant-btn-primary,
+.admin-dashboard-theme .ant-btn-color-primary.ant-btn-variant-solid {
+  background: var(--dashboard-primary-color) !important;
+  border-color: var(--dashboard-primary-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .ant-btn-primary:not(:disabled):hover,
+.dashboard-shell
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):hover,
+.admin-dashboard-theme .ant-btn-primary:not(:disabled):hover,
+.admin-dashboard-theme
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):hover {
+  background: var(--dashboard-primary-hover-color) !important;
+  border-color: var(--dashboard-primary-hover-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+}
+
+.dashboard-shell .ant-btn-primary:not(:disabled):active,
+.dashboard-shell
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):active,
+.admin-dashboard-theme .ant-btn-primary:not(:disabled):active,
+.admin-dashboard-theme
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):active {
+  background: var(--dashboard-primary-active-color) !important;
+  border-color: var(--dashboard-primary-active-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+}
+
+.dashboard-shell .ant-btn-default:not(:disabled):hover,
+.dashboard-shell .ant-btn-default:not(:disabled):focus-visible,
+.admin-dashboard-theme .ant-btn-default:not(:disabled):hover,
+.admin-dashboard-theme .ant-btn-default:not(:disabled):focus-visible {
+  border-color: var(--dashboard-primary-color) !important;
+  color: var(--dashboard-primary-color) !important;
+}
+
+.dashboard-shell .ant-btn:focus-visible,
+.admin-dashboard-theme .ant-btn:focus-visible {
+  outline: 2px solid var(--dashboard-focus-ring-color) !important;
+  outline-offset: 2px;
+}
+
 .dashboard-shell a,
 .dashboard-shell .ant-btn-link {
   color: var(--dashboard-accent-color) !important;

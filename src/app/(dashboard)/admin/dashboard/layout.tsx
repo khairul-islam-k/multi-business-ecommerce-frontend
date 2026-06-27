@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Drawer, theme, Grid } from "antd";
 import { usePathname } from "next/navigation";
 
@@ -23,6 +23,14 @@ export default function AdminDashboardLayout({
   const { token } = theme.useToken();
   const pathname = usePathname();
   const routePermission = getAdminRoutePermission(pathname);
+
+  useEffect(() => {
+    document.documentElement.classList.add("admin-dashboard-theme");
+
+    return () => {
+      document.documentElement.classList.remove("admin-dashboard-theme");
+    };
+  }, []);
 
   return (
     
