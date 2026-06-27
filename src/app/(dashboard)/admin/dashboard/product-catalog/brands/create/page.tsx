@@ -25,7 +25,6 @@ const CreateBrandPage = () => {
       description: values.description?.trim() || "",
       logoUrl: values.logoUrl?.trim() || "",
       status: values.status,
-      sortOrder: values.sortOrder ?? 0,
     };
 
     try {
@@ -41,7 +40,7 @@ const CreateBrandPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Create Product Brand"
-        subtitle="Add a new product brand with logo, description, status, and sorting."
+        subtitle="Add a new product brand with logo, description, and status."
         breadcrumb={adminBreadcrumb}
       />
 

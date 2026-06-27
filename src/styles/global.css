@@ -390,6 +390,28 @@ body {
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
 }
 
+.ant-message {
+  max-width: min(420px, calc(100vw - 32px));
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+.ant-message .ant-message-notice-content {
+  max-width: min(420px, calc(100vw - 32px));
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+[data-sonner-toaster] {
+  width: min(420px, calc(100vw - 32px)) !important;
+}
+
+[data-sonner-toast] {
+  max-width: min(420px, calc(100vw - 32px)) !important;
+  overflow-wrap: anywhere;
+}
+
 .media-theme-scope .ant-input,
 .media-theme-scope .ant-input-affix-wrapper,
 .media-theme-scope .ant-select-selector,

@@ -29,7 +29,6 @@ const UpdateBrandPage = () => {
       description: values.description?.trim() || "",
       logoUrl: values.logoUrl?.trim() || "",
       status: values.status,
-      sortOrder: values.sortOrder ?? 0,
     };
 
     try {
@@ -45,7 +44,7 @@ const UpdateBrandPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Update Product Brand"
-        subtitle="Edit brand name, logo, description, status, and sorting."
+        subtitle="Edit brand name, logo, description, and status."
         breadcrumb={adminBreadcrumb}
       />
 

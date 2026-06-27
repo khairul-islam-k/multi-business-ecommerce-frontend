@@ -629,25 +629,46 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                         </Form.Item>
 
                         <Form.Item
-                          label="Price"
+                          label="Variant selling price"
+                          tooltip="Enter the variant price in the business currency."
                           name={[field.name, "priceOverride"]}
                           rules={[
                             {
                               required: true,
                               message: "Variant price is required",
                             },
+                            {
+                              type: "number",
+                              min: 0,
+                              message:
+                                "Variant price must be a non-negative number",
+                            },
                           ]}
                         >
                           <InputNumber
                             min={0}
+                            precision={2}
                             style={{ width: "100%" }}
                             placeholder={String(price ?? 0)}
                           />
                         </Form.Item>
 
-                        <Form.Item label="Weight" name={[field.name, "weight"]}>
+                        <Form.Item
+                          label="Variant weight in kilograms"
+                          tooltip="Use kilograms. Example: 0.5 means 500 grams."
+                          name={[field.name, "weight"]}
+                          rules={[
+                            {
+                              type: "number",
+                              min: 0,
+                              message:
+                                "Variant weight must be a non-negative number",
+                            },
+                          ]}
+                        >
                           <InputNumber
                             min={0}
+                            precision={3}
                             step={0.1}
                             style={{ width: "100%" }}
                             placeholder={String(weight ?? 0)}
@@ -874,8 +895,8 @@ const ProductForm = ({
     const payload: ProductPayload = {
       images: finalImages,
       name: values.name.trim(),
-      price: values.price,
-      weight: values.weight,
+      price: Number(values.price ?? 0),
+      weight: Number(values.weight ?? 0),
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,
@@ -979,20 +1000,48 @@ const ProductForm = ({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Form.Item
-              label="Price"
+              label="Base selling price"
+              tooltip="Enter the product selling price in the business currency."
               name="price"
               rules={[
                 {
                   required: true,
                   message: "Product price is required",
                 },
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Product price must be a non-negative number",
+                },
               ]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Price" />
+              <InputNumber
+                min={0}
+                precision={2}
+                style={{ width: "100%" }}
+                placeholder="Example: 1200"
+              />
             </Form.Item>
 
-            <Form.Item label="Weight" name="weight">
-              <InputNumber style={{ width: "100%" }} placeholder="Weight" />
+            <Form.Item
+              label="Product weight in kilograms"
+              tooltip="Use kilograms. Example: 0.5 means 500 grams."
+              name="weight"
+              rules={[
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Product weight must be a non-negative number",
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                precision={3}
+                step={0.1}
+                style={{ width: "100%" }}
+                placeholder="Example: 0.5"
+              />
             </Form.Item>
           </div>
 

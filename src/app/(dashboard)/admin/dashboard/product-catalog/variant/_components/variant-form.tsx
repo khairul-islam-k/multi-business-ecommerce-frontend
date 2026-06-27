@@ -278,27 +278,45 @@ const VariantForm = ({
           </Form.Item>
 
           <Form.Item
-            label="Price Override"
+            label="Variant selling price"
+            tooltip="Enter the variant price in the business currency."
             name="priceOverride"
             rules={[
               { required: true, message: "Price override is required" },
+              {
+                type: "number",
+                min: 0,
+                message: "Variant price must be a non-negative number",
+              },
             ]}
-          >
-            <InputNumber min={0}
-            style={{width: '100%'}}
-            placeholder="1250" />
-          </Form.Item>
-
-          <Form.Item
-            label="Weight"
-            name="weight"
-            rules={[{ required: true, message: "Weight is required" }]}
           >
             <InputNumber
               min={0}
+              precision={2}
+              style={{ width: "100%" }}
+              placeholder="Example: 1250"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Variant weight in kilograms"
+            tooltip="Use kilograms. Example: 0.5 means 500 grams."
+            name="weight"
+            rules={[
+              { required: true, message: "Weight is required" },
+              {
+                type: "number",
+                min: 0,
+                message: "Variant weight must be a non-negative number",
+              },
+            ]}
+          >
+            <InputNumber
+              min={0}
+              precision={3}
               step={0.1}
-              style={{width: '100%'}}
-              placeholder="0.5"
+              style={{ width: "100%" }}
+              placeholder="Example: 0.5"
             />
           </Form.Item>
 

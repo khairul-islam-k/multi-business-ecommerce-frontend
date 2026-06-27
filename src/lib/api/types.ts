@@ -100,7 +100,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   password: string;
-  businessName?: string;
+  businessName: string;
 };
 
 export type RegisterResponse = {
@@ -157,6 +157,9 @@ export type BusinessSetting = {
   codEnabled?: boolean;
   onlinePaymentEnabled?: boolean;
   defaultWarehouseId?: ApiId | null;
+  defaultFinanceAccountId?: ApiId | null;
+  defaultUnitId?: ApiId | null;
+  defaultTaxId?: ApiId | null;
 };
 
 export type BusinessBranding = {

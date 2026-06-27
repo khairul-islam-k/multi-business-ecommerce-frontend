@@ -5,7 +5,6 @@ import {
   Card,
   Form,
   Input,
-  InputNumber,
   message,
   Select,
   Space,
@@ -42,7 +41,6 @@ export type ProductCategoryFormValues = {
   imageUrl?: string;
   parentId?: string;
   status: CategoryStatus;
-  sortOrder: number;
 };
 
 type ProductCategoryFormProps = {
@@ -100,7 +98,6 @@ const ProductCategoryForm = ({
         imageUrl: initialData.imageUrl ?? "",
         parentId: initialData.parentId ?? undefined,
         status: initialData.status,
-        sortOrder: initialData.sortOrder,
       });
     } else {
       form.resetFields();
@@ -117,7 +114,6 @@ const ProductCategoryForm = ({
         imageUrl: values.imageUrl?.trim() || "",
         parentId: values.parentId || undefined,
         status: values.status,
-        sortOrder: values.sortOrder ?? 0,
       };
 
       await onSubmit(payload);
@@ -148,7 +144,6 @@ const ProductCategoryForm = ({
         layout="vertical"
         initialValues={{
           status: "ACTIVE",
-          sortOrder: 0,
         }}
         onFinish={handleFinish}
       >
@@ -236,23 +231,6 @@ const ProductCategoryForm = ({
                 value: "INACTIVE",
               },
             ]}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Sort Order"
-          name="sortOrder"
-          rules={[
-            {
-              required: true,
-              message: "Sort order is required",
-            },
-          ]}
-        >
-          <InputNumber
-            min={0}
-            style={{ width: "100%" }}
-            placeholder="Example: 0"
           />
         </Form.Item>
 

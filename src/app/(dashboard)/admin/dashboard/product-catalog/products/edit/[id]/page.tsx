@@ -290,7 +290,7 @@ const UpdateProductPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Update Product"
-        subtitle="Edit product information, images, category, brand, unit, tags, and product status."
+        subtitle="Edit product price, kilogram weight, images, category, brand, unit, tax, tags, and status."
         breadcrumb={adminBreadcrumb}
       />
 

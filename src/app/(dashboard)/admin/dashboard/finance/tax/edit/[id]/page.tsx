@@ -62,7 +62,7 @@ export default function UpdateTaxPage() {
         <div className="space-y-6">
             <PageHeader
                 title="Update Tax"
-                subtitle="Update tax name, rate, description, and status."
+                subtitle="Update the tax name, percentage rate, description, and status."
                 breadcrumb={adminBreadcrumb}
             />
 

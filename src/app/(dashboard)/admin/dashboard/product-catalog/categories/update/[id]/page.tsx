@@ -27,13 +27,11 @@ const UpdateProductCategoryPage = () => {
   const handleUpdate = async (values: ProductCategoryFormValues) => {
     const { parentId, ...resData } = values;
     if (!parentId) {
-      console.log(resData, "data");
       const payload = {
         name: resData.name,
         description: resData.description || "",
         imageUrl: resData.imageUrl || "",
         status: resData.status,
-        sortOrder: resData.sortOrder ?? 0,
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
       message.success("Category updated successfully");
@@ -44,7 +42,6 @@ const UpdateProductCategoryPage = () => {
         description: values.description || "",
         imageUrl: values.imageUrl || "",
         status: values.status,
-        sortOrder: values.sortOrder ?? 0,
         parentId: values.parentId ?? "",
       };
       await updateCategories.mutateAsync({ categoryId: id, payload });
@@ -57,7 +54,7 @@ const UpdateProductCategoryPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Update Product Category"
-        subtitle="Edit category information, image, parent category, status, and sorting."
+        subtitle="Edit category information, image, parent category, and status."
         breadcrumb={adminBreadcrumb}
       />
       <ProductCategoryForm initialData={category} onSubmit={handleUpdate} />

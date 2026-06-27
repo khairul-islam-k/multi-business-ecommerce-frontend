@@ -24,13 +24,11 @@ const CreateProductCategoryPage = () => {
     const { parentId, ...resData } = values;
     try {
       if (!parentId) {
-        console.log(resData, "data");
         const payload = {
           name: resData.name,
           description: resData.description || "",
           imageUrl: resData.imageUrl || "",
           status: resData.status,
-          sortOrder: resData.sortOrder ?? 0,
         };
         await createCategories.mutateAsync(payload);
         message.success("Category has been created");
@@ -41,7 +39,6 @@ const CreateProductCategoryPage = () => {
           description: values.description || "",
           imageUrl: values.imageUrl || "",
           status: values.status,
-          sortOrder: values.sortOrder ?? 0,
           parentId: values.parentId,
         };
         await createCategories.mutateAsync(payload);
@@ -57,7 +54,7 @@ const CreateProductCategoryPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Create Product Category"
-        subtitle="Add a new product category with image, parent category, status, and sorting."
+        subtitle="Add a new product category with image, parent category, and status."
         breadcrumb={adminBreadcrumb}
       />
       <ProductCategoryForm onSubmit={handleCreate} />

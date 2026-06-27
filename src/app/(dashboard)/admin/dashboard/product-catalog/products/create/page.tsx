@@ -117,7 +117,7 @@ const CreateProductPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Create Product"
-        subtitle="Add a new product with images, category, brand, unit, status, and tags."
+        subtitle="Add a product with price, kilogram weight, images, category, brand, unit, tax, status, and tags."
         breadcrumb={adminBreadcrumb}
       />
 

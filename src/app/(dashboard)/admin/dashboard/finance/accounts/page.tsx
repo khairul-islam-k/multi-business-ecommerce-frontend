@@ -393,7 +393,8 @@ const AccountsList = () => {
           onFinish={handleFinish}
         >
           <Form.Item
-            label="Amount"
+            label="Amount to add"
+            tooltip="Enter the deposit amount in this account's currency."
             name="amount"
             rules={[
               {
@@ -402,7 +403,7 @@ const AccountsList = () => {
               },
               {
                 validator: (_, value) => {
-                  if (!value || value <= 0) {
+                  if (typeof value !== "number" || value <= 0) {
                     return Promise.reject("Amount must be greater than 0");
                   }
 
@@ -413,8 +414,9 @@ const AccountsList = () => {
           >
             <InputNumber
               min={1}
+              precision={2}
               style={{ width: "100%" }}
-              placeholder="Enter amount"
+              placeholder="Example: 500"
             />
           </Form.Item>
 

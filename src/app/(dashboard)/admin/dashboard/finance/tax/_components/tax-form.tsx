@@ -84,7 +84,8 @@ const TaxForm = ({
         </Form.Item>
 
         <Form.Item
-          label="Rate"
+          label="Tax rate percentage"
+          tooltip="Enter the percentage rate. Example: 5 means 5%."
           name="rate"
           className="w-full"
           rules={[
@@ -97,7 +98,9 @@ const TaxForm = ({
                 }
 
                 if (Number.isNaN(rate)) {
-                  return Promise.reject(new Error("Tax rate must be a number"));
+                  return Promise.reject(
+                    new Error("Tax rate percentage must be a number"),
+                  );
                 }
 
                 if (rate < 0) {
@@ -106,7 +109,7 @@ const TaxForm = ({
 
                 if (rate > 100) {
                   return Promise.reject(
-                    new Error("Tax rate cannot be more than 100")
+                    new Error("Tax rate percentage cannot be more than 100"),
                   );
                 }
 
@@ -118,9 +121,11 @@ const TaxForm = ({
           <InputNumber
             min={0}
             max={100}
+            precision={2}
             style={{
               width: "100%",
             }}
+            placeholder="Example: 5"
           />
         </Form.Item>
 

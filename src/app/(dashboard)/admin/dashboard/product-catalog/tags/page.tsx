@@ -27,11 +27,9 @@ const ProductTags = () => {
   const [sortBy, setSortBy] = useState<"name" | "createdAt" | "updatedAt">(
     "createdAt",
   );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const limit = 10;
-  console.log("status", statusFilter);
 
   const {
     data: units,
@@ -43,7 +41,6 @@ const ProductTags = () => {
     search,
     status: statusFilter,
     sortBy,
-    sortOrder,
   });
 
   // pagination
@@ -53,7 +50,6 @@ const ProductTags = () => {
   const { removeTag } = useTagsMutation(businessId);
 
   const handleDelete = async (id: string) => {
-    console.log("id", id);
     try {
       await removeTag.mutateAsync(id);
       swal.success("Tag deleted successfully");
@@ -176,16 +172,6 @@ const ProductTags = () => {
                   { label: "Sort: Updated", value: "updatedAt" },
                 ]}
               />
-              <Select
-                value={sortOrder}
-                style={{ width: 120 }}
-                onChange={setSortOrder}
-                options={[
-                  { label: "Desc", value: "desc" },
-                  { label: "Asc", value: "asc" },
-                ]}
-              />
-
               <Button
                 type="primary"
                 icon={<CirclePlus />}

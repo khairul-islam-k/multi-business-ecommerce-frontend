@@ -52,7 +52,6 @@ const ProductsList = () => {
   const [sortBy, setSortBy] = useState<
     "name" | "price" | "createdAt" | "updatedAt"
   >("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ? business?.id : "";
   const swal = useSwal();
@@ -71,7 +70,6 @@ const ProductsList = () => {
     search,
     status: statusFilter,
     sortBy,
-    sortOrder,
   });
 
   const { removeProduct } = useProductMutation(businessId);
@@ -274,19 +272,6 @@ const ProductsList = () => {
                   { label: "Sort: Updated", value: "updatedAt" },
                   { label: "Sort: Name", value: "name" },
                   { label: "Sort: Price", value: "price" },
-                ]}
-              />
-
-              <Select
-                value={sortOrder}
-                style={{ width: 120 }}
-                onChange={(value) => {
-                  setSortOrder(value);
-                  setCurrentPage(1);
-                }}
-                options={[
-                  { label: "Desc", value: "desc" },
-                  { label: "Asc", value: "asc" },
                 ]}
               />
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
+import { Button, Card, Form, Input, Select, Space } from "antd";
 import { useEffect, useState } from "react";
 
 import { ResponseBrand } from "@/types/product/brands";
@@ -14,7 +14,6 @@ export type BrandFormValues = {
   description?: string;
   logoUrl?: string;
   status: BrandStatus;
-  sortOrder: number;
 };
 
 type BrandFormProps = {
@@ -42,7 +41,6 @@ const BrandForm = ({
         description: initialValues.description ?? "",
         logoUrl: initialValues.logoUrl ?? "",
         status: initialValues.status ?? "ACTIVE",
-        sortOrder: initialValues.sortOrder ?? 0,
       });
     }
   }, [form, initialValues]);
@@ -55,7 +53,6 @@ const BrandForm = ({
       description: values.description?.trim() || "",
       logoUrl: values.logoUrl?.trim() || "",
       status: values.status,
-      sortOrder: values.sortOrder ?? 0,
     };
 
     onSubmit(payload);
@@ -75,7 +72,6 @@ const BrandForm = ({
           description: "",
           logoUrl: "",
           status: "ACTIVE",
-          sortOrder: 0,
         }}
       >
         <Form.Item
@@ -112,45 +108,30 @@ const BrandForm = ({
           />
         </Form.Item>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[
+        <Form.Item
+          label="Status"
+          name="status"
+          rules={[
+            {
+              required: true,
+              message: "Status is required",
+            },
+          ]}
+        >
+          <Select
+            placeholder="Select status"
+            options={[
               {
-                required: true,
-                message: "Status is required",
+                label: "Active",
+                value: "ACTIVE",
+              },
+              {
+                label: "Inactive",
+                value: "INACTIVE",
               },
             ]}
-          >
-            <Select
-              placeholder="Select status"
-              options={[
-                {
-                  label: "Active",
-                  value: "ACTIVE",
-                },
-                {
-                  label: "Inactive",
-                  value: "INACTIVE",
-                },
-              ]}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Sort Order"
-            name="sortOrder"
-            rules={[
-              {
-                required: true,
-                message: "Sort order is required",
-              },
-            ]}
-          >
-            <InputNumber min={0} className="w-full" placeholder="0" />
-          </Form.Item>
-        </div>
+          />
+        </Form.Item>
 
         <Space>
           <Button type="primary" htmlType="submit" loading={isSubmitting}>
