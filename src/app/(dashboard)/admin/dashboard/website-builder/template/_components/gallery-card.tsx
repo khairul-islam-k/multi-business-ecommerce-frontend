@@ -1,12 +1,12 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
 import { motion } from "framer-motion";
-
-import electronicImg from '@/assets/template/electronic-template.png';
-import fashionImg from '@/assets/template/electronic-template.png';
-import groceryImg from '@/assets/template/electronic-template.png';
+import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+
+import electronicImg from "@/assets/template/electronic-template.png";
+import fashionImg from "@/assets/template/electronic-template.png";
+import groceryImg from "@/assets/template/electronic-template.png";
 
 type TemplateItem = {
   id: number;
@@ -44,9 +44,7 @@ export default function GalleryCard() {
   return (
     <section className="p-6">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Website Templates
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-900">Website Templates</h1>
 
         <p className="mt-2 text-sm text-gray-500">
           Hover on a template to preview the full landing page.
@@ -60,7 +58,7 @@ export default function GalleryCard() {
             className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
           >
             {/* Preview */}
-            <Link href='/store/myshop'>
+            <Link href="/store/myshop">
               <div className="relative h-[250px] overflow-hidden bg-gray-100">
                 <motion.div
                   className="w-full"

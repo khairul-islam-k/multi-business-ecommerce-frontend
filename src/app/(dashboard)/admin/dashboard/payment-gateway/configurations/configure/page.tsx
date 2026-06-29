@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useMemo } from "react";
 import {
   Button,
   Card,
@@ -13,17 +12,21 @@ import {
   Switch,
   Typography,
 } from "antd";
-import { SaveOutlined } from "@ant-design/icons";
+import { Save } from "lucide-react";
+import { useMemo } from "react";
 
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { useFinanceAccountQuery, usePaymentGatewayConfigMutations } from "@/lib/api";
-import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
 import { useSwal } from "@/hooks/use-swal";
+import {
+  useFinanceAccountQuery,
+  usePaymentGatewayConfigMutations,
+} from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
+import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
 
 const { Title, Text } = Typography;
 
-type GatewayKey = "sslcommerz" | "aamarpay" | "surjopay";
+type GatewayKey = "sslcommerz" | "aamarpay" | "shurjopay";
 
 type GatewayFormValues = {
   sslcommerz: {
@@ -40,7 +43,7 @@ type GatewayFormValues = {
     storeId?: string;
     signatureKey?: string;
   };
-  surjopay: {
+  shurjopay: {
     enabled: boolean;
     mode: GatewayMode;
     financeAccountId?: string;
@@ -93,10 +96,10 @@ const gatewayConfigs = [
     ],
   },
   {
-    key: "surjopay",
-    provider: "SURJOPAY",
-    title: "SURJOPAY",
-    description: "Configure SURJOPAY payment gateway.",
+    key: "shurjopay",
+    provider: "SHURJOPAY",
+    title: "SHURJOPAY",
+    description: "Configure SHURJOPAY payment gateway.",
     fields: [
       {
         name: "endpoint",
@@ -139,7 +142,9 @@ const PaymentGateway = () => {
       status: "ACTIVE",
     });
 
-  const { createAllConfig } = usePaymentGatewayConfigMutations(businessId ?? "");
+  const { createAllConfig } = usePaymentGatewayConfigMutations(
+    businessId ?? "",
+  );
 
   const financeAccountOptions = useMemo(() => {
     return (
@@ -240,7 +245,7 @@ const PaymentGateway = () => {
             enabled: false,
             mode: "SANDBOX",
           },
-          surjopay: {
+          shurjopay: {
             enabled: false,
             mode: "SANDBOX",
           },
@@ -285,8 +290,7 @@ const PaymentGateway = () => {
                 <Form.Item
                   noStyle
                   shouldUpdate={(prev, next) =>
-                    prev?.[gatewayKey]?.enabled !==
-                    next?.[gatewayKey]?.enabled
+                    prev?.[gatewayKey]?.enabled !== next?.[gatewayKey]?.enabled
                   }
                 >
                   {({ getFieldValue }) => {
@@ -295,10 +299,7 @@ const PaymentGateway = () => {
                     return (
                       <Card className="rounded-xl border border-gray-200 shadow-sm">
                         <div className={!enabled ? "opacity-70" : ""}>
-                          <Form.Item
-                            label="Mode"
-                            name={[gatewayKey, "mode"]}
-                          >
+                          <Form.Item label="Mode" name={[gatewayKey, "mode"]}>
                             <Radio.Group
                               disabled={!enabled}
                               optionType="button"
@@ -371,7 +372,7 @@ const PaymentGateway = () => {
           <Space>
             <Button onClick={() => form.resetFields()}>Reset</Button>
 
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+            <Button type="primary" htmlType="submit" icon={<Save />}>
               Save Configuration
             </Button>
           </Space>

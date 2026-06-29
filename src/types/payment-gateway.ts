@@ -1,7 +1,7 @@
 import type { ApiId, ListQuery } from "@/lib/api/types";
 import type { FinanceAccountResponse } from "@/types/finance/account";
 
-export type PaymentGatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SURJOPAY";
+export type PaymentGatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SHURJOPAY";
 export type PaymentGatewayMode = "SANDBOX" | "LIVE";
 export type PaymentGatewayStatus = "ACTIVE" | "INACTIVE";
 
@@ -54,8 +54,7 @@ export type PaymentGatewayConfig = {
   updatedAt?: string;
 };
 
-
-export type GatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SURJOPAY";
+export type GatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SHURJOPAY";
 
 export type GatewayMode = "SANDBOX" | "LIVE";
 

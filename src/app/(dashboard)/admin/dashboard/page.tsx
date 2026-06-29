@@ -13,15 +13,15 @@ import {
   YAxis,
 } from "recharts";
 
-import useWidth from "@/hooks/use-width";
-import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
+import StatCard from "@/components/shared/stat-card";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import useWidth from "@/hooks/use-width";
 import {
-  mockStats,
-  mockSalesOverview,
   mockCustomerGrowth,
   mockOrders,
+  mockSalesOverview,
+  mockStats,
 } from "./data";
 
 const { Title, Text } = Typography;
@@ -129,7 +129,11 @@ export default function AdminDashboardPage() {
 
                 <Tooltip />
 
-                <Bar dataKey="value" fill="var(--dashboard-success-color)" radius={[6, 6, 0, 0]} />
+                <Bar
+                  dataKey="value"
+                  fill="var(--dashboard-success-color)"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </Card>

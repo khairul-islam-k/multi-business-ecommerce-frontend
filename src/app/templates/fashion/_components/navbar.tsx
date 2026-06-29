@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -16,10 +16,8 @@ import {
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import { useCart } from "@/app/store/_components/contex/CartContex";
 import AvatarDropdown from "./avatar-dropdown";
-import { useAddActiveCArt} from "@/lib/api/hooks/add-cart";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
-
 
 type Category = {
   id: string;
@@ -36,7 +34,6 @@ type CategoryTreeItem = {
   category: Category;
   children: CategoryTreeItem[];
 };
-
 
 const pageLinks = [
   {
@@ -178,7 +175,6 @@ const MobileCategoryItem = ({
   );
 };
 
-
 const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -186,12 +182,11 @@ const FashionNavbar = () => {
   const { user } = useCart();
 
   const { data: categories } = useProductCategoryQuery();
-  const {data: cart} = useAddActiveCArt();
+  const { data: cart } = useAddActiveCArt();
 
   const cartCount = cart?.items.length;
   const compareCount = 2;
   const favoriteCount = 5;
-
 
   const handleCategoryClick = (categoryId: string) => {
     console.log("Clicked category id:", categoryId);
@@ -200,7 +195,6 @@ const FashionNavbar = () => {
 
     router.push(`/store/products?categoryId=${categoryId}`);
   };
-
 
   return (
     <>
@@ -287,7 +281,11 @@ const FashionNavbar = () => {
 
           {/* Right Icons */}
           <div className="flex items-center justify-end gap-2">
-            <IconButton href="/search" label="Search" className="hidden lg:grid">
+            <IconButton
+              href="/search"
+              label="Search"
+              className="hidden lg:grid"
+            >
               <Search className="h-5 w-5" />
             </IconButton>
 
@@ -320,17 +318,17 @@ const FashionNavbar = () => {
 
             <StoreThemeToggle />
 
-            {
-              user ? <AvatarDropdown /> :
-
-                <Link
-                  href="/store/login"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
-                >
-                  <LogIn className="hidden h-4 w-4 sm:block" />
-                  Login
-                </Link>
-            }
+            {user ? (
+              <AvatarDropdown />
+            ) : (
+              <Link
+                href="/store/login"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
+              >
+                <LogIn className="hidden h-4 w-4 sm:block" />
+                Login
+              </Link>
+            )}
 
             <button
               type="button"
@@ -431,7 +429,6 @@ const FashionNavbar = () => {
                   >
                     <GitCompareArrows className="h-5 w-5" />
                     Compare
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {compareCount}
                     </span>
@@ -444,7 +441,6 @@ const FashionNavbar = () => {
                   >
                     <Heart className="h-5 w-5" />
                     Favorite
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {favoriteCount}
                     </span>
@@ -457,7 +453,6 @@ const FashionNavbar = () => {
                   >
                     <ShoppingBag className="h-5 w-5" />
                     Cart
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {cartCount}
                     </span>

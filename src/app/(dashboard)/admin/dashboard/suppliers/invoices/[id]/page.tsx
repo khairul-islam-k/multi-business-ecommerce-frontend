@@ -1,7 +1,7 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { Card, Col, Descriptions, Empty, Row, Table, Tag } from "antd";
+import { useParams } from "next/navigation";
 
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
@@ -87,7 +87,10 @@ export default function SupplierInvoiceDetailsPage() {
           dataSource={[]}
           columns={[]}
           pagination={false}
-          locale={{ emptyText: "Supplier invoice item details are not returned by this API yet." }}
+          locale={{
+            emptyText:
+              "Supplier invoice item details are not returned by this API yet.",
+          }}
         />
       </Card>
     </div>

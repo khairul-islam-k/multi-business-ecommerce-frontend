@@ -1,17 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft
-} from "lucide-react";
-
-import Loader from "@/components/shared/loader";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
-import { PurchaseOrderStatus, UpdatePurchaseOrderPayload } from "@/types/suppliers/purchase-order";
-import {
   App,
   Button,
   Card,
@@ -23,8 +12,23 @@ import {
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import dayjs, { Dayjs } from "dayjs";
+import { ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import {
+  usePurchaseOrder,
+  usePurchaseOrderMutation,
+} from "@/lib/api/hooks/purchase-order";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  PurchaseOrderStatus,
+  UpdatePurchaseOrderPayload,
+} from "@/types/suppliers/purchase-order";
 
 type UpdatePurchaseOrderFormValues = {
   expectedDeliveryDate?: Dayjs;
@@ -33,17 +37,10 @@ type UpdatePurchaseOrderFormValues = {
   note?: string;
 };
 
-// type UpdatePurchaseOrderPayload = {
-//   expectedDeliveryDate: string;
-//   status: PurchaseOrderStatus;
-//   shippingCost: number;
-//   note: string;
-// };
-
 const UpdatePurchaseOrder = () => {
   const [form] = Form.useForm<UpdatePurchaseOrderFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {message} = App.useApp();
+  const { message } = App.useApp();
 
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
@@ -51,7 +48,11 @@ const UpdatePurchaseOrder = () => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const { data: purchaseOrder, isLoading, isFetching } = usePurchaseOrder(businessId, id);
+  const {
+    data: purchaseOrder,
+    isLoading,
+    isFetching,
+  } = usePurchaseOrder(businessId, id);
 
   const { updatePurchase } = usePurchaseOrderMutation(businessId);
 
@@ -69,12 +70,12 @@ const UpdatePurchaseOrder = () => {
       console.log("payload", payload);
       await updatePurchase.mutateAsync({
         purchaseId: id,
-        payload
-      })
+        payload,
+      });
 
       router.push("/admin/dashboard/suppliers/purchase-order");
       message.success("Purchase Order update successfully");
-    } catch(error) {
+    } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {
       setIsSubmitting(false);
@@ -95,7 +96,7 @@ const UpdatePurchaseOrder = () => {
   }, [form, purchaseOrder]);
 
   if (isLoading || isFetching) {
-    return <Loader />
+    return <Loader />;
   }
 
   return (
@@ -125,7 +126,10 @@ const UpdatePurchaseOrder = () => {
           }}
         >
           <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
-            <Form.Item label="Expected Delivery Date" name="expectedDeliveryDate">
+            <Form.Item
+              label="Expected Delivery Date"
+              name="expectedDeliveryDate"
+            >
               <DatePicker className="w-full" />
             </Form.Item>
 
@@ -140,9 +144,10 @@ const UpdatePurchaseOrder = () => {
             </Form.Item>
 
             <Form.Item label="Shipping Cost" name="shippingCost">
-              <InputNumber min={0}
+              <InputNumber
+                min={0}
                 style={{
-                  width: '100%'
+                  width: "100%",
                 }}
               />
             </Form.Item>

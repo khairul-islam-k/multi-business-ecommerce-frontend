@@ -44,7 +44,7 @@ const providerOptions: Array<{ label: string; value: PaymentGatewayProvider }> =
   [
     { label: "SSLCommerz", value: "SSLCOMMERZ" },
     { label: "AamarPay", value: "AAMARPAY" },
-    { label: "SurjoPay", value: "SURJOPAY" },
+    { label: "SurjoPay", value: "SHURJOPAY" },
   ];
 
 const modeOptions: Array<{ label: string; value: PaymentGatewayMode }> = [
@@ -60,7 +60,7 @@ const statusOptions: Array<{ label: string; value: PaymentGatewayStatus }> = [
 const parseProvider = (
   value: string | null,
 ): PaymentGatewayProvider | undefined =>
-  value === "SSLCOMMERZ" || value === "AAMARPAY" || value === "SURJOPAY"
+  value === "SSLCOMMERZ" || value === "AAMARPAY" || value === "SHURJOPAY"
     ? value
     : undefined;
 
@@ -216,7 +216,11 @@ export default function PaymentGatewayConfigurations() {
           <Button
             type="primary"
             icon={<CirclePlus />}
-            onClick={() => router.push('/admin/dashboard/payment-gateway/configurations/configure')}
+            onClick={() =>
+              router.push(
+                "/admin/dashboard/payment-gateway/configurations/configure",
+              )
+            }
           >
             Configure Gateway
           </Button>

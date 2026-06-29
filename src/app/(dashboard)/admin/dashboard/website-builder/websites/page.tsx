@@ -1,16 +1,6 @@
 "use client";
 
 import {
-  CircleCheck,
-  CirclePlus,
-  CircleStop,
-  Globe
-} from "lucide-react";
-
-
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import {
   Button,
   Card,
   Col,
@@ -25,21 +15,26 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { CircleCheck, CirclePlus, CircleStop, Globe, Copy } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useWebsiteMutation, useWebsiteQuery } from "@/lib/api/hooks/website";
-import { useAuthStore } from "@/stores/auth.store";
-import { ResponseWebsite, ResponseWebsiteDomain } from "@/types/website/website";
-import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useState } from "react";
-import WebsiteDomainCreateForm from "./_components/website-domain-create-form";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useSwal } from "@/hooks/use-swal";
+import { useWebsiteMutation, useWebsiteQuery } from "@/lib/api/hooks/website";
 import { PERMISSIONS } from "@/lib/auth/permissions";
-import { CopyOutlined } from "@ant-design/icons";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  ResponseWebsite,
+  ResponseWebsiteDomain,
+} from "@/types/website/website";
 
+import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
+import WebsiteDomainCreateForm from "./_components/website-domain-create-form";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -71,9 +66,7 @@ const getFirstWebsite = (
 };
 
 const getActiveSubDomain = (domains: ResponseWebsiteDomain[]) => {
-  const activeSubDomain = domains.find(
-    (item) => item.isPrimary === true,
-  );
+  const activeSubDomain = domains.find((item) => item.isPrimary === true);
 
   return activeSubDomain?.subdomain ?? null;
 };
@@ -90,19 +83,13 @@ const WebsiteList = () => {
 
   // domain modal
   const [openDomainModal, setOpenDomainModal] = useState<boolean>(false);
-  const [websiteId, setWebsiteId] = useState<string>('');
+  const [websiteId, setWebsiteId] = useState<string>("");
 
-  const {
-    data: websites,
-    isLoading,
-    isFetching,
-  } = useWebsiteQuery(businessId);
-
-  console.log('website', websites);
+  const { data: websites, isLoading, isFetching } = useWebsiteQuery(businessId);
 
   const website = getFirstWebsite(websites?.items);
 
-  // TODO:
+  // TODO: handle it properly
   const activeSubDomain = getActiveSubDomain(website?.domains ?? []);
 
   const storeUrl = activeSubDomain
@@ -119,13 +106,13 @@ const WebsiteList = () => {
     swal.success("Store URL copied");
   };
 
-  const { removeWebsite, updatePublish, updateUnPublish } = useWebsiteMutation(businessId);
+  const { removeWebsite, updatePublish, updateUnPublish } =
+    useWebsiteMutation(businessId);
 
   const logoUrl = website?.theme?.logoUrl;
   const faviconUrl = website?.theme?.faviconUrl;
   const headerSlides = website?.config?.headerConfig?.slide ?? [];
-  const bestOfferImages =
-    website?.config?.generalConfig?.bestOfferImages ?? [];
+  const bestOfferImages = website?.config?.generalConfig?.bestOfferImages ?? [];
   const partners = website?.config?.generalConfig?.partners ?? [];
 
   // delete website
@@ -266,7 +253,10 @@ const WebsiteList = () => {
                 <div className="border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <Title level={4} className="!mb-1 truncate !text-gray-950">
+                      <Title
+                        level={4}
+                        className="!mb-1 truncate !text-gray-950"
+                      >
                         {website.name}
                       </Title>
 
@@ -322,7 +312,10 @@ const WebsiteList = () => {
                         Business
                       </Text>
 
-                      <Text strong className="max-w-[160px] truncate text-right">
+                      <Text
+                        strong
+                        className="max-w-[160px] truncate text-right"
+                      >
                         {website.business?.name ?? "-"}
                       </Text>
                     </div>
@@ -332,7 +325,10 @@ const WebsiteList = () => {
                         Meta Title
                       </Text>
 
-                      <Text strong className="max-w-[160px] truncate text-right">
+                      <Text
+                        strong
+                        className="max-w-[160px] truncate text-right"
+                      >
                         {website.seo?.metaTitle ?? "-"}
                       </Text>
                     </div>
@@ -359,7 +355,10 @@ const WebsiteList = () => {
                         Store Domain
                       </Text>
 
-                      <Tag color={storeUrl ? "green" : "default"} className="m-0">
+                      <Tag
+                        color={storeUrl ? "green" : "default"}
+                        className="m-0"
+                      >
                         {storeUrl ? "Available" : "Not Set"}
                       </Tag>
                     </div>
@@ -374,7 +373,7 @@ const WebsiteList = () => {
                           <Button
                             type="text"
                             size="small"
-                            icon={<CopyOutlined />}
+                            icon={<Copy />}
                             onClick={handleCopyStoreUrl}
                             disabled={!storeUrl}
                           />
@@ -465,7 +464,8 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.primaryColor ?? "var(--dashboard-card-background-color)",
+                              website.theme?.primaryColor ??
+                              "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -481,7 +481,8 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.secondaryColor ?? "var(--dashboard-card-background-color)",
+                              website.theme?.secondaryColor ??
+                              "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -497,7 +498,8 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.accentColor ?? "var(--dashboard-card-background-color)",
+                              website.theme?.accentColor ??
+                              "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -647,14 +649,16 @@ const WebsiteList = () => {
                               alt={`Best offer ${index + 1}`}
                               width={item.size === "large" ? 600 : 300}
                               height={item.size === "large" ? 260 : 120}
-                              className={`w-full rounded-xl object-cover ${item.size === "large" ? "h-64" : "h-28"
-                                }`}
+                              className={`w-full rounded-xl object-cover ${
+                                item.size === "large" ? "h-64" : "h-28"
+                              }`}
                               unoptimized
                             />
                           ) : (
                             <div
-                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 ${item.size === "large" ? "h-64" : "h-28"
-                                }`}
+                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 ${
+                                item.size === "large" ? "h-64" : "h-28"
+                              }`}
                             >
                               No Image
                             </div>

@@ -1,20 +1,6 @@
 "use client";
 
 import {
-  CirclePlus,
-  Trash2
-} from "lucide-react";
-
-
-import { useProductsQuery } from "@/lib/api/hooks/product";
-import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
-import { usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
-import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
-import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
-import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
-import {
   App,
   Button,
   Card,
@@ -25,9 +11,20 @@ import {
   Select,
   Space,
 } from "antd";
-import type { Dayjs } from "dayjs";
+import { CirclePlus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import { useProductsQuery } from "@/lib/api/hooks/product";
+import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
+import { usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
+import { useSuppliersQuery } from "@/lib/api/hooks/supplier";
+import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
+
+import type { Dayjs } from "dayjs";
 
 const { TextArea } = Input;
 
@@ -50,7 +47,6 @@ type PurchaseOrderFormValues = {
   note?: string;
   items: PurchaseOrderItemFormValue[];
 };
-
 
 type PurchaseOrderItemProps = {
   fieldName: number;
@@ -112,10 +108,7 @@ const PurchaseOrderItem = ({
           />
         </Form.Item>
 
-        <Form.Item
-          label="Variant"
-          name={[fieldName, "variantId"]}
-        >
+        <Form.Item label="Variant" name={[fieldName, "variantId"]}>
           <Select
             showSearch
             disabled={!productId}
@@ -136,9 +129,10 @@ const PurchaseOrderItem = ({
         >
           <InputNumber
             style={{
-              width: '100%'
+              width: "100%",
             }}
-            min={1} />
+            min={1}
+          />
         </Form.Item>
 
         <Form.Item
@@ -146,17 +140,21 @@ const PurchaseOrderItem = ({
           name={[fieldName, "unitCost"]}
           rules={[{ required: true, message: "Unit cost is required" }]}
         >
-          <InputNumber min={0} 
-          style={{
-              width: '100%'
-            }} />
+          <InputNumber
+            min={0}
+            style={{
+              width: "100%",
+            }}
+          />
         </Form.Item>
 
         <Form.Item label="Discount Amount" name={[fieldName, "discountAmount"]}>
-          <InputNumber min={0} 
-          style={{
-              width: '100%'
-            }} />
+          <InputNumber
+            min={0}
+            style={{
+              width: "100%",
+            }}
+          />
         </Form.Item>
       </div>
     </Card>
@@ -171,14 +169,14 @@ const PurchaseOrderForm = () => {
   const { message } = App.useApp();
   const router = useRouter();
 
-  const {createPurchaseOrder} = usePurchaseOrderMutation(businessId);
+  const { createPurchaseOrder } = usePurchaseOrderMutation(businessId);
 
   const { data: suppliers, isLoading: supplierLoading } = useSuppliersQuery(
     businessId,
     {
       status: "ACTIVE",
       sortOrder: "desc",
-    }
+    },
   );
 
   const { data: warehouses, isLoading: warehouseLoading } = useWarehousesQuery(
@@ -186,7 +184,7 @@ const PurchaseOrderForm = () => {
     {
       status: "ACTIVE",
       sortOrder: "desc",
-    }
+    },
   );
 
   const { data: products, isLoading: productLoading } = useProductsQuery(
@@ -194,14 +192,11 @@ const PurchaseOrderForm = () => {
     {
       status: "ACTIVE",
       sortOrder: "desc",
-    }
+    },
   );
 
   const handleFinish = async (values: PurchaseOrderFormValues) => {
-    if (
-      !values.supplierId ||
-      !values.warehouseId
-    ) {
+    if (!values.supplierId || !values.warehouseId) {
       return;
     }
 
@@ -224,15 +219,13 @@ const PurchaseOrderForm = () => {
 
     try {
       await createPurchaseOrder.mutateAsync(payload);
-      router.push("/admin/dashboard/suppliers/purchase-order")
+      router.push("/admin/dashboard/suppliers/purchase-order");
       message.success("Purchase Order created successfully");
-      
     } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {
       setIsSubmitting(false);
     }
-
   };
 
   return (
@@ -306,9 +299,10 @@ const PurchaseOrderForm = () => {
           </Form.Item>
 
           <Form.Item label="Shipping Cost" name="shippingCost">
-            <InputNumber min={0}
+            <InputNumber
+              min={0}
               style={{
-                width: '100%'
+                width: "100%",
               }}
             />
           </Form.Item>
