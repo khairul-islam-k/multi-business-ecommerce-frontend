@@ -14,6 +14,7 @@ import type {
   PaymentGatewayConfigPayload,
   PaymentGatewayConfigQuery,
   PaymentGatewayDefinition,
+  PaymentGatewayPayload,
   PaymentGatewayQuery,
   UpdatePaymentGatewayConfigPayload,
 } from "@/types/payment-gateway";
@@ -42,6 +43,15 @@ export const paymentGatewayApi = {
     return api
       .post<ApiResponse<PaymentGatewayConfig>>(
         `${basePath(businessId)}/configs`,
+        payload,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  createAllConfig(businessId: ApiId, payload: PaymentGatewayPayload) {
+    return api
+      .post<ApiResponse<PaymentGatewayConfig>>(
+        `${basePath(businessId)}/configs/bulk`,
         payload,
       )
       .then((res) => unwrapApiResponse(res.data));

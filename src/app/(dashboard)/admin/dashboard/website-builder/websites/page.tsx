@@ -16,11 +16,13 @@ import {
   Col,
   Descriptions,
   Empty,
+  Input,
   Modal,
   Row,
   Skeleton,
   Space,
   Tag,
+  Tooltip,
   Typography,
 } from "antd";
 
@@ -28,7 +30,7 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useWebsiteMutation, useWebsiteQuery } from "@/lib/api/hooks/website";
 import { useAuthStore } from "@/stores/auth.store";
-import { ResponseWebsite } from "@/types/website/website";
+import { ResponseWebsite, ResponseWebsiteDomain } from "@/types/website/website";
 import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -36,6 +38,7 @@ import { useState } from "react";
 import WebsiteDomainCreateForm from "./_components/website-domain-create-form";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import { CopyOutlined } from "@ant-design/icons";
 
 
 const { Text, Title, Paragraph } = Typography;
@@ -67,6 +70,14 @@ const getFirstWebsite = (
   return websites;
 };
 
+const getActiveSubDomain = (domains: ResponseWebsiteDomain[]) => {
+  const activeSubDomain = domains.find(
+    (item) => item.isPrimary === true,
+  );
+
+  return activeSubDomain?.subdomain ?? null;
+};
+
 const WebsiteList = () => {
   const router = useRouter();
 
@@ -87,7 +98,26 @@ const WebsiteList = () => {
     isFetching,
   } = useWebsiteQuery(businessId);
 
+  console.log('website', websites);
+
   const website = getFirstWebsite(websites?.items);
+
+  // TODO:
+  const activeSubDomain = getActiveSubDomain(website?.domains ?? []);
+
+  const storeUrl = activeSubDomain
+    ? `http://${activeSubDomain}:3000/store`
+    : "";
+
+  const handleCopyStoreUrl = async () => {
+    if (!storeUrl) {
+      swal.error("Store URL not found");
+      return;
+    }
+
+    await navigator.clipboard.writeText(storeUrl);
+    swal.success("Store URL copied");
+  };
 
   const { removeWebsite, updatePublish, updateUnPublish } = useWebsiteMutation(businessId);
 
@@ -222,115 +252,202 @@ const WebsiteList = () => {
       ) : (
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={8}>
-            <Card className="h-full">
-              <div className="space-y-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <Title level={4} className="!mb-1">
-                      {website.name}
-                    </Title>
+            <Card
+              hoverable
+              className="h-full overflow-hidden rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+              styles={{
+                body: {
+                  padding: 0,
+                },
+              }}
+            >
+              <div className="flex h-full flex-col">
+                {/* Header */}
+                <div className="border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <Title level={4} className="!mb-1 truncate !text-gray-950">
+                        {website.name}
+                      </Title>
 
-                    <Text type="secondary">/{website.slug}</Text>
-                  </div>
-
-                  <Tag color={getStatusColor(website.status)}>
-                    {website.status}
-                  </Tag>
-                </div>
-
-                <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-                  {logoUrl ? (
-                    <Image
-                      src={imageUrlSet(logoUrl)}
-                      alt={website.name}
-                      width={160}
-                      height={64}
-                      className="h-16 w-auto object-contain"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="flex h-16 items-center justify-center rounded-lg bg-white text-gray-400">
-                      No Logo
+                      <Text type="secondary" className="text-sm">
+                        /{website.slug}
+                      </Text>
                     </div>
-                  )}
+
+                    <Tag
+                      color={getStatusColor(website.status)}
+                      className="rounded-full px-3 py-1 text-xs font-semibold"
+                    >
+                      {website.status}
+                    </Tag>
+                  </div>
                 </div>
 
-                <Descriptions column={1} size="small" bordered>
-                  <Descriptions.Item label="Template">
-                    <Tag color="blue">{website.template}</Tag>
-                  </Descriptions.Item>
+                {/* Logo */}
+                <div className="p-5">
+                  <div className="flex h-24 items-center justify-center rounded-2xl border border-gray-100 bg-gray-50">
+                    {logoUrl ? (
+                      <Image
+                        src={imageUrlSet(logoUrl)}
+                        alt={website.name}
+                        width={180}
+                        height={72}
+                        className="max-h-16 w-auto object-contain"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="flex h-16 w-full items-center justify-center rounded-xl bg-white text-sm font-medium text-gray-400">
+                        No Logo
+                      </div>
+                    )}
+                  </div>
+                </div>
 
-                  <Descriptions.Item label="Business">
-                    {website.business?.name ?? "-"}
-                  </Descriptions.Item>
+                {/* Info */}
+                <div className="px-5">
+                  <div className="grid gap-3 rounded-2xl border border-gray-100 bg-white p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <Text type="secondary" className="text-sm">
+                        Template
+                      </Text>
 
-                  <Descriptions.Item label="Meta Title">
-                    {website.seo?.metaTitle ?? "-"}
-                  </Descriptions.Item>
+                      <Tag color="blue" className="m-0 rounded-full">
+                        {website.template}
+                      </Tag>
+                    </div>
 
-                  <Descriptions.Item label="Current Version">
-                    {website.currentVersion?.versionNo
-                      ? `Version ${website.currentVersion.versionNo}`
-                      : "-"}
-                  </Descriptions.Item>
-                </Descriptions>
+                    <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                      <Text type="secondary" className="text-sm">
+                        Business
+                      </Text>
 
-                <Space wrap>
-                  {updateAccess.allowed ? (
-                    <>
-                      <Button
-                        onClick={() =>
-                          router.push(
-                            `/admin/dashboard/website-builder/websites/edit/${website.id}`,
-                          )
-                        }
-                      >
-                        Edit
-                      </Button>
+                      <Text strong className="max-w-[160px] truncate text-right">
+                        {website.business?.name ?? "-"}
+                      </Text>
+                    </div>
 
-                      {website.status === "PUBLISHED" ? (
+                    <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                      <Text type="secondary" className="text-sm">
+                        Meta Title
+                      </Text>
+
+                      <Text strong className="max-w-[160px] truncate text-right">
+                        {website.seo?.metaTitle ?? "-"}
+                      </Text>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                      <Text type="secondary" className="text-sm">
+                        Version
+                      </Text>
+
+                      <Text strong>
+                        {website.currentVersion?.versionNo
+                          ? `Version ${website.currentVersion.versionNo}`
+                          : "-"}
+                      </Text>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Domain URL */}
+                <div className="px-5 pt-5">
+                  <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-4">
+                    <div className="mb-2 flex items-center justify-between">
+                      <Text strong className="text-sm text-gray-900">
+                        Store Domain
+                      </Text>
+
+                      <Tag color={storeUrl ? "green" : "default"} className="m-0">
+                        {storeUrl ? "Available" : "Not Set"}
+                      </Tag>
+                    </div>
+
+                    <Input
+                      readOnly
+                      value={storeUrl}
+                      placeholder="Store URL not available"
+                      className="rounded-xl"
+                      addonAfter={
+                        <Tooltip title="Copy URL">
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={<CopyOutlined />}
+                            onClick={handleCopyStoreUrl}
+                            disabled={!storeUrl}
+                          />
+                        </Tooltip>
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="mt-auto p-5">
+                  <div className="flex flex-wrap gap-2">
+                    {updateAccess.allowed ? (
+                      <>
                         <Button
-                          danger
-                          icon={<CircleStop />}
-                          loading={updateUnPublish.isPending}
-                          onClick={() => handleUnpublishWebsite(website.id)}
+                          className="rounded-lg"
+                          onClick={() =>
+                            router.push(
+                              `/admin/dashboard/website-builder/websites/edit/${website.id}`,
+                            )
+                          }
                         >
-                          Unpublish
+                          Edit
                         </Button>
-                      ) : (
+
+                        {website.status === "PUBLISHED" ? (
+                          <Button
+                            danger
+                            className="rounded-lg"
+                            icon={<CircleStop />}
+                            loading={updateUnPublish.isPending}
+                            onClick={() => handleUnpublishWebsite(website.id)}
+                          >
+                            Unpublish
+                          </Button>
+                        ) : (
+                          <Button
+                            type="primary"
+                            className="rounded-lg"
+                            icon={<CircleCheck />}
+                            loading={updatePublish.isPending}
+                            disabled={website.status === "ARCHIVED"}
+                            onClick={() => handlePublishWebsite(website.id)}
+                          >
+                            Publish
+                          </Button>
+                        )}
+
                         <Button
                           type="primary"
-                          icon={<CircleCheck />}
-                          loading={updatePublish.isPending}
-                          disabled={website.status === "ARCHIVED"}
-                          onClick={() => handlePublishWebsite(website.id)}
+                          className="rounded-lg bg-indigo-600 hover:!bg-indigo-700"
+                          icon={<CirclePlus />}
+                          onClick={() => {
+                            setOpenDomainModal(true);
+                            setWebsiteId(website.id);
+                          }}
                         >
-                          Publish
+                          Add Domain
                         </Button>
-                      )}
+                      </>
+                    ) : null}
 
+                    {deleteAccess.allowed ? (
                       <Button
-                        type="primary"
-                        icon={<CirclePlus />}
-                        onClick={() => {
-                          setOpenDomainModal(true);
-                          setWebsiteId(website.id);
-                        }}
+                        danger
+                        className="rounded-lg"
+                        onClick={() => handleDeleteWebsite(website.id)}
                       >
-                        Add Domain
+                        Delete
                       </Button>
-                    </>
-                  ) : null}
-
-                  {deleteAccess.allowed ? (
-                    <Button
-                      onClick={() => handleDeleteWebsite(website.id)}
-                      danger
-                    >
-                      Delete
-                    </Button>
-                  ) : null}
-                </Space>
+                    ) : null}
+                  </div>
+                </div>
               </div>
             </Card>
           </Col>
@@ -601,8 +718,8 @@ const WebsiteList = () => {
         width={720}
       >
         <WebsiteDomainCreateForm
-        websiteId={websiteId}
-        setOpenDomainModal={setOpenDomainModal}
+          websiteId={websiteId}
+          setOpenDomainModal={setOpenDomainModal}
         />
       </Modal>
     </div>

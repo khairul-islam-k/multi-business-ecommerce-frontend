@@ -24,14 +24,6 @@ const getItemQuantity = (item: CartItem) => {
     return Number(item.quantity);
 };
 
-const getProductImage = (item: CartItem) => {
-    return (
-        item.product.images?.find((image) => image.isThumbnail)?.imageUrl ||
-        item.product.images?.[0]?.imageUrl ||
-        null
-    );
-};
-
 const getThumbnailImage = (images: CartImage[]) => {
     const thumbnailImage = images.find((image) => image.isThumbnail === true);
 
@@ -186,7 +178,6 @@ const FashionActiveCart = () => {
 
                             <div className="divide-y divide-gray-100">
                                 {items.map((item) => {
-                                    const imageUrl = getProductImage(item);
                                     const price = getItemPrice(item);
                                     const quantity = getItemQuantity(item);
                                     const itemTotal = price * quantity;

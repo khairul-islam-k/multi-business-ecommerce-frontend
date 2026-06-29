@@ -8,6 +8,7 @@ import type { ApiId } from "@/lib/api/types";
 import type {
   PaymentGatewayConfigPayload,
   PaymentGatewayConfigQuery,
+  PaymentGatewayPayload,
   PaymentGatewayQuery,
   UpdatePaymentGatewayConfigPayload,
 } from "@/types/payment-gateway";
@@ -46,6 +47,12 @@ export function usePaymentGatewayConfigMutations(businessId: ApiId) {
     createConfig: useMutation({
       mutationFn: (payload: PaymentGatewayConfigPayload) =>
         paymentGatewayApi.createConfig(businessId, payload),
+      onSuccess: invalidate,
+    }),
+
+    createAllConfig: useMutation({
+      mutationFn: (payload: PaymentGatewayPayload) =>
+        paymentGatewayApi.createAllConfig(businessId, payload),
       onSuccess: invalidate,
     }),
 

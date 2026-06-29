@@ -53,3 +53,20 @@ export type PaymentGatewayConfig = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+
+export type GatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SURJOPAY";
+
+export type GatewayMode = "SANDBOX" | "LIVE";
+
+export type GatewayStatus = "ACTIVE" | "INACTIVE";
+
+export type PaymentGatewayPayload = {
+  configs: {
+    provider: GatewayProvider;
+    financeAccountId: string | undefined;
+    mode: GatewayMode;
+    status: GatewayStatus;
+    configData: Record<string, string>;
+  }[];
+};

@@ -11,7 +11,7 @@ import {
   Typography,
 } from "antd";
 import { CirclePlus, Pencil, Trash2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -71,6 +71,7 @@ export default function PaymentGatewayConfigurations() {
   const [provider, setProvider] = useState<PaymentGatewayProvider | undefined>(
     () => parseProvider(searchParams.get("provider")),
   );
+  const router = useRouter();
   const [mode, setMode] = useState<PaymentGatewayMode | undefined>();
   const [status, setStatus] = useState<PaymentGatewayStatus | undefined>();
   const [search, setSearch] = useState("");
@@ -215,12 +216,7 @@ export default function PaymentGatewayConfigurations() {
           <Button
             type="primary"
             icon={<CirclePlus />}
-            onClick={handleOpenCreate}
-            disabled={
-              !createAccess.allowed ||
-              financeAccountsLoading ||
-              !financeAccountItems.length
-            }
+            onClick={() => router.push('/admin/dashboard/payment-gateway/configurations/configure')}
           >
             Configure Gateway
           </Button>
