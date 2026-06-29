@@ -1,12 +1,10 @@
 "use client";
 
-import {
-  CirclePlus,
-  Eye,
-  Pencil,
-  Trash2
-} from "lucide-react";
-
+import { App, Button, Card, Empty, Popconfirm, Select, Tag } from "antd";
+import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import Loader from "@/components/shared/loader";
@@ -20,18 +18,7 @@ import {
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ResponseVariant } from "@/types/product/variant";
-import {
-  App,
-  Button,
-  Card,
-  Empty,
-  Popconfirm,
-  Select,
-  Tag,
-} from "antd";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+
 import { imageUrlSet } from "../products/_components/image-url";
 
 const VariantManagement = () => {
@@ -176,7 +163,7 @@ const VariantManagement = () => {
             icon={<Eye />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/product-catalog/variant/details/${row.productId}/variant/${row.id}`
+                `/admin/dashboard/product-catalog/variant/details/${row.productId}/variant/${row.id}`,
               )
             }
           />
@@ -186,7 +173,7 @@ const VariantManagement = () => {
             icon={<Pencil />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/product-catalog/variant/update/${row.productId}/variants/${row.id}`
+                `/admin/dashboard/product-catalog/variant/update/${row.productId}/variants/${row.id}`,
               )
             }
           />
@@ -246,7 +233,7 @@ const VariantManagement = () => {
               disabled={!selectedProductId}
               onClick={() => {
                 router.push(
-                  `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`
+                  `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`,
                 );
               }}
             >

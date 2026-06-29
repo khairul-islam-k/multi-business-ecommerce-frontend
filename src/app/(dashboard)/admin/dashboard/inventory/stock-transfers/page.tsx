@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  ChevronDown,
-  CirclePlus,
-  Eye,
-  Inbox,
-  Truck,
-  X
-} from "lucide-react";
-
+import { ChevronDown, CirclePlus, Eye, Inbox, Truck, X } from "lucide-react";
 
 import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import { useMemo, useState } from "react";
@@ -25,7 +17,10 @@ import {
 } from "@/lib/api/hooks/stock-transfer";
 import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { useAuthStore } from "@/stores/auth.store";
-import { StockTransferResponse, StockTransferStatus } from "@/types/stock/stock-tansfer";
+import {
+  StockTransferResponse,
+  StockTransferStatus,
+} from "@/types/stock/stock-tansfer";
 
 type StockTransferTableRow = StockTransferResponse & {
   serial: number;
@@ -56,7 +51,7 @@ export default function StockTransferListPage() {
   const [search, setSearch] = useState("");
   const [warehouseId, setWarehouseId] = useState<string>("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: transfers,
@@ -66,7 +61,7 @@ export default function StockTransferListPage() {
     page: currentPage,
     limit,
     search,
-    warehouseId
+    warehouseId,
   });
 
   const {
@@ -78,7 +73,8 @@ export default function StockTransferListPage() {
     sortOrder: "desc",
   });
 
-  const { updateShip, updateReceive, updateCancel } = useStockTransferMutation(businessId);
+  const { updateShip, updateReceive, updateCancel } =
+    useStockTransferMutation(businessId);
 
   const warehouseOptions: SelectOption[] = useMemo(() => {
     return (
@@ -89,7 +85,6 @@ export default function StockTransferListPage() {
     );
   }, [warehouses?.items]);
 
-
   const total = transfers?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
@@ -99,11 +94,12 @@ export default function StockTransferListPage() {
       serial: (currentPage - 1) * limit + index + 1,
     })) ?? [];
 
-    // three action
+  // three action
   const handleShip = (id: string) => {
     swal.modal.confirm({
       title: "Ship stock transfer?",
-      content: "This will mark the transfer as shipped and move stock from the source warehouse.",
+      content:
+        "This will mark the transfer as shipped and move stock from the source warehouse.",
       okText: "Ship",
       cancelText: "Cancel",
       centered: true,
@@ -121,7 +117,8 @@ export default function StockTransferListPage() {
   const handleReceive = (id: string) => {
     swal.modal.confirm({
       title: "Receive stock transfer?",
-      content: "This will mark the transfer as received in the destination warehouse.",
+      content:
+        "This will mark the transfer as received in the destination warehouse.",
       okText: "Receive",
       cancelText: "Cancel",
       centered: true,
@@ -275,7 +272,7 @@ export default function StockTransferListPage() {
           </div>
         );
       },
-    }
+    },
   ];
 
   return (
@@ -306,12 +303,13 @@ export default function StockTransferListPage() {
                 }}
               />
 
-
               <Button
                 type="primary"
                 icon={<CirclePlus />}
                 onClick={() =>
-                  router.push("/admin/dashboard/inventory/stock-transfers/create")
+                  router.push(
+                    "/admin/dashboard/inventory/stock-transfers/create",
+                  )
                 }
               >
                 Create Transfer

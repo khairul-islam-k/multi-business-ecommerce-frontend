@@ -1,20 +1,16 @@
 "use client";
 
-import {
-  ArrowLeft,
-  Pencil
-} from "lucide-react";
-
+import { Button, Card, Empty, Skeleton, Tag } from "antd";
+import JsBarcode from "jsbarcode";
+import { ArrowLeft, Pencil } from "lucide-react";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { ReactNode, useEffect, useRef } from "react";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useVariant } from "@/lib/api/hooks/product-variant";
 import { useAuthStore } from "@/stores/auth.store";
-import { Button, Card, Empty, Skeleton, Tag } from "antd";
-import JsBarcode from "jsbarcode";
-import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, type ReactNode } from "react";
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -88,7 +84,7 @@ const VariantDetail = () => {
           icon={<Pencil />}
           onClick={() =>
             router.push(
-              `/admin/dashboard/product-catalog/variant/update/${productId}/variants/${variantId}`
+              `/admin/dashboard/product-catalog/variant/update/${productId}/variants/${variantId}`,
             )
           }
         >
@@ -147,9 +143,7 @@ const VariantDetail = () => {
             <div className="mb-3 flex flex-wrap items-center gap-3">
               <h1 className="m-0 text-2xl font-semibold">{variant.title}</h1>
 
-              <Tag color={getStatusColor(variant.status)}>
-                {variant.status}
-              </Tag>
+              <Tag color={getStatusColor(variant.status)}>{variant.status}</Tag>
             </div>
 
             <p className="mb-6 text-sm text-gray-500">

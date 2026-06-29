@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Banknote,
-  Eye,
-  Pencil
-} from "lucide-react";
-
+import { Banknote, Eye, Pencil } from "lucide-react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
@@ -76,11 +71,10 @@ const ReceivablesPage = () => {
     ReceivableStatus | undefined
   >();
 
-  // modal state
   const [payModalOpen, setPayModalOpen] = useState<boolean>(false);
   const [payableId, setPayableId] = useState<string>("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: receivables,
@@ -162,20 +156,19 @@ const ReceivablesPage = () => {
             />
           </Tooltip>
 
-          {
-            (!(row.status === "RECEIVED")) && <Tooltip title="Pay receivable">
-            <Button
-              size="small"
-              type="primary"
-              icon={<Banknote />}
-              onClick={() => {
-                setPayableId(row.id);
-                setPayModalOpen(true);
-              }}
-            />
-          </Tooltip>
-          }
-
+          {!(row.status === "RECEIVED") && (
+            <Tooltip title="Pay receivable">
+              <Button
+                size="small"
+                type="primary"
+                icon={<Banknote />}
+                onClick={() => {
+                  setPayableId(row.id);
+                  setPayModalOpen(true);
+                }}
+              />
+            </Tooltip>
+          )}
         </div>
       ),
     },

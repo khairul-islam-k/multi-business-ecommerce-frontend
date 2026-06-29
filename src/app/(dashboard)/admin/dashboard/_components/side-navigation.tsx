@@ -491,49 +491,31 @@ const allItems: MenuProps["items"] = [
     ],
   },
 
-  // {
-  //   key: "payment-gateway",
-  //   icon: <CreditCard />, // Main menu
-  //   label: "Payment Gateway",
-  //   children: [
-  //     {
-  //       key: "gateway-list",
-  //       icon: <FileText />,
-  //       label: (
-  //         <Link href="/admin/dashboard/payment-gateway/gateways">
-  //           Gateway List
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "configurations",
-  //       icon: <Settings />,
-  //       label: (
-  //         <Link href="/admin/dashboard/payment-gateway/configurations">
-  //           Gateway Config
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "gateway-rules",
-  //       icon: <ClipboardList />,
-  //       label: (
-  //         <Link href="/admin/dashboard/payment-gateway/gateway-rules">
-  //           Gateway Rules
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "cod-settings",
-  //       icon: <Wrench />,
-  //       label: (
-  //         <Link href="/admin/dashboard/payment-gateway/cod-settings">
-  //           COD Settings
-  //         </Link>
-  //       ),
-  //     },
-  //   ],
-  // },
+  {
+    key: "payment-gateway",
+    icon: <CreditCard />,
+    label: "Payment Gateway",
+    children: [
+      {
+        key: "gateway-list",
+        icon: <WalletCards />,
+        label: (
+          <Link href="/admin/dashboard/payment-gateway/gateways">
+            Gateways
+          </Link>
+        ),
+      },
+      {
+        key: "gateway-configurations",
+        icon: <Settings />,
+        label: (
+          <Link href="/admin/dashboard/payment-gateway/configurations">
+            Configurations
+          </Link>
+        ),
+      },
+    ],
+  },
 
   // {
   //   key: "invoices",

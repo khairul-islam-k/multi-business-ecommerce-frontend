@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  CirclePlus,
-  Eye,
-  MoreHorizontal,
-  Pencil,
-  Trash2
-} from "lucide-react";
-
+import { CirclePlus, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import {
   Button,
@@ -58,7 +51,7 @@ const ProductsList = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: products,
@@ -137,7 +130,7 @@ const ProductsList = () => {
       label: "Tags",
       render: (row) =>
         row.tags?.length ? (
-          <div className="flex flex-wrap gap-1">
+          <div className="grid grid-cols-3">
             {row.tags.map((item) => (
               <Tag key={item.id}>{item.tag?.name ?? "-"}</Tag>
             ))}

@@ -12,6 +12,10 @@ import type {
   CategoriesQuery,
 } from "@/lib/api/types";
 import type { OrderQuery, OrderReturnQuery } from "./orders";
+import type {
+  PaymentGatewayConfigQuery,
+  PaymentGatewayQuery,
+} from "@/types/payment-gateway";
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
 
@@ -135,6 +139,13 @@ export const apiQueryKeys = {
   },
   pos: {
     all: (businessId: ApiId) => ["pos", businessId] as const,
+  },
+  paymentGateway: {
+    all: (businessId: ApiId) => ["paymentGateway", businessId] as const,
+    gateways: (businessId: ApiId, query?: PaymentGatewayQuery) =>
+      ["paymentGateway", businessId, "gateways", query] as const,
+    configs: (businessId: ApiId, query?: PaymentGatewayConfigQuery) =>
+      ["paymentGateway", businessId, "configs", query] as const,
   },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,

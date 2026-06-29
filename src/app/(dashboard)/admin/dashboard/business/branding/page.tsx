@@ -435,7 +435,7 @@ export default function BusinessBrandingPage() {
         </div>
 
         {updateAccess.allowed && (
-          <div className="mt-4">
+          <div className="mt-4 flex justify-end">
             <Button
               type="primary"
               htmlType="submit"

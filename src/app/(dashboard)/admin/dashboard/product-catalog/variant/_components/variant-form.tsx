@@ -1,28 +1,17 @@
 "use client";
 
-import {
-  CirclePlus,
-  Trash2
-} from "lucide-react";
+import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
+import { CirclePlus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-
+import { useProduct } from "@/lib/api/hooks/product";
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { useAuthStore } from "@/stores/auth.store";
-import type { ResponseProductAttribute } from "@/types/product/attribute";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-} from "antd";
-import { useEffect, useState } from "react";
-import ImageSelectModal from "../../../_components/ImageSelectModal";
-import { useProduct } from "@/lib/api/hooks/product";
 import { ResponseVariant } from "@/types/product/variant";
 
+import ImageSelectModal from "../../../_components/ImageSelectModal";
+
+import type { ResponseProductAttribute } from "@/types/product/attribute";
 type VariantStatus = "ACTIVE" | "INACTIVE";
 
 export type VariantPayload = {
@@ -69,11 +58,11 @@ const AttributeRow = ({
 }: AttributeRowProps) => {
   const selectedAttributeId = Form.useWatch(
     ["attributes", fieldName, "attributeId"],
-    form
+    form,
   );
 
   const selectedAttribute = attributes.find(
-    (attribute) => attribute.id === selectedAttributeId
+    (attribute) => attribute.id === selectedAttributeId,
   );
 
   const attributeValueOptions =
@@ -114,7 +103,7 @@ const AttributeRow = ({
             onChange={() => {
               form.setFieldValue(
                 ["attributes", fieldName, "attributeValueId"],
-                undefined
+                undefined,
               );
             }}
           />
@@ -161,14 +150,14 @@ const VariantForm = ({
   const images = Form.useWatch("images", form);
   const selectedImageUrl = images?.[0]?.imageUrl;
 
-  // only create 
+  // only create
   useEffect(() => {
-    if (!(mode === 'create')) return;
+    if (!(mode === "create")) return;
     form.setFieldsValue({
       priceOverride: Number(product?.price ?? 0),
       weight: Number(product?.weight ?? 0),
-    })
-  }, [mode, product, form])
+    });
+  }, [mode, product, form]);
 
   useEffect(() => {
     if (!initialValues) return;

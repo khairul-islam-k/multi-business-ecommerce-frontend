@@ -478,8 +478,7 @@ export type PackageLimitKey =
   | "MAX_MEDIAS"
   | "MAX_PRODUCTS"
   | "MAX_EMPLOYEES"
-  | "MAX_BUSINESSES"
-  | "MAX_WEBSITES";
+  | "MAX_BUSINESSES";
 
 export type PackageSubscriptionStatus =
   | "TRIALING"

@@ -9,6 +9,7 @@ export * from "./hooks/finance-account";
 export * from "./hooks/media";
 export * from "./hooks/order";
 export * from "./hooks/permission";
+export * from "./hooks/payment-gateway";
 export * from "./hooks/product";
 export * from "./hooks/product-review";
 export * from "./hooks/product-unit";

@@ -6,7 +6,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
-  WalletCards
+  WalletCards,
 } from "lucide-react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -34,7 +34,11 @@ import {
   useFinanceAccountQuery,
 } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
-import { AccountStatus, AddMoneyPayload, FinanceAccountResponse } from "@/types/finance/account";
+import {
+  AccountStatus,
+  AddMoneyPayload,
+  FinanceAccountResponse,
+} from "@/types/finance/account";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
@@ -66,7 +70,7 @@ const AccountsList = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<AccountStatus | undefined>();
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: accounts,
@@ -91,11 +95,11 @@ const AccountsList = () => {
   }, 0);
 
   const activeAccounts = accountItems.filter(
-    (account) => account.status === "ACTIVE"
+    (account) => account.status === "ACTIVE",
   ).length;
 
   const inactiveAccounts = accountItems.filter(
-    (account) => account.status === "INACTIVE"
+    (account) => account.status === "INACTIVE",
   ).length;
 
   const handleDelete = async (id: string) => {
@@ -110,7 +114,7 @@ const AccountsList = () => {
   // modal add money
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [accountId, setAccountId] = useState<string>('');
+  const [accountId, setAccountId] = useState<string>("");
   console.log(accountId);
 
   const handleFinish = async (values: AddMoneyPayload) => {
@@ -144,7 +148,6 @@ const AccountsList = () => {
       setLoading(false);
     }
   };
-
 
   const columns: Column<FinanceAccountResponse>[] = [
     {
@@ -223,7 +226,7 @@ const AccountsList = () => {
         ];
 
         const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-          console.log('ant', key)
+          console.log("ant", key);
           if (key === "view") {
             router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`);
           }
@@ -238,7 +241,9 @@ const AccountsList = () => {
           }
 
           if (key === "transactions") {
-            router.push(`/admin/dashboard/finance/accounts/transactions/${row.id}`);
+            router.push(
+              `/admin/dashboard/finance/accounts/transactions/${row.id}`,
+            );
           }
 
           if (key === "delete") {
@@ -268,13 +273,12 @@ const AccountsList = () => {
             placement="bottomRight"
           >
             <Tooltip title="Actions">
-              <Button size="small" icon={<MoreHorizontal />}>
-              </Button>
+              <Button size="small" icon={<MoreHorizontal />}></Button>
             </Tooltip>
           </Dropdown>
         );
       },
-    }
+    },
   ];
 
   return (
@@ -288,13 +292,15 @@ const AccountsList = () => {
       <Row gutter={[16, 16]}>
         <Col xs={12} md={6}>
           <Card>
-            <Text
-              type="secondary">Total Accounts</Text>
+            <Text type="secondary">Total Accounts</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{total}</Title>
+              level={4}
+            >
+              {total}
+            </Title>
           </Card>
         </Col>
 
@@ -303,9 +309,12 @@ const AccountsList = () => {
             <Text type="secondary">Account Balance</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{formatMoney(totalBalance)}</Title>
+              level={4}
+            >
+              {formatMoney(totalBalance)}
+            </Title>
           </Card>
         </Col>
 
@@ -314,9 +323,12 @@ const AccountsList = () => {
             <Text type="secondary">Active Account</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{activeAccounts}</Title>
+              level={4}
+            >
+              {activeAccounts}
+            </Title>
           </Card>
         </Col>
 
@@ -325,9 +337,12 @@ const AccountsList = () => {
             <Text type="secondary">Inactive Account</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{inactiveAccounts}</Title>
+              level={4}
+            >
+              {inactiveAccounts}
+            </Title>
           </Card>
         </Col>
       </Row>

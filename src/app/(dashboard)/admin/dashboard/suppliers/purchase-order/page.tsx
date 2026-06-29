@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  CirclePlus,
-  Eye,
-  Pencil,
-  Trash2
-} from "lucide-react";
-
+import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
@@ -24,7 +18,6 @@ import React, { useState } from "react";
 
 type PurchaseOrderStatus = "DRAFT" | "ORDERED" | "RECEIVED" | "CANCELLED";
 
-
 const PurchaseOrder = () => {
   const router = useRouter();
   const { message } = App.useApp();
@@ -35,7 +28,7 @@ const PurchaseOrder = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PurchaseOrderStatus>();
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: purchaseOrder,
@@ -103,8 +96,7 @@ const PurchaseOrder = () => {
     {
       key: "expectedDeliveryDate",
       label: "Expected Date",
-      render: (row) =>
-        new Date(row.expectedDeliveryDate).toLocaleDateString(),
+      render: (row) => new Date(row.expectedDeliveryDate).toLocaleDateString(),
     },
     {
       key: "totalAmount",
@@ -126,7 +118,7 @@ const PurchaseOrder = () => {
             icon={<Eye />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/suppliers/purchase-order/detail/${row.id}`
+                `/admin/dashboard/suppliers/purchase-order/detail/${row.id}`,
               )
             }
           />
@@ -136,7 +128,7 @@ const PurchaseOrder = () => {
             icon={<Pencil />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/suppliers/purchase-order/update/${row.id}`
+                `/admin/dashboard/suppliers/purchase-order/update/${row.id}`,
               )
             }
           />
@@ -185,7 +177,9 @@ const PurchaseOrder = () => {
                 type="primary"
                 icon={<CirclePlus />}
                 onClick={() =>
-                  router.push("/admin/dashboard/suppliers/purchase-order/create")
+                  router.push(
+                    "/admin/dashboard/suppliers/purchase-order/create",
+                  )
                 }
               >
                 Create PO

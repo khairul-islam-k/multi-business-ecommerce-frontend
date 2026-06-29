@@ -6,6 +6,7 @@ export * from "./hooks";
 export * from "./media";
 export * from "./orders";
 export * from "./permissions";
+export * from "./payment-gateways";
 export * from "./product-reviews";
 export * from "./query-keys";
 export * from "./roles";
