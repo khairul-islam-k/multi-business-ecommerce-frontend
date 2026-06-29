@@ -33,8 +33,6 @@ export const getApiErrorMessage = (error: unknown) => {
       | { message?: string; errors?: string[] }
       | undefined;
 
-    console.log('api message', data);
-
     return data?.message ?? error.message;
   }
 

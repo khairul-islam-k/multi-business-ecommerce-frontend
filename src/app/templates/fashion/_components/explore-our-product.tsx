@@ -18,7 +18,7 @@ const ExploreOurProduct = () => {
 
   useEffect(() => {
     if (productTabs) {
-      setActiveTab(productTabs[0].id);
+      setActiveTab(productTabs[0]?.id);
     }
   }, [productTabs]);
 

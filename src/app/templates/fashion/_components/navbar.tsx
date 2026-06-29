@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,7 +14,11 @@ import {
   X,
 } from "lucide-react";
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
-import Loader from "@/components/shared/loader";
+import { useCart } from "@/app/store/_components/contex/CartContex";
+import AvatarDropdown from "./avatar-dropdown";
+import { useAddActiveCArt} from "@/lib/api/hooks/add-cart";
+import { ConsoleSqlOutlined } from "@ant-design/icons";
+import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 
 
 type Category = {
@@ -179,10 +183,12 @@ const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const {data: categories} = useProductCategoryQuery();
-  // console.log('data', categoriesData);
+  const { user } = useCart();
 
-  const cartCount = 3;
+  const { data: categories } = useProductCategoryQuery();
+  const {data: cart} = useAddActiveCArt();
+
+  const cartCount = cart?.items.length;
   const compareCount = 2;
   const favoriteCount = 5;
 
@@ -303,17 +309,28 @@ const FashionNavbar = () => {
               <Heart className="h-5 w-5" />
             </IconButton>
 
-            <IconButton href="/cart" label="Cart" count={cartCount}>
+            <IconButton
+              href="/cart"
+              label="Cart"
+              count={cartCount}
+              className="hidden lg:grid"
+            >
               <ShoppingBag className="h-5 w-5" />
             </IconButton>
 
-            <Link
-              href="/store/login"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
-            >
-              <LogIn className="hidden h-4 w-4 sm:block" />
-              Login
-            </Link>
+            <StoreThemeToggle />
+
+            {
+              user ? <AvatarDropdown /> :
+
+                <Link
+                  href="/store/login"
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
+                >
+                  <LogIn className="hidden h-4 w-4 sm:block" />
+                  Login
+                </Link>
+            }
 
             <button
               type="button"

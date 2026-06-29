@@ -60,3 +60,17 @@ export type LoginPayload = {
   email: string;
   password: string;
 }
+
+export type ForgetOtpResponse = {
+  resetRequestId: string;
+};
+
+export type ResetPasswordPayload = {
+  resetRequestId: string;
+  email: string;
+  password: string;
+};
+
+export type RefreshTokenPayload = {
+  refreshToken: string;
+};

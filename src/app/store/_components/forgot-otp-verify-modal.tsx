@@ -5,10 +5,11 @@ import { z } from "zod";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import api, { getApiErrorMessage } from "@/lib/axios";
+import { templateAuthApi } from "@/lib/api/template-auth";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { useMessage } from "./message/message-hook";
 
 type ForgotOtpVerifyModalProps = {
   open: boolean;
@@ -40,6 +41,8 @@ export default function ForgotOtpVerifyModal({
   const [otp, setOtp] = useState("");
   const [verificationId, setVerificationId] = useState("");
   const [otpError, setOtpError] = useState("");
+  const message = useMessage();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -66,62 +69,6 @@ export default function ForgotOtpVerifyModal({
     reset();
   };
 
-  const verifyMutation = useMutation({
-    mutationFn: async () => {
-      const response = await api.post("/auth/reset-password/verify-otp", {
-        email,
-        otp,
-      });
-
-      return response.data;
-    },
-
-    onSuccess: (data) => {
-      const id =
-        data?.data?.verificationId ??
-        data?.data?.id ??
-        data?.verificationId ??
-        data?.id;
-
-      if (!id) {
-        setOtpError("Verification id not found from server response");
-        return;
-      }
-
-      setVerificationId(String(id));
-      setOtp("");
-      setOtpError("");
-    },
-
-    onError: (error) => {
-      setOtpError(getApiErrorMessage(error));
-    },
-  });
-
-  const resetPasswordMutation = useMutation({
-    mutationFn: async (payload: ResetPasswordFormValues) => {
-      const response = await api.post("/auth/forgot-password/reset", {
-        verificationId,
-        email,
-        password: payload.newPassword,
-      });
-
-      return response.data;
-    },
-
-    onSuccess: () => {
-      toast.success("Password reset successfully");
-
-      resetModalState();
-      onVerified?.();
-      onClose();
-    },
-
-    onError: (error) => {
-      toast.error(getApiErrorMessage(error));
-    },
-  });
-
   const handleClose = () => {
     // if (verifyMutation.isPending || resetPasswordMutation.isPending) return;
 
@@ -131,27 +78,69 @@ export default function ForgotOtpVerifyModal({
 
   // step 1
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (otp.length !== 6) {
       toast.error("Please enter 6 digit OTP");
       return;
     }
 
-    setOtpError("");
+    setLoading(true);
+
+    try {
+      const res = await templateAuthApi.forgetOtpVerify({
+        email,
+        otp
+      })
+
+      message.success('Verified successfully')
+      const id = res?.resetRequestId
+
+      if (!id) {
+        setOtpError("Verification id not found from server response");
+        return;
+      }
+
+      setVerificationId(String(id));
+      setOtp("");
+      setOtpError("");
+    } catch (error) {
+      setOtpError(getWebErrorMessage(error));
+    } finally {
+      setLoading(false)
+    }
   };
 
-  const onSubmit = (values: ResetPasswordFormValues) => {
+  const onSubmit = async (values: ResetPasswordFormValues) => {
     if (!verificationId) {
       toast.error("Verification id is missing");
       return;
     }
 
-    resetPasswordMutation.mutate(values);
+    const payload = {
+      password: values.newPassword,
+      email,
+      resetRequestId: verificationId
+    }
+
+    setLoading(true);
+
+    try {
+      const res = await templateAuthApi.forgetResentPassword(payload);
+      console.log('res reset', res);
+      message.success("Password reset successfully");
+
+      resetModalState();
+      onVerified?.();
+      onClose();
+    } catch (error) {
+      message.error(getWebErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!open) return null;
 
-  // const isLoading = verifyMutation.isPending || resetPasswordMutation.isPending;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -252,10 +241,10 @@ export default function ForgotOtpVerifyModal({
 
             <button
               type="submit"
-              disabled={resetPasswordMutation.isPending}
+              disabled={loading}
               className="h-11 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {resetPasswordMutation.isPending
+              {loading
                 ? "Resetting..."
                 : "Reset Password"}
             </button>
@@ -283,11 +272,11 @@ export default function ForgotOtpVerifyModal({
 
             <button
               type="button"
-              // disabled={otp.length !== 6 || verifyMutation.isPending}
+              disabled={otp.length !== 6 || loading}
               onClick={handleVerify}
               className="h-11 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {verifyMutation.isPending ? "Verifying..." : "Verify OTP"}
+              {loading ? "Verifying..." : "Verify OTP"}
             </button>
           </div>
         )}

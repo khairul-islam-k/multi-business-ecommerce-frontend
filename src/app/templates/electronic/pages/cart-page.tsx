@@ -4,15 +4,13 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Trash2 } from "lucide-react";
 
-import { useCart } from "@/app/store/_components/contex/CartContex";
 
 export default function CartPage() {
-  const { items, remove, setQty, total, clear } = useCart();
   const params = useParams();
 
-  const domain = params.domain as string;
+  const items = [];
 
-  const shipping = total > 50 || total === 0 ? 0 : 5;
+  const domain = params.domain as string;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -21,7 +19,7 @@ export default function CartPage() {
           Your cart
         </h1>
 
-        {items.length === 0 ? (
+        {items.length ==0 ? (
           <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
             <p className="mb-6 text-gray-500">Your cart is empty.</p>
 
@@ -36,7 +34,7 @@ export default function CartPage() {
           <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
             {/* Cart Items */}
             <div className="space-y-3">
-              {items.map(({ product, qty }) => (
+              {/* {items.map(({ product, qty }) => (
                 <div
                   key={product.id}
                   className="flex gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm"
@@ -65,7 +63,6 @@ export default function CartPage() {
 
                       <button
                         type="button"
-                        onClick={() => remove(product.id)}
                         className="text-gray-500 hover:text-red-600"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -75,7 +72,6 @@ export default function CartPage() {
                     <div className="mt-3 flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => setQty(product.id, qty - 1)}
                         className="h-8 w-8 rounded-md border border-gray-300"
                       >
                         −
@@ -87,7 +83,6 @@ export default function CartPage() {
 
                       <button
                         type="button"
-                        onClick={() => setQty(product.id, qty + 1)}
                         className="h-8 w-8 rounded-md border border-gray-300"
                       >
                         +
@@ -99,11 +94,10 @@ export default function CartPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+              ))} */}
 
               <button
                 type="button"
-                onClick={clear}
                 className="text-xs text-gray-500 underline hover:text-gray-900"
               >
                 Clear cart
@@ -119,13 +113,13 @@ export default function CartPage() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Subtotal</span>
-                  <span className="text-gray-900">${total.toFixed(2)}</span>
+                  <span className="text-gray-900">0</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="text-gray-500">Shipping</span>
                   <span className="text-gray-900">
-                    {shipping === 0 ? "Free" : `$${shipping.toFixed(2)}`}
+                    0
                   </span>
                 </div>
 
@@ -133,7 +127,7 @@ export default function CartPage() {
 
                 <div className="flex justify-between text-lg font-bold text-gray-900">
                   <span>Total</span>
-                  <span>${(total + shipping).toFixed(2)}</span>
+                  <span>0</span>
                 </div>
               </div>
 

@@ -1,0 +1,31 @@
+.themeBase {
+  min-height: 100vh;
+  background-color: var(--store-bg);
+  color: var(--store-text);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Light mode */
+.light {
+  --store-bg: #ffffff;
+  --store-card: #ffffff;
+  --store-text: #111827;
+  --store-muted: #6b7280;
+  --store-primary: #f16d59;
+  --store-secondary: #f8f5f1;
+  --store-border: #e5e7eb;
+}
+
+/* Dark mode */
+.dark {
+  --store-bg: #020617;
+  --store-card: #0f172a;
+  --store-text: #f8fafc;
+  --store-muted: #94a3b8;
+  --store-primary: #f16d59;
+  --store-secondary: #111827;
+  --store-border: #1e293b;
+}

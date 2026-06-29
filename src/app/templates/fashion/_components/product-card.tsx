@@ -11,6 +11,11 @@ import {
 import { useParams } from "next/navigation";
 import { StorefrontProduct } from "@/types/template/template-product";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
+import VariantModal from "./variant-modal";
+import { useState } from "react";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 
 
 
@@ -24,6 +29,39 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
   const thumbnail =
     product.images.find((image) => image.isThumbnail)?.imageUrl ||
     product.images[0]?.imageUrl;
+
+  const message = useMessage();
+  const { createAddCart } = useAddCartMutation();
+
+  const [variantModalOpen, setVariantModalOpen] = useState<boolean>(false);
+
+
+  const handleAddToCart = async (value: StorefrontProduct) => {
+
+    if (value.variants.length > 0) {
+      setVariantModalOpen(true);
+    } else {
+
+      if (!value.id) {
+        message.error("Product is required");
+        return;
+      }
+
+
+      try {
+        await createAddCart.mutateAsync({
+          productId: product.id,
+          quantity: 1
+        });
+        setVariantModalOpen(false);
+        message.success("Product added to cart successfully");
+      } catch (error) {
+        message.error(getWebErrorMessage(error));
+      }
+
+    }
+  }
+
 
 
   const { store } = useParams<{ store: string }>();
@@ -90,6 +128,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
           <button
             type="button"
+            onClick={() => handleAddToCart(product)}
             className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
             aria-label="Add to cart"
           >
@@ -178,6 +217,14 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
           </div>
         )}
       </div>
+
+      {/* modal */}
+      <VariantModal
+        product={product}
+        open={variantModalOpen}
+        onClose={() => setVariantModalOpen(false)}
+      />
+
     </div>
   );
 };

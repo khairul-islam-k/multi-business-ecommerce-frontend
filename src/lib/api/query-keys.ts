@@ -313,4 +313,34 @@ export const apiQueryKeys = {
     detail: (slug: ApiId) =>
       ["publicWebsite", slug, "detail"] as const,
   },
+
+  productReview: {
+    all: () => ["productReview"] as const,
+    list: (query?: CategoriesQuery) =>
+      ["productReview", "list", query] as const,
+
+    detailProfile: () =>
+      [ "detailProfile"] as const,
+  },
+
+  addCart: {
+    all: () => ["addCart"] as const,
+    list: (query?: CategoriesQuery) =>
+      ["addCart", "list", query] as const,
+
+    detail: () =>
+      ["addCart","detail"] as const,
+
+    detailActive: () =>
+      ["addCart","detailActive"] as const,
+  },
+
+  customerAddressTemplate: {
+    all: () => ["customer"] as const,
+    list: () =>
+      ["customer","list"] as const,
+
+    detail: (addressId: ApiId) =>
+      ["customer", "detail", addressId] as const,
+  },
 };

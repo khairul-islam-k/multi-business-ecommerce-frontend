@@ -4,7 +4,8 @@ import type {
   ApiResponse
 } from "@/lib/api/types";
 import webApi from "../public-api-hook/web-api";
-import { CustomerAuthRegistrationResponse, CustomerRegisterPayload, LoginCustomerResponse, LoginPayload, otpPayload } from "@/types/template/auth";
+import { CustomerAuthRegistrationResponse, CustomerRegisterPayload, ForgetOtpResponse, LoginCustomerResponse, LoginPayload, otpPayload, RefreshTokenPayload, ResetPasswordPayload } from "@/types/template/auth";
+import { publicApi } from "../axios";
 
 export const templateAuthApi = {
   register(payload: CustomerRegisterPayload) {
@@ -37,41 +38,34 @@ export const templateAuthApi = {
       .then((res) => unwrapApiResponse(res.data));
   },
 
-//   refresh(payload: RefreshPayload) {
-//     return publicApi
-//       .post<ApiResponse<AuthPayload>>("/auth/refresh", payload)
-//       .then((res) => unwrapApiResponse(res.data))
-//   },
+  forgetOtpVerify(payload: otpPayload) {
+    return webApi
+      .post<ApiResponse<ForgetOtpResponse>>("/storefront/auth/verify-reset", payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
-//   selectBusiness(payload: SelectBusinessPayload) {
-//     return api
-//       .post<
-//         ApiResponse<Omit<AuthPayload, "refreshToken" | "businesses">>
-//       >("/auth/select-business", payload)
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
+  forgetResentPassword(payload: ResetPasswordPayload) {
+    return webApi
+      .post<ApiResponse<null>>("/storefront/auth/reset-password", payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
-//   me() {
-//     return api
-//       .get<
-//         ApiResponse<Pick<AuthPayload, "user" | "selectedBusiness" | "businesses">>
-//       >("/auth/me")
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
+  refreshAuth(payload: RefreshTokenPayload) {
+    return webApi
+      .post<ApiResponse<LoginCustomerResponse>>("/storefront/auth/refresh", payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
-//   logout(payload: LogoutPayload) {
-//     return api
-//       .post<ApiResponse<null>>("/auth/logout", payload)
-//       .then((res) => ({
-//         message: res.data.message ?? "Logged out successfully",
-//       }));
-//   },
+  logOut(payload: RefreshTokenPayload) {
+    return publicApi
+      .post<ApiResponse<null>>("/storefront/auth/logout", payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
 
-//   logoutAll() {
-//     return api
-//       .post<ApiResponse<null>>("/auth/logout-all")
-//       .then((res) => ({
-//         message: res.data.message ?? "Logged out from all devices successfully",
-//       }));
-//   },
+  userProfile() {
+    return webApi
+      .get<ApiResponse<CustomerAuthRegistrationResponse>>("/storefront/auth/me")
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
 };

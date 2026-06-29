@@ -4,11 +4,9 @@ import Link from "next/link";
 
 
 import type { Product } from "./data/products";
-import { useCart } from "../../../store/_components/contex/CartContex";
 import { useParams } from "next/navigation";
 
 export function ProductCard({ product }: { product: Product }) {
-  const { add } = useCart();
   const { domain } = useParams();
 
   return (
@@ -45,7 +43,6 @@ export function ProductCard({ product }: { product: Product }) {
 
           <button
             type="button"
-            onClick={() => add(product)}
             className="rounded-full bg-gray-900 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition hover:opacity-90"
           >
             Add

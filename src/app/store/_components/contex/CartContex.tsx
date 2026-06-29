@@ -1,5 +1,10 @@
 "use client";
 
+import { templateAuthApi } from "@/lib/api/template-auth";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { CustomerCartResponse } from "@/types/template/add-cart";
+import { Customer } from "@/types/template/auth";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   useContext,
@@ -8,118 +13,125 @@ import {
   type ReactNode,
 } from "react";
 
-import type { Product } from "../../../templates/electronic/_components/data/products";
-
-
-type CartItem = {
-  product: Product;
-  qty: number;
+type User = Pick<Customer, "id" | "name" | "email" | "phone"> & {
+  accessToken: string;
+  refreshToken: string;
 };
 
 type CartContextType = {
-  items: CartItem[];
-  add: (product: Product) => void;
-  remove: (id: string) => void;
-  setQty: (id: string, qty: number) => void;
-  clear: () => void;
-  count: number;
-  total: number;
+  LOginUser: (values: User) => void;
+  user: User | null;
+  handleLogout: () => Promise<void>;
+  newAccessToken: () => Promise<string | null>;
+  getTotalCartQuantity: (cart?: CustomerCartResponse | null) => number;
 };
+
+const AUTH_USER_KEY = "auth_user";
 
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  const LOginUser = (values: User) => {
+    setUser(values);
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(values));
+  };
+
+  const getAuthUser = (): User | null => {
+    const storedUser = localStorage.getItem(AUTH_USER_KEY);
+
+    if (!storedUser) return null;
+
+    try {
+      return JSON.parse(storedUser) as User;
+    } catch {
+      localStorage.removeItem(AUTH_USER_KEY);
+      return null;
+    }
+  };
+
+  const clearAuthUser = () => {
+    localStorage.removeItem(AUTH_USER_KEY);
+    setUser(null);
+  };
 
   useEffect(() => {
-    try {
-      const rawCart = localStorage.getItem("cart");
-
-      if (rawCart) {
-        setItems(JSON.parse(rawCart));
-      }
-    } catch {
-      setItems([]);
-    }
+    const loginUser = getAuthUser();
+    setUser(loginUser);
   }, []);
 
-  useEffect(() => {
+  const handleLogout = async () => {
+    const currentUser = user ?? getAuthUser();
+
     try {
-      localStorage.setItem("cart", JSON.stringify(items));
-    } catch {
-      // Ignore localStorage error
+      if (currentUser?.refreshToken) {
+        console.log('current', currentUser.refreshToken);
+        await templateAuthApi.logOut({
+          refreshToken: currentUser.refreshToken,
+        });
+      }
+    } catch (error) {
+      console.error("Logout failed:", getWebErrorMessage(error));
+    } finally {
+      clearAuthUser();
+
+      router.push("/store/login");
+      router.refresh();
     }
-  }, [items]);
+  };
 
-  const add = (product: Product) => {
-    console.log('product',product)
-    setItems((currentItems) => {
-      const existingItem = currentItems.find(
-        (item) => item.product.id === product.id,
-      );
+  const newAccessToken = async () => {
+    try {
+      const currentUser = user ?? getAuthUser();
 
-      if (existingItem) {
-        return currentItems.map((item) =>
-          item.product.id === product.id
-            ? {
-                ...item,
-                qty: item.qty + 1,
-              }
-            : item,
-        );
+      if (!currentUser?.refreshToken) {
+        clearAuthUser();
+        return null;
       }
 
-      return [
-        ...currentItems,
-        {
-          product,
-          qty: 1,
-        },
-      ];
-    });
+      const response = await templateAuthApi.refreshAuth({
+        refreshToken: currentUser.refreshToken,
+      });
+
+      const updatedUser: User = {
+        ...currentUser,
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+      };
+
+      LOginUser(updatedUser);
+
+      return response.accessToken;
+    } catch (error) {
+      console.error("Refresh token failed:", getWebErrorMessage(error));
+
+      clearAuthUser();
+
+      return null;
+    }
   };
 
-  const remove = (id: string) => {
-    setItems((currentItems) =>
-      currentItems.filter((item) => item.product.id !== id),
+
+  const getTotalCartQuantity = (cart?: CustomerCartResponse | null) => {
+    return (
+      cart?.items?.reduce((total, item) => {
+        const quantity = Number(item.quantity);
+
+        return total + (Number.isNaN(quantity) ? 0 : quantity);
+      }, 0) ?? 0
     );
   };
-
-  const setQty = (id: string, qty: number) => {
-    setItems((currentItems) =>
-      currentItems.map((item) =>
-        item.product.id === id
-          ? {
-              ...item,
-              qty: Math.max(1, qty),
-            }
-          : item,
-      ),
-    );
-  };
-
-  const clear = () => {
-    setItems([]);
-  };
-
-  const count = items.reduce((totalQty, item) => {
-    return totalQty + item.qty;
-  }, 0);
-
-  const total = items.reduce((totalPrice, item) => {
-    return totalPrice + item.qty * item.product.price;
-  }, 0);
 
   return (
     <CartContext.Provider
       value={{
-        items,
-        add,
-        remove,
-        setQty,
-        clear,
-        count,
-        total,
+        LOginUser,
+        user,
+        handleLogout,
+        newAccessToken,
+        getTotalCartQuantity,
       }}
     >
       {children}

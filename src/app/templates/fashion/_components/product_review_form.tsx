@@ -2,14 +2,10 @@
 
 import React, { useState } from "react";
 import { Star } from "lucide-react";
-
-type CreateProductReviewPayload = {
-  productId: string;
-  variantId?: string | null;
-  rating: number;
-  title: string;
-  comment: string;
-};
+import { CreateProductReviewPayload } from "@/types/template/product-review";
+import { useTemplateProductReviewMutation } from "@/lib/api/hooks/template-product-review";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 
 const productReviewDefaultData: CreateProductReviewPayload = {
   productId: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
@@ -19,10 +15,19 @@ const productReviewDefaultData: CreateProductReviewPayload = {
   comment: "",
 };
 
-const ProductReviewForm = () => {
+type DetailsProps = {
+  productId: string;
+  slug: string;
+}
+
+const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
   const [formData, setFormData] = useState<CreateProductReviewPayload>(
     productReviewDefaultData,
   );
+
+  const message = useMessage();
+
+  const { createReview } = useTemplateProductReviewMutation(slug);
 
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 
@@ -44,20 +49,43 @@ const ProductReviewForm = () => {
     }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const payload: CreateProductReviewPayload = {
-      productId: formData.productId,
-      variantId: formData.variantId || null,
-      rating: formData.rating,
-      title: formData.title,
-      comment: formData.comment,
-    };
+    if (!productId) {
+      message.error("Product id is required");
+      return;
+    }
 
-    console.log("Review Payload:", payload);
+    if (!formData.rating) {
+      message.error("Please select a rating");
+      return;
+    }
 
-    // await reviewCreateMutation.mutateAsync(payload);
+    try {
+      const payload: CreateProductReviewPayload = {
+        productId,
+        rating: formData.rating,
+        title: formData.title,
+        comment: formData.comment,
+      };
+
+      const res = await createReview.mutateAsync(payload);
+
+      console.log("Review created successfully:", res);
+
+      message.success("Review submitted successfully.");
+
+      setFormData({
+        rating: 0,
+        title: "",
+        comment: "",
+        productId: ""
+      });
+    } catch (error) {
+      message.error(getWebErrorMessage(error));
+    }
   };
 
   return (
@@ -90,11 +118,10 @@ const ProductReviewForm = () => {
                   className="transition hover:scale-110"
                 >
                   <Star
-                    className={`h-7 w-7 ${
-                      ratingValue <= activeRating
-                        ? "fill-[#f16d59] text-[#f16d59]"
-                        : "text-gray-300"
-                    }`}
+                    className={`h-7 w-7 ${ratingValue <= activeRating
+                      ? "fill-[#f16d59] text-[#f16d59]"
+                      : "text-gray-300"
+                      }`}
                   />
                 </button>
               );
@@ -146,19 +173,6 @@ const ProductReviewForm = () => {
             className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f16d59]"
             required
           />
-        </div>
-
-        {/* Hidden Values Preview */}
-        <div className="rounded-xl bg-gray-50 p-4 text-xs text-gray-500">
-          <p>
-            <span className="font-semibold text-gray-800">Product ID:</span>{" "}
-            {formData.productId}
-          </p>
-
-          <p className="mt-1">
-            <span className="font-semibold text-gray-800">Variant ID:</span>{" "}
-            {formData.variantId || "No variant"}
-          </p>
         </div>
 
         {/* Submit */}

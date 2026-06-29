@@ -5,11 +5,8 @@ import { useParams, usePathname } from "next/navigation";
 import { LogIn, Menu, ShoppingBag, X, Zap } from "lucide-react";
 import { useState } from "react";
 
-import { useCart } from "../../../store/_components/contex/CartContex";
-
 export function ElectronicNavBar() {
   const pathname = usePathname();
-  const { count } = useCart();
   const params = useParams();
 
   const store = params.store as string;
@@ -85,18 +82,18 @@ export function ElectronicNavBar() {
 
           {/* Cart */}
           <Link
-            href={`/store/${store}/cart`}
+            href={`/store/cart`}
             className="relative inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
           >
             <ShoppingBag className="h-4 w-4" />
 
             <span className="hidden sm:inline">Cart</span>
 
-            {count > 0 && (
+            {/* {count > 0 && (
               <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-yellow-400 px-1 text-[10px] font-bold text-gray-900">
                 {count}
               </span>
-            )}
+            )} */}
           </Link>
 
           {/* Mobile Menu Button */}

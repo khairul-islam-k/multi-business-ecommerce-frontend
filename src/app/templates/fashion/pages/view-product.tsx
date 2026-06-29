@@ -115,8 +115,6 @@ const ViewFashionProduct = () => {
     // fetch product
     const { data: product } = useTemplateProduct(productSlug);
 
-    console.log('product', product);
-
     // select initial image
     useEffect(() => {
         if (product?.images) {
@@ -412,7 +410,10 @@ const ViewFashionProduct = () => {
 
 
             {/* Review form */}
-            <ProductReviewForm />
+            <ProductReviewForm 
+            productId={product?.id ?? ''}
+            slug={product?.slug ?? ''}
+            />
 
             {/* Reviews Section */}
             <div className="mt-8 bg-white p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">

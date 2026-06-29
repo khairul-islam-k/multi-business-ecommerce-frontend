@@ -12,6 +12,7 @@ import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useRouter } from "next/navigation";
 import OtpVerifyModal from "@/app/store/_components/otp-verify-modal";
 import ForgotOtpVerifyModal from "@/app/store/_components/forgot-otp-verify-modal";
+import { useCart } from "@/app/store/_components/contex/CartContex";
 
 export type CustomerLoginPayload = {
     email: string;
@@ -35,6 +36,9 @@ export default function FashionLoginPage() {
     const [serverError, setServerError] = useState<string | null>(null);
     const message = useMessage();
     const router = useRouter();
+
+    // global state
+    const { LOginUser } = useCart();
 
     // forget modal 
     const [forgetOpen, setForgetOpen] = useState<boolean>(false);
@@ -66,7 +70,16 @@ export default function FashionLoginPage() {
             const res = await templateAuthApi.login(data);
             message.success('Login Successfully');
 
-            console.log('res', res);
+            const loginPayload = {
+                id: res?.customer?.id,
+                name: res.customer.name,
+                email: res.customer.email,
+                phone: res.customer.email,
+                accessToken: res.accessToken,
+                refreshToken: res.refreshToken
+            }
+
+            LOginUser(loginPayload);
 
             router.push('/store')
         } catch (error) {
@@ -91,8 +104,7 @@ export default function FashionLoginPage() {
         console.log(email, 'email');
 
         try {
-            const res = await templateAuthApi.forgetOtpSend(email);
-            console.log('res', res);
+            await templateAuthApi.forgetOtpSend(email);
             setVerifyEmail(email)
             setForgetOpen(true);
 

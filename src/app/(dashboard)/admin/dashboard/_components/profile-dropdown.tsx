@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import {
   LogoutOutlined,
   ProfileOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 import {
   App,
