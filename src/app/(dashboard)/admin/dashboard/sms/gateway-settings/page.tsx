@@ -1,10 +1,15 @@
 "use client";
 
+import {
+  CirclePlus,
+  Settings
+} from "lucide-react";
+
+
 import { useState } from "react";
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, Column } from "@/components/shared/data-table";
 import { Button, Modal, Form, Input, Select, message, Tag } from "antd";
-import { SettingOutlined, PlusOutlined } from "@ant-design/icons";
 import { mockGateways, SmsGateway } from "./data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useSubmit from "@/hooks/use-submit";
@@ -54,14 +59,14 @@ export default function SmsGatewaySettings() {
         toolbarEnd={
           <Button
             type="primary"
-            icon={<PlusOutlined />}
+            icon={<CirclePlus />}
             onClick={() => openModal()}
           >
             Add Gateway
           </Button>
         }
         actions={(row) => (
-          <Button icon={<SettingOutlined />} onClick={() => openModal(row)} />
+          <Button icon={<Settings />} onClick={() => openModal(row)} />
         )}
       />
 

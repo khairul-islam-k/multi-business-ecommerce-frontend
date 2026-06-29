@@ -1,6 +1,10 @@
 "use client";
 
-import { DollarOutlined } from "@ant-design/icons";
+import {
+  Banknote
+} from "lucide-react";
+
+
 import { Card, theme } from "antd";
 import PaymentTable from "./_component/payment-table";
 import PageHeader from "@/components/shared/page-header";
@@ -33,7 +37,7 @@ const SupplierPayments = () => {
               borderRadius: "10px",
             }}
           >
-            <DollarOutlined style={{ fontSize: "30px" }} />
+            <Banknote style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3

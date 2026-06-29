@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  CirclePlus,
+  Trash2
+} from "lucide-react";
+
+
+import {
   Button,
   Card,
   Col,
@@ -16,7 +22,6 @@ import {
   Tag,
 } from "antd";
 import type { FormInstance } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import ImageSelectModal from "../../../_components/ImageSelectModal";
@@ -30,6 +35,7 @@ import { imageUrlSet } from "./image-url";
 import { ProductPayload, ResponseProduct } from "@/types/product/product";
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { ResponseProductAttribute } from "@/types/product/attribute";
+import { buildCategoryOptions } from "@/lib/product/category-options";
 import {
   BulkUpdateVariantItemPayload,
   ResponseVariant,
@@ -104,9 +110,9 @@ type VariantOptionRowProps = {
 const getVariantKey = (
   attributes:
     | {
-      attributeId: string;
-      attributeValueId: string;
-    }[]
+        attributeId: string;
+        attributeValueId: string;
+      }[]
     | undefined,
 ) => {
   const valueIds = attributes
@@ -156,11 +162,11 @@ const getInitialVariantOptions = (
   return options.length
     ? options
     : [
-      {
-        attributeId: undefined,
-        attributeValueIds: [],
-      },
-    ];
+        {
+          attributeId: undefined,
+          attributeValueIds: [],
+        },
+      ];
 };
 
 const getInitialVariants = (
@@ -300,7 +306,7 @@ const VariantOptionRow = ({
           <Button
             danger
             size="small"
-            icon={<DeleteOutlined />}
+            icon={<Trash2 />}
             onClick={() => remove(fieldName)}
           />
         ) : null}
@@ -368,6 +374,9 @@ const VariantOptionRow = ({
 
 const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const { data: attributes, isLoading } = useProductAttributeQuery(businessId);
+  const [variantImageIndex, setVariantImageIndex] = useState<number | null>(
+    null,
+  );
   const watchedOptions = Form.useWatch("variantOptions", form);
   const watchedVariants = Form.useWatch("variants", form);
   const watchedRemovedVariantKeys = Form.useWatch("removedVariantKeys", form);
@@ -375,14 +384,12 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   const weight = Form.useWatch("weight", form);
 
   const attributeItems = useMemo(() => attributes?.items ?? [], [attributes]);
-  const selectedOptions = useMemo(
-    () => watchedOptions ?? [],
-    [watchedOptions],
-  );
-  const variantRows = useMemo(
-    () => watchedVariants ?? [],
-    [watchedVariants],
-  );
+  const selectedOptions = useMemo(() => watchedOptions ?? [], [watchedOptions]);
+  const variantRows = useMemo(() => watchedVariants ?? [], [watchedVariants]);
+  const selectedVariantImageUrl =
+    variantImageIndex !== null
+      ? variantRows[variantImageIndex]?.images?.[0]?.imageUrl
+      : undefined;
   const removedVariantKeys = useMemo(
     () => new Set(watchedRemovedVariantKeys ?? []),
     [watchedRemovedVariantKeys],
@@ -444,12 +451,16 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   }, [attributeItems.length, form, previews, removedVariantKeys]);
 
   const handleRemoveVariant = (variant: ProductFormVariant | undefined) => {
-    const variantKey = variant?.variantKey || getVariantKey(variant?.attributes);
+    const variantKey =
+      variant?.variantKey || getVariantKey(variant?.attributes);
 
     if (!variantKey) return;
 
     const nextRemovedVariantKeys = Array.from(
-      new Set([...(form.getFieldValue("removedVariantKeys") ?? []), variantKey]),
+      new Set([
+        ...(form.getFieldValue("removedVariantKeys") ?? []),
+        variantKey,
+      ]),
     );
     const nextVariants = (form.getFieldValue("variants") ?? []).filter(
       (item: ProductFormVariant) =>
@@ -476,6 +487,30 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
       })
       .filter(Boolean) ?? [];
 
+  const handleSelectVariantImage = (url: string) => {
+    if (variantImageIndex === null) return;
+
+    const title =
+      form.getFieldValue(["variants", variantImageIndex, "title"]) ??
+      "Variant image";
+
+    form.setFieldValue(
+      ["variants", variantImageIndex, "images"],
+      [
+        {
+          imageUrl: url,
+          altText: title,
+          isThumbnail: true,
+        },
+      ],
+    );
+    setVariantImageIndex(null);
+  };
+
+  const handleClearVariantImage = (index: number) => {
+    form.setFieldValue(["variants", index, "images"], []);
+  };
+
   return (
     <div className="space-y-4">
       <Form.List name="variantOptions">
@@ -495,7 +530,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
 
             <Button
               type="dashed"
-              icon={<PlusOutlined />}
+              icon={<CirclePlus />}
               loading={isLoading}
               disabled={fields.length >= attributeItems.length}
               onClick={() =>
@@ -539,20 +574,45 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                         <Button
                           danger
                           size="small"
-                          icon={<DeleteOutlined />}
+                          icon={<Trash2 />}
                           onClick={() => handleRemoveVariant(row)}
                         >
                           Remove
                         </Button>
                       </div>
 
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <Form.Item name={[field.name, "variantId"]} hidden>
                           <Input />
                         </Form.Item>
 
                         <Form.Item name={[field.name, "variantKey"]} hidden>
                           <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                          label="Image"
+                          name={[field.name, "images", 0, "imageUrl"]}
+                        >
+                          <Input
+                            readOnly
+                            placeholder="Select image"
+                            onClick={() => setVariantImageIndex(field.name)}
+                            addonAfter={
+                              row?.images?.[0]?.imageUrl ? (
+                                <button
+                                  type="button"
+                                  className="border-0 bg-transparent p-0 text-xs text-red-500"
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleClearVariantImage(field.name);
+                                  }}
+                                >
+                                  Clear
+                                </button>
+                              ) : null
+                            }
+                          />
                         </Form.Item>
 
                         <Form.Item
@@ -569,25 +629,46 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
                         </Form.Item>
 
                         <Form.Item
-                          label="Price"
+                          label="Variant selling price"
+                          tooltip="Enter the variant price in the business currency."
                           name={[field.name, "priceOverride"]}
                           rules={[
                             {
                               required: true,
                               message: "Variant price is required",
                             },
+                            {
+                              type: "number",
+                              min: 0,
+                              message:
+                                "Variant price must be a non-negative number",
+                            },
                           ]}
                         >
                           <InputNumber
                             min={0}
+                            precision={2}
                             style={{ width: "100%" }}
                             placeholder={String(price ?? 0)}
                           />
                         </Form.Item>
 
-                        <Form.Item label="Weight" name={[field.name, "weight"]}>
+                        <Form.Item
+                          label="Variant weight in kilograms"
+                          tooltip="Use kilograms. Example: 0.5 means 500 grams."
+                          name={[field.name, "weight"]}
+                          rules={[
+                            {
+                              type: "number",
+                              min: 0,
+                              message:
+                                "Variant weight must be a non-negative number",
+                            },
+                          ]}
+                        >
                           <InputNumber
                             min={0}
+                            precision={3}
                             step={0.1}
                             style={{ width: "100%" }}
                             placeholder={String(weight ?? 0)}
@@ -622,14 +703,16 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
           }
         </Form.List>
       </div>
+
+      <ImageSelectModal
+        open={variantImageIndex !== null}
+        selectedUrl={selectedVariantImageUrl}
+        onClose={() => setVariantImageIndex(null)}
+        onSelect={handleSelectVariantImage}
+      />
     </div>
   );
 };
-
-
-
-
-
 
 const ProductForm = ({
   mode,
@@ -639,7 +722,7 @@ const ProductForm = ({
   onCancel,
 }: ProductFormProps) => {
   const [form] = Form.useForm<ProductFormValues>();
-  console.log('init', initialValues);
+  console.log("init", initialValues);
 
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [multiOpen, setMultiOpen] = useState(false);
@@ -661,15 +744,12 @@ const ProductForm = ({
     return initialValues?.tags?.map((tag) => tag.tagId);
   }, [initialValues]);
 
-  const { data: categories } = useProductCategoriesQuery(businessId);
+  const { data: categories } = useProductCategoriesQuery(businessId, {
+    limit: 100,
+  });
   const categoryOptions: SelectOption[] = useMemo(() => {
-    return (
-      categories?.items?.map((category) => ({
-        label: category.name,
-        value: category.id,
-      })) ?? []
-    );
-  }, [categories]);
+    return buildCategoryOptions(categories?.items ?? []);
+  }, [categories?.items]);
 
   const { data: brands } = useProductBrandQuery(businessId);
   const brandOptions: SelectOption[] = useMemo(() => {
@@ -733,17 +813,17 @@ const ProductForm = ({
 
     const nextThumbnailImage = thumbnail?.imageUrl
       ? {
-        imageUrl: thumbnail.imageUrl,
-        altText: thumbnail.altText ?? "",
-        isThumbnail: true,
-      }
+          imageUrl: thumbnail.imageUrl,
+          altText: thumbnail.altText ?? "",
+          isThumbnail: true,
+        }
       : null;
 
     const nextMultipleImage = mediaImages.map((image) => ({
-        imageUrl: image.imageUrl,
-        altText: image.altText ?? "",
-        isThumbnail: false,
-      }));
+      imageUrl: image.imageUrl,
+      altText: image.altText ?? "",
+      isThumbnail: false,
+    }));
 
     let cancelled = false;
     queueMicrotask(() => {
@@ -794,11 +874,13 @@ const ProductForm = ({
   const handleFinish = (values: ProductFormValues) => {
     const finalImages: ProductImage[] = [
       ...(thumbnailImage?.imageUrl
-        ? [{
-            imageUrl: thumbnailImage.imageUrl,
-            altText: thumbnailImage.altText || values.name.trim(),
-            isThumbnail: true,
-          }]
+        ? [
+            {
+              imageUrl: thumbnailImage.imageUrl,
+              altText: thumbnailImage.altText || values.name.trim(),
+              isThumbnail: true,
+            },
+          ]
         : []),
 
       ...multipleImage
@@ -813,8 +895,8 @@ const ProductForm = ({
     const payload: ProductPayload = {
       images: finalImages,
       name: values.name.trim(),
-      price: values.price,
-      weight: values.weight,
+      price: Number(values.price ?? 0),
+      weight: Number(values.weight ?? 0),
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,
@@ -827,31 +909,33 @@ const ProductForm = ({
     const removedVariantKeys = new Set(
       form.getFieldValue("removedVariantKeys") ?? [],
     );
-    const formVariants = ((form.getFieldValue("variants") ?? []) as ProductFormVariant[])
-      .filter((variant) => {
-        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+    const formVariants = (
+      (form.getFieldValue("variants") ?? []) as ProductFormVariant[]
+    ).filter((variant) => {
+      const variantKey =
+        variant.variantKey || getVariantKey(variant.attributes);
 
-        return (
-          variantKey &&
-          !removedVariantKeys.has(variantKey) &&
-          isVariantSelectedByOptions(variant, values.variantOptions)
-        );
-      });
+      return (
+        variantKey &&
+        !removedVariantKeys.has(variantKey) &&
+        isVariantSelectedByOptions(variant, values.variantOptions)
+      );
+    });
 
     const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
       ? formVariants.map((variant: ProductFormVariant) => ({
-        variantId: variant.variantId,
-        images: normalizeVariantImages(variant.images),
-        title: variant.title.trim(),
-        priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
-        weight: Number(variant.weight ?? values.weight ?? 0),
-        status: variant.status ?? "ACTIVE",
-        attributes:
-          variant.attributes?.map((attribute) => ({
-            attributeId: attribute.attributeId,
-            attributeValueId: attribute.attributeValueId,
-          })) ?? [],
-      }))
+          variantId: variant.variantId,
+          images: normalizeVariantImages(variant.images),
+          title: variant.title.trim(),
+          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+          weight: Number(variant.weight ?? values.weight ?? 0),
+          status: variant.status ?? "ACTIVE",
+          attributes:
+            variant.attributes?.map((attribute) => ({
+              attributeId: attribute.attributeId,
+              attributeValueId: attribute.attributeValueId,
+            })) ?? [],
+        }))
       : [];
 
     const initialVariants = getInitialVariants(
@@ -859,7 +943,8 @@ const ProductForm = ({
     );
     const deletedVariantIds = initialVariants
       .filter((variant) => {
-        const variantKey = variant.variantKey || getVariantKey(variant.attributes);
+        const variantKey =
+          variant.variantKey || getVariantKey(variant.attributes);
 
         return (
           variant.variantId &&
@@ -915,20 +1000,48 @@ const ProductForm = ({
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Form.Item
-              label="Price"
+              label="Base selling price"
+              tooltip="Enter the product selling price in the business currency."
               name="price"
               rules={[
                 {
                   required: true,
                   message: "Product price is required",
                 },
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Product price must be a non-negative number",
+                },
               ]}
             >
-              <InputNumber style={{ width: "100%" }} placeholder="Price" />
+              <InputNumber
+                min={0}
+                precision={2}
+                style={{ width: "100%" }}
+                placeholder="Example: 1200"
+              />
             </Form.Item>
 
-            <Form.Item label="Weight" name="weight">
-              <InputNumber style={{ width: "100%" }} placeholder="Weight" />
+            <Form.Item
+              label="Product weight in kilograms"
+              tooltip="Use kilograms. Example: 0.5 means 500 grams."
+              name="weight"
+              rules={[
+                {
+                  type: "number",
+                  min: 0,
+                  message: "Product weight must be a non-negative number",
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                precision={3}
+                step={0.1}
+                style={{ width: "100%" }}
+                placeholder="Example: 0.5"
+              />
             </Form.Item>
           </div>
 
@@ -948,7 +1061,10 @@ const ProductForm = ({
               <Card
                 title="Thumbnail Image"
                 extra={
-                  <Button type="primary" onClick={() => setImageModalOpen(true)}>
+                  <Button
+                    type="primary"
+                    onClick={() => setImageModalOpen(true)}
+                  >
                     Choose Thumbnail
                   </Button>
                 }
@@ -972,7 +1088,7 @@ const ProductForm = ({
                       <Button
                         danger
                         size="small"
-                        icon={<DeleteOutlined />}
+                        icon={<Trash2 />}
                         onClick={() => setThumbnailImage(null)}
                       >
                         Remove
@@ -1019,7 +1135,7 @@ const ProductForm = ({
                         <Button
                           danger
                           size="small"
-                          icon={<DeleteOutlined />}
+                          icon={<Trash2 />}
                           onClick={() => handleRemoveMediaImage(index)}
                           style={{
                             position: "absolute",

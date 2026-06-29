@@ -5,7 +5,7 @@ export type BrandPayload = {
   description: string;
   logoUrl: string;
   status: BrandStatus;
-  sortOrder: number;
+  sortOrder?: number;
 };
 
 export type ResponseBrand = {

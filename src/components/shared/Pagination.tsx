@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button, theme } from "antd";
-import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type PaginationProps = {
   currentPage: number;
@@ -70,7 +70,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <Button
         disabled={currentPage === 1}
         onClick={() => goToPage(currentPage - 1)}
-        icon={<LeftOutlined />}
+        icon={<ChevronLeft size={16} />}
       ></Button>
 
       {/* Page Numbers */}
@@ -100,7 +100,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* Next */}
       <Button
-        icon={<RightOutlined />}
+        icon={<ChevronRight size={16} />}
         disabled={currentPage === totalPages}
         onClick={() => goToPage(currentPage + 1)}
       ></Button>

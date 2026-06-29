@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  CirclePlus,
+  Trash2
+} from "lucide-react";
+
+
 import { useProductsQuery } from "@/lib/api/hooks/product";
 import { useProductVariantQuery } from "@/lib/api/hooks/product-variant";
 import { usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
@@ -8,7 +14,6 @@ import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import {
   App,
   Button,
@@ -83,7 +88,7 @@ const PurchaseOrderItem = ({
           <Button
             danger
             size="small"
-            icon={<DeleteOutlined />}
+            icon={<Trash2 />}
             onClick={() => remove(fieldName)}
           />
         )
@@ -334,7 +339,7 @@ const PurchaseOrderForm = () => {
 
               <Button
                 type="dashed"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 block
                 onClick={() =>
                   add({

@@ -1,19 +1,25 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Card,
   Form,
   Input,
-  InputNumber,
+  message,
   Select,
   Space,
-  message,
 } from "antd";
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import { useEffect, useMemo, useState } from "react";
+
 import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
+import {
+  buildCategoryOptions,
+  flattenCategories,
+  getCategoryDescendantIds,
+} from "@/lib/product/category-options";
 import { useAuthStore } from "@/stores/auth.store";
+
+import ImageSelectModal from "../../../_components/ImageSelectModal";
 
 const { TextArea } = Input;
 
@@ -35,17 +41,10 @@ export type ProductCategoryFormValues = {
   imageUrl?: string;
   parentId?: string;
   status: CategoryStatus;
-  sortOrder: number;
-};
-
-type ParentCategoryOption = {
-  label: string;
-  value: string;
 };
 
 type ProductCategoryFormProps = {
   initialData?: ProductCategory | null;
-  parentCategories?: ParentCategoryOption[];
   onSubmit: (values: ProductCategoryFormValues) => Promise<void>;
 };
 
@@ -56,23 +55,36 @@ const ProductCategoryForm = ({
   const [form] = Form.useForm<ProductCategoryFormValues>();
   const [loading, setLoading] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
 
-  const { data: categories, isLoading } = useProductCategoriesQuery(businessId);
+  const { data: categories, isLoading } = useProductCategoriesQuery(
+    businessId,
+    {
+      limit: 100,
+    },
+  );
 
   const categoryOptions = useMemo(() => {
-    return (
-      categories?.items
-        ?.filter((category: ProductCategory) => category.status === "ACTIVE")
-        .map((category: ProductCategory) => ({
-          label: category.name, // show name
-          value: category.id,   // pass id
-        })) ?? []
-    );
-  }, [categories]);
+    const categoryItems = categories?.items ?? [];
+    const currentCategory = initialData?.id
+      ? flattenCategories(categoryItems).find(
+          (category) => category.id === initialData.id,
+        )
+      : undefined;
+    const excludedIds = new Set<string>();
 
+    if (currentCategory?.id) {
+      excludedIds.add(currentCategory.id);
+      getCategoryDescendantIds(currentCategory).forEach((id) =>
+        excludedIds.add(id),
+      );
+    }
 
+    return buildCategoryOptions(categoryItems, {
+      excludeIds: Array.from(excludedIds),
+    });
+  }, [categories?.items, initialData?.id]);
 
   const imageUrl = Form.useWatch("imageUrl", form);
 
@@ -86,7 +98,6 @@ const ProductCategoryForm = ({
         imageUrl: initialData.imageUrl ?? "",
         parentId: initialData.parentId ?? undefined,
         status: initialData.status,
-        sortOrder: initialData.sortOrder,
       });
     } else {
       form.resetFields();
@@ -103,7 +114,6 @@ const ProductCategoryForm = ({
         imageUrl: values.imageUrl?.trim() || "",
         parentId: values.parentId || undefined,
         status: values.status,
-        sortOrder: values.sortOrder ?? 0,
       };
 
       await onSubmit(payload);
@@ -115,7 +125,7 @@ const ProductCategoryForm = ({
       message.error(
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again."
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -127,7 +137,6 @@ const ProductCategoryForm = ({
       title={isEditMode ? "Update Product Category" : "Create Product Category"}
       style={{
         margin: "24px auto",
-
       }}
     >
       <Form<ProductCategoryFormValues>
@@ -135,7 +144,6 @@ const ProductCategoryForm = ({
         layout="vertical"
         initialValues={{
           status: "ACTIVE",
-          sortOrder: 0,
         }}
         onFinish={handleFinish}
       >
@@ -187,7 +195,8 @@ const ProductCategoryForm = ({
           <Input
             onClick={() => setImageModalOpen(true)}
             readOnly
-            placeholder="https://cdn.example.com/categories/shoes.jpg" />
+            placeholder="https://cdn.example.com/categories/shoes.jpg"
+          />
         </Form.Item>
 
         <Form.Item label="Parent Category" name="parentId">
@@ -222,23 +231,6 @@ const ProductCategoryForm = ({
                 value: "INACTIVE",
               },
             ]}
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Sort Order"
-          name="sortOrder"
-          rules={[
-            {
-              required: true,
-              message: "Sort order is required",
-            },
-          ]}
-        >
-          <InputNumber
-            min={0}
-            style={{ width: "100%" }}
-            placeholder="Example: 0"
           />
         </Form.Item>
 

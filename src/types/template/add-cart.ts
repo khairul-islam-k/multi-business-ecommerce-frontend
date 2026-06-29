@@ -62,6 +62,26 @@ export type CartVariant = {
     deletedAt: string | null;
 };
 
+export type CartImage = {
+    id: string;
+    businessId: string;
+    productId: string;
+    variantId: string | null;
+
+    imageUrl: string;
+    altText: string | null;
+    isThumbnail: boolean;
+    sortOrder: number;
+
+    createdBy: string | null;
+    updatedBy: string | null;
+    deletedBy: string | null;
+
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: string | null;
+};
+
 export type CartItem = {
     id: string;
     cartId: string;
@@ -69,6 +89,7 @@ export type CartItem = {
     variantId: string | null;
 
     quantity: string;
+    images: CartImage[];
 
     product: CartProduct;
     variant: CartVariant | null;

@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  CirclePlus,
+  Trash2
+} from "lucide-react";
+
+
 import { useMemo, useState } from "react";
 import { App, Button, Form, Input, InputNumber, Modal, Select, Space, Tag } from "antd";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
@@ -156,7 +161,7 @@ export default function ProductReviewsPage() {
         toolbarEnd={
           <Button
             type="primary"
-            icon={<PlusOutlined />}
+            icon={<CirclePlus />}
             onClick={() => setCreateOpen(true)}
           >
             Add review
@@ -175,7 +180,7 @@ export default function ProductReviewsPage() {
             />
             <Button
               danger
-              icon={<DeleteOutlined />}
+              icon={<Trash2 />}
               onClick={() => deleteReview(review)}
             />
           </Space>

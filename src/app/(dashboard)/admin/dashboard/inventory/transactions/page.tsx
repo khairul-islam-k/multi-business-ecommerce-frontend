@@ -1,7 +1,8 @@
 "use client";
 
+import { Eye } from "lucide-react";
+
 import { Button, Card, Tag } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +11,10 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProductStockMovementQuery } from "@/lib/api/hooks/stock";
 import { Column, DataTable } from "@/components/shared/data-table";
-import { StockMovementResponse, StockMovementType } from "@/types/stock/movement";
+import {
+  StockMovementResponse,
+  StockMovementType,
+} from "@/types/stock/movement";
 
 type StockMovementTableRow = StockMovementResponse & {
   serial: number;
@@ -83,21 +87,19 @@ export default function InventoryTransactionsPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: movements,
     isLoading,
     isFetching,
-  } = useProductStockMovementQuery(businessId
-    , {
+  } = useProductStockMovementQuery(businessId, {
     page: currentPage,
     limit,
-    search
-  }
-);
+    search,
+  });
 
-  console.log('data', movements);
+  console.log("data", movements);
 
   const total = movements?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
@@ -118,9 +120,7 @@ export default function InventoryTransactionsPage() {
       key: "Product",
       label: "Product",
       type: "primary",
-      render: (row) => (
-        <strong>{row?.product?.name}</strong>
-      ),
+      render: (row) => <strong>{row?.product?.name}</strong>,
     },
     {
       key: "movementType",
@@ -190,10 +190,10 @@ export default function InventoryTransactionsPage() {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
               router.push(
-                `/admin/dashboard/inventory/stock-overview/details/${row.stockId}`
+                `/admin/dashboard/inventory/stock-overview/details/${row.stockId}`,
               )
             }
           />

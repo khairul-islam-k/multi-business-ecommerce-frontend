@@ -1,13 +1,15 @@
 "use client";
 
+import {
+  CircleCheck,
+  CirclePlus,
+  CircleStop,
+  Globe
+} from "lucide-react";
+
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import {
-  CheckCircleOutlined,
-  GlobalOutlined,
-  PlusOutlined,
-  StopOutlined,
-} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -180,7 +182,7 @@ const WebsiteList = () => {
         {createAccess.allowed ? (
           <Button
             type="primary"
-            icon={<PlusOutlined />}
+            icon={<CirclePlus />}
             onClick={() =>
               router.push(
                 "/admin/dashboard/website-builder/websites/create-website",
@@ -205,7 +207,7 @@ const WebsiteList = () => {
             {createAccess.allowed ? (
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push(
                     "/admin/dashboard/website-builder/websites/create-website",
@@ -289,7 +291,7 @@ const WebsiteList = () => {
                       {website.status === "PUBLISHED" ? (
                         <Button
                           danger
-                          icon={<StopOutlined />}
+                          icon={<CircleStop />}
                           loading={updateUnPublish.isPending}
                           onClick={() => handleUnpublishWebsite(website.id)}
                         >
@@ -298,7 +300,7 @@ const WebsiteList = () => {
                       ) : (
                         <Button
                           type="primary"
-                          icon={<CheckCircleOutlined />}
+                          icon={<CircleCheck />}
                           loading={updatePublish.isPending}
                           disabled={website.status === "ARCHIVED"}
                           onClick={() => handlePublishWebsite(website.id)}
@@ -309,7 +311,7 @@ const WebsiteList = () => {
 
                       <Button
                         type="primary"
-                        icon={<PlusOutlined />}
+                        icon={<CirclePlus />}
                         onClick={() => {
                           setOpenDomainModal(true);
                           setWebsiteId(website.id);
@@ -346,7 +348,7 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.primaryColor ?? "#ffffff",
+                              website.theme?.primaryColor ?? "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -362,7 +364,7 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.secondaryColor ?? "#ffffff",
+                              website.theme?.secondaryColor ?? "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -378,7 +380,7 @@ const WebsiteList = () => {
                           className="inline-block h-6 w-6 rounded border"
                           style={{
                             backgroundColor:
-                              website.theme?.accentColor ?? "#ffffff",
+                              website.theme?.accentColor ?? "var(--dashboard-card-background-color)",
                           }}
                         />
 
@@ -571,7 +573,7 @@ const WebsiteList = () => {
                               unoptimized
                             />
                           ) : (
-                            <GlobalOutlined className="text-xl text-gray-400" />
+                            <Globe className="text-xl text-gray-400" />
                           )}
                         </div>
                       ))}

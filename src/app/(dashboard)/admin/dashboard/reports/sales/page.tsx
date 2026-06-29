@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  BarChartOutlined,
-  DollarOutlined,
-  LineChartOutlined,
-  RollbackOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  ChartBar,
+  ChartLine,
+  Undo2
+} from "lucide-react";
+
+
 import ReportPage from "../_components/report-page";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
@@ -21,28 +23,28 @@ export default function SalesReports() {
           value: "₹32,45,000",
           change: "+12.5%",
           up: true,
-          icon: DollarOutlined,
+          icon: Banknote,
         },
         {
           label: "Avg. Order Value",
           value: "₹1,325",
           change: "-2.1%",
           up: false,
-          icon: BarChartOutlined,
+          icon: ChartBar,
         },
         {
           label: "Conversion Rate",
           value: "3.8%",
           change: "+0.5%",
           up: true,
-          icon: LineChartOutlined,
+          icon: ChartLine,
         },
         {
           label: "Refund Rate",
           value: "2.1%",
           change: "-0.3%",
           up: false,
-          icon: RollbackOutlined,
+          icon: Undo2,
         },
       ]}
       chartData={months.map((m, i) => ({

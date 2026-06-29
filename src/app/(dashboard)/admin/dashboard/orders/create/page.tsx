@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  ShoppingCart,
+  Trash2
+} from "lucide-react";
+
+
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -18,7 +24,6 @@ import {
   Table,
   Typography,
 } from "antd";
-import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -383,7 +388,7 @@ export default function CreateOrder() {
                     <Button
                       danger
                       size="small"
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 />}
                       onClick={() =>
                         setCart((current) =>
                           current.filter((entry) => entry.id !== item.id),
@@ -610,7 +615,7 @@ export default function CreateOrder() {
               type="primary"
               block
               size="large"
-              icon={<ShoppingCartOutlined />}
+              icon={<ShoppingCart />}
               disabled={!canSubmit}
               loading={mutations.createOrder.isPending}
               onClick={handleCreateOrder}

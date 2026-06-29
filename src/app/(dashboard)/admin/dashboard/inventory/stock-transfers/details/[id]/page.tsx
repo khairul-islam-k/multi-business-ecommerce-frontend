@@ -1,11 +1,15 @@
 "use client";
 
+import {
+  ArrowLeft
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useStockTransfer } from "@/lib/api/hooks/stock-transfer";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockTransferResponse, StockTransferStatus } from "@/types/stock/stock-tansfer";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -156,7 +160,7 @@ export default function StockTransferDetails() {
         breadcrumb={adminBreadcrumb}
       />
 
-      <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+      <Button icon={<ArrowLeft />} onClick={() => router.back()}>
         Back
       </Button>
 

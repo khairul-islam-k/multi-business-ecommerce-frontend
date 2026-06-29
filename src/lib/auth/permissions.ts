@@ -53,6 +53,10 @@ export const PERMISSIONS = {
   orderUpdate: { feature: "ORDER_MANAGEMENT", action: "UPDATE" },
   orderDelete: { feature: "ORDER_MANAGEMENT", action: "DELETE" },
   posCreate: { feature: "POS_MANAGEMENT", action: "CREATE" },
+  paymentCreate: { feature: "PAYMENT_MANAGEMENT", action: "CREATE" },
+  paymentRead: { feature: "PAYMENT_MANAGEMENT", action: "READ" },
+  paymentUpdate: { feature: "PAYMENT_MANAGEMENT", action: "UPDATE" },
+  paymentDelete: { feature: "PAYMENT_MANAGEMENT", action: "DELETE" },
   financeCreate: { feature: "FINANCE_MANAGEMENT", action: "CREATE" },
   financeRead: { feature: "FINANCE_MANAGEMENT", action: "READ" },
   financeUpdate: { feature: "FINANCE_MANAGEMENT", action: "UPDATE" },
@@ -196,6 +200,16 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     }
 
     return PERMISSIONS.financeRead;
+  }
+
+  const paymentGatewayPath = `${TENANT_DASHBOARD_PATH}/payment-gateway`;
+  if (pathname.startsWith(paymentGatewayPath)) {
+    if (pathname.includes("/create")) return PERMISSIONS.paymentCreate;
+    if (pathname.includes("/edit/")) {
+      return PERMISSIONS.paymentUpdate;
+    }
+
+    return PERMISSIONS.paymentRead;
   }
 
   const employeesPath = `${TENANT_DASHBOARD_PATH}/access-control/employees`;

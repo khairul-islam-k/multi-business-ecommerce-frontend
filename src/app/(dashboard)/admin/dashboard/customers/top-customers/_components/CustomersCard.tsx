@@ -1,9 +1,9 @@
-import { Card, Grid, theme } from "antd";
 import {
-  DollarOutlined,
-  ShoppingCartOutlined,
-  StarOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  ShieldCheck,
+  ShoppingCart
+} from "lucide-react";
+import { Card, Grid, theme } from "antd";
 
 const CustomersCard = () => {
   const { token } = theme.useToken();
@@ -31,7 +31,7 @@ const CustomersCard = () => {
               borderRadius: "10px",
             }}
           >
-            <DollarOutlined style={{ fontSize: "30px" }} />
+            <Banknote style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>$600.9k</h3>
@@ -53,7 +53,7 @@ const CustomersCard = () => {
               borderRadius: "10px",
             }}
           >
-            <ShoppingCartOutlined style={{ fontSize: "30px" }} />
+            <ShoppingCart style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>8,260</h3>
@@ -75,7 +75,7 @@ const CustomersCard = () => {
               borderRadius: "10px",
             }}
           >
-            <StarOutlined style={{ fontSize: "30px" }} />
+            <ShieldCheck style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3

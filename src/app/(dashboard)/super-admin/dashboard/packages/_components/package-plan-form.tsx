@@ -1,6 +1,11 @@
 "use client";
 
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  CircleMinus,
+  CirclePlus
+} from "lucide-react";
+
+
 import {
   Button,
   Card,
@@ -146,7 +151,7 @@ export default function PackagePlanForm({
             extra={
               <Button
                 type="dashed"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   add({
                     limitKey: "",
@@ -239,7 +244,7 @@ export default function PackagePlanForm({
                     <Button
                       danger
                       type="text"
-                      icon={<MinusCircleOutlined />}
+                      icon={<CircleMinus />}
                       onClick={() => remove(name)}
                     />
                   </Form.Item>
@@ -258,7 +263,7 @@ export default function PackagePlanForm({
             extra={
               <Button
                 type="dashed"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   add({
                     title: "",
@@ -315,7 +320,7 @@ export default function PackagePlanForm({
                     <Button
                       danger
                       type="text"
-                      icon={<MinusCircleOutlined />}
+                      icon={<CircleMinus />}
                       onClick={() => remove(name)}
                     />
                   </Form.Item>

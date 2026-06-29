@@ -66,6 +66,41 @@
       0 1px 3px hsl(234 35% 12% / 0.04), 0 1px 2px hsl(234 35% 12% / 0.04);
 
     --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+
+    --dashboard-primary-color: #1d4ed8;
+    --dashboard-primary-hover-color: #2563eb;
+    --dashboard-primary-active-color: #1e40af;
+    --dashboard-accent-color: #0284c7;
+    --dashboard-success-color: #16a34a;
+    --dashboard-warning-color: #d97706;
+    --dashboard-error-color: #dc2626;
+    --dashboard-info-color: #0284c7;
+    --dashboard-dashboard-background-color: #f1f5f9;
+    --dashboard-sidebar-background-color: #ffffff;
+    --dashboard-sidebar-text-color: #334155;
+    --dashboard-sidebar-muted-text-color: #64748b;
+    --dashboard-sidebar-active-background-color: #dbeafe;
+    --dashboard-sidebar-active-text-color: #1d4ed8;
+    --dashboard-sidebar-hover-background-color: #eff6ff;
+    --dashboard-header-background-color: #ffffff;
+    --dashboard-header-text-color: #0f172a;
+    --dashboard-card-background-color: #ffffff;
+    --dashboard-elevated-background-color: #ffffff;
+    --dashboard-table-header-background-color: #f8fafc;
+    --dashboard-table-row-hover-color: #f8fafc;
+    --dashboard-input-background-color: #ffffff;
+    --dashboard-disabled-background-color: #f1f5f9;
+    --dashboard-text-primary-color: #0f172a;
+    --dashboard-text-secondary-color: #475569;
+    --dashboard-text-muted-color: #64748b;
+    --dashboard-text-inverse-color: #ffffff;
+    --dashboard-border-color: #cbd5e1;
+    --dashboard-border-subtle-color: #e2e8f0;
+    --dashboard-focus-ring-color: #1d4ed8;
+    --dashboard-font-family: var(--font-open-sans), "Open Sans", sans-serif;
+    --dashboard-border-radius: 8;
+    --dashboard-density: DEFAULT;
+    --dashboard-control-height: 38;
   }
 
   .dark {
@@ -286,7 +321,7 @@ body {
 }
 
 * {
-  font-family: var(--font-open-sans);
+  font-family: var(--brand-font-family, var(--font-open-sans));
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.35) transparent;
 }
@@ -320,29 +355,61 @@ body {
 
 .antd-btn {
   padding: 4px 15px;
-  border-radius: 6px;
-  border: 1px solid #d9d9d9;
-  background: #fff;
+  border-radius: calc(var(--dashboard-border-radius, 8) * 1px);
+  border: 1px solid var(--dashboard-border-color);
+  background: var(--dashboard-card-background-color);
+  color: var(--dashboard-text-primary-color);
   cursor: pointer;
 }
 
 .antd-btn-primary {
-  background: #1677ff;
-  border-color: #1677ff;
-  color: #fff;
+  background: var(--dashboard-primary-color);
+  border-color: var(--dashboard-primary-color);
+  color: var(--dashboard-text-inverse-color);
 }
 
 .ant-image-preview-root .ant-image-preview-mask {
-  background: rgba(2, 6, 23, 0.72) !important;
+  background: color-mix(
+    in srgb,
+    var(--dashboard-text-primary-color) 72%,
+    transparent
+  ) !important;
   backdrop-filter: blur(18px) saturate(1.15);
   -webkit-backdrop-filter: blur(18px) saturate(1.15);
 }
 
 .ant-image-preview-root .ant-image-preview-operations-wrapper {
-  background: rgba(15, 23, 42, 0.72);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(
+    in srgb,
+    var(--dashboard-text-primary-color) 72%,
+    transparent
+  );
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--dashboard-text-inverse-color) 10%, transparent);
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.ant-message {
+  max-width: min(420px, calc(100vw - 32px));
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+.ant-message .ant-message-notice-content {
+  max-width: min(420px, calc(100vw - 32px));
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+[data-sonner-toaster] {
+  width: min(420px, calc(100vw - 32px)) !important;
+}
+
+[data-sonner-toast] {
+  max-width: min(420px, calc(100vw - 32px)) !important;
+  overflow-wrap: anywhere;
 }
 
 .media-theme-scope .ant-input,
@@ -397,21 +464,306 @@ body {
 }
 
 .media-themed-popup {
-  border-radius: 8px;
+  background: var(--dashboard-elevated-background-color) !important;
+  border: 1px solid var(--dashboard-border-subtle-color);
+  border-radius: calc(var(--dashboard-border-radius, 8) * 1px);
+  box-shadow: 0 18px 45px
+    color-mix(in srgb, var(--dashboard-text-primary-color) 16%, transparent);
 }
 
-.dark .media-themed-popup {
-  background: #172033 !important;
-  border: 1px solid #243044;
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+.media-themed-popup .ant-select-item {
+  color: var(--dashboard-text-secondary-color);
 }
 
-.dark .media-themed-popup .ant-select-item {
-  color: #a8b3c7;
+.media-themed-popup .ant-select-item-option-active,
+.media-themed-popup .ant-select-item-option-selected {
+  background: var(--dashboard-sidebar-active-background-color) !important;
+  color: var(--dashboard-sidebar-active-text-color) !important;
 }
 
-.dark .media-themed-popup .ant-select-item-option-active,
-.dark .media-themed-popup .ant-select-item-option-selected {
-  background: #1e3a5f !important;
-  color: #e5edf7 !important;
+.dashboard-shell {
+  background: var(--dashboard-dashboard-background-color);
+  color: var(--dashboard-text-primary-color);
+  font-family: var(--dashboard-font-family);
+}
+
+.dashboard-shell .ant-layout,
+.dashboard-shell .ant-layout-content {
+  background: var(--dashboard-dashboard-background-color);
+  color: var(--dashboard-text-primary-color);
+}
+
+.dashboard-shell .ant-card,
+.dashboard-shell .ant-card-head,
+.dashboard-shell .ant-card-body {
+  background: var(--dashboard-card-background-color);
+  color: var(--dashboard-text-primary-color);
+  border-color: var(--dashboard-border-subtle-color);
+}
+
+.dashboard-shell .ant-table,
+.dashboard-shell .ant-table-container,
+.dashboard-shell .ant-table-tbody > tr > td {
+  background: var(--dashboard-card-background-color);
+  color: var(--dashboard-text-primary-color);
+  border-color: var(--dashboard-border-subtle-color);
+}
+
+.dashboard-shell .ant-table-thead > tr > th {
+  background: var(--dashboard-table-header-background-color) !important;
+  color: var(--dashboard-text-secondary-color) !important;
+  border-color: var(--dashboard-border-subtle-color) !important;
+}
+
+.dashboard-shell .ant-table-tbody > tr:hover > td {
+  background: var(--dashboard-table-row-hover-color) !important;
+}
+
+.dashboard-shell .ant-input,
+.dashboard-shell .ant-input-affix-wrapper,
+.dashboard-shell .ant-select-selector,
+.dashboard-shell .ant-picker {
+  background: var(--dashboard-input-background-color) !important;
+  border-color: var(--dashboard-border-color) !important;
+  color: var(--dashboard-text-primary-color) !important;
+}
+
+.dashboard-shell .ant-input::placeholder,
+.dashboard-shell .ant-select-selection-placeholder {
+  color: var(--dashboard-text-muted-color) !important;
+}
+
+.dashboard-shell .ant-menu {
+  background: var(--dashboard-sidebar-background-color) !important;
+  color: var(--dashboard-sidebar-text-color) !important;
+}
+
+.dashboard-shell .ant-menu-item,
+.dashboard-shell .ant-menu-submenu-title {
+  color: var(--dashboard-sidebar-text-color) !important;
+}
+
+.dashboard-shell .ant-menu-item:hover,
+.dashboard-shell .ant-menu-submenu-title:hover {
+  background: var(--dashboard-sidebar-hover-background-color) !important;
+}
+
+.dashboard-shell .ant-menu-item-selected {
+  background: var(--dashboard-sidebar-active-background-color) !important;
+  color: var(--dashboard-sidebar-active-text-color) !important;
+}
+
+.dashboard-shell .ant-btn-primary,
+.dashboard-shell .ant-btn-color-primary.ant-btn-variant-solid,
+.admin-dashboard-theme .ant-btn-primary,
+.admin-dashboard-theme .ant-btn-color-primary.ant-btn-variant-solid {
+  background: var(--dashboard-primary-color) !important;
+  border-color: var(--dashboard-primary-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+  box-shadow: none !important;
+}
+
+.dashboard-shell .ant-btn-primary:not(:disabled):hover,
+.dashboard-shell
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):hover,
+.admin-dashboard-theme .ant-btn-primary:not(:disabled):hover,
+.admin-dashboard-theme
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):hover {
+  background: var(--dashboard-primary-hover-color) !important;
+  border-color: var(--dashboard-primary-hover-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+}
+
+.dashboard-shell .ant-btn-primary:not(:disabled):active,
+.dashboard-shell
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):active,
+.admin-dashboard-theme .ant-btn-primary:not(:disabled):active,
+.admin-dashboard-theme
+  .ant-btn-color-primary.ant-btn-variant-solid:not(:disabled):active {
+  background: var(--dashboard-primary-active-color) !important;
+  border-color: var(--dashboard-primary-active-color) !important;
+  color: var(--dashboard-text-inverse-color) !important;
+}
+
+.dashboard-shell .ant-btn-default:not(:disabled):hover,
+.dashboard-shell .ant-btn-default:not(:disabled):focus-visible,
+.admin-dashboard-theme .ant-btn-default:not(:disabled):hover,
+.admin-dashboard-theme .ant-btn-default:not(:disabled):focus-visible {
+  border-color: var(--dashboard-primary-color) !important;
+  color: var(--dashboard-primary-color) !important;
+}
+
+.dashboard-shell .ant-btn:focus-visible,
+.admin-dashboard-theme .ant-btn:focus-visible {
+  outline: 2px solid var(--dashboard-focus-ring-color) !important;
+  outline-offset: 2px;
+}
+
+.dashboard-shell a,
+.dashboard-shell .ant-btn-link {
+  color: var(--dashboard-accent-color) !important;
+}
+
+.dashboard-shell a:hover,
+.dashboard-shell .ant-btn-link:not(:disabled):hover {
+  color: var(--dashboard-primary-hover-color) !important;
+}
+
+.dashboard-shell a:active,
+.dashboard-shell .ant-btn-link:not(:disabled):active {
+  color: var(--dashboard-primary-active-color) !important;
+}
+
+.dashboard-shell .ant-btn-text:not(:disabled):hover {
+  background: var(--dashboard-sidebar-hover-background-color) !important;
+  color: var(--dashboard-text-primary-color) !important;
+}
+
+.dashboard-shell .ant-tag-blue,
+.dashboard-shell .ant-tag-processing {
+  background: color-mix(
+    in srgb,
+    var(--dashboard-primary-color) 12%,
+    var(--dashboard-card-background-color)
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--dashboard-primary-color) 34%,
+    var(--dashboard-border-subtle-color)
+  ) !important;
+  color: var(--dashboard-primary-color) !important;
+}
+
+.dashboard-shell .ant-tag-green,
+.dashboard-shell .ant-tag-success {
+  background: color-mix(
+    in srgb,
+    var(--dashboard-success-color) 12%,
+    var(--dashboard-card-background-color)
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--dashboard-success-color) 34%,
+    var(--dashboard-border-subtle-color)
+  ) !important;
+  color: var(--dashboard-success-color) !important;
+}
+
+.dashboard-shell .ant-tag-red,
+.dashboard-shell .ant-tag-error {
+  background: color-mix(
+    in srgb,
+    var(--dashboard-error-color) 12%,
+    var(--dashboard-card-background-color)
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--dashboard-error-color) 34%,
+    var(--dashboard-border-subtle-color)
+  ) !important;
+  color: var(--dashboard-error-color) !important;
+}
+
+.dashboard-shell
+  :is(.ant-tag-orange, .ant-tag-gold, .ant-tag-yellow, .ant-tag-warning) {
+  background: color-mix(
+    in srgb,
+    var(--dashboard-warning-color) 12%,
+    var(--dashboard-card-background-color)
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--dashboard-warning-color) 34%,
+    var(--dashboard-border-subtle-color)
+  ) !important;
+  color: var(--dashboard-warning-color) !important;
+}
+
+.dashboard-shell :is(.ant-tag-purple, .ant-tag-magenta, .ant-tag-cyan) {
+  background: color-mix(
+    in srgb,
+    var(--dashboard-accent-color) 12%,
+    var(--dashboard-card-background-color)
+  ) !important;
+  border-color: color-mix(
+    in srgb,
+    var(--dashboard-accent-color) 34%,
+    var(--dashboard-border-subtle-color)
+  ) !important;
+  color: var(--dashboard-accent-color) !important;
+}
+
+.dashboard-shell .ant-tag-default,
+.dashboard-shell .ant-tag-gray {
+  background: var(--dashboard-disabled-background-color) !important;
+  border-color: var(--dashboard-border-subtle-color) !important;
+  color: var(--dashboard-text-secondary-color) !important;
+}
+
+.dashboard-shell .ant-btn .ant-btn-icon svg {
+  width: 1em;
+  height: 1em;
+}
+
+.dashboard-shell .ant-btn-sm .ant-btn-icon svg,
+.dashboard-shell .ant-table .ant-btn .ant-btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.dashboard-shell .ant-btn-icon-only.ant-btn-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.dashboard-shell :is(.text-gray-400, .text-gray-500, .text-slate-400, .text-slate-500) {
+  color: var(--dashboard-text-muted-color) !important;
+}
+
+.dashboard-shell :is(.text-gray-600, .text-gray-700, .text-slate-600, .text-slate-700) {
+  color: var(--dashboard-text-secondary-color) !important;
+}
+
+.dashboard-shell :is(.text-gray-800, .text-gray-900, .text-slate-800, .text-slate-900) {
+  color: var(--dashboard-text-primary-color) !important;
+}
+
+.dashboard-shell :is(.bg-white, .bg-gray-50, .bg-slate-50) {
+  background-color: var(--dashboard-card-background-color) !important;
+}
+
+.dashboard-shell :is(.bg-gray-100, .bg-slate-100) {
+  background-color: var(--dashboard-disabled-background-color) !important;
+}
+
+.dashboard-shell :is(.border-gray-100, .border-gray-200, .border-gray-300, .border-slate-100, .border-slate-200, .border-slate-300) {
+  border-color: var(--dashboard-border-subtle-color) !important;
+}
+
+.dashboard-shell :is(.text-blue-500, .text-blue-600, .text-indigo-500, .text-indigo-600, .text-teal-500, .text-teal-600) {
+  color: var(--dashboard-primary-color) !important;
+}
+
+.dashboard-shell :is(.bg-blue-50, .bg-blue-100, .bg-blue-300, .bg-indigo-50, .bg-indigo-100, .bg-teal-50, .bg-teal-100) {
+  background-color: var(--dashboard-sidebar-active-background-color) !important;
+}
+
+.dashboard-shell :is(.border-blue-500, .border-indigo-500, .border-teal-500) {
+  border-color: var(--dashboard-primary-color) !important;
+}
+
+.dashboard-shell :is(.ring-blue-200, .ring-blue-400, .ring-indigo-200, .ring-teal-200) {
+  --tw-ring-color: var(--dashboard-focus-ring-color) !important;
+}
+
+.dashboard-shell :is(.text-green-500, .text-green-600, .text-emerald-500, .text-emerald-600) {
+  color: var(--dashboard-success-color) !important;
+}
+
+.dashboard-shell :is(.text-red-500, .text-red-600, .text-rose-500, .text-rose-600) {
+  color: var(--dashboard-error-color) !important;
+}
+
+.dashboard-shell :is(.text-yellow-500, .text-yellow-600, .text-orange-500, .text-orange-600, .text-amber-500, .text-amber-600) {
+  color: var(--dashboard-warning-color) !important;
 }

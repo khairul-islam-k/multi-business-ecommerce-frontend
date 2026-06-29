@@ -1,9 +1,14 @@
 "use client";
 
+import {
+  Calendar,
+  Clock
+} from "lucide-react";
+
+
 import dayjs from "dayjs";
 import PageHeader from "@/components/shared/page-header";
 import { Card, Form, Select, DatePicker, Button, message, theme } from "antd";
-import { CalendarOutlined, ClockCircleOutlined } from "@ant-design/icons";
 
 import { mockCampaigns } from "../data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -32,7 +37,7 @@ export default function ScheduleCampaign() {
         <Card
           title={
             <span className="flex items-center gap-2">
-              <CalendarOutlined /> Schedule Settings
+              <Calendar /> Schedule Settings
             </span>
           }
           className="max-w-2xl"
@@ -86,7 +91,7 @@ export default function ScheduleCampaign() {
             <Button
               type="primary"
               htmlType="submit"
-              icon={<ClockCircleOutlined />}
+              icon={<Clock />}
               block
               loading={loading}
             >

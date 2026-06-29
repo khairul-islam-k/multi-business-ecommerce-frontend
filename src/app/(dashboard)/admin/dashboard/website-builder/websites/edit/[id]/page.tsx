@@ -25,16 +25,13 @@ export default function EditWebsite() {
   const handleSubmit = async (values: WebsiteTemplatePayload) => {
     setIsSubmitting(true);
 
-    console.log('values', values);
-
     try {
-      const res = await updateWebsite.mutateAsync({
+      await updateWebsite.mutateAsync({
         websiteId: id,
         payload: values
       });
 
-      console.log('res', res);
-      swal.success("Website template created successfully.");
+      swal.success("Website updated successfully.");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     } finally {

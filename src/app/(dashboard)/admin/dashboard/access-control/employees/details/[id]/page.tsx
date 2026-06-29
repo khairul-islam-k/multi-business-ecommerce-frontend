@@ -1,5 +1,10 @@
 "use client";
 
+import {
+  UserRound
+} from "lucide-react";
+
+
 import { useParams } from "next/navigation";
 import {
   Avatar,
@@ -13,7 +18,6 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { UserOutlined } from "@ant-design/icons";
 
 import { useEmployee } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
@@ -61,7 +65,7 @@ const UserDetail = () => {
               <Avatar
                 size={96}
                 src={user.profile?.imageUrl}
-                icon={<UserOutlined />}
+                icon={<UserRound />}
               />
 
               <Title level={5} style={{ marginTop: 12 }}>

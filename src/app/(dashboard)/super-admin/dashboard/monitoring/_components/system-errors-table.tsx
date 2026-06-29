@@ -1,7 +1,12 @@
 "use client";
 
+import {
+  Cable,
+  Clock
+} from "lucide-react";
+
+
 import { Table, Typography, Badge, Space } from "antd";
-import { ApiOutlined, ClockCircleOutlined } from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -37,7 +42,7 @@ export default function SystemErrorsTable({
     {
       title: (
         <Space>
-          <ApiOutlined />
+          <Cable />
           Service
         </Space>
       ),
@@ -56,7 +61,7 @@ export default function SystemErrorsTable({
     {
       title: (
         <Space>
-          <ClockCircleOutlined />
+          <Clock />
           Time
         </Space>
       ),

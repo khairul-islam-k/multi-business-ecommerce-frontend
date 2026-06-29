@@ -1,6 +1,12 @@
 "use client";
 
 import {
+  Download,
+  Filter
+} from "lucide-react";
+
+
+import {
   Card,
   Row,
   Col,
@@ -10,7 +16,6 @@ import {
   Space,
   Typography,
 } from "antd";
-import { DownloadOutlined, FilterOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import {
   LineChart,
@@ -92,8 +97,8 @@ export default function ReportPage({
           <Col>
             <Space>
               <RangePicker />
-              <Button icon={<FilterOutlined />}>Filter</Button>
-              <Button type="primary" icon={<DownloadOutlined />}>
+              <Button icon={<Filter />}>Filter</Button>
+              <Button type="primary" icon={<Download />}>
                 Export
               </Button>
             </Space>
@@ -123,7 +128,7 @@ export default function ReportPage({
               <Line
                 type="monotone"
                 dataKey="value"
-                stroke="#1677ff"
+                stroke="var(--dashboard-primary-color)"
                 strokeWidth={2}
               />
 
@@ -131,7 +136,7 @@ export default function ReportPage({
                 <Line
                   type="monotone"
                   dataKey="value2"
-                  stroke="#52c41a"
+                  stroke="var(--dashboard-success-color)"
                   strokeWidth={2}
                 />
               )}
@@ -143,10 +148,10 @@ export default function ReportPage({
               <YAxis />
               <Tooltip />
 
-              <Bar dataKey="value" fill="#1677ff" />
+              <Bar dataKey="value" fill="var(--dashboard-primary-color)" />
 
               {chartData[0]?.value2 !== undefined && (
-                <Bar dataKey="value2" fill="#52c41a" />
+                <Bar dataKey="value2" fill="var(--dashboard-success-color)" />
               )}
             </BarChart>
           )}

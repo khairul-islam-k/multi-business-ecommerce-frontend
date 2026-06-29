@@ -1,61 +1,99 @@
 "use client";
 
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Card, Spin, Empty, Tag } from "antd";
+import { Card, Tag, Typography } from "antd";
+
 import { Column, DataTable } from "@/components/shared/data-table";
+import type { ResponseWebsite } from "@/types/website/website";
 
-export default function WebsitePage({ websiteId }: { websiteId: string }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["website-pages", websiteId],
-    queryFn: async () => {
-      const res = await api.get(`/pages`, {
-        params: { website_id: websiteId },
-      });
-      return res.data?.data?.data ?? [];
-    },
-    enabled: !!websiteId,
-  });
+const { Text } = Typography;
 
-  if (isLoading) return <Spin />;
-  if (isError) return <Empty description="Failed to load pages" />;
+type ConfigRow = {
+  id: string;
+  section: string;
+  status: string;
+  value?: unknown;
+};
 
-  const columns: Column<any>[] = [
+const hasValue = (value: unknown) => {
+  if (!value || typeof value !== "object") return Boolean(value);
+  return Object.keys(value).length > 0;
+};
+
+const summarize = (value: unknown) => {
+  if (!hasValue(value)) return "-";
+  return JSON.stringify(value);
+};
+
+export default function WebsitePage({ website }: { website: ResponseWebsite }) {
+  const rows: ConfigRow[] = [
     {
-      key: "title",
-      label: "Title",
+      id: "header",
+      section: "Header",
+      status: hasValue(website.config?.headerConfig) ? "Configured" : "Empty",
+      value: website.config?.headerConfig,
+    },
+    {
+      id: "footer",
+      section: "Footer",
+      status: hasValue(website.config?.footerConfig) ? "Configured" : "Empty",
+      value: website.config?.footerConfig,
+    },
+    {
+      id: "sections",
+      section: "Sections",
+      status: hasValue(website.config?.sectionConfig) ? "Configured" : "Empty",
+      value: website.config?.sectionConfig,
+    },
+    {
+      id: "general",
+      section: "General",
+      status: hasValue(website.config?.generalConfig) ? "Configured" : "Empty",
+      value: website.config?.generalConfig,
+    },
+    {
+      id: "theme",
+      section: "Theme",
+      status: website.theme ? "Configured" : "Empty",
+      value: website.theme,
+    },
+    {
+      id: "seo",
+      section: "SEO",
+      status: website.seo ? "Configured" : "Empty",
+      value: website.seo,
+    },
+  ];
+
+  const columns: Column<ConfigRow>[] = [
+    {
+      key: "section",
+      label: "Section",
       type: "primary",
-      render: (r) => r.title,
-    },
-    {
-      key: "type",
-      label: "Type",
-      render: (r) => r.type,
-    },
-    {
-      key: "slug",
-      label: "Slug",
-      render: (r) => r.slug,
-    },
-    {
-      key: "seo_title",
-      label: "SEO Title",
-      render: (r) => r.seo_title,
+      render: (record) => <strong>{record.section}</strong>,
     },
     {
       key: "status",
       label: "Status",
-      render: (r) => (
-        <Tag color={r.status === "published" ? "green" : "orange"}>
-          {r.status}
+      render: (record) => (
+        <Tag color={record.status === "Configured" ? "green" : "default"}>
+          {record.status}
         </Tag>
+      ),
+    },
+    {
+      key: "value",
+      label: "Value",
+      render: (record) => (
+        <Text className="max-w-xl block truncate" title={summarize(record.value)}>
+          {summarize(record.value)}
+        </Text>
       ),
     },
   ];
 
   return (
     <Card>
-      <DataTable data={data} columns={columns} />
+      <DataTable data={rows} columns={columns} isSearch={false} />
     </Card>
   );
 }

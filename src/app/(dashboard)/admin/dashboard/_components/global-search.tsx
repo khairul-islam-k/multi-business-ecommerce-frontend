@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  Search,
+  X
+} from "lucide-react";
+
+
 import React, { useState } from "react";
 import { Input, Button, Space, theme } from "antd";
-import { SearchOutlined, CloseOutlined } from "@ant-design/icons";
 
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
@@ -12,7 +17,7 @@ const GlobalSearch = () => {
     borderColor: token.colorBorder,
     color: token.colorText,
   };
-  const prefix = <SearchOutlined style={{ color: token.colorTextTertiary }} />;
+  const prefix = <Search style={{ color: token.colorTextTertiary }} />;
 
   return (
     <>
@@ -33,7 +38,7 @@ const GlobalSearch = () => {
             <Button
               type="text"
               icon={
-                <SearchOutlined
+                <Search
                   style={{ color: token.colorText, fontSize: 18 }}
                 />
               }
@@ -51,7 +56,7 @@ const GlobalSearch = () => {
               />
               <Button
                 type="text"
-                icon={<CloseOutlined />}
+                icon={<X />}
                 onClick={() => setOpen(false)}
               />
             </Space>

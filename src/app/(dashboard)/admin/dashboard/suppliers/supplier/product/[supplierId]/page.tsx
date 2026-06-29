@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
 import {
-    DeleteOutlined,
-    EditOutlined,
-    PlusOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
+import React, { useState } from "react";
 import { App, Button, Card, Select, Tag, Tooltip } from "antd";
 import { useParams, useRouter } from "next/navigation";
 
@@ -146,7 +148,7 @@ const SupplierProducts = () => {
                     <Tooltip title="Edit supplier">
                         <Button
                             size="small"
-                            icon={<EditOutlined />}
+                            icon={<Pencil />}
                             onClick={() =>
                                 router.push(`/admin/dashboard/suppliers/supplier/update-s-product/${supplierId}/${row?.supplierProduct?.id}`)
                             }
@@ -157,7 +159,7 @@ const SupplierProducts = () => {
                         <Button
                             danger
                             size="small"
-                            icon={<DeleteOutlined />}
+                            icon={<Trash2 />}
                             onClick={() => handleDelete(row?.supplierProduct?.id)}
                         />
                     </Tooltip>
@@ -201,7 +203,7 @@ const SupplierProducts = () => {
 
                             <Button
                                 type="primary"
-                                icon={<PlusOutlined />}
+                                icon={<CirclePlus />}
                                 onClick={() =>
                                     router.push(
                                         `/admin/dashboard/suppliers/supplier/${supplierId}/products/create`

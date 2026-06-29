@@ -1,17 +1,12 @@
 "use client";
 
+import { Button, Flex, Grid, Space, theme } from "antd";
+import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import React from "react";
-import { Space, Button, theme, Grid, Flex } from "antd";
-import {
-  MenuFoldOutlined,
-  MenuOutlined,
-  MenuUnfoldOutlined,
-} from "@ant-design/icons";
 
-import GlobalSearch from "./global-search";
 import BusinessDropdown from "./business-owner";
+import GlobalSearch from "./global-search";
 import ProfileDropdown from "./profile-dropdown";
-import ThemeToggle from "@/components/shared/antd-theme-toggle";
 
 type TopbarProps = {
   collapsed?: boolean;
@@ -32,7 +27,8 @@ const TopBar: React.FC<TopbarProps> = ({
     <>
       <div
         style={{
-          background: token.colorBgContainer,
+          background: "var(--dashboard-header-background-color)",
+          color: "var(--dashboard-header-text-color)",
           borderBottom: `1px solid ${token.colorBorderSecondary}`,
           boxShadow: "none",
           display: "flex",
@@ -55,9 +51,9 @@ const TopBar: React.FC<TopbarProps> = ({
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               icon={
                 collapsed ? (
-                  <MenuUnfoldOutlined style={{ fontSize: 20 }} />
+                  <PanelLeftOpen size={20} />
                 ) : (
-                  <MenuFoldOutlined style={{ fontSize: 20 }} />
+                  <PanelLeftClose size={20} />
                 )
               }
               onClick={toggleSidebar}
@@ -70,8 +66,6 @@ const TopBar: React.FC<TopbarProps> = ({
           </Flex>
 
           <Space size={screens.xs ? 4 : 8} align="center">
-            <ThemeToggle />
-
             <div style={{ display: screens.xs ? "none" : "block" }}>
               <BusinessDropdown />
             </div>
@@ -81,10 +75,10 @@ const TopBar: React.FC<TopbarProps> = ({
             {/* Mobile menu button */}
             <Button
               style={{
-                display: screens.md ? "none" : "inline-flex"
+                display: screens.md ? "none" : "inline-flex",
               }}
               type="text"
-              icon={<MenuOutlined style={{ fontSize: 20 }} />}
+              icon={<Menu size={20} />}
               onClick={toggle}
             />
           </Space>

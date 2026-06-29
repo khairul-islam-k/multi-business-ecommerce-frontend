@@ -1,6 +1,11 @@
 "use client";
 
-import { CopyOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  Copy,
+  Trash2
+} from "lucide-react";
+
+
 import {
   Button,
   Card,
@@ -105,7 +110,7 @@ export default function MediaCard({
         <Flex gap={8} justify="space-between">
           <Button
             className="media-secondary-button"
-            icon={<CopyOutlined />}
+            icon={<Copy />}
             onClick={() => onCopy(src)}
           >
             Copy URL
@@ -114,7 +119,7 @@ export default function MediaCard({
           <Button
             danger
             className="media-danger-button"
-            icon={<DeleteOutlined />}
+            icon={<Trash2 />}
             loading={deleting}
             disabled={!canDelete}
             onClick={() => onDelete(asset)}

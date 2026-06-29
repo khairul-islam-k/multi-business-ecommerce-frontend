@@ -11,7 +11,11 @@ import type {
   TenantSubscriptionQuery,
   CategoriesQuery,
 } from "@/lib/api/types";
-import type { OrderQuery } from "./orders";
+import type { OrderQuery, OrderReturnQuery } from "./orders";
+import type {
+  PaymentGatewayConfigQuery,
+  PaymentGatewayQuery,
+} from "@/types/payment-gateway";
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
 
@@ -135,6 +139,13 @@ export const apiQueryKeys = {
   },
   pos: {
     all: (businessId: ApiId) => ["pos", businessId] as const,
+  },
+  paymentGateway: {
+    all: (businessId: ApiId) => ["paymentGateway", businessId] as const,
+    gateways: (businessId: ApiId, query?: PaymentGatewayQuery) =>
+      ["paymentGateway", businessId, "gateways", query] as const,
+    configs: (businessId: ApiId, query?: PaymentGatewayConfigQuery) =>
+      ["paymentGateway", businessId, "configs", query] as const,
   },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,
@@ -291,9 +302,15 @@ export const apiQueryKeys = {
       ["orders", businessId, "list", query] as const,
     detail: (businessId: ApiId, orderId: ApiId) =>
       ["orders", businessId, "detail", orderId] as const,
+    returns: (businessId: ApiId, query?: OrderReturnQuery) =>
+      ["orders", businessId, "returns", query] as const,
+    returnDetail: (businessId: ApiId, returnId: ApiId) =>
+      ["orders", businessId, "returns", "detail", returnId] as const,
   },
   website: {
     all: (businessId: ApiId) => ["website", businessId] as const,
+    templates: (businessId: ApiId) =>
+      ["website", businessId, "templates"] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["website", businessId, "list", query] as const,
 

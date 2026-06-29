@@ -1,47 +1,59 @@
 "use client";
 
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Card, Spin, Empty } from "antd";
+import { Card, Empty, Typography } from "antd";
+
 import { Column, DataTable } from "@/components/shared/data-table";
+import type { ResponseWebsite } from "@/types/website/website";
 
-export default function WebsiteMenu({ websiteId }: { websiteId: string }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["website-menus", websiteId],
-    queryFn: async () => {
-      const res = await api.get(`/menus`, {
-        params: { website_id: websiteId },
-      });
-      return res.data?.data?.data ?? [];
-    },
-    enabled: !!websiteId,
-  });
+const { Text } = Typography;
 
-  if (isLoading) return <Spin />;
-  if (isError) return <Empty description="Failed to load menus" />;
+type NavigationRow = {
+  id: string;
+  key: string;
+  value: unknown;
+};
 
-  const columns: Column<any>[] = [
+const summarize = (value: unknown) => {
+  if (value === null || value === undefined || value === "") return "-";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+};
+
+export default function WebsiteMenu({ website }: { website: ResponseWebsite }) {
+  const navigationConfig = website.config?.navigationConfig ?? {};
+  const rows: NavigationRow[] = Object.entries(navigationConfig).map(
+    ([key, value]) => ({
+      id: key,
+      key,
+      value,
+    }),
+  );
+
+  if (!rows.length) {
+    return <Empty description="No navigation configuration found" />;
+  }
+
+  const columns: Column<NavigationRow>[] = [
     {
-      key: "name",
-      label: "Name",
+      key: "key",
+      label: "Key",
       type: "primary",
-      render: (r) => <strong>{r.name}</strong>,
+      render: (record) => <strong>{record.key}</strong>,
     },
     {
-      key: "location",
-      label: "Location",
-      render: (r) => r.location,
-    },
-    {
-      key: "status",
-      label: "Status",
-      render: (r) => r.status,
+      key: "value",
+      label: "Value",
+      render: (record) => (
+        <Text className="max-w-xl block truncate" title={summarize(record.value)}>
+          {summarize(record.value)}
+        </Text>
+      ),
     },
   ];
 
   return (
     <Card>
-      <DataTable data={data} columns={columns} />
+      <DataTable data={rows} columns={columns} isSearch={false} />
     </Card>
   );
 }

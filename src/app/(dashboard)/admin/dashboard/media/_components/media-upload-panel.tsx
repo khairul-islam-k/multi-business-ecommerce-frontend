@@ -1,6 +1,11 @@
 "use client";
 
-import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  Inbox,
+  Upload as UploadIcon
+} from "lucide-react";
+
+
 import { Button, Card, Col, Form, Input, Row, Upload, theme } from "antd";
 import type { FormInstance } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
@@ -64,7 +69,7 @@ export default function MediaUploadPanel({
                 }}
               >
                 <p className="ant-upload-drag-icon">
-                  <InboxOutlined style={{ color: token.colorPrimary }} />
+                  <Inbox style={{ color: token.colorPrimary }} />
                 </p>
                 <p
                   className="ant-upload-text"
@@ -100,7 +105,7 @@ export default function MediaUploadPanel({
             <Button
               disabled={!canUpload}
               htmlType="submit"
-              icon={<UploadOutlined />}
+              icon={<UploadIcon />}
               loading={loading}
               type="primary"
             >

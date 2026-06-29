@@ -1,4 +1,4 @@
-import { App, ConfigProvider, Layout } from "antd";
+import { App, Layout } from "antd";
 
 import "antd/dist/reset.css";
 
@@ -13,13 +13,9 @@ export default function DashboardLayout({
   return (
     <AntdRegistry>
       <AntdThemeProvider>
-        {/* <ConfigProvider> */}
-          <App>
-            <Layout>
-              {children}
-            </Layout>
-          </App>
-        {/* </ConfigProvider> */}
+        <App>
+          <Layout>{children}</Layout>
+        </App>
       </AntdThemeProvider>
     </AntdRegistry>
   );

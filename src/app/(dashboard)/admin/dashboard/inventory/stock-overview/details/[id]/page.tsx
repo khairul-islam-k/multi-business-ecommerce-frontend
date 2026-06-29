@@ -1,10 +1,14 @@
 "use client";
 
+import {
+  ArrowLeft
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useStock } from "@/lib/api/hooks/stock";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -56,7 +60,7 @@ const StockDetail = () => {
       />
 
       <div className="flex justify-end">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
       </div>

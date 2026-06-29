@@ -1,12 +1,21 @@
 import { Card, Timeline } from "antd";
 
-import { mockStatusLogs } from "../../data";
 import { OrderStatusBadge } from "../../_components/badge";
+
+type StatusLog = {
+  id: string;
+  order_id: string;
+  old_status?: Parameters<typeof OrderStatusBadge>[0]["status"];
+  new_status: Parameters<typeof OrderStatusBadge>[0]["status"];
+  note?: string;
+  changed_by?: string;
+  changed_at: string;
+};
+
+const mockStatusLogs: StatusLog[] = [];
 
 export function OrderTimeline({ orderId }: { orderId: string }) {
   const logs = mockStatusLogs.filter((log) => log.order_id === orderId);
-
-  console.log(mockStatusLogs);
 
   return (
     <Card title="Status Timeline">
@@ -16,8 +25,7 @@ export function OrderTimeline({ orderId }: { orderId: string }) {
         </div>
       ) : (
         <Timeline>
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {logs.map((log: any) => (
+          {logs.map((log) => (
             <Timeline.Item key={log.id}>
               <div className="flex items-center justify-between mb-1">
                 <OrderStatusBadge status={log.new_status} />

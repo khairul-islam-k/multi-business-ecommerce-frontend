@@ -19,6 +19,14 @@ import type {
 
 const basePath = (businessId: ApiId) => `/roles/businesses/${businessId}`;
 
+const sanitizeRolePayload = (payload: RolePayload | Partial<RolePayload>) => ({
+  ...payload,
+  permissions: payload.permissions?.map((permission) => ({
+    feature: permission.feature,
+    action: permission.action,
+  })),
+});
+
 export const rolesApi = {
   list(businessId: ApiId, query?: RoleQuery) {
     return api
@@ -30,7 +38,7 @@ export const rolesApi = {
 
   create(businessId: ApiId, payload: RolePayload) {
     return api
-      .post<ApiResponse<Role>>(basePath(businessId), payload)
+      .post<ApiResponse<Role>>(basePath(businessId), sanitizeRolePayload(payload))
       .then((res) => unwrapApiResponse(res.data));
   },
 
@@ -42,7 +50,10 @@ export const rolesApi = {
 
   update(businessId: ApiId, roleId: ApiId, payload: Partial<RolePayload>) {
     return api
-      .patch<ApiResponse<Role>>(`${basePath(businessId)}/${roleId}`, payload)
+      .patch<ApiResponse<Role>>(
+        `${basePath(businessId)}/${roleId}`,
+        sanitizeRolePayload(payload),
+      )
       .then((res) => unwrapApiResponse(res.data));
   },
 

@@ -1,7 +1,11 @@
 "use client";
 
+import {
+  Save
+} from "lucide-react";
+
+
 import { Form, Input, Select, Button } from "antd";
-import { SaveOutlined } from "@ant-design/icons";
 
 import { useSwal } from "@/hooks/use-swal";
 import useSubmit from "@/hooks/use-submit";
@@ -51,7 +55,7 @@ export default function GeneralSettingsForm() {
 
       <Button
         type="primary"
-        icon={<SaveOutlined />}
+        icon={<Save />}
         htmlType="submit"
         loading={loading}
       >

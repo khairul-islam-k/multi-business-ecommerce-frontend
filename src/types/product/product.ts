@@ -37,7 +37,7 @@ export type ProductCategoryPayload = {
   imageUrl: string;
   parentId?: string | null;
   status: CategoryStatus;
-  sortOrder: number;
+  sortOrder?: number;
 };
 
 export type ProductCategoryCount = {

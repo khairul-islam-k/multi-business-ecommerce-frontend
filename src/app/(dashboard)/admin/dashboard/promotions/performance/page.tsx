@@ -1,15 +1,17 @@
 "use client";
 
+import {
+  Banknote,
+  ShoppingCart,
+  Tag,
+  TrendingUp
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import StatCard, { Stat } from "@/components/shared/stat-card";
 
 import { Card, Row, Col } from "antd";
-import {
-  TagOutlined,
-  ShoppingCartOutlined,
-  DollarOutlined,
-  RiseOutlined,
-} from "@ant-design/icons";
 import {
   BarChart,
   Bar,
@@ -67,28 +69,28 @@ export default function PromotionPerformance() {
       value: String(mockPromotions.filter((p) => p.status === "active").length),
       up: true,
       change: "+8%",
-      icon: TagOutlined,
+      icon: Tag,
     },
     {
       label: "Total Uses",
       value: totalUses.toLocaleString(),
       up: true,
       change: "+12%",
-      icon: ShoppingCartOutlined,
+      icon: ShoppingCart,
     },
     {
       label: "Revenue",
       value: `$${totalRevenue.toLocaleString()}`,
       up: true,
       change: "+18%",
-      icon: DollarOutlined,
+      icon: Banknote,
     },
     {
       label: "Avg Discount",
       value: `${avgDiscount}%`,
       up: false,
       change: "-2%",
-      icon: RiseOutlined,
+      icon: TrendingUp,
     },
   ];
 
@@ -115,7 +117,7 @@ export default function PromotionPerformance() {
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="uses" radius={[4, 4, 0, 0]} fill="#52c41a" />
+                <Bar dataKey="uses" radius={[4, 4, 0, 0]} fill="var(--dashboard-success-color)" />
               </BarChart>
             </ResponsiveContainer>
           </Card>

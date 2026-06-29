@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { Card, Table, Tag } from "antd";
+import Image from "next/image";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";

@@ -1,16 +1,13 @@
 "use client";
 
+import { Banknote, Eye, Pencil } from "lucide-react";
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useFinanceReceivableQuery } from "@/lib/api/hooks/finance-payable-receivable";
 import { useAuthStore } from "@/stores/auth.store";
 import { ReceivableResponse, ReceivableStatus } from "@/types/finance/payable";
-import {
-  DollarOutlined,
-  EditOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
 import {
   Button,
   Card,
@@ -74,11 +71,10 @@ const ReceivablesPage = () => {
     ReceivableStatus | undefined
   >();
 
-  // modal state
   const [payModalOpen, setPayModalOpen] = useState<boolean>(false);
   const [payableId, setPayableId] = useState<string>("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: receivables,
@@ -151,7 +147,7 @@ const ReceivablesPage = () => {
           <Tooltip title="View receivable">
             <Button
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() =>
                 router.push(
                   `/admin/dashboard/finance/receivables/view/${row.id}`,
@@ -160,20 +156,19 @@ const ReceivablesPage = () => {
             />
           </Tooltip>
 
-          {
-            (!(row.status === "RECEIVED")) && <Tooltip title="Pay receivable">
-            <Button
-              size="small"
-              type="primary"
-              icon={<DollarOutlined />}
-              onClick={() => {
-                setPayableId(row.id);
-                setPayModalOpen(true);
-              }}
-            />
-          </Tooltip>
-          }
-
+          {!(row.status === "RECEIVED") && (
+            <Tooltip title="Pay receivable">
+              <Button
+                size="small"
+                type="primary"
+                icon={<Banknote />}
+                onClick={() => {
+                  setPayableId(row.id);
+                  setPayModalOpen(true);
+                }}
+              />
+            </Tooltip>
+          )}
         </div>
       ),
     },

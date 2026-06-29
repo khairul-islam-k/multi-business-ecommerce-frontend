@@ -1,14 +1,15 @@
 "use client";
-import { Column, DataTable } from "@/components/shared/data-table";
+
 import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  MoreOutlined,
-  PlusCircleOutlined,
-  PlusOutlined,
-  TransactionOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  WalletCards,
+} from "lucide-react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
 import {
   Button,
   Card,
@@ -33,7 +34,11 @@ import {
   useFinanceAccountQuery,
 } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
-import { AccountStatus, AddMoneyPayload, FinanceAccountResponse } from "@/types/finance/account";
+import {
+  AccountStatus,
+  AddMoneyPayload,
+  FinanceAccountResponse,
+} from "@/types/finance/account";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
@@ -65,7 +70,7 @@ const AccountsList = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<AccountStatus | undefined>();
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: accounts,
@@ -90,11 +95,11 @@ const AccountsList = () => {
   }, 0);
 
   const activeAccounts = accountItems.filter(
-    (account) => account.status === "ACTIVE"
+    (account) => account.status === "ACTIVE",
   ).length;
 
   const inactiveAccounts = accountItems.filter(
-    (account) => account.status === "INACTIVE"
+    (account) => account.status === "INACTIVE",
   ).length;
 
   const handleDelete = async (id: string) => {
@@ -109,7 +114,7 @@ const AccountsList = () => {
   // modal add money
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [accountId, setAccountId] = useState<string>('');
+  const [accountId, setAccountId] = useState<string>("");
   console.log(accountId);
 
   const handleFinish = async (values: AddMoneyPayload) => {
@@ -143,7 +148,6 @@ const AccountsList = () => {
       setLoading(false);
     }
   };
-
 
   const columns: Column<FinanceAccountResponse>[] = [
     {
@@ -192,22 +196,22 @@ const AccountsList = () => {
           {
             key: "view",
             label: "View account",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
           },
           {
             key: "edit",
             label: "Update account",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
           },
           {
             key: "add-money",
             label: "Add money",
-            icon: <PlusCircleOutlined />,
+            icon: <CirclePlus />,
           },
           {
             key: "transactions",
             label: "Transactions",
-            icon: <TransactionOutlined />,
+            icon: <WalletCards />,
           },
           {
             type: "divider",
@@ -215,14 +219,14 @@ const AccountsList = () => {
           {
             key: "delete",
             label: "Delete account",
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             danger: true,
             disabled: removeAccount.isPending,
           },
         ];
 
         const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-          console.log('ant', key)
+          console.log("ant", key);
           if (key === "view") {
             router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`);
           }
@@ -237,7 +241,9 @@ const AccountsList = () => {
           }
 
           if (key === "transactions") {
-            router.push(`/admin/dashboard/finance/accounts/transactions/${row.id}`);
+            router.push(
+              `/admin/dashboard/finance/accounts/transactions/${row.id}`,
+            );
           }
 
           if (key === "delete") {
@@ -267,13 +273,12 @@ const AccountsList = () => {
             placement="bottomRight"
           >
             <Tooltip title="Actions">
-              <Button size="small" icon={<MoreOutlined />}>
-              </Button>
+              <Button size="small" icon={<MoreHorizontal />}></Button>
             </Tooltip>
           </Dropdown>
         );
       },
-    }
+    },
   ];
 
   return (
@@ -287,13 +292,15 @@ const AccountsList = () => {
       <Row gutter={[16, 16]}>
         <Col xs={12} md={6}>
           <Card>
-            <Text
-              type="secondary">Total Accounts</Text>
+            <Text type="secondary">Total Accounts</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{total}</Title>
+              level={4}
+            >
+              {total}
+            </Title>
           </Card>
         </Col>
 
@@ -302,9 +309,12 @@ const AccountsList = () => {
             <Text type="secondary">Account Balance</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{formatMoney(totalBalance)}</Title>
+              level={4}
+            >
+              {formatMoney(totalBalance)}
+            </Title>
           </Card>
         </Col>
 
@@ -313,9 +323,12 @@ const AccountsList = () => {
             <Text type="secondary">Active Account</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{activeAccounts}</Title>
+              level={4}
+            >
+              {activeAccounts}
+            </Title>
           </Card>
         </Col>
 
@@ -324,9 +337,12 @@ const AccountsList = () => {
             <Text type="secondary">Inactive Account</Text>
             <Title
               style={{
-                marginTop: 0
+                marginTop: 0,
               }}
-              level={4}>{inactiveAccounts}</Title>
+              level={4}
+            >
+              {inactiveAccounts}
+            </Title>
           </Card>
         </Col>
       </Row>
@@ -355,7 +371,7 @@ const AccountsList = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/finance/accounts/create")
                 }
@@ -392,7 +408,8 @@ const AccountsList = () => {
           onFinish={handleFinish}
         >
           <Form.Item
-            label="Amount"
+            label="Amount to add"
+            tooltip="Enter the deposit amount in this account's currency."
             name="amount"
             rules={[
               {
@@ -401,7 +418,7 @@ const AccountsList = () => {
               },
               {
                 validator: (_, value) => {
-                  if (!value || value <= 0) {
+                  if (typeof value !== "number" || value <= 0) {
                     return Promise.reject("Amount must be greater than 0");
                   }
 
@@ -412,8 +429,9 @@ const AccountsList = () => {
           >
             <InputNumber
               min={1}
+              precision={2}
               style={{ width: "100%" }}
-              placeholder="Enter amount"
+              placeholder="Example: 500"
             />
           </Form.Item>
 

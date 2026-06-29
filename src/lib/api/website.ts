@@ -2,10 +2,23 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { ResponseWebsite, WebsiteDomainFormValues, WebsiteTemplatePayload } from "@/types/website/website";
+import {
+  ResponseWebsite,
+  WebsiteDomainFormValues,
+  WebsiteTemplateOption,
+  WebsiteTemplatePayload,
+} from "@/types/website/website";
 
 const basePath = (businessId: ApiId) => `/websites/businesses/${businessId}`;
 export const websiteApi = {
+  templates(businessId: ApiId) {
+    return api
+      .get<ApiResponse<WebsiteTemplateOption[]>>(
+        `${basePath(businessId)}/templates`,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
   list(businessId: ApiId, query?: CategoriesQuery) {
     return api
       .get<ApiPaginatedResponse<ResponseWebsite>>(

@@ -1,6 +1,9 @@
-import { Card, Space, Typography } from "antd";
-import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
-import { AntdIconProps } from "@ant-design/icons/lib/components/AntdIcon";
+import {
+  ArrowDown,
+  ArrowUp,
+  type LucideIcon,
+} from "lucide-react";
+import { Card, Space, Typography, theme } from "antd";
 
 const { Text, Title } = Typography;
 
@@ -9,16 +12,17 @@ export type Stat = {
   value: string;
   up: boolean;
   change: string;
-  icon: React.FC<AntdIconProps>;
+  icon: LucideIcon;
 };
 
 export default function StatCard({ stat }: { stat: Stat }) {
   const Icon = stat.icon;
+  const { token } = theme.useToken();
 
   return (
     <Card>
       <Space orientation="vertical" size={4}>
-        <Icon style={{ fontSize: 20, color: "#8c8c8c" }} />
+        <Icon size={20} style={{ color: token.colorTextTertiary }} />
 
         <Text type="secondary" className="text-xs uppercase">
           {stat.label}
@@ -35,22 +39,22 @@ export default function StatCard({ stat }: { stat: Stat }) {
 
         <Space size={4}>
           {stat.up ? (
-            <ArrowUpOutlined
+            <ArrowUp
               style={{
-                color: "#52c41a",
+                color: token.colorSuccess,
               }}
             />
           ) : (
-            <ArrowDownOutlined
+            <ArrowDown
               style={{
-                color: "#ff4d4f",
+                color: token.colorError,
               }}
             />
           )}
 
           <Text
             style={{
-              color: stat.up ? "#52c41a" : "#ff4d4f",
+              color: stat.up ? token.colorSuccess : token.colorError,
               fontSize: 12,
             }}
           >

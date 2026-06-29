@@ -1,41 +1,50 @@
 "use client";
 
-import { z } from "zod";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDebounce } from "use-debounce";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
+  CheckCircle2,
   Eye,
   EyeOff,
   LockKeyhole,
   Mail,
   Store,
   User,
+  XCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { useDebounce } from "use-debounce";
+import { z } from "zod";
 
 import Logo from "@/components/shared/logo";
 import api, { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import OtpVerifyDialog from "../_components/otp-verify-dialog";
-import { toast } from "sonner";
 
 const signUpSchema = z
   .object({
     name: z.string().trim().min(2, "Name must be at least 2 characters"),
     email: z.string().trim().email("Enter a valid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must include at least one uppercase letter")
+      .regex(/[a-z]/, "Password must include at least one lowercase letter")
+      .regex(/[0-9]/, "Password must include at least one number")
+      .regex(/[^A-Za-z0-9]/, "Password must include at least one symbol"),
     confirmPassword: z
       .string()
-      .min(6, "Confirm password must be at least 6 characters"),
+      .min(8, "Confirm password must be at least 8 characters"),
     businessName: z
       .string()
       .trim()
-      .max(80, "Store name cannot be longer than 80 characters")
-      .optional(),
+      .min(2, "Store name must be at least 2 characters")
+      .max(80, "Store name cannot be longer than 80 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Password and confirm password must be same",
@@ -55,6 +64,29 @@ type CheckEmailResponse = {
 
 const inputClassName =
   "h-10 sm:h-11 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-4 focus:ring-primary/10";
+
+const getPasswordRequirements = (password: string) => [
+  {
+    label: "At least 8 characters",
+    met: password.length >= 8,
+  },
+  {
+    label: "At least one uppercase letter",
+    met: /[A-Z]/.test(password),
+  },
+  {
+    label: "At least one lowercase letter",
+    met: /[a-z]/.test(password),
+  },
+  {
+    label: "At least one number",
+    met: /[0-9]/.test(password),
+  },
+  {
+    label: "At least one symbol",
+    met: /[^A-Za-z0-9]/.test(password),
+  },
+];
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -86,8 +118,9 @@ export default function SignUpPage() {
     },
   });
 
-
   const emailValue = watch("email");
+  const passwordValue = watch("password") ?? "";
+  const passwordRequirements = getPasswordRequirements(passwordValue);
   const [debouncedEmail] = useDebounce(emailValue, 600);
 
   // Email validation
@@ -106,9 +139,7 @@ export default function SignUpPage() {
       try {
         setIsEmailChecking(true);
 
-        const response = await api.get(
-          `/auth/validate-email?email=${email}`,
-        );
+        const response = await api.get(`/auth/validate-email?email=${email}`);
 
         const result = response.data as CheckEmailResponse;
 
@@ -124,10 +155,10 @@ export default function SignUpPage() {
 
         clearErrors("email");
         setIsEmailAvailable(true);
-      } catch {
+      } catch (error) {
         setError("email", {
           type: "manual",
-          message: "Could not validate email",
+          message: getApiErrorMessage(error),
         });
 
         setIsEmailAvailable(false);
@@ -141,10 +172,9 @@ export default function SignUpPage() {
 
   const onSubmit = async (data: SignUpFormValues) => {
     if (isEmailChecking) {
-      toast.error("Please wait. Email checking is running.");
+      toast.error("Please wait while we verify your email address.");
       return;
     }
-
 
     const { name, email, password, businessName } = data;
 
@@ -152,16 +182,17 @@ export default function SignUpPage() {
       name: name.trim(),
       email: email.trim().toLowerCase(),
       password,
-      businessName: businessName?.trim() || undefined,
+      businessName: businessName.trim(),
     };
 
     try {
       await registerAccount(payload);
-      toast.success("Registration successfully")
+      toast.success(
+        "Account created. Check your email and enter the verification code to activate your workspace.",
+      );
 
       setVerifyEmail(payload.email);
       setOtpOpen(true);
-
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }
@@ -228,7 +259,7 @@ export default function SignUpPage() {
                 </h2>
 
                 <p className="mt-1.5 text-sm leading-5 text-muted-foreground">
-                  Set up your account and optionally create your first store.
+                  Set up your account and create your first store.
                 </p>
               </div>
 
@@ -307,9 +338,6 @@ export default function SignUpPage() {
                     className="mb-1 block text-xs font-medium text-foreground"
                   >
                     Default store name{" "}
-                    <span className="font-normal text-muted-foreground">
-                      optional
-                    </span>
                   </label>
 
                   <div className="relative">
@@ -355,7 +383,9 @@ export default function SignUpPage() {
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -370,6 +400,26 @@ export default function SignUpPage() {
                       {errors.password.message}
                     </p>
                   )}
+
+                  <div className="mt-2 grid gap-1.5 text-xs">
+                    {passwordRequirements.map((requirement) => {
+                      const Icon = requirement.met ? CheckCircle2 : XCircle;
+
+                      return (
+                        <div
+                          key={requirement.label}
+                          className={
+                            requirement.met
+                              ? "flex items-center gap-1.5 text-green-600"
+                              : "flex items-center gap-1.5 text-muted-foreground"
+                          }
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span>{requirement.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
                 <div>
@@ -396,7 +446,9 @@ export default function SignUpPage() {
                       type="button"
                       onClick={() => setShowPassword((value) => !value)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -420,7 +472,6 @@ export default function SignUpPage() {
                 >
                   {isSubmitting ? "Creating account..." : "Create account"}
                 </button>
-
               </form>
 
               <p className="mt-5 text-center text-sm text-muted-foreground">

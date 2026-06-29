@@ -1,13 +1,15 @@
 "use client";
 
+import {
+  Download,
+  Printer,
+  Send
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { Button, Card } from "antd";
 import { useParams } from "next/navigation";
-import {
-  DownloadOutlined,
-  SendOutlined,
-  PrinterOutlined,
-} from "@ant-design/icons";
 
 import StatusBadge from "../_components/badge";
 import PageHeader from "@/components/shared/page-header";
@@ -47,13 +49,13 @@ export default function InvoiceDetails() {
 
       <div className="flex items-center justify-end gap-3">
         <Link href={`/admin/dashboard/invoices/preview/${id}`}>
-          <Button icon={<PrinterOutlined />}>Preview</Button>
+          <Button icon={<Printer />}>Preview</Button>
         </Link>
 
-        <Button icon={<SendOutlined />}>Send</Button>
+        <Button icon={<Send />}>Send</Button>
 
         <Link href={`/admin/dashboard/invoices/preview/${id}`}>
-          <Button type="primary" icon={<DownloadOutlined />}>
+          <Button type="primary" icon={<Download />}>
             Download
           </Button>
         </Link>

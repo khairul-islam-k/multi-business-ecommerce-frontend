@@ -51,12 +51,11 @@ export default function EditRole() {
         roleId,
         payload: {
           ...values,
-          // TODO: is this right?
           permissions: selectedPermissions,
         },
       });
 
-      message.success("Role updated.");
+      message.success("Role updated successfully.");
       router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
       message.error(getApiErrorMessage(error));

@@ -31,7 +31,6 @@ export const limitKeyOptions: PackageLimitKey[] = [
   "MAX_PRODUCTS",
   "MAX_EMPLOYEES",
   "MAX_BUSINESSES",
-  "MAX_WEBSITES",
 ];
 
 export const subscriptionStatusOptions: PackageSubscriptionStatus[] = [

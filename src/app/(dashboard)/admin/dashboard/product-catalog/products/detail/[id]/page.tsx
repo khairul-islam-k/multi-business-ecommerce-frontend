@@ -1,16 +1,23 @@
 "use client";
 
-import Loader from "@/components/shared/loader";
-import { useProduct } from "@/lib/api/hooks/product";
-import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  ArrowLeft,
+  Pencil
+} from "lucide-react";
+
+
 import { Button, Card, Col, Empty, Row, Statistic, Tag } from "antd";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useState, type ReactNode } from "react";
-import ViewVariantTable from "./_components/view-variant-table";
+import { ReactNode, useState } from "react";
+
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useProduct } from "@/lib/api/hooks/product";
+import { useAuthStore } from "@/stores/auth.store";
+
+import ViewVariantTable from "./_components/view-variant-table";
 
 const imageUrlSet = (url?: string | null) => {
   if (!url) return "";
@@ -40,18 +47,12 @@ export default function ProductDetailPage() {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const {
-    data: product,
-    isLoading,
-    isFetching,
-  } = useProduct(businessId, id);
+  const { data: product, isLoading, isFetching } = useProduct(businessId, id);
 
-  console.log('product', product);
+  console.log("product", product);
 
   if (isLoading || isFetching) {
-    return (
-      <Loader />
-    );
+    return <Loader />;
   }
 
   if (!product) {
@@ -70,7 +71,6 @@ export default function ProductDetailPage() {
 
   return (
     <div className="space-y-6">
-
       <PageHeader
         title="Product Details"
         subtitle="View product information, variants, SKU, barcode, price, stock, category, brand, and status."
@@ -78,16 +78,16 @@ export default function ProductDetailPage() {
       />
 
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
 
         <Button
           type="primary"
-          icon={<EditOutlined />}
+          icon={<Pencil />}
           onClick={() =>
             router.push(
-              `/admin/dashboard/product-catalog/products/edit/${product.id}`
+              `/admin/dashboard/product-catalog/products/edit/${product.id}`,
             )
           }
         >
@@ -97,7 +97,6 @@ export default function ProductDetailPage() {
 
       <Card>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
-
           {/* Images */}
           <div className="space-y-4">
             <div className="h-[320px] w-full overflow-hidden rounded-xl border bg-gray-50">
@@ -127,8 +126,16 @@ export default function ProductDetailPage() {
                       key={image.id}
                       type="button"
                       onClick={() => setSelectedImageId(image.id)}
-                      className={`relative h-20 overflow-hidden rounded-lg border bg-gray-50 ${isSelected ? "border-blue-500 ring-2 ring-blue-200" : ""
-                        }`}
+                      className="relative h-20 overflow-hidden rounded-lg border bg-gray-50"
+                      style={
+                        isSelected
+                          ? {
+                              borderColor: "var(--dashboard-primary-color)",
+                              boxShadow:
+                                "0 0 0 2px var(--dashboard-focus-ring-color)",
+                            }
+                          : undefined
+                      }
                     >
                       <Image
                         src={imageUrlSet(image.imageUrl)}
@@ -177,7 +184,10 @@ export default function ProductDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <InfoItem label="Category" value={product.category?.name ?? "-"} />
+              <InfoItem
+                label="Category"
+                value={product.category?.name ?? "-"}
+              />
 
               <InfoItem label="Brand" value={product.brand?.name ?? "-"} />
 
@@ -251,10 +261,7 @@ export default function ProductDetailPage() {
         </div>
       </Card>
 
-      <ViewVariantTable
-        variants={product.variants ?? []}
-      />
-
+      <ViewVariantTable variants={product.variants ?? []} />
     </div>
   );
 }

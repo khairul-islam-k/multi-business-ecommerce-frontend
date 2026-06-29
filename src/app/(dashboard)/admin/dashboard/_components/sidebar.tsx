@@ -130,7 +130,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   return (
     <div
       style={{
-        background: token.colorBgContainer,
+        background: "var(--dashboard-sidebar-background-color)",
+        color: "var(--dashboard-sidebar-text-color)",
         borderRight: `1px solid ${token.colorBorderSecondary}`,
         display: "flex",
         flexDirection: "column",
@@ -157,7 +158,11 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
           inlineCollapsed={collapsed}
           items={primaryMenuItems}
           onClick={close}
-          style={{ borderRight: 0, background: "transparent" }}
+          style={{
+            borderRight: 0,
+            background: "transparent",
+            color: "var(--dashboard-sidebar-text-color)",
+          }}
         />
       </div>
 
@@ -173,7 +178,11 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
           inlineCollapsed={collapsed}
           items={notificationMenuItems}
           onClick={close}
-          style={{ borderRight: 0, background: "transparent" }}
+          style={{
+            borderRight: 0,
+            background: "transparent",
+            color: "var(--dashboard-sidebar-text-color)",
+          }}
         />
       </div>
 

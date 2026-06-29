@@ -1,44 +1,16 @@
 "use client";
 
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useAddActiveCArt, useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { CartImage, CartItem } from "@/types/template/add-cart";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 
-type CartProductImage = {
-    id?: string;
-    imageUrl: string;
-    altText?: string | null;
-    isThumbnail?: boolean;
-};
 
-type CartProduct = {
-    id: string;
-    name: string;
-    slug: string;
-    description: string | null;
-    price: string;
-    images?: CartProductImage[];
-};
-
-type CartVariant = {
-    id: string;
-    title: string;
-    priceOverride: string;
-} | null;
-
-type CartItem = {
-    id: string;
-    cartId: string;
-    productId: string;
-    variantId: string | null;
-    quantity: string;
-    product: CartProduct;
-    variant: CartVariant;
-};
 
 const getItemPrice = (item: CartItem) => {
     if (item.variant) {
@@ -60,9 +32,17 @@ const getProductImage = (item: CartItem) => {
     );
 };
 
+const getThumbnailImage = (images: CartImage[]) => {
+    const thumbnailImage = images.find((image) => image.isThumbnail === true);
+
+    return thumbnailImage?.imageUrl || null;
+};
+
 const FashionActiveCart = () => {
     const { data: cart, isLoading } = useAddActiveCArt();
     const message = useMessage();
+
+    console.log('cart', cart);
 
     const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
@@ -211,27 +191,33 @@ const FashionActiveCart = () => {
                                     const quantity = getItemQuantity(item);
                                     const itemTotal = price * quantity;
 
+                                    const thumbnail = getThumbnailImage(item?.images);
+
                                     return (
                                         <div
                                             key={item.id}
                                             className="grid gap-4 px-4 py-5 sm:px-6 lg:grid-cols-[1fr_130px_160px_120px_60px] lg:items-center"
                                         >
                                             <div className="flex gap-4">
-                                                <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gray-100">
-                                                    {imageUrl ? (
-                                                        <img
-                                                            src={imageUrl}
+                                                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+                                                    {thumbnail ? (
+                                                        <Image
+                                                            src={imageUrlSet(thumbnail)}
+                                                            fill
                                                             alt={item.product.name}
-                                                            className="h-full w-full object-cover"
+                                                            sizes="96px"
+                                                            className="object-cover"
                                                         />
                                                     ) : (
-                                                        <span className="text-2xl font-bold text-gray-400">
-                                                            {item.product.name.charAt(0)}
-                                                        </span>
+                                                        <div className="flex h-full w-full items-center justify-center">
+                                                            <span className="text-2xl font-bold text-gray-400">
+                                                                {item.product.name.charAt(0)}
+                                                            </span>
+                                                        </div>
                                                     )}
                                                 </div>
 
-                                                <div>
+                                                <div className="min-w-0">
                                                     <Link
                                                         href={`/store/products/details/${item.product.slug}`}
                                                         className="line-clamp-1 text-base font-bold text-gray-950 transition hover:text-[#f16d59]"
@@ -247,9 +233,7 @@ const FashionActiveCart = () => {
                                                             </span>
                                                         </p>
                                                     ) : (
-                                                        <p className="mt-1 text-sm text-gray-500">
-                                                            No Variant
-                                                        </p>
+                                                        <p className="mt-1 text-sm text-gray-500">No Variant</p>
                                                     )}
 
                                                     <p className="mt-1 line-clamp-1 text-sm text-gray-400">

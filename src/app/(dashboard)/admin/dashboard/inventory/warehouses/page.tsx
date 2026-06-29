@@ -1,8 +1,14 @@
 "use client";
 
+import {
+  CirclePlus,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -106,7 +112,7 @@ const Warehouses = () => {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() =>
               router.push(
                 `/admin/dashboard/inventory/warehouses/edit/${row.id}`,
@@ -121,7 +127,7 @@ const Warehouses = () => {
             cancelText="No"
             onConfirm={() => handleDelete(row.id)}
           >
-            <Button danger size="small" icon={<DeleteOutlined />} />
+            <Button danger size="small" icon={<Trash2 />} />
           </Popconfirm>
         </div>
       ),
@@ -159,7 +165,7 @@ const Warehouses = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/inventory/warehouses/create")
                 }

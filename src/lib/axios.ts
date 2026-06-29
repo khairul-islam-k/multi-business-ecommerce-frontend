@@ -30,10 +30,22 @@ let failedQueue: Array<{
 export const getApiErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as
-      | { message?: string; errors?: string[] }
+      | { message?: string | string[]; errors?: string[] }
       | undefined;
 
-    return data?.message ?? error.message;
+    if (Array.isArray(data?.message)) {
+      return data.message.join(". ");
+    }
+
+    if (typeof data?.message === "string") {
+      return data.message;
+    }
+
+    if (Array.isArray(data?.errors) && data.errors.length > 0) {
+      return data.errors.join(". ");
+    }
+
+    return error.message;
   }
 
   return error instanceof Error ? error.message : "Something went wrong";

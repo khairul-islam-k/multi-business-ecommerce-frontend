@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  Search
+} from "lucide-react";
+
+
 import { useState } from "react";
 import { Card, Flex, Grid, Input, Select, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 
 import HistoryTable from "./_components/HistoryTable";
 import PageHeader from "@/components/shared/page-header";
@@ -51,7 +55,7 @@ const OrderHistory = () => {
               style={{
                 width: screens.lg ? "330px" : "100%",
               }}
-              prefix={<SearchOutlined />}
+              prefix={<Search />}
               placeholder="Search packages..."
               onChange={(e) => handleSearch(e.target.value)}
             />

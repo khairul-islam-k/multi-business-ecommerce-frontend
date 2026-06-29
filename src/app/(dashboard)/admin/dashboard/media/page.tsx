@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  RefreshCw
+} from "lucide-react";
+
+
 import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
-import { ReloadOutlined } from "@ant-design/icons";
 import { App, Button, Card, Empty, Form, theme } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
@@ -190,7 +194,7 @@ export default function MediaLibraryPage() {
         actions={
           <Button
             className="media-secondary-button"
-            icon={<ReloadOutlined />}
+            icon={<RefreshCw />}
             onClick={() => refetch()}
           >
             Refresh

@@ -1,8 +1,12 @@
 "use client";
 
-import { AttributeValuePayload, ResponseAttributeValue } from "@/types/product/attribute";
 import { Button, Card, Form, Input, Space } from "antd";
 import { useEffect } from "react";
+
+import {
+  AttributeValuePayload,
+  ResponseAttributeValue,
+} from "@/types/product/attribute";
 
 type AttributeValueFormProps = {
   mode: "create" | "update";
@@ -38,7 +42,11 @@ const AttributeValueForm = ({
   };
 
   return (
-    <Card title={mode === "create" ? "Create Attribute Value" : "Update Attribute Value"}>
+    <Card
+      title={
+        mode === "create" ? "Create Attribute Value" : "Update Attribute Value"
+      }
+    >
       <Form<AttributeValuePayload>
         form={form}
         layout="vertical"

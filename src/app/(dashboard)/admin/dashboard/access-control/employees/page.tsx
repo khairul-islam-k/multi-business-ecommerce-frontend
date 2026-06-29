@@ -1,15 +1,17 @@
 "use client";
 
+import {
+  CirclePlus,
+  Eye,
+  MoreHorizontal,
+  UserRoundCog
+} from "lucide-react";
+
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { App, Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
-import {
-  EyeOutlined,
-  MoreOutlined,
-  PlusOutlined,
-  UserSwitchOutlined,
-} from "@ant-design/icons";
 
 import type { Employee } from "@/lib/api";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
@@ -130,7 +132,7 @@ export default function Users() {
         updateAccess.allowed ? (
           <Button
             type="default"
-            icon={<UserSwitchOutlined />}
+            icon={<UserRoundCog />}
             onClick={() => openRoleModal(row)}
           >
             Assign Roles
@@ -160,7 +162,7 @@ export default function Users() {
             createAccess.allowed ? (
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push(
                     "/admin/dashboard/access-control/employees/create",
@@ -191,7 +193,7 @@ export default function Users() {
               <Link
                 href={`/admin/dashboard/access-control/employees/details/${row.id}`}
               >
-                <Button type="text" icon={<EyeOutlined />} />
+                <Button type="text" icon={<Eye />} />
               </Link>
 
               {(updateAccess.allowed || deleteAccess.allowed) && (
@@ -240,7 +242,7 @@ export default function Users() {
                     ],
                   }}
                 >
-                  <Button type="text" icon={<MoreOutlined />} />
+                  <Button type="text" icon={<MoreHorizontal />} />
                 </Dropdown>
               )}
             </Flex>

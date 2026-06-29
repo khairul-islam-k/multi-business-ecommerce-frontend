@@ -29,7 +29,7 @@ const CustomersChart = () => {
             <XAxis dataKey="customer" />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="totalSpent" fill="#1677ff" />
+            <Bar dataKey="totalSpent" fill="var(--dashboard-primary-color)" />
           </BarChart>
         </ResponsiveContainer>
       </Card>

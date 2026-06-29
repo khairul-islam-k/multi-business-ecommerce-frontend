@@ -1,10 +1,10 @@
-import { Card, Grid, theme } from "antd";
 import {
-  DollarOutlined,
-  TeamOutlined,
-  UserDeleteOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  TriangleAlert,
+  UserRoundX,
+  Users
+} from "lucide-react";
+import { Card, Grid, theme } from "antd";
 
 const CustomerCard = () => {
   const { token } = theme.useToken();
@@ -32,7 +32,7 @@ const CustomerCard = () => {
               borderRadius: "10px",
             }}
           >
-            <TeamOutlined style={{ fontSize: "30px" }} />
+            <Users style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>8</h3>
@@ -54,7 +54,7 @@ const CustomerCard = () => {
               borderRadius: "10px",
             }}
           >
-            <DollarOutlined style={{ fontSize: "30px" }} />
+            <Banknote style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>Rs 1072K</h3>
@@ -76,7 +76,7 @@ const CustomerCard = () => {
               borderRadius: "10px",
             }}
           >
-            <UserDeleteOutlined style={{ fontSize: "30px" }} />
+            <UserRoundX style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3
@@ -103,7 +103,7 @@ const CustomerCard = () => {
               borderRadius: "10px",
             }}
           >
-            <WarningOutlined style={{ fontSize: "30px" }} />
+            <TriangleAlert style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3

@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  AppstoreOutlined,
-  CheckCircleOutlined,
-  WarningOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons";
+  CircleCheck,
+  CircleX,
+  LayoutDashboard,
+  TriangleAlert
+} from "lucide-react";
+
+
 
 import ReportPage from "../_components/report-page";
 
@@ -20,28 +22,28 @@ export default function InventoryReports() {
           value: "12,800",
           change: "+120 new",
           up: true,
-          icon: AppstoreOutlined,
+          icon: LayoutDashboard,
         },
         {
           label: "In Stock",
           value: "10,450",
           change: "81.6%",
           up: true,
-          icon: CheckCircleOutlined,
+          icon: CircleCheck,
         },
         {
           label: "Low Stock",
           value: "1,850",
           change: "14.5%",
           up: false,
-          icon: WarningOutlined,
+          icon: TriangleAlert,
         },
         {
           label: "Out of Stock",
           value: "500",
           change: "3.9%",
           up: false,
-          icon: CloseCircleOutlined,
+          icon: CircleX,
         },
       ]}
       chartData={[

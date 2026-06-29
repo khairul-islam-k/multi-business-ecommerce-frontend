@@ -1,8 +1,12 @@
 "use client";
 
+import {
+  CirclePlus
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { PlusOutlined } from "@ant-design/icons";
 import { Button, Grid, Select, Space } from "antd";
 import { useState } from "react";
 import ConfigCollapse from "./_components/section-collapse";
@@ -42,7 +46,7 @@ const SectionEditor = () => {
           <option value="Tech Outlet-Home">Tech Outlet-Home</option>
         </Select>
 
-        <Button icon={<PlusOutlined />} type="primary">
+        <Button icon={<CirclePlus />} type="primary">
           Add Section
         </Button>
       </Space>

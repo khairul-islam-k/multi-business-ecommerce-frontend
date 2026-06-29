@@ -1,9 +1,9 @@
 import {
-  AppstoreOutlined,
-  InboxOutlined,
-  WarningOutlined,
-  DollarOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  Inbox,
+  LayoutDashboard,
+  TriangleAlert
+} from "lucide-react";
 
 import { formatCurrency } from "./utils";
 
@@ -112,7 +112,7 @@ export const mockStats = [
     value: String(mockInventories.length),
     up: true,
     change: "+0%",
-    icon: AppstoreOutlined,
+    icon: LayoutDashboard,
   },
   {
     label: "Total Available",
@@ -121,7 +121,7 @@ export const mockStats = [
       .toLocaleString(),
     up: true,
     change: "+0%",
-    icon: InboxOutlined,
+    icon: Inbox,
   },
   {
     label: "Total Reserved",
@@ -130,7 +130,7 @@ export const mockStats = [
       .toLocaleString(),
     up: false,
     change: "-0%",
-    icon: WarningOutlined,
+    icon: TriangleAlert,
   },
   {
     label: "Inventory Value",
@@ -139,6 +139,6 @@ export const mockStats = [
     ),
     up: true,
     change: "+0%",
-    icon: DollarOutlined,
+    icon: Banknote,
   },
 ];

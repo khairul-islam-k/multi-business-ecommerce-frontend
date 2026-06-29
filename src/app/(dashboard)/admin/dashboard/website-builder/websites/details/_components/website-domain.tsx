@@ -1,52 +1,44 @@
 "use client";
 
-import api from "@/lib/axios";
-import { useQuery } from "@tanstack/react-query";
-import { Card, Tag, Spin, Empty } from "antd";
+import { Card, Tag } from "antd";
+
 import { Column, DataTable } from "@/components/shared/data-table";
+import type { ResponseWebsite, ResponseWebsiteDomain } from "@/types/website/website";
 
-export default function WebsiteDomain({ websiteId }: { websiteId: string }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["website-domains", websiteId],
-    queryFn: async () => {
-      const res = await api.get(`/domains`, {
-        params: { website_id: websiteId },
-      });
-      return res.data?.data?.data ?? [];
-    },
-    enabled: !!websiteId,
-  });
-
-  if (isLoading) return <Spin />;
-  if (isError) return <Empty description="Failed to load domains" />;
-
-  const columns: Column<any>[] = [
+export default function WebsiteDomain({ website }: { website: ResponseWebsite }) {
+  const columns: Column<ResponseWebsiteDomain>[] = [
     {
       key: "domain",
       label: "Domain",
       type: "primary",
-      render: (r) => r.domain,
+      render: (record) => record.domain ?? record.subdomain ?? "-",
     },
     {
-      key: "dns_status",
-      label: "DNS",
-      render: (r) => <Tag>{r.dns_status}</Tag>,
+      key: "domainType",
+      label: "Type",
+      render: (record) => record.domainType ?? "-",
     },
     {
-      key: "status",
-      label: "Status",
-      render: (r) => <Tag>{r.status}</Tag>,
+      key: "verificationStatus",
+      label: "Verification",
+      render: (record) => <Tag>{record.verificationStatus ?? "-"}</Tag>,
     },
     {
-      key: "is_primary",
+      key: "sslStatus",
+      label: "SSL",
+      render: (record) => <Tag>{record.sslStatus ?? "-"}</Tag>,
+    },
+    {
+      key: "isPrimary",
       label: "Primary",
-      render: (r) => (r.is_primary ? <Tag color="blue">Primary</Tag> : "—"),
+      render: (record) =>
+        record.isPrimary ? <Tag color="blue">Primary</Tag> : "-",
     },
   ];
 
   return (
     <Card>
-      <DataTable data={data} columns={columns} />
+      <DataTable data={website.domains ?? []} columns={columns} />
     </Card>
   );
 }

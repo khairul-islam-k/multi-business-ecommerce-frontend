@@ -1,16 +1,23 @@
 "use client";
 
+import { Check, CirclePlus, Eye, X } from "lucide-react";
+
 import { Button, Card, Select, Tag, Tooltip } from "antd";
-import { CheckOutlined, CloseOutlined, EyeOutlined, PlusOutlined } from "@ant-design/icons";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useStockAdjustmentMutation, useStockAdjustmentQuery } from "@/lib/api/hooks/stock-adjustment";
+import {
+  useStockAdjustmentMutation,
+  useStockAdjustmentQuery,
+} from "@/lib/api/hooks/stock-adjustment";
 import { useAuthStore } from "@/stores/auth.store";
 import { Column, DataTable } from "@/components/shared/data-table";
-import type { StockAdjustmentResponse, StockAdjustmentStatus } from "@/types/stock/adjustment";
+import type {
+  StockAdjustmentResponse,
+  StockAdjustmentStatus,
+} from "@/types/stock/adjustment";
 import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -50,7 +57,7 @@ export default function StockAdjustmentListPage() {
   const [search, setSearch] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: adjustments,
@@ -60,7 +67,7 @@ export default function StockAdjustmentListPage() {
     page: currentPage,
     limit,
     search,
-    warehouseId
+    warehouseId,
   });
 
   const total = adjustments?.meta?.total || 0;
@@ -90,7 +97,8 @@ export default function StockAdjustmentListPage() {
     );
   }, [warehouses?.items]);
 
-  const { updateApprove, updateCancel } = useStockAdjustmentMutation(businessId);
+  const { updateApprove, updateCancel } =
+    useStockAdjustmentMutation(businessId);
 
   const handleApprove = (id: string) => {
     swal.modal.confirm({
@@ -102,7 +110,6 @@ export default function StockAdjustmentListPage() {
       async onOk() {
         try {
           await updateApprove.mutateAsync(id);
-
 
           swal.success("Stock adjustment approved successfully.");
         } catch (error) {
@@ -179,9 +186,7 @@ export default function StockAdjustmentListPage() {
       key: "status",
       label: "Status",
       type: "meta",
-      render: (row) => (
-        <Tag color={statusColor[row.status]}>{row.status}</Tag>
-      ),
+      render: (row) => <Tag color={statusColor[row.status]}>{row.status}</Tag>,
     },
     {
       key: "actions",
@@ -191,7 +196,7 @@ export default function StockAdjustmentListPage() {
           <Tooltip title="View">
             <Button
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() =>
                 router.push(
                   `/admin/dashboard/inventory/stock-adjustments/details/${row.id}`,
@@ -204,7 +209,7 @@ export default function StockAdjustmentListPage() {
             <Button
               size="small"
               type="primary"
-              icon={<CheckOutlined />}
+              icon={<Check />}
               disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
               onClick={() => handleApprove(row.id)}
             />
@@ -214,14 +219,14 @@ export default function StockAdjustmentListPage() {
             <Button
               size="small"
               danger
-              icon={<CloseOutlined />}
+              icon={<X />}
               disabled={row.status === "APPROVED" || row.status === "CANCELLED"}
               onClick={() => handleCancel(row.id)}
             />
           </Tooltip>
         </div>
       ),
-    }
+    },
   ];
 
   return (
@@ -237,7 +242,6 @@ export default function StockAdjustmentListPage() {
           data={tableData}
           toolbarEnd={
             <div className="flex flex-col gap-3 md:flex-row">
-
               <Select
                 allowClear
                 showSearch
@@ -255,9 +259,11 @@ export default function StockAdjustmentListPage() {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
-                  router.push("/admin/dashboard/inventory/stock-adjustments/create")
+                  router.push(
+                    "/admin/dashboard/inventory/stock-adjustments/create",
+                  )
                 }
               >
                 Create Adjustment

@@ -1,26 +1,23 @@
 "use client";
 
-import { useUnit } from "@/lib/api/hooks/product-unit";
-import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
 import { Button, Card, Empty, Skeleton, Tag } from "antd";
-import { ReactNode } from "react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { ReactNode } from "react";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useUnit } from "@/lib/api/hooks/product-unit";
+import { useAuthStore } from "@/stores/auth.store";
 
 const UnitDetails = () => {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
 
   const business = useAuthStore((s) => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const businessId = business?.id ? business?.id : "";
 
-  const {
-    data: unit,
-    isLoading,
-    isFetching,
-  } = useUnit(businessId, id);
+  const { data: unit, isLoading, isFetching } = useUnit(businessId, id);
 
   if (isLoading || isFetching) {
     return (
@@ -46,16 +43,16 @@ const UnitDetails = () => {
       </div>
 
       <div className="flex items-center justify-between">
-        <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+        <Button icon={<ArrowLeft />} onClick={() => router.back()}>
           Back
         </Button>
 
         <Button
           type="primary"
-          icon={<EditOutlined />}
+          icon={<Pencil />}
           onClick={() =>
             router.push(
-              `/admin/dashboard/product-catalog/units/update/${unit.id}`
+              `/admin/dashboard/product-catalog/units/update/${unit.id}`,
             )
           }
         >
@@ -76,10 +73,7 @@ const UnitDetails = () => {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <InfoItem label="Unit Name" value={unit.name} />
 
-          <InfoItem
-            label="Products"
-            value={unit._count?.products ?? 0}
-          />
+          <InfoItem label="Products" value={unit._count?.products ?? 0} />
 
           <InfoItem
             label="Created At"

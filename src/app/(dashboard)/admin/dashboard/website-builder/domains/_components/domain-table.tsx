@@ -1,11 +1,11 @@
+import {
+  Globe,
+  RefreshCw,
+  Trash2
+} from "lucide-react";
 import React from "react";
 import { Table, Space, Tooltip } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import {
-  ReloadOutlined,
-  DeleteOutlined,
-  GlobalOutlined,
-} from "@ant-design/icons";
 
 interface Domain {
   id: number;
@@ -74,7 +74,7 @@ const DomainTable: React.FC = () => {
             }}
           >
             <div>
-              <GlobalOutlined />
+              <Globe />
             </div>
             <div>{Domain}</div>
           </div>
@@ -108,15 +108,15 @@ const DomainTable: React.FC = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Refresh DNS / SSL status">
-            <ReloadOutlined
+            <RefreshCw
               style={{ cursor: "pointer" }}
               onClick={() => handleRefresh(record)}
             />
           </Tooltip>
 
           <Tooltip title="Delete Domain">
-            <DeleteOutlined
-              style={{ color: "#ff4d4f", cursor: "pointer" }}
+            <Trash2
+              style={{ color: "var(--dashboard-error-color)", cursor: "pointer" }}
               onClick={() => handleDelete(record)}
             />
           </Tooltip>

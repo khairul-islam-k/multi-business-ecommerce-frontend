@@ -1,6 +1,14 @@
 import { Badge } from "antd";
 
-import type { OrderStatus, PaymentStatus, ReturnStatus } from "../data";
+type OrderStatus =
+  | "pending"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | "returned";
+type PaymentStatus = "paid" | "pending" | "refunded" | "failed";
+type ReturnStatus = "requested" | "approved" | "received" | "refunded" | "rejected";
 
 const statusConfig: Record<OrderStatus, { label: string; color: string }> = {
   pending: { label: "Pending", color: "orange" },

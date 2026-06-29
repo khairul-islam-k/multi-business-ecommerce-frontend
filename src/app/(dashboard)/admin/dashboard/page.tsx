@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  stroke="#1677ff"
+                  stroke="var(--dashboard-primary-color)"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -129,7 +129,7 @@ export default function AdminDashboardPage() {
 
                 <Tooltip />
 
-                <Bar dataKey="value" fill="#52c41a" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="value" fill="var(--dashboard-success-color)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </Card>

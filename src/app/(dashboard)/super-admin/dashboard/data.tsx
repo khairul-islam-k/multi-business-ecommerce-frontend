@@ -1,11 +1,11 @@
 import {
-  BankOutlined,
-  TeamOutlined,
-  DollarOutlined,
-  RiseOutlined,
-  CreditCardOutlined,
-  ClockCircleOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  Clock,
+  CreditCard,
+  Landmark,
+  TrendingUp,
+  Users
+} from "lucide-react";
 
 export const mockTenants = [
   {
@@ -126,42 +126,42 @@ export const mockStats = [
     value: "1,482",
     change: "+2.1%",
     up: true,
-    icon: BankOutlined,
+    icon: Landmark,
   },
   {
     label: "Active Tenants",
     value: "1,247",
     change: "+3.4%",
     up: true,
-    icon: TeamOutlined,
+    icon: Users,
   },
   {
     label: "MRR",
     value: "$128,430",
     change: "+5.2%",
     up: true,
-    icon: DollarOutlined,
+    icon: Banknote,
   },
   {
     label: "Total Revenue",
     value: "$1.54M",
     change: "+12.3%",
     up: true,
-    icon: RiseOutlined,
+    icon: TrendingUp,
   },
   {
     label: "Active Subs",
     value: "1,180",
     change: "+1.8%",
     up: true,
-    icon: CreditCardOutlined,
+    icon: CreditCard,
   },
   {
     label: "Trial Accounts",
     value: "67",
     change: "-8.2%",
     up: false,
-    icon: ClockCircleOutlined,
+    icon: Clock,
   },
 ];
 

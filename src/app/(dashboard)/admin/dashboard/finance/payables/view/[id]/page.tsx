@@ -1,11 +1,15 @@
 "use client";
 
+import {
+  ArrowLeft
+} from "lucide-react";
+
+
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useFinancePayable } from "@/lib/api/hooks/finance-payable-receivable";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import {
     Button,
     Card,
@@ -93,7 +97,7 @@ const ViewPayablePage = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <Button icon={<ArrowLeftOutlined />} onClick={() => router.back()}>
+            <Button icon={<ArrowLeft />} onClick={() => router.back()}>
                 Back
             </Button>
 

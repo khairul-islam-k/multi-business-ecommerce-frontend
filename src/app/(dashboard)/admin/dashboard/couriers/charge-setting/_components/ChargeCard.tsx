@@ -1,6 +1,10 @@
+import {
+  Globe,
+  Home,
+  Truck
+} from "lucide-react";
 import React from "react";
 import { Card, Grid, theme } from "antd";
-import { CarOutlined, GlobalOutlined, HomeOutlined } from "@ant-design/icons";
 
 const ChargeCard = () => {
   const { token } = theme.useToken();
@@ -28,7 +32,7 @@ const ChargeCard = () => {
               borderRadius: "10px",
             }}
           >
-            <HomeOutlined style={{ fontSize: "30px" }} />
+            <Home style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>Rs 142</h3>
@@ -50,7 +54,7 @@ const ChargeCard = () => {
               borderRadius: "10px",
             }}
           >
-            <CarOutlined style={{ fontSize: "30px" }} />
+            <Truck style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3 style={{ fontSize: "20px" }}>Rs 300</h3>
@@ -72,7 +76,7 @@ const ChargeCard = () => {
               borderRadius: "10px",
             }}
           >
-            <GlobalOutlined style={{ fontSize: "30px" }} />
+            <Globe style={{ fontSize: "30px" }} />
           </div>
           <div>
             <h3

@@ -77,28 +77,28 @@ const ReportChart = () => {
         >
           <defs>
             <linearGradient id="colorWebsite" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-primary-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-primary-color)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorFacebook" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3572f5" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#3572f5" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-info-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-info-color)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorInstagram" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f06292" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#f06292" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-error-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-error-color)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorGoogleAds" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f4d03f" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#f4d03f" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-warning-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-warning-color)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorReferral" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#27ae60" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#27ae60" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-success-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-success-color)" stopOpacity={0} />
             </linearGradient>
             <linearGradient id="colorWalkIn" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#7f8c8d" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#7f8c8d" stopOpacity={0} />
+              <stop offset="5%" stopColor="var(--dashboard-text-muted-color)" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="var(--dashboard-text-muted-color)" stopOpacity={0} />
             </linearGradient>
           </defs>
           <XAxis dataKey="month" />
@@ -110,42 +110,42 @@ const ReportChart = () => {
             type="monotone"
             dataKey="Website"
             stackId="1"
-            stroke="#8884d8"
+            stroke="var(--dashboard-primary-color)"
             fill="url(#colorWebsite)"
           />
           <Area
             type="monotone"
             dataKey="Facebook"
             stackId="1"
-            stroke="#3572f5"
+            stroke="var(--dashboard-info-color)"
             fill="url(#colorFacebook)"
           />
           <Area
             type="monotone"
             dataKey="Instagram"
             stackId="1"
-            stroke="#f06292"
+            stroke="var(--dashboard-error-color)"
             fill="url(#colorInstagram)"
           />
           <Area
             type="monotone"
             dataKey="Google Ads"
             stackId="1"
-            stroke="#f4d03f"
+            stroke="var(--dashboard-warning-color)"
             fill="url(#colorGoogleAds)"
           />
           <Area
             type="monotone"
             dataKey="Referral"
             stackId="1"
-            stroke="#27ae60"
+            stroke="var(--dashboard-success-color)"
             fill="url(#colorReferral)"
           />
           <Area
             type="monotone"
             dataKey="Walk-in"
             stackId="1"
-            stroke="#7f8c8d"
+            stroke="var(--dashboard-text-muted-color)"
             fill="url(#colorWalkIn)"
           />
         </AreaChart>

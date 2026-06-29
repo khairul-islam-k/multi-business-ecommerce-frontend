@@ -1,12 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-  StopOutlined,
-} from "@ant-design/icons";
+  CirclePlus,
+  CircleStop,
+  Pencil,
+  Trash2
+} from "lucide-react";
+
+
+import { useMemo, useState } from "react";
 import { App, Button, Modal, Select, Space, Tabs, Tag } from "antd";
 
 import { getApiErrorMessage } from "@/lib/axios";
@@ -333,7 +335,7 @@ export default function PackagesPage() {
                 toolbarEnd={
                   <Button
                     type="primary"
-                    icon={<PlusOutlined />}
+                    icon={<CirclePlus />}
                     onClick={() => setPlanModalOpen(true)}
                   >
                     Create plan
@@ -342,7 +344,7 @@ export default function PackagesPage() {
                 actions={(plan) => (
                   <Space>
                     <Button
-                      icon={<EditOutlined />}
+                      icon={<Pencil />}
                       onClick={() => {
                         setEditingPlan(plan);
                         setPlanModalOpen(true);
@@ -350,7 +352,7 @@ export default function PackagesPage() {
                     />
                     <Button
                       danger
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 />}
                       onClick={() => deletePlan(plan)}
                     />
                   </Space>
@@ -375,7 +377,7 @@ export default function PackagesPage() {
                 toolbarEnd={
                   <Button
                     type="primary"
-                    icon={<PlusOutlined />}
+                    icon={<CirclePlus />}
                     onClick={() => setSubscriptionModalOpen(true)}
                   >
                     Create subscription
@@ -383,13 +385,9 @@ export default function PackagesPage() {
                 }
                 actions={(subscription) => (
                   <Space>
-                    {/* <Button
-                      icon={<RetweetOutlined />}
-                      onClick={() => setChangingSubscription(subscription)}
-                    /> */}
                     <Button
                       danger
-                      icon={<StopOutlined />}
+                      icon={<CircleStop />}
                       disabled={subscription.status === "CANCELLED"}
                       onClick={() => cancelSubscription(subscription)}
                     />

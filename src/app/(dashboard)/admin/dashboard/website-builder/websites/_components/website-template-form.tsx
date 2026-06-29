@@ -15,7 +15,13 @@ import {
 } from "antd";
 
 import ImageSelectModal from "../../../_components/ImageSelectModal";
-import { BestOfferImage, HeaderSlide, WebsiteTemplatePayload } from "@/types/website/website";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useWebsiteTemplates } from "@/lib/api/hooks/website";
+import {
+  BestOfferImage,
+  HeaderSlide,
+  WebsiteTemplatePayload,
+} from "@/types/website/website";
 
 const { TextArea } = Input;
 
@@ -118,6 +124,13 @@ export default function WebsiteTemplateForm({
   onSubmit,
 }: WebsiteTemplateFormProps) {
   const [form] = Form.useForm<TemplateFormValues>();
+  const businessId = useActiveBusinessId();
+  const websiteTemplatesQuery = useWebsiteTemplates(businessId ?? "");
+  const templateOptions =
+    websiteTemplatesQuery.data?.map((template) => ({
+      label: template.name,
+      value: template.key,
+    })) ?? [];
 
   const [slideImageModalOpen, setSlideImageModalOpen] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number | null>(null);
@@ -259,20 +272,8 @@ export default function WebsiteTemplateForm({
                   >
                     <Select
                       placeholder="Select template"
-                      options={[
-                        {
-                          label: "Electronic",
-                          value: "ELECTRONIC",
-                        },
-                        {
-                          label: "Fashion",
-                          value: "FASHION",
-                        },
-                        {
-                          label: "Grocery",
-                          value: "GROCERY",
-                        },
-                      ]}
+                      loading={websiteTemplatesQuery.isLoading}
+                      options={templateOptions}
                     />
                   </Form.Item>
 

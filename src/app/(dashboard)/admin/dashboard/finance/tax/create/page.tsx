@@ -48,7 +48,7 @@ export default function CreateTaxPage() {
     <div className="space-y-6">
       <PageHeader
         title="Create Tax"
-        subtitle="Add a new tax rate with name, rate, description, and status."
+        subtitle="Add a tax rule with a percentage rate, description, and status."
         breadcrumb={adminBreadcrumb}
       />
 

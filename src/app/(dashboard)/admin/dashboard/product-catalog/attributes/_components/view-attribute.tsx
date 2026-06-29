@@ -3,8 +3,8 @@
 import { Card, Empty, Skeleton, Tag } from "antd";
 import React from "react";
 
-import { useAttribute } from "@/lib/api/hooks/product-attribute";
 import { ApiId } from "@/lib/api";
+import { useAttribute } from "@/lib/api/hooks/product-attribute";
 import { useAuthStore } from "@/stores/auth.store";
 
 type ViewAttributeProps = {
@@ -68,10 +68,7 @@ const ViewAttribute = ({ attributeId }: ViewAttributeProps) => {
         {viewAttribute.values?.length ? (
           <div className="space-y-3">
             {viewAttribute.values.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-lg border bg-gray-50 p-3"
-              >
+              <div key={item.id} className="rounded-lg border bg-gray-50 p-3">
                 <p className="m-0 font-medium">{item.value}</p>
                 <p className="m-0 text-xs text-gray-500">
                   Created: {new Date(item.createdAt).toLocaleDateString()}

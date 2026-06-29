@@ -53,7 +53,7 @@ export type ListQuery = {
 export type ApiArrayResponse<T> = {
   message?: string;
   data: T[] | null;
-}
+};
 
 export type SystemUserType = "ADMIN" | "TENANT" | "EMPLOYEE" | string;
 export type SystemUserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED" | string;
@@ -100,7 +100,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   password: string;
-  businessName?: string;
+  businessName: string;
 };
 
 export type RegisterResponse = {
@@ -156,6 +156,10 @@ export type BusinessSetting = {
   autoConfirmOrder?: boolean;
   codEnabled?: boolean;
   onlinePaymentEnabled?: boolean;
+  defaultWarehouseId?: ApiId | null;
+  defaultFinanceAccountId?: ApiId | null;
+  defaultUnitId?: ApiId | null;
+  defaultTaxId?: ApiId | null;
 };
 
 export type BusinessBranding = {
@@ -163,9 +167,39 @@ export type BusinessBranding = {
   logoUrl?: string | null;
   faviconUrl?: string | null;
   primaryColor?: string | null;
+  primaryHoverColor?: string | null;
+  primaryActiveColor?: string | null;
   secondaryColor?: string | null;
   accentColor?: string | null;
+  successColor?: string | null;
+  warningColor?: string | null;
+  errorColor?: string | null;
+  infoColor?: string | null;
+  dashboardBackgroundColor?: string | null;
+  sidebarBackgroundColor?: string | null;
+  sidebarTextColor?: string | null;
+  sidebarMutedTextColor?: string | null;
+  sidebarActiveBackgroundColor?: string | null;
+  sidebarActiveTextColor?: string | null;
+  sidebarHoverBackgroundColor?: string | null;
+  headerBackgroundColor?: string | null;
+  headerTextColor?: string | null;
+  cardBackgroundColor?: string | null;
+  elevatedBackgroundColor?: string | null;
+  tableHeaderBackgroundColor?: string | null;
+  tableRowHoverColor?: string | null;
+  inputBackgroundColor?: string | null;
+  disabledBackgroundColor?: string | null;
+  textPrimaryColor?: string | null;
+  textSecondaryColor?: string | null;
+  textMutedColor?: string | null;
+  textInverseColor?: string | null;
+  borderColor?: string | null;
+  borderSubtleColor?: string | null;
+  focusRingColor?: string | null;
   fontFamily?: string | null;
+  borderRadius?: number | string | null;
+  density?: "COMPACT" | "DEFAULT" | "COMFORTABLE" | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
 };
@@ -444,8 +478,7 @@ export type PackageLimitKey =
   | "MAX_MEDIAS"
   | "MAX_PRODUCTS"
   | "MAX_EMPLOYEES"
-  | "MAX_BUSINESSES"
-  | "MAX_WEBSITES";
+  | "MAX_BUSINESSES";
 
 export type PackageSubscriptionStatus =
   | "TRIALING"
@@ -606,8 +639,7 @@ export type PackageUsageSummaryItem = {
   remaining: number;
 };
 
-export type ConfirmPackagePaymentResult =
-  {
-    payment: PackageMockPayment;
-    subscription: TenantSubscription;
-  };
+export type ConfirmPackagePaymentResult = {
+  payment: PackageMockPayment;
+  subscription: TenantSubscription;
+};

@@ -1,11 +1,15 @@
 "use client";
 
+import {
+  ArrowLeft
+} from "lucide-react";
+
+
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useFinanceAccount } from "@/lib/api/hooks/finance-account";
 import { useAuthStore } from "@/stores/auth.store";
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Descriptions, Empty, Row, Statistic, Tag, Typography } from "antd";
 import { useParams, useRouter } from "next/navigation";
 
@@ -58,7 +62,7 @@ const AccountDetails = () => {
                 breadcrumb={adminBreadcrumb}
             />
 
-            <Button icon={<ArrowLeftOutlined />} 
+            <Button icon={<ArrowLeft />} 
             onClick={() => router.back()}
             >
                 Back

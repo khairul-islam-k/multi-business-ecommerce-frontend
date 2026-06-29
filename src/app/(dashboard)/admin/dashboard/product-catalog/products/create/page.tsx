@@ -1,20 +1,49 @@
 "use client";
 
-import { useAuthStore } from "@/stores/auth.store";
-import ProductForm from "../_components/product-form";
+import { App } from "antd";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useProductMutation } from "@/lib/api/hooks/product";
 import { useVariantMutation } from "@/lib/api/hooks/product-variant";
 import { getApiErrorMessage } from "@/lib/axios";
-import { useRouter } from "next/navigation";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useAuthStore } from "@/stores/auth.store";
 import { ProductPayload } from "@/types/product/product";
-import { App } from "antd";
-import { useState } from "react";
 import {
   BulkUpdateVariantItemPayload,
   VariantPayload,
 } from "@/types/product/variant";
+
+import ProductForm from "../_components/product-form";
+
+const getVariantAttributeKey = (
+  attributes:
+    | Array<{
+        attributeId: string;
+        attributeValueId: string;
+      }>
+    | undefined,
+) =>
+  attributes
+    ?.map((attribute) => attribute.attributeValueId)
+    .filter(Boolean)
+    .sort()
+    .join("|") ?? "";
+
+const hasDuplicateVariant = (variants: BulkUpdateVariantItemPayload[]) => {
+  const seen = new Set<string>();
+
+  for (const variant of variants) {
+    const key = getVariantAttributeKey(variant.attributes);
+    if (!key) continue;
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+
+  return false;
+};
 
 const CreateProductPage = () => {
   const router = useRouter();
@@ -30,12 +59,17 @@ const CreateProductPage = () => {
     values: ProductPayload,
     variants: BulkUpdateVariantItemPayload[],
   ) => {
+    if (hasDuplicateVariant(variants)) {
+      message.error("Each variant attribute combination must be unique.");
+      return;
+    }
+
     setIsSubmitting(true);
     const payload: ProductPayload = {
       images: values.images,
       name: values.name.trim(),
       price: values.price,
-      weight: values.weight,
+      weight: values.weight ?? 0,
       description: values.description?.trim() || "",
       categoryId: values.categoryId,
       brandId: values.brandId,
@@ -83,7 +117,7 @@ const CreateProductPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Create Product"
-        subtitle="Add a new product with images, category, brand, unit, status, and tags."
+        subtitle="Add a product with price, kilogram weight, images, category, brand, unit, tax, status, and tags."
         breadcrumb={adminBreadcrumb}
       />
 

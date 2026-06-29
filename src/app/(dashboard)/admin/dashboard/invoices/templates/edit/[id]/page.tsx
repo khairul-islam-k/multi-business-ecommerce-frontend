@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  Eye,
+  Save
+} from "lucide-react";
+
+
 import { useParams } from "next/navigation";
 import { Button, Card, Col, Input, Row, Space } from "antd";
-import { SaveOutlined, EyeOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -15,8 +20,8 @@ export default function EditInvoiceTemplate() {
   const mockConfig = {
     layout: "standard",
     colors: {
-      primary: "#1677ff",
-      text: "#1f2937",
+      primary: "var(--dashboard-primary-color)",
+      text: "var(--dashboard-text-primary-color)",
     },
     header: { showLogo: true },
     footer: { showTerms: true },
@@ -30,8 +35,8 @@ export default function EditInvoiceTemplate() {
         <p className="text-gray-500">Editing template #{templateId}</p>
 
         <Space>
-          <Button icon={<EyeOutlined />}>Preview</Button>
-          <Button type="primary" icon={<SaveOutlined />}>
+          <Button icon={<Eye />}>Preview</Button>
+          <Button type="primary" icon={<Save />}>
             Save Template
           </Button>
         </Space>
@@ -86,7 +91,12 @@ export default function EditInvoiceTemplate() {
               </div>
 
               <div className="border-t mt-4 pt-4 flex justify-end">
-                <div className="h-4 w-24 bg-blue-300" />
+                <div
+                  className="h-4 w-24"
+                  style={{
+                    backgroundColor: "var(--dashboard-primary-color)",
+                  }}
+                />
               </div>
             </div>
           </Card>

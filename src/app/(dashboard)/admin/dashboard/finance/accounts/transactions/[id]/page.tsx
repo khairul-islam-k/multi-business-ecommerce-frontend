@@ -1,16 +1,18 @@
 "use client";
 
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye
+} from "lucide-react";
+
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useFinanceTransactionQuery } from "@/lib/api/hooks/finance-account";
 import { useAuthStore } from "@/stores/auth.store";
 import type { FinanceTransactionResponse } from "@/types/finance/account";
-import {
-    ArrowDownOutlined,
-    ArrowUpOutlined,
-    EyeOutlined,
-} from "@ant-design/icons";
 import {
     Button,
     Card,
@@ -103,9 +105,9 @@ const Transactions = () => {
                     color={transactionTypeColor[row.transactionType]}
                     icon={
                         row.transactionType === "CREDIT" ? (
-                            <ArrowUpOutlined />
+                            <ArrowUp />
                         ) : (
-                            <ArrowDownOutlined />
+                            <ArrowDown />
                         )
                     }
                 >

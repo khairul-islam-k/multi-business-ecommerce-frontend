@@ -25,8 +25,6 @@ export default function PermissionTree({
 }) {
   const { data = [], isLoading } = useAvailablePermissions();
 
-  console.log('data', data);
-
   const treeData = useMemo(() => {
     const grouped = data.reduce<Record<string, PermissionItem[]>>(
       (acc, permission) => {

@@ -1,11 +1,13 @@
 "use client";
 
 import {
-  FundOutlined,
-  CalculatorOutlined,
-  PieChartOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
+  Calculator,
+  ChartNoAxesColumnIncreasing,
+  ChartPie,
+  ShoppingCart
+} from "lucide-react";
+
+
 
 import ReportPage from "../_components/report-page";
 
@@ -20,28 +22,28 @@ export default function ProfitReports() {
           value: "₹9,75,000",
           change: "40.2% margin",
           up: true,
-          icon: FundOutlined,
+          icon: ChartNoAxesColumnIncreasing,
         },
         {
           label: "Operating Profit",
           value: "₹5,55,000",
           change: "22.9% margin",
           up: true,
-          icon: CalculatorOutlined,
+          icon: Calculator,
         },
         {
           label: "Net Profit",
           value: "₹4,42,000",
           change: "18.2% margin",
           up: true,
-          icon: PieChartOutlined,
+          icon: ChartPie,
         },
         {
           label: "COGS Ratio",
           value: "59.8%",
           change: "-1.2% vs prior",
           up: false,
-          icon: ShoppingCartOutlined,
+          icon: ShoppingCart,
         },
       ]}
       chartData={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({

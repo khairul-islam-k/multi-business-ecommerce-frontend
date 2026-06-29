@@ -1,9 +1,13 @@
 "use client";
 
+import {
+  StepBack
+} from "lucide-react";
+
+
 import { Button, Result } from "antd";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { BackwardOutlined } from "@ant-design/icons";
 
 export default function NotFoundPage() {
   const router = useRouter();
@@ -29,7 +33,7 @@ export default function NotFoundPage() {
               <Button
                 type="primary"
                 size="large"
-                icon={<BackwardOutlined />}
+                icon={<StepBack />}
                 onClick={() => router.back()}
               >
                 Go Back

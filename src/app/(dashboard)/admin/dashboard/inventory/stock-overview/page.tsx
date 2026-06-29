@@ -1,7 +1,19 @@
 "use client";
 
-import { App, Button, Card, Col, Form, InputNumber, Modal, Row, Select, Tag } from "antd";
-import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { Eye, Pencil } from "lucide-react";
+
+import {
+  App,
+  Button,
+  Card,
+  Col,
+  Form,
+  InputNumber,
+  Modal,
+  Row,
+  Select,
+  Tag,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,7 +22,10 @@ import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useAuthStore } from "@/stores/auth.store";
-import { useProductStockMutation, useProductStockQuery } from "@/lib/api/hooks/stock";
+import {
+  useProductStockMutation,
+  useProductStockQuery,
+} from "@/lib/api/hooks/stock";
 import { Column, DataTable } from "@/components/shared/data-table";
 import { InventoryStockResponse } from "@/types/stock/stock";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -36,14 +51,14 @@ export default function StockOverviewPage() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form] = Form.useForm<LowStockAlertFormValues>();
-  const [stockId, setStockId] = useState<string>('');
-  const [LowStock, setLowStock] = useState<string>('');
+  const [stockId, setStockId] = useState<string>("");
+  const [LowStock, setLowStock] = useState<string>("");
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: stocks,
@@ -70,13 +85,13 @@ export default function StockOverviewPage() {
         lowStockAlertQty: Number(values.lowStockAlertQty),
       };
 
-      console.log("payload", payload, 'id', stockId);
+      console.log("payload", payload, "id", stockId);
       const res = await updateLowAlert.mutateAsync({
         stockId,
-        payload
+        payload,
       });
 
-      console.log('res', res);
+      console.log("res", res);
       message.success("Low stock alert updated successfully");
       setIsModalOpen(false);
     } catch (error) {
@@ -95,10 +110,10 @@ export default function StockOverviewPage() {
   useEffect(() => {
     if (stocks) {
       form.setFieldsValue({
-        lowStockAlertQty: Number(LowStock ?? 0)
+        lowStockAlertQty: Number(LowStock ?? 0),
       });
     }
-  }, [stocks, form, LowStock])
+  }, [stocks, form, LowStock]);
 
   const columns: Column<StockTableRow>[] = [
     {
@@ -181,21 +196,25 @@ export default function StockOverviewPage() {
         <div className="flex items-center gap-2">
           <Button
             size="small"
-            icon={<EyeOutlined />}
+            icon={<Eye />}
             onClick={() =>
-              router.push(`/admin/dashboard/inventory/stock-overview/details/${row.id}`)
+              router.push(
+                `/admin/dashboard/inventory/stock-overview/details/${row.id}`,
+              )
             }
           />
 
           <Button
             size="small"
-            icon={<EditOutlined />}
+            icon={<Pencil />}
             onClick={() => {
               setIsModalOpen(true);
               setStockId(row.id);
               setLowStock(row.lowStockAlertQty);
             }}
-          >Low stock</Button>
+          >
+            Low stock
+          </Button>
         </div>
       ),
     },
@@ -286,7 +305,6 @@ export default function StockOverviewPage() {
           </div>
         </Form>
       </Modal>
-
     </div>
   );
 }

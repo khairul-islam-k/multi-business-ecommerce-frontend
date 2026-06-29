@@ -1,8 +1,13 @@
 "use client";
 
+import {
+  CreditCard,
+  Zap
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { Card, Button, InputNumber, Form, Tag } from "antd";
-import { CreditCardOutlined, ThunderboltOutlined } from "@ant-design/icons";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 
@@ -27,7 +32,14 @@ export default function RechargeSmsCredits() {
       {/* Plans */}
       <div className="grid md:grid-cols-3 gap-6 mb-6">
         {plans.map((p) => (
-          <Card key={p.credits} className={p.popular ? "border-blue-500" : ""}>
+          <Card
+            key={p.credits}
+            style={
+              p.popular
+                ? { borderColor: "var(--dashboard-primary-color)" }
+                : undefined
+            }
+          >
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold">
                 {p.credits.toLocaleString()} Credits
@@ -43,7 +55,7 @@ export default function RechargeSmsCredits() {
 
             <Button
               type={p.popular ? "primary" : "default"}
-              icon={<ThunderboltOutlined />}
+              icon={<Zap />}
               block
               onClick={() => purchase(p.credits)}
             >
@@ -57,7 +69,7 @@ export default function RechargeSmsCredits() {
       <Card
         title={
           <span className="flex items-center gap-2">
-            <CreditCardOutlined /> Custom Amount
+            <CreditCard /> Custom Amount
           </span>
         }
         className="max-w-md"

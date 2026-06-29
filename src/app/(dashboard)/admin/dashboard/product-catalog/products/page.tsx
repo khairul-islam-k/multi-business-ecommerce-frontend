@@ -1,27 +1,31 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag } from "antd";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  EyeOutlined,
-  MoreOutlined,
-  PlusOutlined
-} from "@ant-design/icons";
 
+import { CirclePlus, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+
+import {
+  Button,
+  Card,
+  Dropdown,
+  MenuProps,
+  Popconfirm,
+  Select,
+  Tag,
+} from "antd";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
-import { useState } from "react";
-import { useAuthStore } from "@/stores/auth.store";
 import { useProductMutation, useProductsQuery } from "@/lib/api/hooks/product";
-import Image from "next/image";
-import { Column, DataTable } from "@/components/shared/data-table";
-import { ProductStatus, ResponseProduct } from "@/types/product/product";
-import { imageUrlSet } from "./_components/image-url";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { ProductStatus, ResponseProduct } from "@/types/product/product";
 
-/* ================= TYPES ================= */
+import { imageUrlSet } from "./_components/image-url";
+
 export interface TProduct {
   id: string;
   uuid: string;
@@ -34,46 +38,46 @@ export interface TProduct {
   published_at: string | null;
 }
 
-/* ================= COMPONENT ================= */
 const ProductsList = () => {
   const router = useRouter();
 
   const [statusFilter, setStatusFilter] = useState<ProductStatus | undefined>();
-  const [sortBy, setSortBy] = useState<"name" | "price" | "createdAt" | "updatedAt">("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const business = useAuthStore(s => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : '';
+  const [sortBy, setSortBy] = useState<
+    "name" | "price" | "createdAt" | "updatedAt"
+  >("createdAt");
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const swal = useSwal();
 
-  const [currentPage, setCurrentPage] = useState<number>(1)
-  const [search, setSearch] = useState('');
-  const limit = 5;
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const limit = 10;
 
-  const { data: products, isLoading, isFetching } = useProductsQuery(businessId, {
+  const {
+    data: products,
+    isLoading,
+    isFetching,
+  } = useProductsQuery(businessId, {
     page: currentPage,
     limit,
     search,
     status: statusFilter,
     sortBy,
-    sortOrder,
   });
 
   const { removeProduct } = useProductMutation(businessId);
 
-  // pagination
   const total = products?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   const handleDelete = async (id: string) => {
     try {
       await removeProduct.mutateAsync(id);
-      swal.success('Product has been deleted');
+      swal.success("Product has been deleted");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
-  }
-
-  // create attribute
+  };
 
   const columns: Column<ResponseProduct>[] = [
     {
@@ -81,7 +85,6 @@ const ProductsList = () => {
       label: "Image",
       render: (row) => {
         const image = row.images?.[0];
-
         return image?.imageUrl ? (
           <Image
             src={imageUrlSet(image.imageUrl)}
@@ -127,7 +130,7 @@ const ProductsList = () => {
       label: "Tags",
       render: (row) =>
         row.tags?.length ? (
-          <div className="flex flex-wrap gap-1">
+          <div className="grid grid-cols-3">
             {row.tags.map((item) => (
               <Tag key={item.id}>{item.tag?.name ?? "-"}</Tag>
             ))}
@@ -162,22 +165,21 @@ const ProductsList = () => {
       key: "actions",
       label: "Actions",
       render: (row) => {
-
         const items: MenuProps["items"] = [
           {
             key: "view",
-            icon: <EyeOutlined />,
+            icon: <Eye />,
             label: "View",
           },
           {
             key: "edit",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
             label: "Edit",
           },
           {
             key: "delete",
             danger: true,
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             label: (
               <Popconfirm
                 title="Delete product?"
@@ -194,26 +196,26 @@ const ProductsList = () => {
 
         return (
           <Dropdown
-            // trigger={["click"]}
+            trigger={["click"]}
             placement="bottomRight"
             menu={{
               items,
               onClick: ({ key }) => {
                 if (key === "view") {
                   router.push(
-                    `/admin/dashboard/product-catalog/products/detail/${row.id}`
+                    `/admin/dashboard/product-catalog/products/detail/${row.id}`,
                   );
                 }
 
                 if (key === "edit") {
                   router.push(
-                    `/admin/dashboard/product-catalog/products/edit/${row.id}`
+                    `/admin/dashboard/product-catalog/products/edit/${row.id}`,
                   );
                 }
               },
             }}
           >
-            <Button size="small" icon={<MoreOutlined />} />
+            <Button size="small" icon={<MoreHorizontal />} />
           </Dropdown>
         );
       },
@@ -222,7 +224,7 @@ const ProductsList = () => {
 
   /* ================= UI ================= */
   return (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       <PageHeader
         title="Products"
         subtitle="Manage your product catalog, images, categories, brands, units, tags, and product status."
@@ -266,24 +268,13 @@ const ProductsList = () => {
                 ]}
               />
 
-              <Select
-                value={sortOrder}
-                style={{ width: 120 }}
-                onChange={(value) => {
-                  setSortOrder(value);
-                  setCurrentPage(1);
-                }}
-                options={[
-                  { label: "Desc", value: "desc" },
-                  { label: "Asc", value: "asc" },
-                ]}
-              />
-
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
-                  router.push("/admin/dashboard/product-catalog/products/create")
+                  router.push(
+                    "/admin/dashboard/product-catalog/products/create",
+                  )
                 }
               >
                 New Product
@@ -295,10 +286,7 @@ const ProductsList = () => {
             setSearch(value);
             setCurrentPage(1);
           }}
-          loading={
-            isLoading ||
-            isFetching
-          }
+          loading={isLoading || isFetching}
           pagination={{
             currentPage,
             onPageChange: setCurrentPage,
@@ -306,7 +294,6 @@ const ProductsList = () => {
           }}
         />
       </Card>
-
     </div>
   );
 };

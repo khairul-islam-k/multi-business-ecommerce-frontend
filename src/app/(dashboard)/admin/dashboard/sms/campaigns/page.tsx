@@ -1,13 +1,15 @@
 "use client";
 
+import {
+  ChartBar,
+  Pencil,
+  UserRound
+} from "lucide-react";
+
+
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, Column } from "@/components/shared/data-table";
 import { Tag, Button, Space } from "antd";
-import {
-  BarChartOutlined,
-  UserOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { mockCampaigns, SmsCampaign } from "./data";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -71,18 +73,18 @@ export default function CampaignList() {
         actions={(row) => (
           <Space>
             <Button
-              icon={<BarChartOutlined />}
+              icon={<ChartBar />}
               onClick={() =>
                 router.push("/admin/dashboard/sms/campaigns/analytics")
               }
             />
             <Button
-              icon={<UserOutlined />}
+              icon={<UserRound />}
               onClick={() =>
                 router.push("/admin/dashboard/sms/campaigns/recipients")
               }
             />
-            <Button icon={<EditOutlined />} />
+            <Button icon={<Pencil />} />
           </Space>
         )}
       />

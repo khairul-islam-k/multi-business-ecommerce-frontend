@@ -1,19 +1,14 @@
 "use client";
 
+import { Banknote, Eye } from "lucide-react";
+
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useSwal } from "@/hooks/use-swal";
 import { useFinancePayableQuery } from "@/lib/api/hooks/finance-payable-receivable";
 import { useAuthStore } from "@/stores/auth.store";
-import {
-  PayableResponse,
-  PayableStatus,
-} from "@/types/finance/payable";
-import {
-  DollarOutlined,
-  EyeOutlined,
-} from "@ant-design/icons";
+import { PayableResponse, PayableStatus } from "@/types/finance/payable";
 import {
   Button,
   Card,
@@ -70,7 +65,7 @@ const PayablePage = () => {
   const swal = useSwal();
   // modal confirm
   const [payModalOpen, setPayModalOpen] = useState<boolean>(false);
-  const [payableId, setPayableId] = useState<string>('');
+  const [payableId, setPayableId] = useState<string>("");
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -79,7 +74,7 @@ const PayablePage = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<PayableStatus | undefined>();
 
-  const limit = 5;
+  const limit = 10;
 
   const {
     data: payables,
@@ -108,7 +103,7 @@ const PayablePage = () => {
   const dueAmount = totalAmount - paidAmount;
 
   const pendingPayables = payableItems.filter(
-    (payable) => payable.status === "PENDING"
+    (payable) => payable.status === "PENDING",
   ).length;
 
   const columns: Column<PayableResponse>[] = [
@@ -142,9 +137,7 @@ const PayablePage = () => {
       key: "status",
       label: "Status",
       type: "meta",
-      render: (row) => (
-        <Tag color={statusColor[row.status]}>{row.status}</Tag>
-      ),
+      render: (row) => <Tag color={statusColor[row.status]}>{row.status}</Tag>,
     },
     {
       key: "actions",
@@ -154,27 +147,26 @@ const PayablePage = () => {
           <Tooltip title="View payable">
             <Button
               size="small"
-              icon={<EyeOutlined />}
+              icon={<Eye />}
               onClick={() =>
                 router.push(`/admin/dashboard/finance/payables/view/${row.id}`)
               }
             />
           </Tooltip>
 
-          {
-            (!(row.status === 'PAID')) && <Tooltip title="Pay payable">
+          {!(row.status === "PAID") && (
+            <Tooltip title="Pay payable">
               <Button
                 size="small"
                 type="primary"
-                icon={<DollarOutlined />}
+                icon={<Banknote />}
                 onClick={() => {
                   setPayModalOpen(true);
                   setPayableId(row.id);
                 }}
               />
             </Tooltip>
-          }
-
+          )}
         </div>
       ),
     },
@@ -273,10 +265,7 @@ const PayablePage = () => {
         footer={null}
         destroyOnHidden
       >
-        <PayPayable
-          payableId={payableId}
-          payModalOpen={setPayModalOpen}
-        />
+        <PayPayable payableId={payableId} payModalOpen={setPayModalOpen} />
       </Modal>
     </div>
   );

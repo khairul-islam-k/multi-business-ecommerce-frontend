@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Open_Sans, Geist } from "next/font/google";
-
 import "@/styles/global.css";
+
+import { Geist, Open_Sans } from "next/font/google";
+
 import { cn } from "@/lib/utils";
 import AuthProvider from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
+import { ShadcnThemeProvider } from "@/providers/shadcn-theme-provider";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -29,11 +31,11 @@ export default function RootLayout({
       className={cn(openSans.variable, "font-sans", geist.variable)}
     >
       <body>
-        {/* <ShadcnThemeProvider> */}
+        <ShadcnThemeProvider>
           <AuthProvider>
             <QueryProvider>{children}</QueryProvider>
           </AuthProvider>
-        {/* </ShadcnThemeProvider> */}
+        </ShadcnThemeProvider>
       </body>
     </html>
   );

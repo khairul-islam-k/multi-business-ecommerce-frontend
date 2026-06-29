@@ -1,6 +1,10 @@
 "use client";
 
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  Trash2
+} from "lucide-react";
+
+
 import { Button, Card, Flex, Input, Select, Space, theme } from "antd";
 
 import type { MediaQuery } from "@/lib/api";
@@ -85,7 +89,7 @@ export default function MediaToolbar({
           danger
           className="media-danger-button"
           disabled={!selectedCount || !canDelete}
-          icon={<DeleteOutlined />}
+          icon={<Trash2 />}
           loading={deleting}
           onClick={onBulkDelete}
         >

@@ -1,9 +1,10 @@
+import {
+  FileText,
+  LogOut,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  LogoutOutlined,
-  ProfileOutlined,
-} from "@ant-design/icons";
+
 import {
   App,
   Avatar,
@@ -67,7 +68,7 @@ const ProfileDropdown = () => {
               label: (
                 <Link href="/admin/dashboard/profile">
                   <Flex align="center" gap={8} style={{ color: token.colorText }}>
-                    <ProfileOutlined />
+                    <FileText />
                     <Text style={{ color: token.colorText }}>Profile</Text>
                   </Flex>
                 </Link>
@@ -80,7 +81,7 @@ const ProfileDropdown = () => {
               key: "create",
               label: (
                 <Button
-                  icon={<LogoutOutlined />}
+                  icon={<LogOut />}
                   type="text"
                   style={{
                     color: token.colorText,

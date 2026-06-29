@@ -1,14 +1,16 @@
 "use client";
 
+import {
+  CirclePlus,
+  MoreHorizontal,
+  Pencil,
+  ShoppingBag,
+  Trash2
+} from "lucide-react";
+
+
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  MoreOutlined,
-  PlusOutlined,
-  ShoppingOutlined,
-} from "@ant-design/icons";
 import { App, Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag, Tooltip } from "antd";
 
 import { Column, DataTable } from "@/components/shared/data-table";
@@ -115,17 +117,17 @@ const SupplierInfo = () => {
         const items: MenuProps["items"] = [
           {
             key: "view-products",
-            icon: <ShoppingOutlined />,
+            icon: <ShoppingBag />,
             label: "View Supplier Products",
           },
           {
             key: "add-supplier-product",
-            icon: <PlusOutlined />,
+            icon: <CirclePlus />,
             label: "Add Supplier Product",
           },
           {
             key: "edit",
-            icon: <EditOutlined />,
+            icon: <Pencil />,
             label: "Edit",
           },
           {
@@ -133,7 +135,7 @@ const SupplierInfo = () => {
           },
           {
             key: "delete",
-            icon: <DeleteOutlined />,
+            icon: <Trash2 />,
             label: "Delete",
             danger: true,
           },
@@ -171,7 +173,7 @@ const SupplierInfo = () => {
             <Tooltip title="Actions">
               <Button
                 size="small"
-                icon={<MoreOutlined />}
+                icon={<MoreHorizontal />}
                 onClick={(e) => e.preventDefault()}
               />
             </Tooltip>
@@ -212,7 +214,7 @@ const SupplierInfo = () => {
 
               <Button
                 type="primary"
-                icon={<PlusOutlined />}
+                icon={<CirclePlus />}
                 onClick={() =>
                   router.push("/admin/dashboard/suppliers/supplier/create")
                 }

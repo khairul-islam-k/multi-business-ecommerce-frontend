@@ -107,17 +107,28 @@ const FinanceAccountForm = ({
             !(submitText === "Update Account") &&
             <Col xs={24} md={12}>
               <Form.Item
-                label="Opening Balance"
+                label="Opening balance amount"
+                tooltip="Enter the starting balance in the selected account currency."
                 name="openingBalance"
                 rules={[
                   { required: true, message: "Opening balance is required" },
+                  {
+                    type: "number",
+                    min: 0,
+                    message:
+                      "Opening balance must be a non-negative numeric amount",
+                  },
                 ]}
               >
                 <InputNumber
                   style={{
-                    width: '100%'
+                    width: "100%",
                   }}
-                  min={0} className="w-full" placeholder="0" />
+                  min={0}
+                  precision={2}
+                  className="w-full"
+                  placeholder="Example: 0"
+                />
               </Form.Item>
             </Col>
           }

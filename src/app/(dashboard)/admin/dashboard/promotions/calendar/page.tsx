@@ -78,9 +78,17 @@ export default function PromotionCalendar() {
             return (
               <div
                 key={day}
-                className={`min-h-22.5 border rounded-lg p-2 ${
-                  isToday ? "ring-2 ring-blue-400 bg-blue-50" : ""
-                }`}
+                className="min-h-22.5 border rounded-lg p-2"
+                style={
+                  isToday
+                    ? {
+                        backgroundColor:
+                          "var(--dashboard-sidebar-active-background-color)",
+                        boxShadow:
+                          "0 0 0 2px var(--dashboard-focus-ring-color)",
+                      }
+                    : undefined
+                }
               >
                 <Text strong>{day}</Text>
 
@@ -88,7 +96,12 @@ export default function PromotionCalendar() {
                   {promos.slice(0, 2).map((p) => (
                     <div
                       key={p.id}
-                      className="text-[11px] bg-blue-100 text-blue-600 px-1 rounded truncate"
+                      className="text-[11px] px-1 rounded truncate"
+                      style={{
+                        backgroundColor:
+                          "var(--dashboard-sidebar-active-background-color)",
+                        color: "var(--dashboard-primary-color)",
+                      }}
                     >
                       {p.name}
                     </div>

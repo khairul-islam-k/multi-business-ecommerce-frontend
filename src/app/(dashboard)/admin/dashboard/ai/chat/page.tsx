@@ -1,8 +1,14 @@
 "use client";
 
+import {
+  Bot,
+  Send,
+  UserRound
+} from "lucide-react";
+
+
 import { useState, useEffect, useRef } from "react";
 import { Card, Input, Button, Typography, theme } from "antd";
-import { SendOutlined, RobotOutlined, UserOutlined } from "@ant-design/icons";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -98,7 +104,7 @@ export default function AiMarketingChat() {
                   gap: 8,
                 }}
               >
-                {m.role === "assistant" && <RobotOutlined />}
+                {m.role === "assistant" && <Bot />}
 
                 <div
                   style={{
@@ -116,7 +122,7 @@ export default function AiMarketingChat() {
                   {m.content}
                 </div>
 
-                {m.role === "user" && <UserOutlined />}
+                {m.role === "user" && <UserRound />}
               </div>
             ))}
 
@@ -128,7 +134,7 @@ export default function AiMarketingChat() {
           <div
             style={{
               padding: "12px 16px",
-              borderTop: "1px solid #f0f0f0",
+              borderTop: "1px solid var(--dashboard-border-subtle-color)",
             }}
           >
             <Text type="secondary" style={{ fontSize: 12 }}>
@@ -163,7 +169,7 @@ export default function AiMarketingChat() {
 
         <div
           style={{
-            borderTop: "1px solid #f0f0f0",
+            borderTop: "1px solid var(--dashboard-border-subtle-color)",
             padding: 12,
             background: token.colorBgBase,
             position: "sticky",
@@ -186,7 +192,7 @@ export default function AiMarketingChat() {
 
             <Button
               type="primary"
-              icon={<SendOutlined />}
+              icon={<Send />}
               onClick={() => send(input)}
             />
           </div>

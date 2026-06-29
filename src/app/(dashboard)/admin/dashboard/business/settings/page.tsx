@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Alert,
   Button,
@@ -19,24 +17,34 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { Trash2 } from "lucide-react";
+import { useEffect } from "react";
 
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
+import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useBusiness, useBusinessMutations } from "@/lib/api";
-import type { AuthBusiness, BusinessPayload } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth.store";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useSwal } from "@/hooks/use-swal";
+import {
+  useBusiness,
+  useBusinessMutations,
+  useFinanceAccountQuery,
+  useProductUnitQuery,
+  useTaxQuery,
+  useWarehousesQuery,
+} from "@/lib/api";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import { getApiErrorMessage } from "@/lib/axios";
 import {
   countryOptions,
   currencyOptions,
   timezoneOptions,
 } from "@/lib/business/options";
-import { usePermissionAccess } from "@/hooks/use-permission-access";
-import { PERMISSIONS } from "@/lib/auth/permissions";
-import Loader from "@/components/shared/loader";
+import { useAuthStore } from "@/stores/auth.store";
+import { useQueryClient } from "@tanstack/react-query";
+
+import type { AuthBusiness, BusinessPayload } from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -118,6 +126,41 @@ export default function BusinessSettingsPage() {
   const queryClient = useQueryClient();
   const businessId = useActiveBusinessId();
   const { data: business, isLoading } = useBusiness(businessId ?? undefined);
+  const { data: warehouses, isLoading: warehousesLoading } = useWarehousesQuery(
+    businessId ?? "",
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      // sortBy: "name",
+    },
+  );
+  const { data: financeAccounts, isLoading: financeAccountsLoading } =
+    useFinanceAccountQuery(businessId ?? "", {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      // sortBy: "name",
+    });
+  console.log(financeAccounts);
+  const { data: units, isLoading: unitsLoading } = useProductUnitQuery(
+    businessId ?? "",
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      // sortBy: "name",
+    },
+  );
+  const { data: taxes, isLoading: taxesLoading } = useTaxQuery(
+    businessId ?? "",
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      // sortBy: "name",
+    },
+  );
   const { updateBusiness, removeBusiness } = useBusinessMutations();
   const setSelectedBusiness = useAuthStore(
     (state) => state.setSelectedBusiness,
@@ -127,6 +170,26 @@ export default function BusinessSettingsPage() {
   const deletableBusinesses = businesses.filter(
     (item) => item.id !== businessId,
   );
+  const warehouseOptions =
+    warehouses?.items.map((warehouse) => ({
+      label: `${warehouse.name}${warehouse.address ? ` - ${warehouse.address}` : ""}`,
+      value: warehouse.id,
+    })) ?? [];
+  const financeAccountOptions =
+    financeAccounts?.items.map((account) => ({
+      label: `${account.name}${account.accountType ? ` - ${account.accountType.replaceAll("_", " ")}` : ""}`,
+      value: account.id,
+    })) ?? [];
+  const unitOptions =
+    units?.items.map((unit) => ({
+      label: unit.name,
+      value: unit.id,
+    })) ?? [];
+  const taxOptions =
+    taxes?.items.map((tax) => ({
+      label: `${tax.name}${tax.rate !== undefined ? ` - ${tax.rate}%` : ""}`,
+      value: tax.id,
+    })) ?? [];
   const updatePermission = usePermissionAccess(PERMISSIONS.businessUpdate);
   const deletePermission = usePermissionAccess(PERMISSIONS.businessDelete);
 
@@ -168,6 +231,11 @@ export default function BusinessSettingsPage() {
         autoConfirmOrder: business.settings?.autoConfirmOrder ?? false,
         codEnabled: business.settings?.codEnabled ?? true,
         onlinePaymentEnabled: business.settings?.onlinePaymentEnabled ?? false,
+        defaultWarehouseId: business.settings?.defaultWarehouseId ?? undefined,
+        defaultFinanceAccountId:
+          business.settings?.defaultFinanceAccountId ?? undefined,
+        defaultUnitId: business.settings?.defaultUnitId ?? undefined,
+        defaultTaxId: business.settings?.defaultTaxId ?? undefined,
       },
     });
   }, [business, form]);
@@ -342,12 +410,99 @@ export default function BusinessSettingsPage() {
                 <Col xs={24} md={12}>
                   <Form.Item
                     name={["settings", "lowStockThreshold"]}
-                    label="Low stock threshold"
+                    label="Low stock alert quantity"
+                    tooltip="Products at or below this quantity are treated as low stock."
                   >
                     <InputNumber
                       min={0}
                       max={999999}
+                      precision={0}
                       style={{ width: "100%" }}
+                      placeholder="Example: 5"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    name={["settings", "defaultWarehouseId"]}
+                    label="Default warehouse"
+                    tooltip="Used automatically for stock, order, and POS workflows when a specific warehouse is not selected."
+                    rules={[
+                      {
+                        required: true,
+                        message: "Default warehouse is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      loading={warehousesLoading}
+                      placeholder="Select default warehouse"
+                      optionFilterProp="label"
+                      options={warehouseOptions}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    name={["settings", "defaultFinanceAccountId"]}
+                    label="Default finance account"
+                    tooltip="Used for payments and financial entries when a specific account is not selected."
+                    rules={[
+                      {
+                        required: true,
+                        message: "Default finance account is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      loading={financeAccountsLoading}
+                      placeholder="Select default finance account"
+                      optionFilterProp="label"
+                      options={financeAccountOptions}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    name={["settings", "defaultUnitId"]}
+                    label="Default product unit"
+                    tooltip="Used as the default unit for new products when no unit is selected."
+                    rules={[
+                      {
+                        required: true,
+                        message: "Default product unit is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      loading={unitsLoading}
+                      placeholder="Select default product unit"
+                      optionFilterProp="label"
+                      options={unitOptions}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} md={12}>
+                  <Form.Item
+                    name={["settings", "defaultTaxId"]}
+                    label="Default sales tax"
+                    tooltip="Used as the default tax rule for new products and taxable sales."
+                    rules={[
+                      {
+                        required: true,
+                        message: "Default sales tax is required",
+                      },
+                    ]}
+                  >
+                    <Select
+                      showSearch
+                      loading={taxesLoading}
+                      placeholder="Select default sales tax"
+                      optionFilterProp="label"
+                      options={taxOptions}
                     />
                   </Form.Item>
                 </Col>
@@ -452,7 +607,7 @@ export default function BusinessSettingsPage() {
                   {deletePermission.allowed && (
                     <Button
                       danger
-                      icon={<DeleteOutlined />}
+                      icon={<Trash2 />}
                       loading={removeBusiness.isPending}
                       onClick={() => handleDeleteBusiness(item)}
                     >

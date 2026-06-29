@@ -1,11 +1,6 @@
 "use client";
 
 import {
-  DeleteOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import {
   App,
   Button,
   Card,
@@ -17,8 +12,8 @@ import {
   Select,
   Skeleton,
 } from "antd";
+import { CirclePlus, Pencil, Trash2 } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import type React from "react";
 
 import { ApiId } from "@/lib/api";
 import {
@@ -31,8 +26,11 @@ import {
   AttributeUpdatePayload,
   AttributeValuePayload,
 } from "@/types/product/attribute";
+
 import { UpdateAttributeName } from "../page";
 import AttributeValueForm from "./attribute-value-form";
+
+import type React from "react";
 
 type UpdateAttributesPageProps = {
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -235,7 +233,7 @@ const UpdateAttributesPage = ({
         extra={
           <Button
             type="primary"
-            icon={<PlusOutlined />}
+            icon={<CirclePlus />}
             onClick={() => {
               setValueMode("create");
               setValueInitialValues({ value: "" });
@@ -264,7 +262,7 @@ const UpdateAttributesPage = ({
                 <div className="flex items-center gap-2">
                   <Button
                     size="small"
-                    icon={<EditOutlined />}
+                    icon={<Pencil />}
                     onClick={() => {
                       setValueMode("update");
                       setValueInitialValues({ value: item.value });
@@ -280,7 +278,7 @@ const UpdateAttributesPage = ({
                     cancelText="No"
                     onConfirm={() => handleDeleteValue(item.id)}
                   >
-                    <Button danger size="small" icon={<DeleteOutlined />} />
+                    <Button danger size="small" icon={<Trash2 />} />
                   </Popconfirm>
                 </div>
               </div>
@@ -292,7 +290,11 @@ const UpdateAttributesPage = ({
       </Card>
 
       <Modal
-        title={valueMode === "create" ? "Add Attribute Value" : "Edit Attribute Value"}
+        title={
+          valueMode === "create"
+            ? "Add Attribute Value"
+            : "Edit Attribute Value"
+        }
         open={valueModal}
         footer={null}
         onCancel={() => setValueModal(false)}

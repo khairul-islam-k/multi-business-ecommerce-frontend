@@ -1,9 +1,9 @@
 import {
-  FileTextOutlined,
-  DollarOutlined,
-  ClockCircleOutlined,
-  WarningOutlined,
-} from "@ant-design/icons";
+  Banknote,
+  Clock,
+  FileText,
+  TriangleAlert
+} from "lucide-react";
 
 export const mockInvoices = [
   {
@@ -50,27 +50,27 @@ export const mockStats = [
     value: "156",
     up: true,
     change: "+8.2%",
-    icon: FileTextOutlined,
+    icon: FileText,
   },
   {
     label: "Revenue",
     value: "৳32L",
     up: true,
     change: "+12.5%",
-    icon: DollarOutlined,
+    icon: Banknote,
   },
   {
     label: "Pending",
     value: "23",
     up: false,
     change: "-3.1%",
-    icon: ClockCircleOutlined,
+    icon: Clock,
   },
   {
     label: "Overdue",
     value: "5",
     up: false,
     change: "+1.4%",
-    icon: WarningOutlined,
+    icon: TriangleAlert,
   },
 ];

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button, Select, Space, Tag } from "antd";
-import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Eye, Plus } from "lucide-react";
 
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
@@ -205,13 +205,13 @@ export default function OrdersList() {
         actions={(order) => (
           <Space>
             <Link href={`/admin/dashboard/orders/${order.id}`}>
-              <Button type="text" icon={<EyeOutlined />} />
+              <Button type="text" icon={<Eye size={16} />} />
             </Link>
           </Space>
         )}
         toolbarEnd={
           <Link href="/admin/dashboard/orders/create">
-            <Button type="primary" icon={<PlusOutlined />}>
+            <Button type="primary" icon={<Plus size={16} />}>
               New Order
             </Button>
           </Link>
