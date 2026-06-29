@@ -16,7 +16,7 @@ import {
 import { SaveOutlined } from "@ant-design/icons";
 
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { useFinanceAccountQuery, usePaymentGatewayConfigMutations } from "@/lib/api";
+import { useFinanceAccountQuery, usePaymentGatewayConfigMutations, usePaymentGatewayConfigsQuery } from "@/lib/api";
 import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
@@ -139,6 +139,13 @@ const PaymentGateway = () => {
       status: "ACTIVE",
     });
 
+  // GateWay 
+  const { data: paymentGateway, isLoading, isFetching } = usePaymentGatewayConfigsQuery(
+    businessId ?? ""
+  );
+
+  console.log('gateway', paymentGateway?.items);
+
   const { createAllConfig } = usePaymentGatewayConfigMutations(businessId ?? "");
 
   const financeAccountOptions = useMemo(() => {
@@ -199,8 +206,6 @@ const PaymentGateway = () => {
           };
         }),
     };
-
-    console.log("body", payload);
 
     try {
       const res = await createAllConfig.mutateAsync(payload);

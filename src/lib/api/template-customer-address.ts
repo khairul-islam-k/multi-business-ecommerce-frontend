@@ -1,15 +1,15 @@
 import {  unwrapApiResponse, unwrapArrayResponse } from "./response";
 import { ApiArrayResponse, ApiId, ApiResponse } from "./types";
 
-import { ResponseBrand } from "@/types/product/brands";
 import { CustomerAddressPayload } from "@/types/template/customer-address";
 import webApi from "../public-api-hook/web-api";
+import { CustomerAddress } from "@/types/template/address";
 
 const basePath = () => `/storefront/customer/addresses`;
 export const templateCustomerAddressApi = {
   list() {
     return webApi
-      .get<ApiArrayResponse<unknown>>(
+      .get<ApiArrayResponse<CustomerAddress>>(
         `${basePath()}`,
       )
       .then((res) => unwrapArrayResponse(res.data));
@@ -17,13 +17,13 @@ export const templateCustomerAddressApi = {
 
   get(addressId: ApiId) {
     return webApi
-      .get<ApiResponse<ResponseBrand>>(`${basePath()}/${addressId}`)
+      .get<ApiResponse<CustomerAddress>>(`${basePath()}/${addressId}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 
   create(payload: CustomerAddressPayload) {
     return webApi
-      .post<ApiResponse<ResponseBrand>>(basePath(), payload)
+      .post<ApiResponse<CustomerAddress>>(basePath(), payload)
       .then((res) => unwrapApiResponse(res.data));
   },
   update(
@@ -31,7 +31,7 @@ export const templateCustomerAddressApi = {
     payload: CustomerAddressPayload,
   ) {
     return webApi
-      .patch<ApiResponse<ResponseBrand>>(
+      .patch<ApiResponse<CustomerAddress>>(
         `${basePath()}/${addressId}`,
         payload,
       )

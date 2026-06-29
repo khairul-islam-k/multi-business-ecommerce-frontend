@@ -9,6 +9,7 @@ import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
+import PaymentModal from "../_components/payment/payment-modal";
 
 
 
@@ -34,7 +35,7 @@ const FashionActiveCart = () => {
     const { data: cart, isLoading } = useAddActiveCArt();
     const message = useMessage();
 
-    console.log('cart', cart);
+    const [open, setOpen] = useState<boolean>(false);
 
     const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
@@ -335,6 +336,7 @@ const FashionActiveCart = () => {
 
                             <button
                                 type="button"
+                                onClick={() => setOpen(true)}
                                 className="mt-6 w-full rounded-full bg-[#f16d59] px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-950"
                             >
                                 Proceed to Checkout
@@ -350,6 +352,11 @@ const FashionActiveCart = () => {
                     </div>
                 )}
             </div>
+
+            <PaymentModal
+                open={open}
+                onClose={() => setOpen(false)}
+            />
         </section>
     );
 };

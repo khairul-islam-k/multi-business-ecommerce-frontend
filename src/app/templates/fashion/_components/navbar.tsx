@@ -310,7 +310,7 @@ const FashionNavbar = () => {
             </IconButton>
 
             <IconButton
-              href="/cart"
+              href="/store/dashboard/active-cart"
               label="Cart"
               count={cartCount}
               className="hidden lg:grid"
@@ -451,7 +451,7 @@ const FashionNavbar = () => {
                   </Link>
 
                   <Link
-                    href="/cart"
+                    href="/store/dashboard/active-cart"
                     onClick={() => setMobileMenuOpen(false)}
                     className="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-gray-950 bg-gray-950 py-3 text-xs font-medium text-white"
                   >

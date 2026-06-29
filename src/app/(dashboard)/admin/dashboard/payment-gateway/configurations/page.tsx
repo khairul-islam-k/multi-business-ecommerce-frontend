@@ -84,7 +84,7 @@ export default function PaymentGatewayConfigurations() {
   const deleteAccess = usePermissionAccess(PERMISSIONS.paymentDelete);
   const limit = 10;
 
-  const { data, isLoading, isFetching } = usePaymentGatewayConfigsQuery(
+  const { data: paymentGateway, isLoading, isFetching } = usePaymentGatewayConfigsQuery(
     businessId ?? "",
     {
       page: currentPage,
@@ -95,6 +95,9 @@ export default function PaymentGatewayConfigurations() {
       status,
     },
   );
+
+  console.log('gateway', paymentGateway);
+
   const { data: financeAccounts, isLoading: financeAccountsLoading } =
     useFinanceAccountQuery(businessId ?? "", {
       page: 1,
@@ -102,36 +105,12 @@ export default function PaymentGatewayConfigurations() {
       status: "ACTIVE",
       // sortBy: "name",
     });
-  const { createConfig, updateConfig, removeConfig } =
+  const {  removeConfig } =
     usePaymentGatewayConfigMutations(businessId ?? "");
 
   const financeAccountItems = financeAccounts?.items ?? [];
-  const submitting = createConfig.isPending || updateConfig.isPending;
 
-  const handleOpenCreate = () => {
-    setEditingConfig(null);
-    setModalOpen(true);
-  };
 
-  const handleSubmit = async (payload: PaymentGatewayConfigPayload) => {
-    try {
-      if (editingConfig) {
-        await updateConfig.mutateAsync({
-          configId: editingConfig.id,
-          payload,
-        });
-        swal.success("Payment gateway configuration updated.");
-      } else {
-        await createConfig.mutateAsync(payload);
-        swal.success("Payment gateway configuration created.");
-      }
-
-      setModalOpen(false);
-      setEditingConfig(null);
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
-    }
-  };
 
   const handleDelete = async (configId: string) => {
     try {
@@ -147,7 +126,7 @@ export default function PaymentGatewayConfigurations() {
       key: "provider",
       label: "Provider",
       type: "primary",
-      render: (row) => <strong>{row.provider}</strong>,
+      render: (row) => <strong>{row?.gateway?.name}</strong>,
     },
     {
       key: "mode",
@@ -223,14 +202,14 @@ export default function PaymentGatewayConfigurations() {
         }
       />
 
-      {!financeAccountsLoading && !financeAccountItems.length ? (
+      {!isLoading && !paymentGateway?.items?.length ? (
         <Card>
           <Empty description="Create an active finance account before configuring payment gateways." />
         </Card>
       ) : (
         <Card>
           <DataTable
-            data={data?.items ?? []}
+            data={paymentGateway?.items ?? []}
             columns={columns}
             loading={isLoading || isFetching}
             onSearch={(value) => {
@@ -306,25 +285,13 @@ export default function PaymentGatewayConfigurations() {
             )}
             pagination={{
               currentPage,
-              totalPages: data?.meta.totalPages ?? 1,
+              totalPages: paymentGateway?.meta.totalPages ?? 1,
               onPageChange: setCurrentPage,
             }}
           />
         </Card>
       )}
 
-      <PaymentGatewayConfigModal
-        open={modalOpen}
-        mode={editingConfig ? "update" : "create"}
-        config={editingConfig}
-        financeAccounts={financeAccountItems}
-        loading={submitting}
-        onCancel={() => {
-          setModalOpen(false);
-          setEditingConfig(null);
-        }}
-        onSubmit={handleSubmit}
-      />
     </div>
   );
 }

@@ -41,6 +41,19 @@ export type PaymentGatewayConfigPayload = {
 export type UpdatePaymentGatewayConfigPayload =
   Partial<PaymentGatewayConfigPayload>;
 
+export type GatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SURJOPAY";
+
+export type PaymentGateway = {
+  id: string;
+  name: string;
+  code: GatewayProvider;
+  description: string | null;
+  sortOrder: number;
+  status: PaymentGatewayStatus;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type PaymentGatewayConfig = {
   id: ApiId;
   businessId: ApiId;
@@ -50,12 +63,11 @@ export type PaymentGatewayConfig = {
   mode: PaymentGatewayMode;
   status: PaymentGatewayStatus;
   configData: Record<string, unknown>;
+  gateway:PaymentGateway;
   createdAt?: string;
   updatedAt?: string;
 };
 
-
-export type GatewayProvider = "SSLCOMMERZ" | "AAMARPAY" | "SURJOPAY";
 
 export type GatewayMode = "SANDBOX" | "LIVE";
 
