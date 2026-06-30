@@ -360,4 +360,12 @@ export const apiQueryKeys = {
     detail: (addressId: ApiId) =>
       ["customer", "detail", addressId] as const,
   },
+  paymentTemplate: {
+    all: () => ["paymentTemplate"] as const,
+    list: () =>
+      ["paymentTemplate","list"] as const,
+
+    detail: (addressId: ApiId) =>
+      ["paymentTemplate", "detail", addressId] as const,
+  },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -16,10 +16,8 @@ import {
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import { useCart } from "@/app/store/_components/contex/CartContex";
 import AvatarDropdown from "./avatar-dropdown";
-import { useAddActiveCArt} from "@/lib/api/hooks/add-cart";
-import { ConsoleSqlOutlined } from "@ant-design/icons";
+import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
-
 
 type Category = {
   id: string;
@@ -36,7 +34,6 @@ type CategoryTreeItem = {
   category: Category;
   children: CategoryTreeItem[];
 };
-
 
 const pageLinks = [
   {
@@ -70,7 +67,7 @@ const IconButton = ({
     <Link
       href={href}
       aria-label={label}
-      className={`relative grid h-10 w-10 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white ${className}`}
+      className={`relative grid h-10 w-10 place-items-center rounded-full transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white ${className}`}
     >
       {children}
 
@@ -178,7 +175,6 @@ const MobileCategoryItem = ({
   );
 };
 
-
 const FashionNavbar = () => {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -186,12 +182,11 @@ const FashionNavbar = () => {
   const { user } = useCart();
 
   const { data: categories } = useProductCategoryQuery();
-  const {data: cart} = useAddActiveCArt();
+  const { data: cart } = useAddActiveCArt();
 
   const cartCount = cart?.items.length;
   const compareCount = 2;
   const favoriteCount = 5;
-
 
   const handleCategoryClick = (categoryId: string) => {
     console.log("Clicked category id:", categoryId);
@@ -201,14 +196,13 @@ const FashionNavbar = () => {
     router.push(`/store/products?categoryId=${categoryId}`);
   };
 
-
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-50 bg-[var(--store-bg-1)]">
         <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-950">
+            <Link href="/" className="text-2xl font-bold">
               Fashion Store
             </Link>
           </div>
@@ -217,7 +211,7 @@ const FashionNavbar = () => {
           <div className="hidden items-center justify-center gap-8 lg:flex">
             <Link
               href={`/store`}
-              className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
+              className="text-sm font-medium transition hover:text-[#f16d59]"
             >
               Home
             </Link>
@@ -226,14 +220,14 @@ const FashionNavbar = () => {
             <div className="group relative">
               <button
                 type="button"
-                className="flex items-center gap-1 text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
+                className="flex items-center gap-1 text-sm font-medium transition hover:text-[#f16d59]"
               >
                 Products
                 <ChevronDown className="h-4 w-4 transition duration-300 group-hover:rotate-180" />
               </button>
 
               <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
+                <div className="rounded-xl  bg-white p-2 shadow-xl">
                   {categories?.map((item, index) => (
                     <CategoryMenuItem
                       key={`${item.category.id}-${index}`}
@@ -249,7 +243,7 @@ const FashionNavbar = () => {
             <div className="group relative">
               <button
                 type="button"
-                className="flex items-center gap-1 text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
+                className="flex items-center gap-1 text-sm font-medium transition hover:text-[#f16d59]"
               >
                 Pages
                 <ChevronDown className="h-4 w-4 transition duration-300 group-hover:rotate-180" />
@@ -272,14 +266,14 @@ const FashionNavbar = () => {
 
             <Link
               href="/faq"
-              className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
+              className="text-sm font-medium transition hover:text-[#f16d59]"
             >
               FAQ
             </Link>
 
             <Link
               href="/store/contact"
-              className="text-sm font-medium text-gray-700 transition hover:text-[#f16d59]"
+              className="text-sm font-medium transition hover:text-[#f16d59]"
             >
               Contact Us
             </Link>
@@ -287,7 +281,11 @@ const FashionNavbar = () => {
 
           {/* Right Icons */}
           <div className="flex items-center justify-end gap-2">
-            <IconButton href="/search" label="Search" className="hidden lg:grid">
+            <IconButton
+              href="/search"
+              label="Search"
+              className="hidden lg:grid"
+            >
               <Search className="h-5 w-5" />
             </IconButton>
 
@@ -320,17 +318,17 @@ const FashionNavbar = () => {
 
             <StoreThemeToggle />
 
-            {
-              user ? <AvatarDropdown /> :
-
-                <Link
-                  href="/store/login"
-                  className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
-                >
-                  <LogIn className="hidden h-4 w-4 sm:block" />
-                  Login
-                </Link>
-            }
+            {user ? (
+              <AvatarDropdown />
+            ) : (
+              <Link
+                href="/store/login"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
+              >
+                <LogIn className="hidden h-4 w-4 sm:block" />
+                Login
+              </Link>
+            )}
 
             <button
               type="button"
@@ -431,7 +429,6 @@ const FashionNavbar = () => {
                   >
                     <GitCompareArrows className="h-5 w-5" />
                     Compare
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {compareCount}
                     </span>
@@ -444,7 +441,6 @@ const FashionNavbar = () => {
                   >
                     <Heart className="h-5 w-5" />
                     Favorite
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {favoriteCount}
                     </span>
@@ -457,7 +453,6 @@ const FashionNavbar = () => {
                   >
                     <ShoppingBag className="h-5 w-5" />
                     Cart
-
                     <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
                       {cartCount}
                     </span>

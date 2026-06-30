@@ -1,6 +1,6 @@
 .themeBase {
   min-height: 100vh;
-  background-color: var(--store-bg);
+  background-color: var(--store-bg-1);
   color: var(--store-text);
 
   transition:
@@ -10,7 +10,9 @@
 
 /* Light mode */
 .light {
-  --store-bg: #ffffff;
+  --store-bg-1: #ffffff;
+  --store-bg-2: #fef8ee;
+  --store-bg-3: #f6f6f6;
   --store-card: #ffffff;
   --store-text: #111827;
   --store-muted: #6b7280;
@@ -21,7 +23,9 @@
 
 /* Dark mode */
 .dark {
-  --store-bg: #020617;
+  --store-bg-1: #020617;/* Deep navy */
+  --store-bg-2: #0f172a;/* Slate dark */
+  --store-bg-3: #1e293b;/* Soft dark blue */
   --store-card: #0f172a;
   --store-text: #f8fafc;
   --store-muted: #94a3b8;

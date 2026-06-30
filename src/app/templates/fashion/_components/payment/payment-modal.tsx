@@ -1,35 +1,70 @@
 "use client";
 
+import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useCustomerAddressList } from "@/lib/api/hooks/template-customer-address";
+import { useTemplatePaymentMutation } from "@/lib/api/hooks/template-payment";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { PaymentMethodStatus, PaymentPayload } from "@/types/template/template-payment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreditCard, Loader2, MapPin, X } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
-const paymentSchema = z.object({
-    shippingAddressId: z.string().min(1, "Shipping address is required"),
-    shippingAddressSnapshot: z.object({
-        address: z.string().min(1, "Address is required"),
-    }),
-    note: z.string().optional(),
-});
+const paymentMethodOptions = [
+    {
+        label: "Online Payment",
+        value: "ONLINE",
+    },
+    {
+        label: "Cash on Delivery",
+        value: "COD",
+    }
+] as const;
+
+const paymentSchema = z
+    .object({
+        paymentMethod: z.enum(["COD", "ONLINE"], {
+            error: "Payment method is required",
+        }),
+        shippingAddressId: z.string().optional(),
+        shippingAddressSnapshot: z.object({
+            address: z.string().optional(),
+        }),
+        note: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+        const hasShippingAddressId = Boolean(data.shippingAddressId?.trim());
+        const hasManualAddress = Boolean(
+            data.shippingAddressSnapshot.address?.trim(),
+        );
+
+        if (!hasShippingAddressId && !hasManualAddress) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: ["shippingAddressSnapshot", "address"],
+                message: "Select a shipping address or provide an address",
+            });
+        }
+    });
 
 export type PaymentFormValues = z.infer<typeof paymentSchema>;
 
 type PaymentModalProps = {
     open: boolean;
     onClose: () => void;
-    // addresses: CustomerAddress[];
-    // isSubmitting?: boolean;
-    // onSubmit: (values: PaymentFormValues) => void | Promise<void>;
+    handleOrderModal: (id: string, method: PaymentMethodStatus) => void;
 };
 
 export default function PaymentModal({
     open,
-    onClose
+    onClose,
+    handleOrderModal,
 }: PaymentModalProps) {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const message = useMessage();
+    const { createPayment } = useTemplatePaymentMutation();
 
     const {
         register,
@@ -40,6 +75,7 @@ export default function PaymentModal({
     } = useForm<PaymentFormValues>({
         resolver: zodResolver(paymentSchema),
         defaultValues: {
+            paymentMethod: "ONLINE",
             shippingAddressId: "",
             shippingAddressSnapshot: {
                 address: "",
@@ -52,9 +88,12 @@ export default function PaymentModal({
 
     const addresses = allAddresses ?? [];
 
-    
-
     const selectedAddressId = watch("shippingAddressId");
+    const manualAddress = watch("shippingAddressSnapshot.address");
+
+    const shippingAddressRegister = register("shippingAddressId");
+    const manualAddressRegister = register("shippingAddressSnapshot.address");
+    const noteRegister = register("note");
 
     const addressOptions = useMemo(() => {
         return addresses.map((address) => ({
@@ -63,34 +102,92 @@ export default function PaymentModal({
         }));
     }, [addresses]);
 
-    const selectedAddress = useMemo(() => {
-        return addresses.find((address) => address.id === selectedAddressId);
-    }, [addresses, selectedAddressId]);
+    const handleShippingAddressChange = (
+        event: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        shippingAddressRegister.onChange(event);
 
-    useEffect(() => {
-        if (!selectedAddress) return;
+        const value = event.target.value;
 
-        setValue(
-            "shippingAddressSnapshot.address",
-            `${selectedAddress.address}, ${selectedAddress.city}, ${selectedAddress.country}`,
-            {
+        if (value) {
+            setValue("shippingAddressSnapshot.address", "", {
                 shouldValidate: true,
-            },
-        );
-    }, [selectedAddress, setValue]);
+                shouldDirty: true,
+            });
+        }
+    };
+
+    const handleManualAddressChange = (
+        event: React.ChangeEvent<HTMLTextAreaElement>,
+    ) => {
+        manualAddressRegister.onChange(event);
+
+        const value = event.target.value;
+
+        if (value.trim()) {
+            setValue("shippingAddressId", "", {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        }
+    };
+
+    const handleNoteChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+        noteRegister.onChange(event);
+    };
 
     const handlePayment = async (values: PaymentFormValues) => {
-        console.log("payment payload", values);
+        try {
+            setIsSubmitting(true);
 
-        // await createOrder.mutateAsync(values);
+            const paymentMethod = values.paymentMethod as PaymentMethodStatus;
+            const note = values.note?.trim();
 
-        // setOpen(false);
+            let payload: PaymentPayload;
+
+            if (values.shippingAddressId?.trim()) {
+                payload = {
+                    paymentMethod,
+                    shippingAddressId: values.shippingAddressId.trim(),
+                };
+
+                if (note) {
+                    payload.note = note;
+                }
+            } else {
+                payload = {
+                    paymentMethod,
+                    shippingAddressSnapshot: {
+                        address: values.shippingAddressSnapshot.address?.trim() || "",
+                    },
+                };
+
+                if (note) {
+                    payload.note = note;
+                }
+            }
+
+              const res = await createPayment.mutateAsync(payload);
+
+            message.success("Payment created successfully");
+
+              handleOrderModal(res?.id, payload.paymentMethod);
+            console.log('payload', payload);
+            onClose();
+        } catch (error) {
+            message.error(getWebErrorMessage(error));
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (!open) return null;
 
+    const hasSelectedShippingAddress = Boolean(selectedAddressId);
+    const hasManualAddress = Boolean(manualAddress?.trim());
+
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-6">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-4">
             <button
                 type="button"
                 onClick={onClose}
@@ -98,8 +195,8 @@ export default function PaymentModal({
                 aria-label="Close modal"
             />
 
-            <div className="relative z-10 w-full max-w-2xl overflow-hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-2xl">
-                <div className="flex items-center justify-between border-b border-[var(--store-border,#e5e7eb)] px-6 py-5">
+            <div className="relative z-10 flex max-h-[calc(100dvh-32px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-2xl">
+                <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border,#e5e7eb)] px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="grid size-11 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)]">
                             <CreditCard className="size-5" />
@@ -109,8 +206,9 @@ export default function PaymentModal({
                             <h2 className="text-xl font-bold text-[var(--store-text,#111827)]">
                                 Payment
                             </h2>
+
                             <p className="text-sm text-[var(--store-muted,#6b7280)]">
-                                Confirm your shipping address before payment.
+                                Select payment method and shipping address.
                             </p>
                         </div>
                     </div>
@@ -124,69 +222,128 @@ export default function PaymentModal({
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit(handlePayment)} className="space-y-5 p-6">
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
-                            Shipping Address
-                        </label>
+                <form
+                    onSubmit={handleSubmit(handlePayment)}
+                    className="flex min-h-0 flex-1 flex-col"
+                >
+                    <div className="flex-1 space-y-5 overflow-y-auto p-6">
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                Payment Method
+                            </label>
 
-                        <select
-                            {...register("shippingAddressId")}
-                            className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent px-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
-                        >
-                            <option value="">Select shipping address</option>
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                {paymentMethodOptions.map((method) => (
+                                    <label
+                                        key={method.value}
+                                        className="flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--store-border,#e5e7eb)] p-4 transition hover:border-[var(--store-primary,#f16d59)]"
+                                    >
+                                        <input
+                                            type="radio"
+                                            value={method.value}
+                                            {...register("paymentMethod")}
+                                            className="size-4 accent-[var(--store-primary,#f16d59)]"
+                                        />
 
-                            {addressOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
+                                        <span className="text-sm font-semibold text-[var(--store-text,#111827)]">
+                                            {method.label}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
 
-                        {errors.shippingAddressId && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.shippingAddressId.message}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
-                            Address Snapshot
-                        </label>
-
-                        <div className="relative">
-                            <MapPin className="absolute left-4 top-4 size-5 text-[var(--store-muted,#6b7280)]" />
-
-                            <textarea
-                                {...register("shippingAddressSnapshot.address")}
-                                rows={3}
-                                placeholder="House 42, Dhaka"
-                                className="w-full resize-none rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent py-3 pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)]"
-                            />
+                            {errors.paymentMethod && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.paymentMethod.message}
+                                </p>
+                            )}
                         </div>
 
-                        {errors.shippingAddressSnapshot?.address && (
-                            <p className="mt-1 text-sm text-red-500">
-                                {errors.shippingAddressSnapshot.address.message}
-                            </p>
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                Shipping Address
+                            </label>
+
+                            <select
+                                name={shippingAddressRegister.name}
+                                ref={shippingAddressRegister.ref}
+                                onBlur={shippingAddressRegister.onBlur}
+                                onChange={handleShippingAddressChange}
+                                disabled={isLoading || hasManualAddress}
+                                className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent px-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                            >
+                                <option value="">
+                                    {isLoading
+                                        ? "Loading addresses..."
+                                        : "Select shipping address"}
+                                </option>
+
+                                {addressOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            {hasManualAddress && (
+                                <p className="mt-1 text-xs text-[var(--store-muted,#6b7280)]">
+                                    Clear manual address to select saved shipping address.
+                                </p>
+                            )}
+
+                            {errors.shippingAddressId && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {errors.shippingAddressId.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {!hasSelectedShippingAddress && (
+                            <div>
+                                <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                    Address
+                                </label>
+
+                                <div className="relative">
+                                    <MapPin className="absolute left-4 top-4 size-5 text-[var(--store-muted,#6b7280)]" />
+
+                                    <textarea
+                                        name={manualAddressRegister.name}
+                                        ref={manualAddressRegister.ref}
+                                        onBlur={manualAddressRegister.onBlur}
+                                        onChange={handleManualAddressChange}
+                                        rows={3}
+                                        placeholder="House 42, Dhaka"
+                                        className="w-full resize-none rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent py-3 pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)]"
+                                    />
+                                </div>
+
+                                {errors.shippingAddressSnapshot?.address && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.shippingAddressSnapshot.address.message}
+                                    </p>
+                                )}
+                            </div>
                         )}
+
+                        <div>
+                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                Note
+                            </label>
+
+                            <textarea
+                                name={noteRegister.name}
+                                ref={noteRegister.ref}
+                                onBlur={noteRegister.onBlur}
+                                onChange={handleNoteChange}
+                                rows={3}
+                                placeholder="Please call before delivery"
+                                className="w-full resize-none rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent px-4 py-3 text-sm text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)]"
+                            />
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
-                            Note
-                        </label>
-
-                        <textarea
-                            {...register("note")}
-                            rows={3}
-                            placeholder="Please call before delivery"
-                            className="w-full resize-none rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent px-4 py-3 text-sm text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)]"
-                        />
-                    </div>
-
-                    <div className="flex flex-col-reverse gap-3 border-t border-[var(--store-border,#e5e7eb)] pt-5 sm:flex-row sm:justify-end">
+                    <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-[var(--store-border,#e5e7eb)] bg-[var(--store-card,#ffffff)] px-6 py-4 sm:flex-row sm:justify-end">
                         <button
                             type="button"
                             onClick={onClose}

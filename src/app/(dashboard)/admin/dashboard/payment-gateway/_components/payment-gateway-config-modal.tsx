@@ -16,7 +16,7 @@ const providerOptions: Array<{ label: string; value: PaymentGatewayProvider }> =
   [
     { label: "SSLCommerz", value: "SSLCOMMERZ" },
     { label: "AamarPay", value: "AAMARPAY" },
-    { label: "SurjoPay", value: "SURJOPAY" },
+    { label: "SurjoPay", value: "SHURJOPAY" },
   ];
 
 const modeOptions: Array<{ label: string; value: PaymentGatewayMode }> = [

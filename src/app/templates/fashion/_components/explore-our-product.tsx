@@ -11,7 +11,7 @@ const ExploreOurProduct = () => {
   const { data: productTabs } = useProductTagsQuery();
   const [activeTab, setActiveTab] = useState('');
 
-  const {data: products, isLoading, isFetching} = useTemplateProductQuery({
+  const {data: products} = useTemplateProductQuery({
     tagId: activeTab
   });
 
@@ -23,11 +23,11 @@ const ExploreOurProduct = () => {
   }, [productTabs]);
 
   return (
-    <section className="bg-[#f6f6f6] py-16">
+    <section className="bg-[var(--store-bg-3)] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-gray-950 sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
             Explore Our Products
           </h2>
 
@@ -84,7 +84,7 @@ const ExploreOurProduct = () => {
           </AnimatePresence>
 
           {products?.items.length === 0 && (
-            <div className="mt-10 rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
+            <div className="mt-10 rounded-2xl border border-dashed border-gray-300 bg-[var(--store-bg-1)] p-10 text-center">
               <p className="text-base font-medium text-gray-500">
                 No products found.
               </p>

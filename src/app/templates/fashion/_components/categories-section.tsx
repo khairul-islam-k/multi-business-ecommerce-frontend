@@ -64,7 +64,7 @@ const CategoriesSection = () => {
   };
 
   return (
-    <section className="bg-[#fffdf9] py-16">
+    <section className="bg-[var(--store-bg-1)] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-5">
@@ -73,7 +73,7 @@ const CategoriesSection = () => {
               Shop by Category
             </p>
 
-            <h2 className="mt-3 text-3xl font-bold text-gray-950 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
               Explore Our Categories
             </h2>
           </div>
@@ -133,7 +133,7 @@ const CategoriesSection = () => {
 
                   {/* Name and Count */}
                   <div className="mt-4">
-                    <h3 className="text-sm font-semibold text-gray-900 transition duration-300 group-hover:text-[#f16d59]">
+                    <h3 className="text-sm font-semibold transition duration-300 group-hover:text-[#f16d59]">
                       {category.name}
                     </h3>
 

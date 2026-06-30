@@ -60,7 +60,7 @@ const BestSellingProducts = () => {
   };
 
   return (
-    <section className="bg-[#f6f6f6] py-16">
+    <section className="bg-[var(--store-bg-3)] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-5">
@@ -69,7 +69,7 @@ const BestSellingProducts = () => {
               Top Products
             </p>
 
-            <h2 className="text-3xl font-bold text-gray-950 sm:text-4xl lg:text-5xl">
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
               Best Selling Products
             </h2>
           </div>
@@ -79,7 +79,7 @@ const BestSellingProducts = () => {
             <button
               type="button"
               onClick={handleScrollLeft}
-              className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+              className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
               aria-label="Scroll left"
             >
               <ChevronLeft className="h-5 w-5" />
@@ -88,7 +88,7 @@ const BestSellingProducts = () => {
             <button
               type="button"
               onClick={handleScrollRight}
-              className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+              className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
               aria-label="Scroll right"
             >
               <ChevronRight className="h-5 w-5" />
@@ -138,7 +138,7 @@ const BestSellingProducts = () => {
           <button
             type="button"
             onClick={handleScrollRight}
-            className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+            className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
             aria-label="Scroll right"
           >
             <ChevronRight className="h-5 w-5" />

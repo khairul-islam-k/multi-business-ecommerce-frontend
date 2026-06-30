@@ -27,7 +27,9 @@ type StoreThemeContextType = {
 };
 
 type ThemeStyle = React.CSSProperties & {
-  "--store-bg"?: string;
+  "--store-bg-1"?: string;
+  "--store-bg-2"?: string;
+  "--store-bg-3"?: string;
   "--store-card"?: string;
   "--store-text"?: string;
   "--store-muted"?: string;
@@ -78,7 +80,9 @@ export function StoreThemeProvider({
    * Dark mode colors come from StoreTheme.module.css.
    */
   const lightStyle: ThemeStyle = {
-    "--store-bg": backendTheme?.backgroundColor || "#ffffff",
+    "--store-bg-1": backendTheme?.backgroundColor || "#ffffff",
+    "--store-bg-2": backendTheme?.backgroundColor || "#fef8ee",
+    "--store-bg-3": backendTheme?.backgroundColor || "#f6f6f6",
     "--store-card": backendTheme?.cardColor || "#ffffff",
     "--store-text": backendTheme?.textColor || "#111827",
     "--store-muted": "#6b7280",

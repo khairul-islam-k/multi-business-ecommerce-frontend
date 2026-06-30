@@ -27,6 +27,8 @@ const VariantModal = ({
     const message = useMessage();
     const { createAddCart } = useAddCartMutation();
 
+    console.log('product', product);
+
     useEffect(() => {
         if (!open) return;
 
@@ -166,6 +168,7 @@ const VariantModal = ({
                                             <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 translate-y-8 items-center gap-3 opacity-0 transition-all duration-300 group-hover/variant:translate-y-0 group-hover/variant:opacity-100">
                                                 <button
                                                     type="button"
+                                                    disabled={!variant?.stockSummary?.inStock}
                                                     onClick={() => {
                                                         handleAddItem({
                                                             productId: product.id,
@@ -173,7 +176,7 @@ const VariantModal = ({
                                                             quantity: 1
                                                         })
                                                     }}
-                                                    className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
+                                                    className={`grid h-10 w-10 place-items-center ${variant?.stockSummary?.inStock && 'hover:bg-[#f16d59]'} rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:text-white`}
                                                     aria-label="Add variant to cart"
                                                 >
                                                     <ShoppingCart className="h-5 w-5" />
@@ -218,13 +221,14 @@ const VariantModal = ({
                                                     : "text-red-500"
                                                     }`}
                                             >
-                                                {variant.status === "ACTIVE"
+                                                {variant?.stockSummary?.inStock
                                                     ? "Available"
                                                     : "Unavailable"}
                                             </p>
 
                                             <button
                                                 type="button"
+                                                disabled={!variant?.stockSummary?.inStock}
                                                 onClick={() => {
                                                     handleAddItem({
                                                         productId: product.id,

@@ -70,7 +70,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
   return (
     <div
-      className={`group overflow-hidden border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isList ? "lg:flex lg:items-stretch" : ""
+      className={`group overflow-hidden border border-gray-200 bg-[var(--store-bg-1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isList ? "lg:flex lg:items-stretch" : ""
         }`}
     >
       {/* Image Area */}
@@ -128,6 +128,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
           <button
             type="button"
+            disabled={!product.stockSummary.inStock}
             onClick={() => handleAddToCart(product)}
             className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
             aria-label="Add to cart"
@@ -153,7 +154,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
           }`}
       >
         <h3
-          className={`line-clamp-1 font-semibold text-gray-950 transition group-hover:text-[#f16d59] ${isList ? "text-base lg:text-2xl" : "text-base"
+          className={`line-clamp-1 font-semibold transition group-hover:text-[#f16d59] ${isList ? "text-base lg:text-2xl" : "text-base"
             }`}
         >
           {product.name}
@@ -180,12 +181,12 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
             />
           ))}
 
-          <span className="ml-1 text-xs text-gray-500">
+          <span className="ml-1 text-xs">
             ({product.reviewSummary.reviewCount})
           </span>
         </div>
 
-        <p className="mt-3 text-lg font-bold text-gray-950">
+        <p className="mt-3 text-lg font-bold">
           ৳{product.price}
         </p>
 

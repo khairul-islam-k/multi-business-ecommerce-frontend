@@ -10,6 +10,9 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import PaymentModal from "../_components/payment/payment-modal";
+import { useTemplatePaymentGateway } from "@/lib/api/hooks/template-payment";
+import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
+import { PaymentMethodStatus } from "@/types/template/template-payment";
 
 
 
@@ -34,6 +37,10 @@ const getThumbnailImage = (images: CartImage[]) => {
 const FashionActiveCart = () => {
     const { data: cart, isLoading } = useAddActiveCArt();
     const message = useMessage();
+
+    // payment
+    const [openPayment, setOpenPayment] = useState<boolean>(false);
+    const [orderId, setOrderId] = useState<string>('');
 
     const [open, setOpen] = useState<boolean>(false);
 
@@ -116,16 +123,21 @@ const FashionActiveCart = () => {
             return total + getItemQuantity(item);
         }, 0);
 
-        const shipping = subtotal > 0 ? 100 : 0;
-        const total = subtotal + shipping;
+        const total = subtotal;
 
         return {
             subtotal,
             totalQuantity,
-            shipping,
             total,
         };
     }, [items]);
+
+    const handleOrderModal = (id: string, method: PaymentMethodStatus) => {
+        if (method !== 'COD') {
+            setOpenPayment(true);
+            setOrderId(id);
+        }
+    }
 
     if (isLoading) {
         return (
@@ -315,12 +327,6 @@ const FashionActiveCart = () => {
                                     </span>
                                 </div>
 
-                                <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-500">Shipping</span>
-                                    <span className="font-semibold text-gray-950">
-                                        ৳{summary.shipping.toLocaleString()}
-                                    </span>
-                                </div>
 
                                 <div className="border-t border-gray-100 pt-4">
                                     <div className="flex items-center justify-between">
@@ -356,6 +362,13 @@ const FashionActiveCart = () => {
             <PaymentModal
                 open={open}
                 onClose={() => setOpen(false)}
+                handleOrderModal={handleOrderModal}
+            />
+
+            <PaymentGatewayModal
+                open={openPayment}
+                orderId={orderId}
+                onClose={() => setOpenPayment(false)}
             />
         </section>
     );

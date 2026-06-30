@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Layout, Drawer, theme, Grid } from "antd";
+import { Drawer, Grid, Layout, theme } from "antd";
 import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+
+import AccessDenied from "@/components/auth/access-denied";
+import PermissionGate from "@/components/auth/permission-gate";
+import { getAdminRoutePermission } from "@/lib/auth/permissions";
 
 import Sidebar from "./_components/sidebar";
 import TopBar from "./_components/top-bar";
-import PermissionGate from "@/components/auth/permission-gate";
-import AccessDenied from "@/components/auth/access-denied";
-import { getAdminRoutePermission } from "@/lib/auth/permissions";
 
 const { Header, Sider, Content } = Layout;
 
@@ -33,89 +34,88 @@ export default function AdminDashboardLayout({
   }, []);
 
   return (
-    
-      <Layout
-        className="dashboard-shell"
-        hasSider
-        style={{ maxHeight: "100vh", overflow: "hidden" }}
-      >
-        {/* Desktop Sidebar */}
-        {!screens.xs && (
-          <Sider
-            width={260}
-            collapsed={collapsed}
-            breakpoint="md"
-            trigger={null}
-            style={{ background: "var(--dashboard-sidebar-background-color)" }}
-          >
-            <Sidebar collapsed={collapsed} />
-          </Sider>
-        )}
+    <Layout
+      className="dashboard-shell"
+      hasSider
+      style={{ maxHeight: "100vh", overflow: "hidden" }}
+    >
+      {/* Desktop Sidebar */}
+      {!screens.xs && (
+        <Sider
+          width={260}
+          collapsed={collapsed}
+          breakpoint="md"
+          trigger={null}
+          style={{ background: "var(--dashboard-sidebar-background-color)" }}
+        >
+          <Sidebar collapsed={collapsed} />
+        </Sider>
+      )}
 
-        {/* Mobile Sidebar */}
-        <Drawer
-          placement="left"
-          open={open}
-          onClose={() => setOpen(false)}
-          size={260} // instead of width
-          styles={{
-            body: { padding: 0 }, // instead of bodyStyle
-            // header: { display: "none" }, // instead of headerStyle
+      {/* Mobile Sidebar */}
+      <Drawer
+        placement="left"
+        open={open}
+        onClose={() => setOpen(false)}
+        size={260} // instead of width
+        styles={{
+          body: { padding: 0 }, // instead of bodyStyle
+          // header: { display: "none" }, // instead of headerStyle
+        }}
+      >
+        <Sidebar close={() => setOpen(false)} />
+      </Drawer>
+
+      {/* Right Side (Header + Content) */}
+      <Layout>
+        {/* Mobile Topbar */}
+        <Header
+          style={{
+            padding: 0,
+            background: "var(--dashboard-header-background-color)",
+            color: "var(--dashboard-header-text-color)",
+            display: "flex",
+            alignItems: "center",
+            borderLeft: `1px solid ${token.colorBorderSecondary}`,
+            height: 64,
+            lineHeight: "normal",
           }}
         >
-          <Sidebar close={() => setOpen(false)} />
-        </Drawer>
+          <TopBar
+            collapsed={collapsed}
+            toggleSidebar={() => setCollapsed(!collapsed)}
+            toggle={() => setOpen(true)}
+          />
+        </Header>
 
-        {/* Right Side (Header + Content) */}
-        <Layout>
-          {/* Mobile Topbar */}
-          <Header
-            style={{
-              padding: 0,
-              background: "var(--dashboard-header-background-color)",
-              color: "var(--dashboard-header-text-color)",
-              display: "flex",
-              alignItems: "center",
-              borderLeft: `1px solid ${token.colorBorderSecondary}`,
-              height: 64,
-              lineHeight: "normal",
-            }}
-          >
-            <TopBar
-              collapsed={collapsed}
-              toggleSidebar={() => setCollapsed(!collapsed)}
-              toggle={() => setOpen(true)}
-            />
-          </Header>
-
-          {/* Page Content */}
-          <Content
-            style={{
-              overflowY: "auto",
-              overflowX: "hidden",
-              padding: screens.xs ? "10px" : "24px",
-              background: "var(--dashboard-dashboard-background-color)",
-              color: "var(--dashboard-text-primary-color)",
-            }}
-          >
-            {routePermission === "DENY" ? (
-              <AccessDenied />
-            ) : (
-              <PermissionGate permission={routePermission}>
-                {children}
-              </PermissionGate>
-            )}
-          </Content>
-        </Layout>
-
-        {/* Desktop-only header visibility */}
-        <style jsx>{`
-          @media (min-width: 768px) {
-            .desktop-header {
-              display: block;
-            }
-          }
-        `}</style>
+        {/* Page Content */}
+        <Content
+          style={{
+            overflowY: "auto",
+            overflowX: "hidden",
+            padding: screens.xs ? "10px" : "24px",
+            background: "var(--dashboard-dashboard-background-color)",
+            color: "var(--dashboard-text-primary-color)",
+          }}
+        >
+          {routePermission === "DENY" ? (
+            <AccessDenied />
+          ) : (
+            <PermissionGate permission={routePermission}>
+              {children}
+            </PermissionGate>
+          )}
+        </Content>
       </Layout>
+
+      {/* Desktop-only header visibility */}
+      <style jsx>{`
+        @media (min-width: 768px) {
+          .desktop-header {
+            display: block;
+          }
+        }
+      `}</style>
+    </Layout>
   );
 }

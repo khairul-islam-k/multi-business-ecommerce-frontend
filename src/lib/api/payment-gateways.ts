@@ -57,6 +57,15 @@ export const paymentGatewayApi = {
       .then((res) => unwrapApiResponse(res.data));
   },
 
+  updateAllConfig(businessId: ApiId, payload: PaymentGatewayPayload) {
+    return api
+      .post<ApiResponse<PaymentGatewayConfig>>(
+        `${basePath(businessId)}/configs/bulk`,
+        payload,
+      )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
   updateConfig(
     businessId: ApiId,
     configId: ApiId,

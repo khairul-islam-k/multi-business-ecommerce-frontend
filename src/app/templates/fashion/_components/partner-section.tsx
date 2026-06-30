@@ -84,11 +84,11 @@ const partners: Partner[] = [
 
 const PartnerSection = () => {
   return (
-    <section className="bg-[#fffdf9] py-16">
+    <section className="bg-[var(--store-bg-1)] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto mb-12 max-w-2xl text-center">
-          <h2 className="text-3xl font-bold text-gray-950 sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
             Our Partners
           </h2>
 

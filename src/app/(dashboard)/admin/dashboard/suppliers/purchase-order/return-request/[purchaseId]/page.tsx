@@ -1,15 +1,30 @@
 "use client";
 
+import {
+  App,
+  Button,
+  Card,
+  Checkbox,
+  Empty,
+  Form,
+  Input,
+  InputNumber,
+  Spin,
+  Typography,
+} from "antd";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
+import {
+  usePurchaseOrder,
+  usePurchaseOrderMutation,
+} from "@/lib/api/hooks/purchase-order";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockItem } from "@/types/stock/stock";
 import { PurchaseOrderItemResponse } from "@/types/suppliers/purchase-order";
-import { Button, Card, Checkbox, Empty, Form, Input, InputNumber, Spin, Typography, App } from "antd";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 type ReturnPayload = {
   reason: string;
@@ -37,7 +52,7 @@ const PurchaseOrderReturn = () => {
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const { purchaseId } = useParams<{ purchaseId: string }>();
 
@@ -49,7 +64,7 @@ const PurchaseOrderReturn = () => {
 
   const { purchaseOrderReturnRequest } = usePurchaseOrderMutation(businessId);
 
-  console.log('data', purchase);
+  console.log("data", purchase);
 
   // Available Quantity
   const sumTotalQuantity = (stocks?: StockItem[]) => {
@@ -68,7 +83,6 @@ const PurchaseOrderReturn = () => {
     return sumTotalQuantity(item.product?.productStocks);
   };
 
-
   useEffect(() => {
     if (!purchase?.items?.length) return;
 
@@ -84,7 +98,7 @@ const PurchaseOrderReturn = () => {
     });
   }, [purchase, form]);
 
-  // available 
+  // available
 
   const handleSubmit = async (values: ReturnFormValues) => {
     if (!purchase?.items?.length) {
@@ -124,11 +138,11 @@ const PurchaseOrderReturn = () => {
     try {
       const res = await purchaseOrderReturnRequest.mutateAsync({
         purchaseId,
-        payload
+        payload,
       });
       router.push("/admin/dashboard/suppliers/purchase-order");
       message.success("Purchase Order returned successfully");
-      console.log('res', res)
+      console.log("res", res);
     } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {
@@ -200,7 +214,11 @@ const PurchaseOrderReturn = () => {
                       noStyle
                     >
                       {({ getFieldValue }) => {
-                        const checked = getFieldValue(["items", index, "checked"]);
+                        const checked = getFieldValue([
+                          "items",
+                          index,
+                          "checked",
+                        ]);
 
                         return (
                           <Form.Item
@@ -209,11 +227,11 @@ const PurchaseOrderReturn = () => {
                             rules={
                               checked
                                 ? [
-                                  {
-                                    required: true,
-                                    message: "Quantity is required",
-                                  },
-                                ]
+                                    {
+                                      required: true,
+                                      message: "Quantity is required",
+                                    },
+                                  ]
                                 : []
                             }
                           >
@@ -231,12 +249,17 @@ const PurchaseOrderReturn = () => {
 
                   <Form.Item
                     shouldUpdate={(prev, cur) =>
-                      prev.items?.[index]?.checked !== cur.items?.[index]?.checked
+                      prev.items?.[index]?.checked !==
+                      cur.items?.[index]?.checked
                     }
                     noStyle
                   >
                     {({ getFieldValue }) => {
-                      const checked = getFieldValue(["items", index, "checked"]);
+                      const checked = getFieldValue([
+                        "items",
+                        index,
+                        "checked",
+                      ]);
 
                       return (
                         <Form.Item
@@ -245,11 +268,11 @@ const PurchaseOrderReturn = () => {
                           rules={
                             checked
                               ? [
-                                {
-                                  required: true,
-                                  message: "Reason is required",
-                                },
-                              ]
+                                  {
+                                    required: true,
+                                    message: "Reason is required",
+                                  },
+                                ]
                               : []
                           }
                         >
@@ -268,7 +291,13 @@ const PurchaseOrderReturn = () => {
           })}
         </div>
 
-        <Button htmlType="submit" loading={isSubmitting} type="primary" danger className="mt-4">
+        <Button
+          htmlType="submit"
+          loading={isSubmitting}
+          type="primary"
+          danger
+          className="mt-4"
+        >
           Submit Return Request
         </Button>
       </Form>

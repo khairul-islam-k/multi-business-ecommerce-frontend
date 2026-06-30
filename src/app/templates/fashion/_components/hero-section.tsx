@@ -66,7 +66,7 @@ const HeroSection = () => {
     }, []);
 
     return (
-        <section className="relative overflow-hidden bg-[#fef8ee]">
+        <section className="relative overflow-hidden bg-[var(--store-bg-2)]">
             <div className="mx-auto grid min-h-[620px] max-w-7xl grid-cols-1 items-center gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-8">
                 {/* Left Text Content */}
                 <div className="relative z-10">
@@ -93,7 +93,7 @@ const HeroSection = () => {
                                 initial={{ opacity: 0, y: 24 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2, duration: 0.5 }}
-                                className="max-w-xl text-4xl font-extrabold leading-tight text-gray-950 sm:text-5xl lg:text-6xl"
+                                className="max-w-xl text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl"
                             >
                                 {activeHero.title}
                             </motion.h1>
@@ -116,7 +116,7 @@ const HeroSection = () => {
                                 className="mt-8"
                             >
                                 <Link
-                                    href="/products"
+                                    href="/store/products"
                                     className="inline-flex rounded-full bg-[#f16d59] px-8 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#f16d59]"
                                 >
                                     Shop Now
@@ -171,7 +171,7 @@ const HeroSection = () => {
                 <button
                     type="button"
                     onClick={handlePrev}
-                    className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
+                    className="grid h-11 w-11 place-items-center rounded-full border border-gray-20 text-xl shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
                     aria-label="Previous slide"
                 >
                     ←
@@ -180,7 +180,7 @@ const HeroSection = () => {
                 <button
                     type="button"
                     onClick={handleNext}
-                    className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 bg-white text-xl text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
+                    className="grid h-11 w-11 place-items-center rounded-full border border-gray-200 text-xl shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
                     aria-label="Next slide"
                 >
                     →

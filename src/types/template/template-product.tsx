@@ -93,6 +93,13 @@ export type ProductReview = AuditFields & {
 
 // variant 
 
+export type StockSummary = {
+  totalQuantity: number;
+  quantityReserved: number;
+  availableQuantity: number;
+  inStock: boolean;
+};
+
 export type ProductVariant = {
   id: string;
   businessId: string;
@@ -113,6 +120,8 @@ export type ProductVariant = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
+
+  stockSummary: StockSummary;
 
   effectivePrice: string;
 

@@ -6,11 +6,11 @@ import monthOffer_3 from "@/assets/fashion/month-offer/month-offer-3.png";
 
 const MonthOffer = () => {
   return (
-    <section className="bg-[#fffdf9] py-16">
+    <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header Text */}
         <div className="mx-auto mb-12 max-w-3xl text-center">
-          <h2 className="text-3xl font-bold text-gray-950 sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
             Best Month Offer
           </h2>
 

@@ -5,13 +5,13 @@ import dealOfTheDay from "@/assets/fashion/deal-of-day.png";
 
 const DealOfDay = () => {
   return (
-    <section className="bg-[#fffdf9] py-16">
+    <section className="bg-[var(--store-bg-1)] py-16">
       <div className="sm:px-6 lg:px-0">
-        <div className="grid min-h-[620px] grid-cols-1 overflow-hidden rounded-3xl bg-[#f8eee8] lg:grid-cols-2">
+        <div className="grid min-h-[620px] grid-cols-1 overflow-hidden rounded-3xl bg-[var(--store-bg-3)] lg:grid-cols-2">
           {/* Left Text */}
           <div className="flex flex-col justify-center px-6 py-10 sm:px-10 lg:px-14">
 
-            <h2 className="mt-4 text-4xl font-bold leading-tight text-gray-950 sm:text-5xl lg:text-6xl">
+            <h2 className="mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               Deal <br /> of the Day.
             </h2>
 
@@ -32,7 +32,7 @@ const DealOfDay = () => {
 
             <div className="mt-8">
               <Link
-                href="/products"
+                href="/store/products"
                 className="inline-flex rounded-full px-8 py-3 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 bg-[#f16d59]"
               >
                 Shop Now

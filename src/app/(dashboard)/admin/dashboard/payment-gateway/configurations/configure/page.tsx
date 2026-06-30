@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useMemo } from "react";
 import {
   Button,
   Card,
@@ -13,17 +12,22 @@ import {
   Switch,
   Typography,
 } from "antd";
-import { SaveOutlined } from "@ant-design/icons";
+import { Save } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { useFinanceAccountQuery, usePaymentGatewayConfigMutations, usePaymentGatewayConfigsQuery } from "@/lib/api";
+import {
+  useFinanceAccountQuery,
+  usePaymentGatewayConfigMutations,
+  usePaymentGatewayConfigsQuery,
+} from "@/lib/api";
 import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
 
 const { Title, Text } = Typography;
 
-type GatewayKey = "sslcommerz" | "aamarpay" | "surjopay";
+type GatewayKey = "sslcommerz" | "aamarpay" | "shurjopay";
 
 type GatewayFormValues = {
   sslcommerz: {
@@ -40,7 +44,7 @@ type GatewayFormValues = {
     storeId?: string;
     signatureKey?: string;
   };
-  surjopay: {
+  shurjopay: {
     enabled: boolean;
     mode: GatewayMode;
     financeAccountId?: string;
@@ -49,6 +53,18 @@ type GatewayFormValues = {
     password?: string;
     prefix?: string;
   };
+};
+
+type PaymentGatewayConfigItem = {
+  id: string;
+  financeAccountId?: string | null;
+  mode?: GatewayMode | null;
+  status?: "ACTIVE" | "INACTIVE" | string;
+  configData?: Record<string, unknown> | null;
+  gateway?: {
+    code?: string | null;
+    name?: string | null;
+  } | null;
 };
 
 const gatewayConfigs = [
@@ -93,10 +109,10 @@ const gatewayConfigs = [
     ],
   },
   {
-    key: "surjopay",
-    provider: "SURJOPAY",
-    title: "SURJOPAY",
-    description: "Configure SURJOPAY payment gateway.",
+    key: "shurjopay",
+    provider: "SHURJOPAY",
+    title: "SHURJOPAY",
+    description: "Configure SHURJOPAY payment gateway.",
     fields: [
       {
         name: "endpoint",
@@ -126,6 +142,45 @@ const gatewayConfigs = [
   },
 ] as const;
 
+const providerToGatewayKey: Record<string, GatewayKey> = {
+  SSLCOMMERZ: "sslcommerz",
+  AAMARPAY: "aamarpay",
+
+  // Keep both spellings for safety.
+  SHURJOPAY: "shurjopay",
+  SURJOPAY: "shurjopay",
+};
+
+const getDefaultGatewayFormValues = (): GatewayFormValues => ({
+  sslcommerz: {
+    enabled: false,
+    mode: "SANDBOX",
+  },
+  aamarpay: {
+    enabled: false,
+    mode: "SANDBOX",
+  },
+  shurjopay: {
+    enabled: false,
+    mode: "SANDBOX",
+  },
+});
+
+const getCleanConfigData = (configData?: Record<string, unknown> | null) => {
+  if (!configData) return {};
+
+  return Object.entries(configData).reduce<Record<string, string>>(
+    (acc, [key, value]) => {
+      if (value !== undefined && value !== null) {
+        acc[key] = String(value);
+      }
+
+      return acc;
+    },
+    {},
+  );
+};
+
 const PaymentGateway = () => {
   const [form] = Form.useForm<GatewayFormValues>();
   const swal = useSwal();
@@ -139,14 +194,19 @@ const PaymentGateway = () => {
       status: "ACTIVE",
     });
 
-  // GateWay 
-  const { data: paymentGateway, isLoading, isFetching } = usePaymentGatewayConfigsQuery(
-    businessId ?? ""
+  const {
+    data: paymentGateway,
+    isLoading: paymentGatewayLoading,
+    isFetching: paymentGatewayFetching,
+  } = usePaymentGatewayConfigsQuery(businessId ?? "");
+
+  const savedGatewayItems = useMemo(() => {
+    return (paymentGateway?.items ?? []) as PaymentGatewayConfigItem[];
+  }, [paymentGateway?.items]);
+
+  const { createAllConfig } = usePaymentGatewayConfigMutations(
+    businessId ?? "",
   );
-
-  console.log('gateway', paymentGateway?.items);
-
-  const { createAllConfig } = usePaymentGatewayConfigMutations(businessId ?? "");
 
   const financeAccountOptions = useMemo(() => {
     return (
@@ -156,6 +216,32 @@ const PaymentGateway = () => {
       })) ?? []
     );
   }, [financeAccounts?.items]);
+
+  useEffect(() => {
+    const formValues = getDefaultGatewayFormValues();
+
+    savedGatewayItems.forEach((item) => {
+      const providerCode = item.gateway?.code;
+
+      if (!providerCode) return;
+
+      const gatewayKey = providerToGatewayKey[providerCode];
+
+      if (!gatewayKey) return;
+
+      const configData = getCleanConfigData(item.configData);
+
+      formValues[gatewayKey] = {
+        ...formValues[gatewayKey],
+        ...configData,
+        enabled: item.status === "ACTIVE",
+        mode: item.mode ?? "SANDBOX",
+        financeAccountId: item.financeAccountId ?? undefined,
+      };
+    });
+
+    form.setFieldsValue(formValues);
+  }, [form, savedGatewayItems]);
 
   const requiredWhenEnabled = (gatewayKey: GatewayKey, label: string) => ({
     validator(_: unknown, value: string | undefined) {
@@ -172,6 +258,32 @@ const PaymentGateway = () => {
       return Promise.resolve();
     },
   });
+
+  const onReset = () => {
+    const formValues = getDefaultGatewayFormValues();
+
+    savedGatewayItems.forEach((item) => {
+      const providerCode = item.gateway?.code;
+
+      if (!providerCode) return;
+
+      const gatewayKey = providerToGatewayKey[providerCode];
+
+      if (!gatewayKey) return;
+
+      const configData = getCleanConfigData(item.configData);
+
+      formValues[gatewayKey] = {
+        ...formValues[gatewayKey],
+        ...configData,
+        enabled: item.status === "ACTIVE",
+        mode: item.mode ?? "SANDBOX",
+        financeAccountId: item.financeAccountId ?? undefined,
+      };
+    });
+
+    form.setFieldsValue(formValues);
+  };
 
   const onSubmit = async (values: GatewayFormValues) => {
     const payload: PaymentGatewayPayload = {
@@ -207,14 +319,23 @@ const PaymentGateway = () => {
         }),
     };
 
-    try {
-      const res = await createAllConfig.mutateAsync(payload);
+    if (!payload.configs.length) {
+      swal.error("Please enable at least one payment gateway.");
+      return;
+    }
 
-      console.log("Payment gateway response:", res);
+    try {
+
+      if (savedGatewayItems.length) {
+        console.log('payload', payload);
+      } else {
+        const res = await createAllConfig.mutateAsync(payload);
+        console.log("Payment gateway response:", res);
+      }
+
+      console.log('payload', payload);
 
       swal.success("Payment gateway configuration saved successfully.");
-
-      form.resetFields();
     } catch (error: unknown) {
       swal.error(getApiErrorMessage(error));
     }
@@ -236,23 +357,10 @@ const PaymentGateway = () => {
         form={form}
         layout="vertical"
         onFinish={onSubmit}
-        initialValues={{
-          sslcommerz: {
-            enabled: false,
-            mode: "SANDBOX",
-          },
-          aamarpay: {
-            enabled: false,
-            mode: "SANDBOX",
-          },
-          surjopay: {
-            enabled: false,
-            mode: "SANDBOX",
-          },
-        }}
+        initialValues={getDefaultGatewayFormValues()}
       >
         <Collapse
-          accordion={false}
+          accordion={true}
           defaultActiveKey={["sslcommerz"]}
           className="rounded-2xl bg-white"
           items={gatewayConfigs.map((gateway) => {
@@ -260,6 +368,7 @@ const PaymentGateway = () => {
 
             return {
               key: gateway.key,
+              forceRender: true,
               label: (
                 <div>
                   <h3 className="mb-0 font-semibold text-gray-900">
@@ -280,6 +389,7 @@ const PaymentGateway = () => {
                   <Switch
                     checkedChildren="ON"
                     unCheckedChildren="OFF"
+                    loading={paymentGatewayLoading || paymentGatewayFetching}
                     onClick={(_, event) => {
                       event.stopPropagation();
                     }}
@@ -290,8 +400,7 @@ const PaymentGateway = () => {
                 <Form.Item
                   noStyle
                   shouldUpdate={(prev, next) =>
-                    prev?.[gatewayKey]?.enabled !==
-                    next?.[gatewayKey]?.enabled
+                    prev?.[gatewayKey]?.enabled !== next?.[gatewayKey]?.enabled
                   }
                 >
                   {({ getFieldValue }) => {
@@ -300,10 +409,7 @@ const PaymentGateway = () => {
                     return (
                       <Card className="rounded-xl border border-gray-200 shadow-sm">
                         <div className={!enabled ? "opacity-70" : ""}>
-                          <Form.Item
-                            label="Mode"
-                            name={[gatewayKey, "mode"]}
-                          >
+                          <Form.Item label="Mode" name={[gatewayKey, "mode"]}>
                             <Radio.Group
                               disabled={!enabled}
                               optionType="button"
@@ -374,9 +480,15 @@ const PaymentGateway = () => {
 
         <div className="mt-6 flex justify-end">
           <Space>
-            <Button onClick={() => form.resetFields()}>Reset</Button>
+            <Button onClick={onReset}>Reset</Button>
 
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<Save size={16} />}
+              loading={createAllConfig.isPending}
+              disabled={!businessId}
+            >
               Save Configuration
             </Button>
           </Space>

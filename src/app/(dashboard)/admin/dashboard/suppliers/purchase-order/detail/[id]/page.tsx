@@ -1,11 +1,5 @@
 "use client";
 
-import Loader from "@/components/shared/loader";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { usePurchaseOrder, usePurchaseOrderMutation } from "@/lib/api/hooks/purchase-order";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
 import {
   App,
   Button,
@@ -22,58 +16,54 @@ import TextArea from "antd/es/input/TextArea";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import {
+  usePurchaseOrder,
+  usePurchaseOrderMutation,
+} from "@/lib/api/hooks/purchase-order";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+
 const PurchaseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { message, modal } = App.useApp();
   const router = useRouter();
 
-  // modal 
+  // modal
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [note, setNote] = useState<string>('');
-  const [mode, setMode] = useState<string>('');
+  const [note, setNote] = useState<string>("");
+  const [mode, setMode] = useState<string>("");
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const { data: purchase, isLoading, isFetching } = usePurchaseOrder(
-    businessId,
-    id
+  const {
+    data: purchase,
+    isLoading,
+    isFetching,
+  } = usePurchaseOrder(businessId, id);
+
+  console.log("status", purchase);
+  const cancelOrReceiveStatus = !(
+    purchase?.status === "CANCELLED" || purchase?.status === "RECEIVED"
   );
 
-  console.log('status', purchase);
-  const cancelOrReceiveStatus = !((purchase?.status === "CANCELLED") || (purchase?.status === "RECEIVED"));
+  const receiveStatus = purchase?.status === "RECEIVED";
 
-  const receiveStatus = purchase?.status === "RECEIVED"
-
-  const { updateReceivePO, updateCancelPO } = usePurchaseOrderMutation(businessId);
-
+  const { updateReceivePO, updateCancelPO } =
+    usePurchaseOrderMutation(businessId);
 
   const handleReceivePO = async (id: string) => {
     const payload = { note };
     try {
       const res = await updateReceivePO.mutateAsync({
         purchaseId: id,
-        payload
-      })
-      console.log('res', res);
+        payload,
+      });
+      console.log("res", res);
       message.success("Purchase order have been received");
-    } catch (error) {
-      message.error(getApiErrorMessage(error));
-    } finally {
-      setIsModalOpen(false);
-    }
-  }
-
-  const handleCancel = async (id: string) => {
-    const payload = { note };
-    console.log('can', payload, id);
-    try {
-      const res = await updateCancelPO.mutateAsync({
-        purchaseId: id,
-        payload
-      })
-      console.log('res', res);
-      message.success("Purchase order have been cancel");;
     } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {
@@ -81,6 +71,22 @@ const PurchaseDetail = () => {
     }
   };
 
+  const handleCancel = async (id: string) => {
+    const payload = { note };
+    console.log("can", payload, id);
+    try {
+      const res = await updateCancelPO.mutateAsync({
+        purchaseId: id,
+        payload,
+      });
+      console.log("res", res);
+      message.success("Purchase order have been cancel");
+    } catch (error) {
+      message.error(getApiErrorMessage(error));
+    } finally {
+      setIsModalOpen(false);
+    }
+  };
 
   if (isLoading || isFetching) {
     return <Loader />;
@@ -102,30 +108,40 @@ const PurchaseDetail = () => {
         {receiveStatus && (
           <Button
             type="primary"
-            danger onClick={()=> router.push(`/admin/dashboard/suppliers/purchase-order/return-request/${purchase.id}`)}>
+            danger
+            onClick={() =>
+              router.push(
+                `/admin/dashboard/suppliers/purchase-order/return-request/${purchase.id}`,
+              )
+            }
+          >
             Return Request
           </Button>
         )}
 
-        {
-          cancelOrReceiveStatus &&
-          <Button type="primary" onClick={() => {
-            setIsModalOpen(true);
-            setMode("receive");
-          }}>
+        {cancelOrReceiveStatus && (
+          <Button
+            type="primary"
+            onClick={() => {
+              setIsModalOpen(true);
+              setMode("receive");
+            }}
+          >
             Receive PO
           </Button>
-        }
+        )}
 
-        {
-          cancelOrReceiveStatus &&
-          <Button danger onClick={() => {
-            setIsModalOpen(true);
-            setMode("cancel");
-          }}>
+        {cancelOrReceiveStatus && (
+          <Button
+            danger
+            onClick={() => {
+              setIsModalOpen(true);
+              setMode("cancel");
+            }}
+          >
             Cancel PO
           </Button>
-        }
+        )}
       </Flex>
 
       <Card>
@@ -146,7 +162,10 @@ const PurchaseDetail = () => {
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
           <Card title="Order Information">
-            <InfoItem label="Order Date" value={formatDate(purchase.orderDate)} />
+            <InfoItem
+              label="Order Date"
+              value={formatDate(purchase.orderDate)}
+            />
             <InfoItem
               label="Expected Delivery"
               value={formatDate(purchase.expectedDeliveryDate)}
@@ -186,7 +205,7 @@ const PurchaseDetail = () => {
             {
               title: "Product",
               dataIndex: "productId",
-              render: (_, row) => row.product.name
+              render: (_, row) => row.product.name,
             },
             {
               title: "Variant",
@@ -232,10 +251,7 @@ const PurchaseDetail = () => {
           </Col>
 
           <Col xs={24} md={8} lg={4}>
-            <InfoItem
-              label="Discount"
-              value={money(purchase.discountTotal)}
-            />
+            <InfoItem label="Discount" value={money(purchase.discountTotal)} />
           </Col>
 
           <Col xs={24} md={8} lg={4}>
@@ -243,10 +259,7 @@ const PurchaseDetail = () => {
           </Col>
 
           <Col xs={24} md={8} lg={4}>
-            <InfoItem
-              label="Shipping"
-              value={money(purchase.shippingCost)}
-            />
+            <InfoItem label="Shipping" value={money(purchase.shippingCost)} />
           </Col>
 
           <Col xs={24} md={8} lg={4}>
@@ -280,12 +293,11 @@ const PurchaseDetail = () => {
       <Modal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        footer={null}>
-        {
-          mode === "receive" && <>
-            <Card
-              title="Receive Purchase Order"
-            >
+        footer={null}
+      >
+        {mode === "receive" && (
+          <>
+            <Card title="Receive Purchase Order">
               <TextArea
                 rows={4}
                 placeholder="Write purchase order note..."
@@ -296,25 +308,25 @@ const PurchaseDetail = () => {
                 }}
               />
 
-              <Button type="primary"
+              <Button
+                type="primary"
                 style={{
-                  marginTop: '8px'
+                  marginTop: "8px",
                 }}
                 onClick={() => {
                   handleReceivePO(purchase.id);
-                }}>
+                }}
+              >
                 Receive PO
               </Button>
             </Card>
           </>
-        }
+        )}
 
         {/* cancel */}
-        {
-          mode === "cancel" && <>
-            <Card
-              title="Cancel Purchase Order"
-            >
+        {mode === "cancel" && (
+          <>
+            <Card title="Cancel Purchase Order">
               <TextArea
                 rows={4}
                 placeholder="Write purchase order note..."
@@ -325,20 +337,22 @@ const PurchaseDetail = () => {
                 }}
               />
 
-              <Button type="primary"
+              <Button
+                type="primary"
                 style={{
-                  marginTop: '8px'
+                  marginTop: "8px",
                 }}
                 onClick={() => {
                   handleCancel(purchase.id);
-                }}>
+                }}
+              >
                 Cancel PO
               </Button>
             </Card>
           </>
-        }
+        )}
       </Modal>
-    </div >
+    </div>
   );
 };
 
