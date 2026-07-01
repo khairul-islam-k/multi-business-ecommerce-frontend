@@ -3,23 +3,6 @@ import { templatePaymentApi } from "@/lib/api/template-payment";
 import { PaymentGatewayProvider } from "@/types/payment-gateway";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params;
-
-  return NextResponse.json({
-    status: true,
-    message: "Product details fetched successfully",
-    data: {
-      id,
-      name: "Keyboard",
-      price: 5000,
-    },
-  });
-}
-
 type PaymentRouteParams = {
   method: string;
   paymentId: string;

@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArrowLeft,
   Ban,
@@ -9,15 +7,31 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import React from "react";
 
-const FashionPaymentCancelPage = () => {
-  const searchParams = useSearchParams();
+type PaymentCancelPageProps = {
+  searchParams: Promise<{
+    orderId?: string | string[];
+    transactionReference?: string | string[];
+    reason?: string | string[];
+  }>;
+};
 
-  const orderId = searchParams.get("orderId");
-  const transactionId = searchParams.get("transactionId");
-  const reason = searchParams.get("reason");
+const getSearchParamValue = (value?: string | string[]) => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+};
+
+export default async function FashionPaymentCancelPage({
+  searchParams,
+}: PaymentCancelPageProps) {
+  const params = await searchParams;
+
+  const orderId = getSearchParamValue(params.orderId);
+  const transactionId = getSearchParamValue(params.transactionReference);
+  const reason = getSearchParamValue(params.reason);
 
   return (
     <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-12 sm:px-6 lg:px-8">
@@ -135,6 +149,4 @@ const FashionPaymentCancelPage = () => {
       </div>
     </section>
   );
-};
-
-export default FashionPaymentCancelPage;
+}

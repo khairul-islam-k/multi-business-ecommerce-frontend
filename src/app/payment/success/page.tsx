@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ArrowRight,
   CheckCircle2,
@@ -9,18 +7,31 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import React from "react";
 
-const FashionPaymentSuccessPage = () => {
-  const searchParams = useSearchParams();
+type PaymentSuccessPageProps = {
+  searchParams: Promise<{
+    orderId?: string | string[];
+    paidAmount?: string | string[];
+    transactionReference?: string | string[];
+  }>;
+};
 
-  console.log('params', searchParams);
+const getSearchParamValue = (value?: string | string[]) => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
 
-  const orderId = searchParams.get("orderId");
-  const transactionId = searchParams.get("transactionId");
-  const amount = searchParams.get("paidAmount");
-  const transactionReference = searchParams.get("transactionReference");
+  return value;
+};
+
+export default async function FashionPaymentSuccessPage({
+  searchParams,
+}: PaymentSuccessPageProps) {
+  const params = await searchParams;
+
+  const orderId = getSearchParamValue(params.orderId);
+  const amount = getSearchParamValue(params.paidAmount);
+  const transactionReference = getSearchParamValue(params.transactionReference);
 
   return (
     <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-12 sm:px-6 lg:px-8">
@@ -104,7 +115,7 @@ const FashionPaymentSuccessPage = () => {
 
                 <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-sm text-[var(--store-muted,#6b7280)]">
-                    TransactionReference
+                    Transaction Reference
                   </span>
 
                   <span className="break-all text-sm font-semibold text-[var(--store-text,#111827)]">
@@ -125,7 +136,7 @@ const FashionPaymentSuccessPage = () => {
 
               <Link
                 href="/store/dashboard/orders"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--store-primary,#f16d59)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-green-600 px-6 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 View Orders
                 <ArrowRight className="size-5" />
@@ -136,6 +147,4 @@ const FashionPaymentSuccessPage = () => {
       </div>
     </section>
   );
-};
-
-export default FashionPaymentSuccessPage;
+}

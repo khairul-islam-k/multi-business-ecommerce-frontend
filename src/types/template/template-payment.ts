@@ -26,6 +26,9 @@ export type PaymentInitPayload = {
     cancelRedirectUrl: string;
 };
 
+export type PaymentInitResponse = {
+    redirectUrl: string;
+}
 
 // order Response
 
@@ -166,7 +169,7 @@ export type TemplatePaymentGatewayResponse = {
     id: string;
     gatewayId: string;
     code: PaymentGatewayProvider;
-    name: string;
+    name: PaymentGatewayProvider;
     description: string;
     mode: PaymentGatewayMode;
 };

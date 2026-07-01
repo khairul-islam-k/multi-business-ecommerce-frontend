@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse, unwrapArrayResponse } fr
 import { ApiArrayResponse, ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import { buildQueryString } from "./params";
 import webApi from "../public-api-hook/web-api";
-import { OrderResponse, PaymentInitPayload, PaymentPayload, TemplatePaymentGatewayResponse, VerifyPaymentResponse } from "@/types/template/template-payment";
+import { OrderResponse, PaymentInitPayload, PaymentInitResponse, PaymentPayload, TemplatePaymentGatewayResponse, VerifyPaymentResponse } from "@/types/template/template-payment";
 import { PaymentGatewayProvider, PaymentQuery } from "@/types/payment-gateway";
 
 const basePath = () => `/storefront/customer/orders/place`;
@@ -29,7 +29,7 @@ export const templatePaymentApi = {
 
   createProvidePayment(orderId: ApiId ,payload: PaymentInitPayload) {
     return webApi
-      .post<ApiResponse<unknown>>(`/storefront/customer/orders/${orderId}/payments/initiate`, payload)
+      .post<ApiResponse<PaymentInitResponse>>(`/storefront/customer/orders/${orderId}/payments/initiate`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 

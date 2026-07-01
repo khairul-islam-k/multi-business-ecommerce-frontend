@@ -1,5 +1,3 @@
-"use client";
-
 import {
   AlertTriangle,
   ArrowLeft,
@@ -10,15 +8,31 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import React from "react";
 
-const FashionPaymentFailedPage = () => {
-  const searchParams = useSearchParams();
+type PaymentFailedPageProps = {
+  searchParams: Promise<{
+    orderId?: string | string[];
+    transactionReference?: string | string[];
+    reason?: string | string[];
+  }>;
+};
 
-  const orderId = searchParams.get("orderId");
-  const transactionId = searchParams.get("transactionId");
-  const reason = searchParams.get("reason");
+const getSearchParamValue = (value?: string | string[]) => {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+};
+
+export default async function FashionPaymentFailedPage({
+  searchParams,
+}: PaymentFailedPageProps) {
+  const params = await searchParams;
+
+  const orderId = getSearchParamValue(params.orderId);
+  const transactionId = getSearchParamValue(params.transactionReference);
+  const reason = getSearchParamValue(params.reason);
 
   return (
     <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-12 sm:px-6 lg:px-8">
@@ -136,6 +150,4 @@ const FashionPaymentFailedPage = () => {
       </div>
     </section>
   );
-};
-
-export default FashionPaymentFailedPage;
+}

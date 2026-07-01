@@ -43,16 +43,14 @@ export default function PaymentGatewayModal({
         const payload = {
             provider: gateway.name,
             successRedirectUrl: "http://localhost:3000/routes/payment",
-            failRedirectUrl: "http://localhost:3000/payment/failed",
-            cancelRedirectUrl: "http://localhost:3000/payment/cancel"
+            failRedirectUrl: "http://localhost:3000/routes/failed",
+            cancelRedirectUrl: "http://localhost:3000/routes/cancel"
         }
 
         const res = await createProvidePayment.mutateAsync({
             orderId,
             payload
         });
-
-        console.log('res', res);
 
         router.push(res?.redirectUrl)
 
