@@ -337,7 +337,7 @@ export const apiQueryKeys = {
       ["productReview", "list", query] as const,
 
     detailProfile: () =>
-      [ "detailProfile"] as const,
+      ["detailProfile"] as const,
   },
 
   addCart: {
@@ -346,16 +346,16 @@ export const apiQueryKeys = {
       ["addCart", "list", query] as const,
 
     detail: () =>
-      ["addCart","detail"] as const,
+      ["addCart", "detail"] as const,
 
     detailActive: () =>
-      ["addCart","detailActive"] as const,
+      ["addCart", "detailActive"] as const,
   },
 
   customerAddressTemplate: {
     all: () => ["customer"] as const,
     list: () =>
-      ["customer","list"] as const,
+      ["customer", "list"] as const,
 
     detail: (addressId: ApiId) =>
       ["customer", "detail", addressId] as const,
@@ -363,9 +363,26 @@ export const apiQueryKeys = {
   paymentTemplate: {
     all: () => ["paymentTemplate"] as const,
     list: () =>
-      ["paymentTemplate","list"] as const,
+      ["paymentTemplate", "list"] as const,
 
     detail: (addressId: ApiId) =>
       ["paymentTemplate", "detail", addressId] as const,
+  },
+
+  templateOrderHistory: {
+    all: ()=> ["orderHistory"] as const,
+    list: (query?: CategoriesQuery) =>
+      ["orderHistory", "list", query] as const,
+
+    detail: (orderId: ApiId) =>
+      ["orderHistory", orderId, "detail"] as const,
+  },
+  templateProductWishList: {
+    all: ()=> ["wishList"] as const,
+    list: (query?: CategoriesQuery) =>
+      ["wishList", "list", query] as const,
+
+    detail: (orderId: ApiId) =>
+      ["wishList", orderId, "detail"] as const,
   },
 };

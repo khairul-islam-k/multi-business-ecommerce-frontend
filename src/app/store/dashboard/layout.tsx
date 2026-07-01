@@ -26,7 +26,7 @@ const sidebarItems = [
     },
     {
         label: "Orders",
-        href: "/store/dashboard/orders",
+        href: "/store/dashboard/order-history",
         icon: ShoppingCart,
     },
     {
@@ -48,6 +48,11 @@ const sidebarItems = [
         label: "Products",
         href: "/store/dashboard/products",
         icon: Package,
+    },
+    {
+        label: "Wish List",
+        href: "/store/dashboard/wish-list",
+        icon: BarChart3,
     },
     {
         label: "Analytics",

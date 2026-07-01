@@ -16,6 +16,7 @@ import { useState } from "react";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
 
 
 
@@ -32,6 +33,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
   const message = useMessage();
   const { createAddCart } = useAddCartMutation();
+  const { addWishList } = useTemplateProductWishListMutation();
 
   const [variantModalOpen, setVariantModalOpen] = useState<boolean>(false);
 
@@ -62,7 +64,32 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
     }
   }
 
+  const handleAddToWishList = async (value: StorefrontProduct) => {
 
+    if (value.variants.length > 0) {
+      setVariantModalOpen(true);
+    } else {
+
+      if (!value.id) {
+        message.error("Product is required");
+        return;
+      }
+
+
+      try {
+        const res = await addWishList.mutateAsync({
+          productId: product.id
+        });
+
+        console.log('res', res);
+        setVariantModalOpen(false);
+        message.success("Product added to Wish successfully");
+      } catch (error) {
+        message.error(getWebErrorMessage(error));
+      }
+
+    }
+  }
 
   const { store } = useParams<{ store: string }>();
 
@@ -109,6 +136,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
         {/* Heart Icon */}
         <button
+          onClick={() => handleAddToWishList(product)}
           type="button"
           className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
           aria-label="Add to wishlist"

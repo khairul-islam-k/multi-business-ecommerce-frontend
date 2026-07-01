@@ -101,7 +101,6 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
   const { data: products } = useTemplateProductQuery({
-    // tagId: activeTab
     categoryId,
     sortBy,
     sortOrder
@@ -271,6 +270,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
             </div>
           )}
         </div>
+        
       </div>
     </section>
   );

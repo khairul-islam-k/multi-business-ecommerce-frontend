@@ -3,10 +3,12 @@
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
+import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { AddToCartPayload } from "@/types/template/add-cart";
 import { StorefrontProduct } from "@/types/template/template-product";
-import { ShoppingCart, Star, X } from "lucide-react";
+import { ProductWishListPayload } from "@/types/template/wishList";
+import { Heart, ShoppingCart, Star, X } from "lucide-react";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -26,6 +28,7 @@ const VariantModal = ({
 }: Props) => {
     const message = useMessage();
     const { createAddCart } = useAddCartMutation();
+    const { addWishList } = useTemplateProductWishListMutation();
 
     console.log('product', product);
 
@@ -80,6 +83,22 @@ const VariantModal = ({
             await createAddCart.mutateAsync(values);
             onClose()
             message.success("Product added to cart successfully");
+        } catch (error) {
+            message.error(getWebErrorMessage(error));
+        }
+    };
+
+    const handleAddToWishList = async (values: ProductWishListPayload) => {
+
+        if (!values.productId) {
+            message.error("Product is required");
+            return;
+        }
+
+        try {
+            await addWishList.mutateAsync(values);
+            onClose()
+            message.success("Product added to WishList successfully");
         } catch (error) {
             message.error(getWebErrorMessage(error));
         }
@@ -163,6 +182,18 @@ const VariantModal = ({
                                             <span className="absolute left-4 top-4 rounded-full bg-[#f16d59] px-3 py-1 text-xs font-semibold text-white">
                                                 Variant
                                             </span>
+
+                                            <button
+                                                onClick={() => handleAddToWishList({
+                                                    productId: product.id,
+                                                    variantId: variant.id,
+                                                })}
+                                                type="button"
+                                                className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
+                                                aria-label="Add to wishlist"
+                                            >
+                                                <Heart className="h-5 w-5" />
+                                            </button>
 
                                             {/* Hover Icons */}
                                             <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 translate-y-8 items-center gap-3 opacity-0 transition-all duration-300 group-hover/variant:translate-y-0 group-hover/variant:opacity-100">
