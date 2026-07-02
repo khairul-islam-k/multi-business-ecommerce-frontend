@@ -4,71 +4,67 @@ import Link from "next/link";
 import { useState } from "react";
 import {
     BarChart3,
+    Heart,
     Home,
     LogOut,
+    MapPinHouse,
     Menu,
     Package,
+    PackageSearch,
+    ReceiptText,
     Settings,
     ShoppingCart,
+    Star,
     User,
     X,
 } from "lucide-react";
+import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown";
 
 type DashboardLayoutProps = {
     children: React.ReactNode;
 };
 
 const sidebarItems = [
-    {
-        label: "Dashboard",
-        href: "/store/dashboard",
-        icon: Home,
-    },
-    {
-        label: "Orders",
-        href: "/store/dashboard/order-history",
-        icon: ShoppingCart,
-    },
-    {
-        label: "My Active Cart",
-        href: "/store/dashboard/active-cart",
-        icon: ShoppingCart,
-    },
-    {
-        label: "My Reviews",
-        href: "/store/dashboard/review",
-        icon: ShoppingCart,
-    },
-    {
-        label: "Customer Address",
-        href: "/store/dashboard/customer-address",
-        icon: Package,
-    },
-    {
-        label: "Products",
-        href: "/store/dashboard/products",
-        icon: Package,
-    },
-    {
-        label: "Wish List",
-        href: "/store/dashboard/wish-list",
-        icon: BarChart3,
-    },
-    {
-        label: "Analytics",
-        href: "/store/dashboard/analytics",
-        icon: BarChart3,
-    },
-    {
-        label: "Profile",
-        href: "/store/dashboard/profile",
-        icon: User,
-    },
-    {
-        label: "Settings",
-        href: "/store/dashboard/settings",
-        icon: Settings,
-    },
+  {
+    label: "Dashboard",
+    href: "/store/dashboard",
+    icon: Home,
+  },
+  {
+    label: "Orders",
+    href: "/store/dashboard/order-history",
+    icon: ReceiptText,
+  },
+  {
+    label: "My Active Cart",
+    href: "/store/dashboard/active-cart",
+    icon: ShoppingCart,
+  },
+  {
+    label: "My Reviews",
+    href: "/store/dashboard/review",
+    icon: Star,
+  },
+  {
+    label: "Customer Address",
+    href: "/store/dashboard/customer-address",
+    icon: MapPinHouse,
+  },
+  {
+    label: "Products",
+    href: "/store/dashboard/products",
+    icon: PackageSearch,
+  },
+  {
+    label: "Wish List",
+    href: "/store/dashboard/wish-list",
+    icon: Heart,
+  },
+//   {
+//     label: "Settings",
+//     href: "/store/dashboard/settings",
+//     icon: Settings,
+//   },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -199,20 +195,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                             View Store
                         </button>
 
-                        <button
-                            type="button"
-                            className="flex items-center gap-2 rounded-full border bg-white p-1.5 pr-3 shadow-sm transition hover:bg-gray-50"
-                        >
-                            <img
-                                src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128"
-                                alt="User avatar"
-                                className="size-8 rounded-full object-cover"
-                            />
-
-                            <span className="hidden text-sm font-medium text-gray-700 sm:block">
-                                User
-                            </span>
-                        </button>
+                        <AvatarDropdown />
                     </div>
                 </header>
 

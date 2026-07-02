@@ -275,8 +275,7 @@ function OrderActionDropdown({
     closeMenu();
 
     console.log("return order", order.id);
-
-    // returnOrder.mutate(order.id);
+    router.push(`/store/dashboard/order-history/return/${order.id}`)
   };
 
   return (

@@ -11,7 +11,9 @@ const FashionWishList = () => {
     const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
     const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-    const { data: wishList } = useTemplateProductWishListQuery();
+    const { data: wishList } = useTemplateProductWishListQuery({
+        sortOrder,
+    });
 
     console.log('data', wishList);
 

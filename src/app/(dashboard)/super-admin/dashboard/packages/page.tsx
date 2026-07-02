@@ -216,7 +216,6 @@ export default function PackagesPage() {
         });
         message.success("Package plan updated successfully.");
       } else {
-        console.log('payload', payload);
         await mutations.createPlan.mutateAsync(payload);
         message.success("Package plan created successfully.");
       }

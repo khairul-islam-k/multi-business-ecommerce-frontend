@@ -78,13 +78,29 @@ export type WishlistImage = {
   deletedAt: string | null;
 };
 
+export type StockSummary = {
+  id: string;
+  businessId: string;
+  productId: string;
+  variantId: string | null;
+
+  stockItemKey: string;
+
+  totalQuantity: string;
+  quantityReserved: string;
+  lowStockAlertQty: string;
+
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type WishlistItem = {
   id: ApiId;
   businessId: ApiId;
   customerId: ApiId;
   productId: ApiId;
   variantId: ApiId | null;
-
+  stockSummary: StockSummary;
   createdAt: string;
   updatedAt: string;
 

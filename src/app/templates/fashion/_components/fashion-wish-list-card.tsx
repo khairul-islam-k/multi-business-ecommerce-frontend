@@ -4,8 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Eye,
-  GitCompareArrows,
-  Heart,
   Loader2,
   ShoppingCart,
   Star,
@@ -46,8 +44,7 @@ const FashionWishListCard = ({
   const price = variant?.priceOverride || product?.price;
   const variantTitle = variant?.title;
 
-  const isAvailable =
-    product?.status === "ACTIVE" && (!variant || variant.status === "ACTIVE");
+    const quantity = Number(item?.stockSummary?.totalQuantity) ?? 0;
 
   const averageRating = 0;
   const reviewCount = 0;
@@ -127,10 +124,10 @@ const FashionWishListCard = ({
 
         {/* Status */}
         <span
-          className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold text-white ${isAvailable ? "bg-green-600" : "bg-red-500"
+          className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold text-white ${quantity ? "bg-green-600" : "bg-red-500"
             }`}
         >
-          {isAvailable ? "Available" : "Unavailable"}
+          {quantity ? "Available" : "Unavailable"}
         </span>
 
         {/* Heart Icon */}
@@ -150,17 +147,17 @@ const FashionWishListCard = ({
 
         {/* Bottom Icons */}
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 translate-y-8 items-center gap-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <button
+          {/* <button
             type="button"
             className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
             aria-label="Compare"
           >
             <GitCompareArrows className="h-5 w-5" />
-          </button>
+          </button> */}
 
           <button
             type="button"
-            disabled={!isAvailable || createAddCart.isPending}
+            disabled={!quantity || createAddCart.isPending}
             onClick={() => handleAddItem({
               productId: product.id,
               variantId: variant?.id,
@@ -232,10 +229,10 @@ const FashionWishListCard = ({
         <p className="mt-3 text-lg font-bold">৳{price}</p>
 
         <p
-          className={`mt-2 text-xs font-medium ${isAvailable ? "text-green-600" : "text-red-500"
+          className={`mt-2 text-xs font-medium ${quantity ? "text-green-600" : "text-red-500"
             }`}
         >
-          {isAvailable ? "In Stock" : "Unavailable"}
+          {quantity ? "In Stock" : "Unavailable"}
         </p>
 
         {/* List view buttons only large screen */}
@@ -243,7 +240,7 @@ const FashionWishListCard = ({
           <div className="mt-5 hidden items-center gap-3 lg:flex">
             <button
               type="button"
-              disabled={!isAvailable || createAddCart.isPending}
+              disabled={!quantity || createAddCart.isPending}
               // onClick={handleAddToCart}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-6 text-sm font-semibold text-white transition hover:bg-gray-950 disabled:cursor-not-allowed disabled:opacity-50"
             >

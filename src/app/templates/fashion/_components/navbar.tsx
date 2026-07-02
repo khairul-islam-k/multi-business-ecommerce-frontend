@@ -18,6 +18,7 @@ import { useCart } from "@/app/store/_components/contex/CartContex";
 import AvatarDropdown from "./avatar-dropdown";
 import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
+import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
 
 type Category = {
   id: string;
@@ -183,10 +184,11 @@ const FashionNavbar = () => {
 
   const { data: categories } = useProductCategoryQuery();
   const { data: cart } = useAddActiveCArt();
+  const { data: wishList } = useTemplateProductWishListQuery();
 
-  const cartCount = cart?.items.length;
+  const cartCount = cart?.items.length ?? 0;
   const compareCount = 2;
-  const favoriteCount = 5;
+  const favoriteCount = wishList?.meta.total ?? 0;
 
   const handleCategoryClick = (categoryId: string) => {
     console.log("Clicked category id:", categoryId);
@@ -202,7 +204,7 @@ const FashionNavbar = () => {
         <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold">
+            <Link href="/store" className="text-2xl font-bold">
               Fashion Store
             </Link>
           </div>
@@ -289,17 +291,17 @@ const FashionNavbar = () => {
               <Search className="h-5 w-5" />
             </IconButton>
 
-            <IconButton
+            {/* <IconButton
               href="/compare"
               label="Compare"
               count={compareCount}
               className="hidden lg:grid"
             >
               <GitCompareArrows className="h-5 w-5" />
-            </IconButton>
+            </IconButton> */}
 
             <IconButton
-              href="/wishlist"
+              href="/store/dashboard/wish-list"
               label="Wishlist"
               count={favoriteCount}
               className="hidden lg:grid"
