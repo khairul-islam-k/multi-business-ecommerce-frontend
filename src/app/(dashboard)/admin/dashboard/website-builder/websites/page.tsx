@@ -130,7 +130,6 @@ const WebsiteList = () => {
       async onOk() {
         try {
           await removeWebsite.mutateAsync(id);
-
           swal.success("Website deleted successfully.");
         } catch (error) {
           swal.error(getApiErrorMessage(error));

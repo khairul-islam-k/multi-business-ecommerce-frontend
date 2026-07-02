@@ -19,6 +19,9 @@ import AvatarDropdown from "./avatar-dropdown";
 import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
+import { useResolveWebsite } from "@/lib/api/hooks/template-resolve";
+import Image from "next/image";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
 type Category = {
   id: string;
@@ -184,7 +187,11 @@ const FashionNavbar = () => {
   const { data: categories } = useProductCategoryQuery();
   const { data: cart } = useAddActiveCArt();
   const { data: wishList } = useTemplateProductWishListQuery();
+  const { data: resolve } = useResolveWebsite();
 
+  console.log('resolve', resolve?.name);
+
+  const logoUrl = resolve?.theme?.logoUrl ?? '';
   const cartCount = cart?.items.length ?? 0;
   const compareCount = 2;
   const favoriteCount = wishList?.meta.total ?? 0;
@@ -202,11 +209,23 @@ const FashionNavbar = () => {
       <header className="sticky top-0 z-50 bg-[var(--store-bg-1)]">
         <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
           {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/store" className="text-2xl font-bold">
-              Fashion Store
-            </Link>
-          </div>
+          {
+            logoUrl ? <div className="flex items-center">
+              <Image
+                src={imageUrlSet(logoUrl)}
+                width={200}
+                height={50}
+                alt="logo"
+                className="object-contain w-[200px] h-[45px]"
+              />
+            </div> :
+
+              <div className="flex items-center">
+                <Link href="/store" className="text-2xl font-bold">
+                  Fashion Store
+                </Link>
+              </div>
+          }
 
           {/* Center Navigation */}
           <div className="hidden items-center justify-center gap-8 lg:flex">

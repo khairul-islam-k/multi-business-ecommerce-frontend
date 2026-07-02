@@ -6,6 +6,7 @@ import type {
 import webApi from "../public-api-hook/web-api";
 import { CustomerAuthRegistrationResponse, CustomerRegisterPayload, ForgetOtpResponse, LoginCustomerResponse, LoginPayload, otpPayload, RefreshTokenPayload, ResetPasswordPayload } from "@/types/template/auth";
 import { publicApi } from "../axios";
+import { WebsiteTemplatePayload, WebsiteTemplateResolve } from "@/types/website/website";
 
 export const templateAuthApi = {
   register(payload: CustomerRegisterPayload) {
@@ -65,6 +66,12 @@ export const templateAuthApi = {
   userProfile() {
     return webApi
       .get<ApiResponse<CustomerAuthRegistrationResponse>>("/storefront/auth/me")
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  resolveWebsite() {
+    return webApi
+      .get<ApiResponse<WebsiteTemplateResolve>>("/storefront/resolve")
       .then((res) => unwrapApiResponse(res.data));
   },
 

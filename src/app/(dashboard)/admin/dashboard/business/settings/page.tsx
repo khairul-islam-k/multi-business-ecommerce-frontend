@@ -523,7 +523,7 @@ export default function BusinessSettingsPage() {
                     </Form.Item>
                   </Col>
                 ))}
-                <Col xs={24} md={8}>
+                {/* <Col xs={24} md={8}>
                   <Form.Item
                     name={["settings", "allowBackorder"]}
                     label="Allow backorder"
@@ -531,7 +531,7 @@ export default function BusinessSettingsPage() {
                   >
                     <Switch />
                   </Form.Item>
-                </Col>
+                </Col> */}
                 <Col xs={24} md={8}>
                   <Form.Item
                     name={["settings", "autoConfirmOrder"]}

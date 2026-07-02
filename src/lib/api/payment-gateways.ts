@@ -11,7 +11,6 @@ import type {
 } from "@/lib/api/types";
 import type {
   PaymentGatewayConfig,
-  PaymentGatewayConfigPayload,
   PaymentGatewayConfigQuery,
   PaymentGatewayDefinition,
   PaymentGatewayPayload,
@@ -39,15 +38,6 @@ export const paymentGatewayApi = {
       .then((res) => normalizePaginatedResponse(res.data));
   },
 
-  createConfig(businessId: ApiId, payload: PaymentGatewayConfigPayload) {
-    return api
-      .post<ApiResponse<PaymentGatewayConfig>>(
-        `${basePath(businessId)}/configs`,
-        payload,
-      )
-      .then((res) => unwrapApiResponse(res.data));
-  },
-
   createAllConfig(businessId: ApiId, payload: PaymentGatewayPayload) {
     return api
       .post<ApiResponse<PaymentGatewayConfig>>(
@@ -68,12 +58,11 @@ export const paymentGatewayApi = {
 
   updateConfig(
     businessId: ApiId,
-    configId: ApiId,
     payload: UpdatePaymentGatewayConfigPayload,
   ) {
     return api
       .patch<ApiResponse<PaymentGatewayConfig>>(
-        `${basePath(businessId)}/configs/${configId}`,
+        `${basePath(businessId)}/configs/bulk`,
         payload,
       )
       .then((res) => unwrapApiResponse(res.data));

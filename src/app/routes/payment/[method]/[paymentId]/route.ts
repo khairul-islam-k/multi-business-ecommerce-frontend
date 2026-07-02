@@ -45,23 +45,53 @@ export async function POST(
 
     const body = await parseRequestBody(request);
 
-    const res = await templatePaymentApi.verifyPayment(
-      method,
-      paymentId,
-      "success",
-      {
-        val_id: body.val_id,
-        tran_id: body.tran_id,
-      },
-    );
+    console.log('body', body);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let res: any;
 
-    console.log("verify", res);
+    if (method === "SHURJOPAY") {
+      res = await templatePaymentApi.verifyPayment(
+        method,
+        paymentId,
+        "success",
+        {
+          val_id: body.val_id,
+          tran_id: body.tran_id,
+        },
+      );
+    }
 
-    if (res?.paymentStatus === "PAID" && res?.gatewayPayload?.status === "VALID") {
+    if (method === "AAMARPAY") {
+      res = await templatePaymentApi.verifyPayment(
+        method,
+        paymentId,
+        "success",
+        {
+          mer_txnid: body.mer_txnid
+        },
+      );
+    }
+
+    console.log('verify', res);
+
+    if ((res?.paymentStatus === "PAID")&& (res?.gatewayPayload?.status === "VALID") && (method === 'SSLCOMMERZ')) {
       const successUrl = new URL("/payment/success", request.url);
 
       successUrl.searchParams.set("orderId", paymentId);
       successUrl.searchParams.set("paidAmount", res?.gatewayPayload?.amount);
+      successUrl.searchParams.set("OrderId", res?.orderId);
+      successUrl.searchParams.set("transactionReference", res.transactionReference);
+
+      return NextResponse.redirect(successUrl, {
+        status: 303,
+      });
+    }
+
+    if ((res?.paymentStatus === "PAID")&& (res?.gatewayPayload?.status === "VALID") && (method === 'AAMARPAY')) {
+      const successUrl = new URL("/payment/success", request.url);
+
+      successUrl.searchParams.set("orderId", paymentId);
+      successUrl.searchParams.set("paidAmount", res?.amount);
       successUrl.searchParams.set("OrderId", res?.orderId);
       successUrl.searchParams.set("transactionReference", res.transactionReference);
 

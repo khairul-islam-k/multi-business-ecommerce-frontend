@@ -30,16 +30,26 @@ export type PaymentGatewayDefinition = {
   updatedAt?: string;
 };
 
-export type PaymentGatewayConfigPayload = {
-  provider: PaymentGatewayProvider;
-  financeAccountId: ApiId;
-  mode: PaymentGatewayMode;
-  status?: PaymentGatewayStatus;
-  configData: Record<string, unknown>;
+type GatewayCode = "SSLCOMMERZ" | "AAMARPAY" | "SHURJOPAY";
+
+export type PaymentGatewayFormItem = {
+  id: string;
+  gatewayId: string;
+  provider: GatewayCode | string;
+  financeAccountId: string;
+  mode: GatewayMode;
+  status: GatewayStatus;
+  configData: Record<string, string>;
 };
 
-export type UpdatePaymentGatewayConfigPayload =
-  Partial<PaymentGatewayConfigPayload>;
+export type UpdatePaymentGatewayConfigItem = Omit<
+  PaymentGatewayFormItem,
+  "gatewayId"
+>;
+
+export type UpdatePaymentGatewayConfigPayload = {
+  configs: UpdatePaymentGatewayConfigItem[];
+};
 
 export type PaymentGateway = {
   id: string;
@@ -83,7 +93,7 @@ export type PaymentGatewayPayload = {
 
 export type PaymentQuery = {
   val_id?: string;
-  tran_id: string;
+  tran_id?: string;
   ran_id?: string;
   mer_txnid?: string;
   order_id?: string;

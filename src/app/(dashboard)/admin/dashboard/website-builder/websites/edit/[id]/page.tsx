@@ -5,7 +5,7 @@ import { useSwal } from "@/hooks/use-swal";
 import { useWebsite, useWebsiteMutation } from "@/lib/api/hooks/website";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import WebsiteTemplateForm from "../../_components/website-template-form";
 import { WebsiteTemplatePayload } from "@/types/website/website";
@@ -14,6 +14,7 @@ import { adminBreadcrumb } from "@/config/breadcrumb.config";
 
 export default function EditWebsite() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const business = useAuthStore(s => s.selectedBusiness);
   const businessId = business?.id ? business?.id : '';
   const { data: website, isLoading, isFetching } = useWebsite(businessId, id);
@@ -30,7 +31,7 @@ export default function EditWebsite() {
         websiteId: id,
         payload: values
       });
-
+      router.push('/admin/dashboard/website-builder/websites');
       swal.success("Website updated successfully.");
     } catch (error) {
       swal.error(getApiErrorMessage(error));

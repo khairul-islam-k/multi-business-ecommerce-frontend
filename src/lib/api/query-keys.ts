@@ -385,4 +385,10 @@ export const apiQueryKeys = {
     detail: (orderId: ApiId) =>
       ["wishList", orderId, "detail"] as const,
   },
+
+  templateResolve: {
+    detail: () =>
+      ["categories", "detail"] as const,
+  },
+
 };

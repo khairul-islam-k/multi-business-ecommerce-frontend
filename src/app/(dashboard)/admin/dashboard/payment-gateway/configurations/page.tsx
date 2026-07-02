@@ -1,301 +1,543 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  Empty,
-  Popconfirm,
-  Select,
-  Space,
-  Tag,
-  Typography,
-} from "antd";
-import { CirclePlus, Pencil, Trash2 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-
-import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { useSwal } from "@/hooks/use-swal";
 import {
   useFinanceAccountQuery,
   usePaymentGatewayConfigMutations,
   usePaymentGatewayConfigsQuery,
 } from "@/lib/api";
-import { PERMISSIONS } from "@/lib/auth/permissions";
 import { getApiErrorMessage } from "@/lib/axios";
-
-import PaymentGatewayConfigModal from "../_components/payment-gateway-config-modal";
-
-import type {
-  PaymentGatewayConfig,
-  PaymentGatewayConfigPayload,
-  PaymentGatewayMode,
-  PaymentGatewayProvider,
-  PaymentGatewayStatus,
-} from "@/types/payment-gateway";
+import { UpdatePaymentGatewayConfigPayload } from "@/types/payment-gateway";
+import {
+  Alert,
+  Button,
+  Card,
+  Collapse,
+  Empty,
+  Form,
+  Input,
+  Radio,
+  Select,
+  Skeleton,
+  Switch,
+  Typography,
+  type CollapseProps,
+  type FormInstance,
+} from "antd";
+import { CreditCard, Save, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
 const { Text } = Typography;
 
-const providerOptions: Array<{ label: string; value: PaymentGatewayProvider }> =
-  [
-    { label: "SSLCommerz", value: "SSLCOMMERZ" },
-    { label: "AamarPay", value: "AAMARPAY" },
-    { label: "SurjoPay", value: "SHURJOPAY" },
-  ];
+type GatewayCode = "SSLCOMMERZ" | "AAMARPAY" | "SHURJOPAY";
+type GatewayMode = "SANDBOX" | "LIVE";
+type GatewayStatus = "ACTIVE" | "INACTIVE";
 
-const modeOptions: Array<{ label: string; value: PaymentGatewayMode }> = [
-  { label: "Sandbox", value: "SANDBOX" },
-  { label: "Live", value: "LIVE" },
-];
+type PaymentGatewayConfigItem = {
+  id: string;
+  businessId: string;
+  gatewayId: string;
+  financeAccountId: string;
+  configData: Record<string, string>;
+  mode: GatewayMode;
+  status: GatewayStatus;
+  gateway: {
+    id: string;
+    name: string;
+    code: GatewayCode | string;
+    description?: string;
+    status: GatewayStatus | string;
+  };
+  account?: {
+    id: string;
+    name: string;
+    accountType?: string;
+    currencyCode?: string;
+  };
+};
 
-const statusOptions: Array<{ label: string; value: PaymentGatewayStatus }> = [
-  { label: "Active", value: "ACTIVE" },
-  { label: "Inactive", value: "INACTIVE" },
-];
+type PaymentGatewayFormItem = {
+  id: string;
+  gatewayId: string;
+  provider: GatewayCode | string;
+  financeAccountId: string;
+  mode: GatewayMode;
+  status: GatewayStatus;
+  configData: Record<string, string>;
+};
 
-const parseProvider = (
-  value: string | null,
-): PaymentGatewayProvider | undefined =>
-  value === "SSLCOMMERZ" || value === "AAMARPAY" || value === "SHURJOPAY"
-    ? value
-    : undefined;
+type PaymentGatewayFormValues = {
+  gateways: PaymentGatewayFormItem[];
+};
+
+type ConfigField = {
+  name: string;
+  label: string;
+  placeholder: string;
+  secret?: boolean;
+};
+
+const GATEWAY_CONFIG_FIELDS: Record<GatewayCode, ConfigField[]> = {
+  SSLCOMMERZ: [
+    {
+      name: "storeId",
+      label: "Store ID",
+      placeholder: "Enter SSLCOMMERZ store ID",
+    },
+    {
+      name: "storePassword",
+      label: "Store Password",
+      placeholder: "Enter SSLCOMMERZ store password",
+      secret: true,
+    },
+  ],
+
+  AAMARPAY: [
+    {
+      name: "storeId",
+      label: "Store ID",
+      placeholder: "Enter aamarPay store ID",
+    },
+    {
+      name: "signatureKey",
+      label: "Signature Key",
+      placeholder: "Enter aamarPay signature key",
+      secret: true,
+    },
+  ],
+
+  SHURJOPAY: [
+    {
+      name: "username",
+      label: "Username",
+      placeholder: "Enter shurjoPay username",
+    },
+    {
+      name: "password",
+      label: "Password",
+      placeholder: "Enter shurjoPay password",
+      secret: true,
+    },
+    {
+      name: "prefix",
+      label: "Prefix",
+      placeholder: "Enter shurjoPay prefix",
+    },
+  ],
+};
+
+function normalizeGatewayCode(code?: string): GatewayCode | string {
+  return String(code ?? "").toUpperCase();
+}
+
+function getGatewayConfigFields(code?: string): ConfigField[] {
+  const gatewayCode = normalizeGatewayCode(code);
+
+  if (gatewayCode in GATEWAY_CONFIG_FIELDS) {
+    return GATEWAY_CONFIG_FIELDS[gatewayCode as GatewayCode];
+  }
+
+  return [];
+}
+
+function buildInitialValues(
+  configs: PaymentGatewayConfigItem[],
+): PaymentGatewayFormValues {
+  return {
+    gateways: configs.map((item) => {
+      const provider = normalizeGatewayCode(item.gateway?.code);
+      const fields = getGatewayConfigFields(provider);
+
+      const configData = fields.reduce<Record<string, string>>((acc, field) => {
+        acc[field.name] = item.configData?.[field.name] ?? "";
+        return acc;
+      }, {});
+
+      return {
+        id: item.id,
+        gatewayId: item.gatewayId,
+        provider,
+        financeAccountId: item.financeAccountId,
+        mode: item.mode ?? "SANDBOX",
+        status: item.status ?? "INACTIVE",
+        configData,
+      };
+    }),
+  };
+}
+
+function cleanConfigData(
+  provider: string,
+  configData: Record<string, string>,
+): Record<string, string> {
+  const fields = getGatewayConfigFields(provider);
+
+  return fields.reduce<Record<string, string>>((acc, field) => {
+    acc[field.name] = configData?.[field.name]?.trim?.() ?? "";
+    return acc;
+  }, {});
+}
+
+function GatewayStatusSwitch({
+  form,
+  index,
+}: {
+  form: FormInstance<PaymentGatewayFormValues>;
+  index: number;
+}) {
+  const status = Form.useWatch(["gateways", index, "status"], form);
+  const isActive = status === "ACTIVE";
+
+  return (
+    <div
+      className="flex shrink-0 items-center gap-2"
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
+    >
+      <span
+        className={
+          isActive
+            ? "hidden text-[11px] font-semibold text-emerald-600 xs:inline sm:inline"
+            : "hidden text-[11px] font-semibold text-gray-500 xs:inline sm:inline"
+        }
+      >
+        {isActive ? "ACTIVE" : "INACTIVE"}
+      </span>
+
+      <Form.Item
+        noStyle
+        name={["gateways", index, "status"]}
+        getValueProps={(value: GatewayStatus) => ({
+          checked: value === "ACTIVE",
+        })}
+        getValueFromEvent={(checked: boolean) =>
+          checked ? "ACTIVE" : "INACTIVE"
+        }
+      >
+        <Switch
+          size="small"
+          checkedChildren="ON"
+          unCheckedChildren="OFF"
+          className="shrink-0"
+        />
+      </Form.Item>
+    </div>
+  );
+}
 
 export default function PaymentGatewayConfigurations() {
+  const [form] = Form.useForm<PaymentGatewayFormValues>();
   const businessId = useActiveBusinessId();
-  const searchParams = useSearchParams();
   const swal = useSwal();
-  const [provider, setProvider] = useState<PaymentGatewayProvider | undefined>(
-    () => parseProvider(searchParams.get("provider")),
-  );
-  const router = useRouter();
-  const [mode, setMode] = useState<PaymentGatewayMode | undefined>();
-  const [status, setStatus] = useState<PaymentGatewayStatus | undefined>();
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingConfig, setEditingConfig] =
-    useState<PaymentGatewayConfig | null>(null);
-  const createAccess = usePermissionAccess(PERMISSIONS.paymentCreate);
-  const updateAccess = usePermissionAccess(PERMISSIONS.paymentUpdate);
-  const deleteAccess = usePermissionAccess(PERMISSIONS.paymentDelete);
-  const limit = 10;
-
-  const { data: paymentGateway, isLoading, isFetching } = usePaymentGatewayConfigsQuery(
-    businessId ?? "",
-    {
-      page: currentPage,
-      limit,
-      search,
-      provider,
-      mode,
-      status,
-    },
-  );
-
-  console.log('gateway', paymentGateway);
 
   const { data: financeAccounts, isLoading: financeAccountsLoading } =
     useFinanceAccountQuery(businessId ?? "", {
       page: 1,
       limit: 100,
       status: "ACTIVE",
-      // sortBy: "name",
     });
-  const {  removeConfig } =
-    usePaymentGatewayConfigMutations(businessId ?? "");
 
-  const financeAccountItems = financeAccounts?.items ?? [];
+  const {
+    data: paymentGateway,
+    isLoading: paymentGatewayLoading,
+    isFetching: paymentGatewayFetching,
+  } = usePaymentGatewayConfigsQuery(businessId ?? "");
 
+  const { updateConfigs } = usePaymentGatewayConfigMutations(
+    businessId ?? "",
+  );
 
+  const financeAccountOptions = useMemo(() => {
+    return (
+      financeAccounts?.items?.map((account) => ({
+        label: `${account.name}${account.accountType ? ` (${account.accountType})` : ""
+          }`,
+        value: account.id,
+      })) ?? []
+    );
+  }, [financeAccounts?.items]);
 
-  const handleDelete = async (configId: string) => {
-    try {
-      await removeConfig.mutateAsync(configId);
-      swal.success("Payment gateway configuration deleted.");
-    } catch (error) {
-      swal.error(getApiErrorMessage(error));
+  const gatewayConfigs = useMemo(() => {
+    const response = paymentGateway as any;
+
+    if (Array.isArray(response)) {
+      return response as PaymentGatewayConfigItem[];
     }
+
+    if (Array.isArray(response?.items)) {
+      return response.items as PaymentGatewayConfigItem[];
+    }
+
+    if (Array.isArray(response?.data)) {
+      return response.data as PaymentGatewayConfigItem[];
+    }
+
+    return [];
+  }, [paymentGateway]);
+
+  useEffect(() => {
+    if (!gatewayConfigs.length) return;
+
+    form.setFieldsValue(buildInitialValues(gatewayConfigs));
+  }, [form, gatewayConfigs]);
+
+  const isLoading =
+    paymentGatewayLoading || paymentGatewayFetching || financeAccountsLoading;
+
+  const isSaving = updateConfigs?.isPending;
+
+  const handleSubmit = async () => {
+  const values = form.getFieldsValue(true) as PaymentGatewayFormValues;
+
+  const payload: UpdatePaymentGatewayConfigPayload = {
+    configs: values.gateways.map((item: PaymentGatewayFormItem) => ({
+      id: item.id,
+      provider: item.provider,
+      financeAccountId: item.financeAccountId,
+      mode: item.mode,
+      status: item.status,
+      configData: cleanConfigData(item.provider, item.configData),
+    })),
   };
 
-  const columns: Column<PaymentGatewayConfig>[] = [
-    {
-      key: "provider",
-      label: "Provider",
-      type: "primary",
-      render: (row) => <strong>{row?.gateway?.name}</strong>,
-    },
-    {
-      key: "mode",
-      label: "Mode",
-      type: "meta",
-      render: (row) => (
-        <Tag color={row.mode === "LIVE" ? "green" : "gold"}>{row.mode}</Tag>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      type: "meta",
-      render: (row) => (
-        <Tag color={row.status === "ACTIVE" ? "green" : "default"}>
-          {row.status}
-        </Tag>
-      ),
-    },
-    {
-      key: "financeAccount",
-      label: "Settlement account",
-      render: (row) =>
-        row.financeAccount?.name ??
-        financeAccountItems.find(
-          (account) => account.id === row.financeAccountId,
-        )?.name ??
-        row.financeAccountId,
-    },
-    {
-      key: "configData",
-      label: "Config keys",
-      render: (row) => {
-        const keys = Object.keys(row.configData ?? {});
+  try {
+    console.log("payload", payload);
 
-        return keys.length ? (
-          <Space size={[4, 4]} wrap>
-            {keys.map((key) => (
-              <Tag key={key}>{key}</Tag>
-            ))}
-          </Space>
-        ) : (
-          <Text type="secondary">No keys</Text>
-        );
-      },
+    const res = await updateConfigs.mutateAsync({
+      payload,
+    });
+
+    swal.success("Payment gateway configurations updated successfully.");
+  } catch (error) {
+    swal.error(getApiErrorMessage(error));
+  }
+};
+
+  const collapseItems: CollapseProps["items"] = gatewayConfigs.map(
+    (gatewayItem, index) => {
+      const provider = normalizeGatewayCode(gatewayItem.gateway?.code);
+      const configFields = getGatewayConfigFields(provider);
+
+      return {
+        key: gatewayItem.id,
+        forceRender: true,
+
+        label: (
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 sm:size-10">
+              <CreditCard size={18} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-xs font-semibold text-gray-900 sm:text-sm">
+                {gatewayItem.gateway?.name}
+              </div>
+
+              <div className="mt-0.5 hidden truncate text-[11px] text-gray-500 sm:block">
+                {gatewayItem.gateway?.description}
+              </div>
+
+              <div className="mt-1 inline-flex max-w-full rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-600">
+                <span className="truncate">{provider}</span>
+              </div>
+            </div>
+          </div>
+        ),
+
+        extra: <GatewayStatusSwitch form={form} index={index} />,
+
+        children: (
+          <div className="space-y-4 sm:space-y-5">
+            <Form.Item name={["gateways", index, "id"]} hidden>
+              <Input />
+            </Form.Item>
+
+            <Form.Item name={["gateways", index, "gatewayId"]} hidden>
+              <Input />
+            </Form.Item>
+
+            <Form.Item name={["gateways", index, "provider"]} hidden>
+              <Input />
+            </Form.Item>
+
+            <Card
+              size="small"
+              className="rounded-2xl border border-gray-100 shadow-sm"
+              title={
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={16} className="text-blue-600" />
+                  <span className="text-xs font-semibold sm:text-sm">
+                    Gateway Setup
+                  </span>
+                </div>
+              }
+            >
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <Form.Item
+                  label="Finance Account"
+                  name={["gateways", index, "financeAccountId"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Finance account is required",
+                    },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    placeholder="Select finance account"
+                    options={financeAccountOptions}
+                    loading={financeAccountsLoading}
+                    optionFilterProp="label"
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  label="Gateway Mode"
+                  name={["gateways", index, "mode"]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Gateway mode is required",
+                    },
+                  ]}
+                >
+                  <Radio.Group
+                    optionType="button"
+                    buttonStyle="solid"
+                    className="grid w-full grid-cols-2 gap-2"
+                  >
+                    <Radio.Button
+                      value="SANDBOX"
+                      className="h-9 rounded-lg! text-center text-xs leading-9! sm:h-10 sm:text-sm sm:leading-10!"
+                    >
+                      SANDBOX
+                    </Radio.Button>
+
+                    <Radio.Button
+                      value="LIVE"
+                      className="h-9 rounded-lg! text-center text-xs leading-9! sm:h-10 sm:text-sm sm:leading-10!"
+                    >
+                      LIVE
+                    </Radio.Button>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+            </Card>
+
+            <Card
+              size="small"
+              className="rounded-2xl border border-gray-100 shadow-sm"
+              title={
+                <div>
+                  <Text strong className="text-xs sm:text-sm">
+                    Credential Information
+                  </Text>
+
+                  <div className="mt-0.5 text-[11px] font-normal text-gray-500 sm:text-xs">
+                    Add merchant credential values for{" "}
+                    {gatewayItem.gateway?.name}.
+                  </div>
+                </div>
+              }
+            >
+              {configFields.length ? (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {configFields.map((field) => {
+                    const InputComponent = field.secret
+                      ? Input.Password
+                      : Input;
+
+                    return (
+                      <Form.Item
+                        key={field.name}
+                        label={field.label}
+                        name={[
+                          "gateways",
+                          index,
+                          "configData",
+                          field.name,
+                        ]}
+                        rules={[
+                          {
+                            required: true,
+                            message: `${field.label} is required`,
+                          },
+                        ]}
+                      >
+                        <InputComponent placeholder={field.placeholder} />
+                      </Form.Item>
+                    );
+                  })}
+                </div>
+              ) : (
+                <Alert
+                  type="warning"
+                  showIcon
+                  message="Unsupported gateway"
+                  description={`No credential fields are configured for provider code: ${provider}`}
+                />
+              )}
+            </Card>
+          </div>
+        ),
+      };
     },
-    {
-      key: "updatedAt",
-      label: "Updated",
-      render: (row) =>
-        row.updatedAt ? new Date(row.updatedAt).toLocaleDateString() : "-",
-    },
-  ];
+  );
 
   if (!businessId) {
     return <Empty description="No active business selected" />;
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <PageHeader
         title="Gateway Configurations"
         subtitle="Create and manage provider credentials, mode, status, and settlement account mappings for checkout payments."
         breadcrumb={adminBreadcrumb}
-        actions={
-          <Button
-            type="primary"
-            icon={<CirclePlus />}
-            onClick={() =>
-              router.push(
-                "/admin/dashboard/payment-gateway/configurations/configure",
-              )
-            }
-          >
-            Configure Gateway
-          </Button>
-        }
       />
 
-      {!isLoading && !paymentGateway?.items?.length ? (
-        <Card>
-          <Empty description="Create an active finance account before configuring payment gateways." />
-        </Card>
-      ) : (
-        <Card>
-          <DataTable
-            data={paymentGateway?.items ?? []}
-            columns={columns}
-            loading={isLoading || isFetching}
-            onSearch={(value) => {
-              setSearch(value);
-              setCurrentPage(1);
-            }}
-            extra={
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-                <Select
-                  allowClear
-                  placeholder="Provider"
-                  className="w-full sm:w-40"
-                  value={provider}
-                  onChange={(value) => {
-                    setProvider(value);
-                    setCurrentPage(1);
-                  }}
-                  options={providerOptions}
-                />
-                <Select
-                  allowClear
-                  placeholder="Mode"
-                  className="w-full sm:w-36"
-                  value={mode}
-                  onChange={(value) => {
-                    setMode(value);
-                    setCurrentPage(1);
-                  }}
-                  options={modeOptions}
-                />
-                <Select
-                  allowClear
-                  placeholder="Status"
-                  className="w-full sm:w-36"
-                  value={status}
-                  onChange={(value) => {
-                    setStatus(value);
-                    setCurrentPage(1);
-                  }}
-                  options={statusOptions}
-                />
-              </div>
-            }
-            actions={(row) => (
-              <Space size={4}>
-                <Button
-                  size="small"
-                  icon={<Pencil />}
-                  disabled={!updateAccess.allowed}
-                  onClick={() => {
-                    setEditingConfig(row);
-                    setModalOpen(true);
-                  }}
-                />
-                {deleteAccess.allowed ? (
-                  <Popconfirm
-                    title="Delete gateway configuration?"
-                    description="This will remove the saved credentials for this provider."
-                    okText="Delete"
-                    cancelText="Cancel"
-                    okButtonProps={{ danger: true }}
-                    onConfirm={() => handleDelete(row.id)}
-                  >
-                    <Button
-                      danger
-                      size="small"
-                      icon={<Trash2 />}
-                      loading={removeConfig.isPending}
-                    />
-                  </Popconfirm>
-                ) : null}
-              </Space>
-            )}
-            pagination={{
-              currentPage,
-              totalPages: paymentGateway?.meta.totalPages ?? 1,
-              onPageChange: setCurrentPage,
-            }}
-          />
-        </Card>
-      )}
+      <Card className="rounded-2xl shadow-sm">
+        {isLoading ? (
+          <Skeleton active paragraph={{ rows: 10 }} />
+        ) : !gatewayConfigs.length ? (
+          <Empty description="No payment gateway configuration found" />
+        ) : (
+          <Form
+            form={form}
+            layout="vertical"
+            preserve
+            onFinish={handleSubmit}
+            initialValues={buildInitialValues(gatewayConfigs)}
+            className="gateway-config-form"
+          >
+            <Collapse
+              accordion
+              bordered={false}
+              destroyOnHidden={false}
+              items={collapseItems}
+              defaultActiveKey={gatewayConfigs[0]?.id}
+              className="gateway-config-collapse bg-transparent"
+            />
 
+            <div className="mt-5 flex justify-end border-t border-gray-100 pt-5">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSaving}
+                icon={<Save size={16} />}
+                className="w-full sm:w-auto"
+              >
+                Save Configurations
+              </Button>
+            </div>
+          </Form>
+        )}
+      </Card>
     </div>
   );
 }

@@ -35,7 +35,8 @@ export const templatePaymentApi = {
 
   verifyPayment(provider: PaymentGatewayProvider, paymentId: ApiId ,eventType: ApiId, query?: PaymentQuery) {
     return webApi
-      .post<ApiResponse<VerifyPaymentResponse>>(`/payment-gateways/callbacks/${provider}/${paymentId}/${eventType}${buildQueryString(query)}`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .post<ApiResponse<any>>(`/payment-gateways/callbacks/${provider}/${paymentId}/${eventType}${buildQueryString(query)}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 //   update(

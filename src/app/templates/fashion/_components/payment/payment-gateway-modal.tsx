@@ -10,7 +10,7 @@ export type PaymentGatewayMode = "SANDBOX" | "LIVE";
 export type PaymentGateway = {
     id: string;
     gatewayId: string;
-    code: string;
+    code: PaymentGatewayProvider;
     name: PaymentGatewayProvider;
     description: string;
     mode: PaymentGatewayMode;
@@ -38,10 +38,12 @@ export default function PaymentGatewayModal({
     console.log('payment', orderId);
 
     const handleSelectGateway = async (gateway: PaymentGateway) => {
-        console.log("selected gateway name:", gateway.name);
+        console.log("selected gateway name:", gateway.code);
+
+        if (!gateway.code) return;
 
         const payload = {
-            provider: gateway.name,
+            provider: gateway.code,
             successRedirectUrl: "http://localhost:3000/routes/payment",
             failRedirectUrl: "http://localhost:3000/routes/failed",
             cancelRedirectUrl: "http://localhost:3000/routes/cancel"

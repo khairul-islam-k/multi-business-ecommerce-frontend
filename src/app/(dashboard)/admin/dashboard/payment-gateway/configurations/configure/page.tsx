@@ -115,12 +115,6 @@ const gatewayConfigs = [
     description: "Configure SHURJOPAY payment gateway.",
     fields: [
       {
-        name: "endpoint",
-        label: "Endpoint",
-        placeholder: "Enter endpoint URL",
-        type: "text",
-      },
-      {
         name: "username",
         label: "Username",
         placeholder: "Enter username",

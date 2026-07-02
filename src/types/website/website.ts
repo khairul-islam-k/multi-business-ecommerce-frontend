@@ -81,6 +81,11 @@ export type WebsiteTemplatePayload = {
   seo?: SeoConfig;
 };
 
+// resolve response
+export type WebsiteTemplateResolve = WebsiteTemplatePayload & {
+  name: string;
+}
+
 export type JsonObject = Record<string, unknown>;
 
 
