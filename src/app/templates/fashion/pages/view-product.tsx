@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-    Check,
-    GitCompareArrows,
-    Heart,
-    Minus,
-    Plus,
-    ShoppingCart,
-    Star,
+  Check,
+  GitCompareArrows,
+  Heart,
+  Minus,
+  Plus,
+  ShoppingCart,
+  Star,
 } from "lucide-react";
 
 import product_1 from "@/assets/fashion/products/product-1.jpg";
@@ -20,497 +20,492 @@ import { useTemplateProduct } from "@/lib/api/hooks/public-website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
 const fashionDetail = {
-    id: "product-1",
-    categoryId: "906334a0-7d01-4f57-8df8-0fa89a4fcac8",
-    name: "Classic Denim Jacket",
-    slug: "classic-denim-jacket",
-    description: "Stylish denim jacket for everyday fashion.",
-    price: "1350",
-    status: "ACTIVE",
-    tag: {
-        id: 1,
-        name: "NEW ARRIVAL",
+  id: "product-1",
+  categoryId: "906334a0-7d01-4f57-8df8-0fa89a4fcac8",
+  name: "Classic Denim Jacket",
+  slug: "classic-denim-jacket",
+  description: "Stylish denim jacket for everyday fashion.",
+  price: "1350",
+  status: "ACTIVE",
+  tag: {
+    id: 1,
+    name: "NEW ARRIVAL",
+  },
+  images: [
+    {
+      id: "product-1-image-1",
+      imageUrl: product_1,
+      altText: "Classic Denim Jacket",
+      isThumbnail: true,
     },
-    images: [
+  ],
+  variants: [
+    {
+      id: "product-1-variant-1",
+      title: "Black M",
+      sku: "SKU-PRODUCT-1-BLACK-M",
+      price: "1350",
+      status: "ACTIVE",
+      images: [
         {
-            id: "product-1-image-1",
-            imageUrl: product_1,
-            altText: "Classic Denim Jacket",
-            isThumbnail: true,
-            sortOrder: 0,
+          id: "product-1-variant-image-1",
+          imageUrl: product_1,
+          altText: "Classic Denim Jacket Black M",
+          isThumbnail: true,
         },
-    ],
-    variants: [
-        {
-            id: "product-1-variant-1",
-            title: "Black M",
-            sku: "SKU-PRODUCT-1-BLACK-M",
-            price: "1350",
-            status: "ACTIVE",
-            images: [
-                {
-                    id: "product-1-variant-image-1",
-                    imageUrl: product_1,
-                    altText: "Classic Denim Jacket Black M",
-                    isThumbnail: true,
-                    sortOrder: 0,
-                },
-            ],
-        },
-    ],
-    stockSummary: {
-        totalQuantity: "110",
-        quantityReserved: "0",
-        availableQuantity: "110",
-        inStock: true,
+      ],
     },
-    reviewSummary: {
-        reviewCount: 1,
-        averageRating: 5,
+  ],
+  stockSummary: {
+    totalQuantity: "110",
+    quantityReserved: "0",
+    availableQuantity: "110",
+    inStock: true,
+  },
+  reviewSummary: {
+    reviewCount: 1,
+    averageRating: 5,
+  },
+  reviews: [
+    {
+      id: "251df15f-f88d-4ba1-828f-102284075109",
+      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
+      productId: "bbecc817-09bb-4576-a33b-c6c7e8ac0f78",
+      variantId: null,
+      rating: 4,
+      title: "nice",
+      comment: "adsfas a",
+      reviewerName: "naim",
+      reviewerEmail: "naim@gmail.com",
+      reviewerPhone: null,
+      status: "APPROVED",
+      createdBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
+      updatedBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
+      createdAt: "2026-06-21T10:08:54.017Z",
+      updatedAt: "2026-06-21T04:08:59.484Z",
+      deletedAt: null,
     },
-    reviews: [
-        {
-            id: "251df15f-f88d-4ba1-828f-102284075109",
-            businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-            productId: "bbecc817-09bb-4576-a33b-c6c7e8ac0f78",
-            variantId: null,
-            rating: 4,
-            title: "nice",
-            comment: "adsfas a",
-            reviewerName: "naim",
-            reviewerEmail: "naim@gmail.com",
-            reviewerPhone: null,
-            status: "APPROVED",
-            createdBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
-            updatedBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
-            createdAt: "2026-06-21T10:08:54.017Z",
-            updatedAt: "2026-06-21T04:08:59.484Z",
-            deletedAt: null,
-        },
-    ]
+  ],
 };
 
 const RatingStars = ({ rating }: { rating: number }) => {
-    return (
-        <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, index) => (
-                <Star
-                    key={index}
-                    className={`h-4 w-4 ${index < rating
-                        ? "fill-[#f16d59] text-[#f16d59]"
-                        : "text-gray-300"
-                        }`}
-                />
-            ))}
-        </div>
-    );
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          className={`h-4 w-4 ${
+            index < rating ? "fill-[#f16d59] text-[#f16d59]" : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
 };
 
 const ViewFashionProduct = () => {
-    const { productSlug } = useParams<{ productSlug: string }>();
-    const [quantity, setQuantity] = useState(1);
-    const [selectedImage, setSelectedImage] = useState<string>('');
-    const [selectedVariantId, setSelectedVariantId] = useState('');
+  const { productSlug } = useParams<{ productSlug: string }>();
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState<string>("");
+  const [selectedVariantId, setSelectedVariantId] = useState("");
 
-    // fetch product
-    const { data: product } = useTemplateProduct(productSlug);
+  // fetch product
+  const { data: product } = useTemplateProduct(productSlug);
 
-    // select initial image
-    useEffect(() => {
-        if (product?.images) {
-            setSelectedImage(product?.images[0]?.imageUrl)
-        }
-    }, [product])
+  // select initial image
+  useEffect(() => {
+    if (product?.images) {
+      setSelectedImage(product?.images[0]?.imageUrl);
+    }
+  }, [product]);
 
-    const selectedVariant = fashionDetail.variants.find(
-        (variant) => variant.id === selectedVariantId,
-    );
+  const selectedVariant = fashionDetail.variants.find(
+    (variant) => variant.id === selectedVariantId,
+  );
 
-    const handleIncrease = () => {
-        setQuantity((prev) => prev + 1);
-    };
+  const handleIncrease = () => {
+    setQuantity((prev) => prev + 1);
+  };
 
-    const handleDecrease = () => {
-        setQuantity((prev) => {
-            if (prev <= 1) return 1;
-            return prev - 1;
-        });
-    };
+  const handleDecrease = () => {
+    setQuantity((prev) => {
+      if (prev <= 1) return 1;
+      return prev - 1;
+    });
+  };
 
-    const productImages = product?.images ?? [];
-    const variants = product?.variants ?? [];
-    const averageRating = product?.reviewSummary.averageRating ?? 0;
-    const reviews = product?.reviews ?? [];
+  const productImages = product?.images ?? [];
+  const variants = product?.variants ?? [];
+  const averageRating = product?.reviewSummary.averageRating ?? 0;
+  const reviews = product?.reviews ?? [];
 
-    return (
-        <section className="bg-[#f6f6f6] py-10">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Breadcrumb */}
-                <div className="mb-6 text-sm text-gray-500">
-                    <Link href="/" className="hover:text-[#f16d59]">
-                        Home
-                    </Link>
-                    <span className="mx-2">/</span>
-                    <Link href="/products" className="hover:text-[#f16d59]">
-                        Products
-                    </Link>
-                    <span className="mx-2">/</span>
-                    <span className="text-gray-900">{product?.name}</span>
-                </div>
+  return (
+    <section className="bg-[#f6f6f6] py-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Breadcrumb */}
+        <div className="mb-6 text-sm text-gray-500">
+          <Link href="/" className="hover:text-[#f16d59]">
+            Home
+          </Link>
+          <span className="mx-2">/</span>
+          <Link href="/products" className="hover:text-[#f16d59]">
+            Products
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-gray-900">{product?.name}</span>
+        </div>
 
-                <div className="grid grid-cols-1 gap-8 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-8">
-                    {/* Left Image Side */}
-                    <div>
-                        <div className="relative h-[420px] overflow-hidden bg-[#f8f5f1] sm:h-[520px]">
-                            {selectedImage && (
-                                <Image
-                                    src={imageUrlSet(selectedImage)}
-                                    alt={product?.name ?? ''}
-                                    fill
-                                    priority
-                                    sizes="(max-width: 1024px) 100vw, 50vw"
-                                    className="object-cover"
-                                />
-                            )}
+        <div className="grid grid-cols-1 gap-8 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-8">
+          {/* Left Image Side */}
+          <div>
+            <div className="relative h-[420px] overflow-hidden bg-[#f8f5f1] sm:h-[520px]">
+              {selectedImage && (
+                <Image
+                  src={imageUrlSet(selectedImage)}
+                  alt={product?.name ?? ""}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              )}
 
-                            <span className="absolute left-5 top-5 rounded-full bg-[#f16d59] px-4 py-1.5 text-xs font-bold text-white">
-                                {product?.tags[0].name}
-                            </span>
-                        </div>
-
-                        {/* Thumbnail Images */}
-                        <div className="mt-4 flex gap-3">
-                            {productImages.map((image) => (
-                                <button
-                                    key={image.id}
-                                    type="button"
-                                    onClick={() => setSelectedImage(image.imageUrl)}
-                                    className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${selectedImage === image?.imageUrl
-                                        ? "border-[#f16d59]"
-                                        : "border-gray-200"
-                                        }`}
-                                >
-                                    <Image
-                                        src={imageUrlSet(image.imageUrl)}
-                                        alt={image.altText ?? ''}
-                                        fill
-                                        sizes="96px"
-                                        className="object-cover"
-                                    />
-                                </button>
-                            ))}
-
-                            {variants.map((variant) =>
-                                variant.images.map((image) => (
-                                    <button
-                                        key={image.id}
-                                        type="button"
-                                        onClick={() => {
-                                            setSelectedImage(image.imageUrl);
-                                            // setSelectedVariantId(variant.id);
-                                        }}
-                                        className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${selectedImage === image.imageUrl
-                                            ? "border-[#f16d59]"
-                                            : "border-gray-200"
-                                            }`}
-                                    >
-                                        <Image
-                                            src={image.imageUrl}
-                                            alt={image.altText ?? ''}
-                                            fill
-                                            sizes="96px"
-                                            className="object-cover"
-                                        />
-                                    </button>
-                                )),
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Right Text Side */}
-                    <div className="flex flex-col justify-center">
-                        <p className="mb-3 inline-flex w-fit items-center rounded-full bg-[#f16d59]/10 px-4 py-1.5 text-xs font-bold text-[#f16d59]">
-                            {product?.tags[0].name}
-                        </p>
-
-                        <h1 className="text-3xl font-bold text-gray-950 sm:text-4xl">
-                            {product?.name}
-                        </h1>
-
-                        <div className="mt-4 flex items-center gap-2">
-                            <div className="flex items-center gap-1">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                    <Star
-                                        key={index}
-                                        className={`h-5 w-5 ${index < averageRating
-                                            ? "fill-[#f16d59] text-[#f16d59]"
-                                            : "text-gray-300"
-                                            }`}
-                                    />
-                                ))}
-                            </div>
-
-                            <span className="text-sm text-gray-500">
-                                ({product?.reviewSummary?.reviewCount} Review)
-                            </span>
-                        </div>
-
-                        <p className="mt-5 text-3xl font-bold text-[#f16d59]">
-                            ৳{selectedVariant?.price || product?.price}
-                        </p>
-
-                        <p className="mt-5 text-base leading-7 text-gray-600">
-                            {product?.description}
-                        </p>
-
-                        <div className="mt-5 flex flex-wrap items-center gap-3">
-                            <span
-                                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${product?.stockSummary?.inStock
-                                    ? "bg-green-50 text-green-600"
-                                    : "bg-red-50 text-red-500"
-                                    }`}
-                            >
-                                <Check className="h-4 w-4" />
-                                {product?.stockSummary?.inStock
-                                    ? "In Stock"
-                                    : "Out of Stock"}
-                            </span>
-
-                            <span className="text-sm text-gray-500">
-                                Available: {product?.stockSummary.availableQuantity}
-                            </span>
-                        </div>
-
-                        {/* Variant */}
-                        {variants?.length > 0 && (
-                            <div className="mt-6">
-                                <h3 className="mb-3 text-sm font-bold text-gray-950">
-                                    Select Variant
-                                </h3>
-
-                                <div className="flex flex-wrap gap-3">
-                                    {variants?.map((variant) => {
-                                        const oneVariantImage = variant?.images[0]?.imageUrl ?? '';
-                                        const oneProductImage = product?.images[0].imageUrl ?? '';
-                                        return (
-                                            <button
-                                                key={variant?.id}
-                                                type="button"
-                                                onClick={() => {
-                                                    // setSelectedVariantId(variant.id);
-                                                    setSelectedImage(
-                                                        oneVariantImage ||
-                                                        oneProductImage
-                                                    );
-                                                }}
-                                                className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${selectedVariantId === variant.id
-                                                    ? "border-[#f16d59] bg-[#f16d59] text-white"
-                                                    : "border-gray-300 text-gray-700 hover:border-[#f16d59] hover:text-[#f16d59]"
-                                                    }`}
-                                            >
-                                                {variant.title}
-                                            </button>
-                                        )
-                                    }
-
-                                    )}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Quantity */}
-                        <div className="mt-6">
-                            <h3 className="mb-3 text-sm font-bold text-gray-950">
-                                Quantity
-                            </h3>
-
-                            <div className="flex h-12 w-36 items-center justify-between border border-gray-300">
-                                <button
-                                    type="button"
-                                    onClick={handleDecrease}
-                                    className="grid h-full w-12 place-items-center text-gray-700 hover:bg-gray-100"
-                                >
-                                    <Minus className="h-4 w-4" />
-                                </button>
-
-                                <span className="text-sm font-bold text-gray-950">
-                                    {quantity}
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={handleIncrease}
-                                    className="grid h-full w-12 place-items-center text-gray-700 hover:bg-gray-100"
-                                >
-                                    <Plus className="h-4 w-4" />
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Buttons */}
-                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                            <button
-                                type="button"
-                                className="inline-flex h-12 items-center justify-center gap-2 bg-[#f16d59] px-8 text-sm font-bold text-white transition hover:bg-gray-950"
-                            >
-                                <ShoppingCart className="h-5 w-5" />
-                                Add To Cart
-                            </button>
-
-                            <button
-                                type="button"
-                                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
-                            >
-                                <Heart className="h-5 w-5" />
-                                Wishlist
-                            </button>
-
-                            <button
-                                type="button"
-                                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
-                            >
-                                <GitCompareArrows className="h-5 w-5" />
-                                Compare
-                            </button>
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="mt-8 border-t border-gray-200 pt-6">
-                            <div className="space-y-3 text-sm">
-                                <p>
-                                    <span className="font-bold text-gray-950">SKU:</span>{" "}
-                                    <span className="text-gray-600">
-                                        {selectedVariant?.sku || "N/A"}
-                                    </span>
-                                </p>
-
-                                <p>
-                                    <span className="font-bold text-gray-950">Status:</span>{" "}
-                                    <span className="text-gray-600">{product?.status}</span>
-                                </p>
-
-                                <p>
-                                    <span className="font-bold text-gray-950">Total Stock:</span>{" "}
-                                    <span className="text-gray-600">
-                                        {product?.stockSummary.totalQuantity}
-                                    </span>
-                                </p>
-
-                                <p>
-                                    <span className="font-bold text-gray-950">Reserved:</span>{" "}
-                                    <span className="text-gray-600">
-                                        {product?.stockSummary.quantityReserved}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              <span className="absolute left-5 top-5 rounded-full bg-[#f16d59] px-4 py-1.5 text-xs font-bold text-white">
+                {product?.tags[0].name}
+              </span>
             </div>
 
+            {/* Thumbnail Images */}
+            <div className="mt-4 flex gap-3">
+              {productImages.map((image) => (
+                <button
+                  key={image.id}
+                  type="button"
+                  onClick={() => setSelectedImage(image.imageUrl)}
+                  className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${
+                    selectedImage === image?.imageUrl
+                      ? "border-[#f16d59]"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <Image
+                    src={imageUrlSet(image.imageUrl)}
+                    alt={image.altText ?? ""}
+                    fill
+                    sizes="96px"
+                    className="object-cover"
+                  />
+                </button>
+              ))}
 
-            {/* Review form */}
-            <ProductReviewForm 
-            productId={product?.id ?? ''}
-            slug={product?.slug ?? ''}
-            />
+              {variants.map((variant) =>
+                variant.images.map((image) => (
+                  <button
+                    key={image.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedImage(image.imageUrl);
+                      // setSelectedVariantId(variant.id);
+                    }}
+                    className={`relative h-24 w-24 overflow-hidden border bg-[#f8f5f1] ${
+                      selectedImage === image.imageUrl
+                        ? "border-[#f16d59]"
+                        : "border-gray-200"
+                    }`}
+                  >
+                    <Image
+                      src={image.imageUrl}
+                      alt={image.altText ?? ""}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                  </button>
+                )),
+              )}
+            </div>
+          </div>
 
-            {/* Reviews Section */}
-            <div className="mt-8 bg-white p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
-                <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-950">Customer Reviews</h2>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Total Reviews: {product?.reviews.length}
+          {/* Right Text Side */}
+          <div className="flex flex-col justify-center">
+            <p className="mb-3 inline-flex w-fit items-center rounded-full bg-[#f16d59]/10 px-4 py-1.5 text-xs font-bold text-[#f16d59]">
+              {product?.tags[0].name}
+            </p>
+
+            <h1 className="text-3xl font-bold text-gray-950 sm:text-4xl">
+              {product?.name}
+            </h1>
+
+            <div className="mt-4 flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star
+                    key={index}
+                    className={`h-5 w-5 ${
+                      index < averageRating
+                        ? "fill-[#f16d59] text-[#f16d59]"
+                        : "text-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <span className="text-sm text-gray-500">
+                ({product?.reviewSummary?.reviewCount} Review)
+              </span>
+            </div>
+
+            <p className="mt-5 text-3xl font-bold text-[#f16d59]">
+              ৳{selectedVariant?.price || product?.price}
+            </p>
+
+            <p className="mt-5 text-base leading-7 text-gray-600">
+              {product?.description}
+            </p>
+
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <span
+                className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
+                  product?.stockSummary?.inStock
+                    ? "bg-green-50 text-green-600"
+                    : "bg-red-50 text-red-500"
+                }`}
+              >
+                <Check className="h-4 w-4" />
+                {product?.stockSummary?.inStock ? "In Stock" : "Out of Stock"}
+              </span>
+
+              <span className="text-sm text-gray-500">
+                Available: {product?.stockSummary.availableQuantity}
+              </span>
+            </div>
+
+            {/* Variant */}
+            {variants?.length > 0 && (
+              <div className="mt-6">
+                <h3 className="mb-3 text-sm font-bold text-gray-950">
+                  Select Variant
+                </h3>
+
+                <div className="flex flex-wrap gap-3">
+                  {variants?.map((variant) => {
+                    const oneVariantImage = variant?.images[0]?.imageUrl ?? "";
+                    const oneProductImage = product?.images[0].imageUrl ?? "";
+                    return (
+                      <button
+                        key={variant?.id}
+                        type="button"
+                        onClick={() => {
+                          // setSelectedVariantId(variant.id);
+                          setSelectedImage(oneVariantImage || oneProductImage);
+                        }}
+                        className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${
+                          selectedVariantId === variant.id
+                            ? "border-[#f16d59] bg-[#f16d59] text-white"
+                            : "border-gray-300 text-gray-700 hover:border-[#f16d59] hover:text-[#f16d59]"
+                        }`}
+                      >
+                        {variant.title}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Quantity */}
+            <div className="mt-6">
+              <h3 className="mb-3 text-sm font-bold text-gray-950">Quantity</h3>
+
+              <div className="flex h-12 w-36 items-center justify-between border border-gray-300">
+                <button
+                  type="button"
+                  onClick={handleDecrease}
+                  className="grid h-full w-12 place-items-center text-gray-700 hover:bg-gray-100"
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+
+                <span className="text-sm font-bold text-gray-950">
+                  {quantity}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleIncrease}
+                  className="grid h-full w-12 place-items-center text-gray-700 hover:bg-gray-100"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                className="inline-flex h-12 items-center justify-center gap-2 bg-[#f16d59] px-8 text-sm font-bold text-white transition hover:bg-gray-950"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Add To Cart
+              </button>
+
+              <button
+                type="button"
+                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
+              >
+                <Heart className="h-5 w-5" />
+                Wishlist
+              </button>
+
+              <button
+                type="button"
+                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
+              >
+                <GitCompareArrows className="h-5 w-5" />
+                Compare
+              </button>
+            </div>
+
+            {/* Product Info */}
+            <div className="mt-8 border-t border-gray-200 pt-6">
+              <div className="space-y-3 text-sm">
+                <p>
+                  <span className="font-bold text-gray-950">SKU:</span>{" "}
+                  <span className="text-gray-600">
+                    {selectedVariant?.sku || "N/A"}
+                  </span>
+                </p>
+
+                <p>
+                  <span className="font-bold text-gray-950">Status:</span>{" "}
+                  <span className="text-gray-600">{product?.status}</span>
+                </p>
+
+                <p>
+                  <span className="font-bold text-gray-950">Total Stock:</span>{" "}
+                  <span className="text-gray-600">
+                    {product?.stockSummary.totalQuantity}
+                  </span>
+                </p>
+
+                <p>
+                  <span className="font-bold text-gray-950">Reserved:</span>{" "}
+                  <span className="text-gray-600">
+                    {product?.stockSummary.quantityReserved}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Review form */}
+      <ProductReviewForm
+        productId={product?.id ?? ""}
+        slug={product?.slug ?? ""}
+      />
+
+      {/* Reviews Section */}
+      <div className="mt-8 bg-white p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
+        <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-950">
+              Customer Reviews
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Total Reviews: {product?.reviews.length}
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <RatingStars rating={product?.reviewSummary.averageRating ?? 0} />
+
+            <span className="text-sm font-semibold text-gray-700">
+              {product?.reviewSummary.averageRating} out of 5
+            </span>
+          </div>
+        </div>
+
+        {reviews.length > 0 ? (
+          <div className="space-y-5">
+            {reviews.map((review) => (
+              <div
+                key={review.id}
+                className="rounded-xl border border-gray-200 p-5 transition hover:border-[#f16d59] hover:shadow-sm"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f16d59]/10 text-sm font-bold text-[#f16d59]">
+                        {review?.reviewerName?.charAt(0).toUpperCase()}
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-gray-950">
+                          {review?.reviewerName}
+                        </h3>
+
+                        <p className="text-xs text-gray-500">
+                          {review.reviewerEmail}
                         </p>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        <RatingStars rating={product?.reviewSummary.averageRating ?? 0} />
+                    <div className="mt-4 flex items-center gap-2">
+                      <RatingStars rating={review.rating} />
 
-                        <span className="text-sm font-semibold text-gray-700">
-                            {product?.reviewSummary.averageRating} out of 5
-                        </span>
+                      <span className="text-sm font-semibold text-gray-700">
+                        {review.rating}/5
+                      </span>
                     </div>
+                  </div>
+
+                  <div className="flex flex-col items-start gap-2 sm:items-end">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-bold ${
+                        review.status === "APPROVED"
+                          ? "bg-green-50 text-green-600"
+                          : "bg-yellow-50 text-yellow-600"
+                      }`}
+                    >
+                      {review.status}
+                    </span>
+
+                    <span className="text-xs text-gray-500">
+                      {new Date(review.createdAt).toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
                 </div>
 
-                {reviews.length > 0 ? (
-                    <div className="space-y-5">
-                        {reviews.map((review) => (
-                            <div
-                                key={review.id}
-                                className="rounded-xl border border-gray-200 p-5 transition hover:border-[#f16d59] hover:shadow-sm"
-                            >
-                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                                    <div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f16d59]/10 text-sm font-bold text-[#f16d59]">
-                                                {review?.reviewerName?.charAt(0).toUpperCase()}
-                                            </div>
+                <div className="mt-5">
+                  <h4 className="text-base font-bold text-gray-950">
+                    {review.title}
+                  </h4>
 
-                                            <div>
-                                                <h3 className="font-bold text-gray-950">
-                                                    {review?.reviewerName}
-                                                </h3>
-
-                                                <p className="text-xs text-gray-500">
-                                                    {review.reviewerEmail}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 flex items-center gap-2">
-                                            <RatingStars rating={review.rating} />
-
-                                            <span className="text-sm font-semibold text-gray-700">
-                                                {review.rating}/5
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col items-start gap-2 sm:items-end">
-                                        <span
-                                            className={`rounded-full px-3 py-1 text-xs font-bold ${review.status === "APPROVED"
-                                                ? "bg-green-50 text-green-600"
-                                                : "bg-yellow-50 text-yellow-600"
-                                                }`}
-                                        >
-                                            {review.status}
-                                        </span>
-
-                                        <span className="text-xs text-gray-500">
-                                            {new Date(review.createdAt).toLocaleDateString("en-US", {
-                                                day: "2-digit",
-                                                month: "short",
-                                                year: "numeric",
-                                            })}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-5">
-                                    <h4 className="text-base font-bold text-gray-950">
-                                        {review.title}
-                                    </h4>
-
-                                    <p className="mt-2 text-sm leading-6 text-gray-600">
-                                        {review.comment}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-                        <h3 className="text-lg font-bold text-gray-950">No reviews yet</h3>
-                        <p className="mt-2 text-sm text-gray-500">
-                            Be the first person to review this product.
-                        </p>
-                    </div>
-                )}
-            </div>
-        </section>
-    );
+                  <p className="mt-2 text-sm leading-6 text-gray-600">
+                    {review.comment}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
+            <h3 className="text-lg font-bold text-gray-950">No reviews yet</h3>
+            <p className="mt-2 text-sm text-gray-500">
+              Be the first person to review this product.
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 };
 
 export default ViewFashionProduct;

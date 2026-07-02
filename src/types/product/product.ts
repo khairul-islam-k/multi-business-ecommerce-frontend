@@ -37,14 +37,12 @@ export type ProductCategoryPayload = {
   imageUrl: string;
   parentId?: string | null;
   status: CategoryStatus;
-  sortOrder?: number;
 };
 
 export type ProductCategoryCount = {
   children: number;
   products: number;
 };
-
 
 export type CategoryParent = {
   id: string;
@@ -53,7 +51,6 @@ export type CategoryParent = {
   name: string;
   description: string | null;
   imageUrl: string | null;
-  sortOrder: number;
   status: CategoryStatus;
   createdAt: string;
   updatedAt: string;
@@ -69,7 +66,6 @@ export type CategoryChild = {
   name: string;
   description: string | null;
   imageUrl: string | null;
-  sortOrder: number;
   status: CategoryStatus;
   createdAt: string;
   updatedAt: string;
@@ -85,7 +81,6 @@ export type ResponseCategory = {
   name: string;
   description: string | null;
   imageUrl: string | null;
-  sortOrder: number;
   status: CategoryStatus;
 
   parent: CategoryParent | null;
@@ -102,7 +97,6 @@ export type ResponseCategory = {
     products: number;
   };
 };
-
 
 export type ProductStatus = "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED";
 
@@ -159,7 +153,6 @@ type ProductImage = {
   imageUrl: string;
   altText: string;
   isThumbnail: boolean;
-  sortOrder: number;
 
   createdBy: string | null;
   updatedBy: string | null;

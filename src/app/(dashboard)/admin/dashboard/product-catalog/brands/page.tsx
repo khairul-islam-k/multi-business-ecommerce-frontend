@@ -96,11 +96,6 @@ const ProductBrands = () => {
       ),
     },
     {
-      key: "sortOrder",
-      label: "Sort Order",
-      render: (row) => row.sortOrder,
-    },
-    {
       key: "_count",
       label: "Products",
       render: (row) => row._count?.products ?? 0,

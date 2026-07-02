@@ -46,7 +46,6 @@ export type PaymentGateway = {
   name: string;
   code: GatewayProvider;
   description: string | null;
-  sortOrder: number;
   status: PaymentGatewayStatus;
   createdAt: string;
   updatedAt: string;
@@ -61,7 +60,7 @@ export type PaymentGatewayConfig = {
   mode: PaymentGatewayMode;
   status: PaymentGatewayStatus;
   configData: Record<string, unknown>;
-  gateway:PaymentGateway;
+  gateway: PaymentGateway;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -81,7 +80,6 @@ export type PaymentGatewayPayload = {
     configData: Record<string, string>;
   }[];
 };
-
 
 export type PaymentQuery = {
   val_id?: string;

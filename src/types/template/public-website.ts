@@ -9,7 +9,6 @@ export type StorefrontCategory = {
   imageUrl: string | null;
 
   parentId: string | null;
-  sortOrder: number;
   status: CategoryStatus;
 
   createdAt: string;

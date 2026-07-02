@@ -14,7 +14,10 @@ import {
 } from "lucide-react";
 
 import ProductCard from "../_components/product-card";
-import { useProductCategoryQuery, useTemplateProductQuery } from "@/lib/api/hooks/public-website";
+import {
+  useProductCategoryQuery,
+  useTemplateProductQuery,
+} from "@/lib/api/hooks/public-website";
 import Loader from "@/components/shared/loader";
 import { SortOrder } from "@/lib/api";
 
@@ -30,15 +33,12 @@ type Category = {
   description?: string | null;
   imageUrl?: string | null;
   status?: string;
-  sortOrder?: number;
 };
 
 type CategoryTreeItem = {
   category: Category;
   children: CategoryTreeItem[];
 };
-
-
 
 const CategorySidebarItem = ({
   item,
@@ -59,8 +59,9 @@ const CategorySidebarItem = ({
       <button
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
-        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-          }`}
+        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${
+          isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+        }`}
       >
         <span>{item.category.name}</span>
 
@@ -72,7 +73,11 @@ const CategorySidebarItem = ({
             }}
             className="grid h-6 w-6 place-items-center"
           >
-            {open ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+            {open ? (
+              <Minus className="h-4 w-4" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
           </span>
         )}
       </button>
@@ -98,12 +103,12 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const pathname = usePathname();
 
   const [sortBy, setSortBy] = useState<string>("");
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const { data: products } = useTemplateProductQuery({
     categoryId,
     sortBy,
-    sortOrder
+    sortOrder,
   });
 
   // all categories
@@ -111,9 +116,8 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
 
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-
   const handleCategoryClick = (id: string) => {
-    console.log('id', id)
+    console.log("id", id);
     router.push(`${pathname}?categoryId=${id}`);
   };
 
@@ -123,13 +127,11 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
 
   const productItems = products?.items ?? [];
 
-  if (isLoading || isFetching) return <Loader />
+  if (isLoading || isFetching) return <Loader />;
 
   return (
     <section className="bg-[#f6f6f6] py-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[270px_1fr] lg:px-8">
-
-
         {/* Left Sidebar */}
         <aside className="h-fit bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4">
@@ -143,8 +145,11 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           <button
             type="button"
             onClick={handleClearCategory}
-            className={`mt-5 block w-full text-left text-sm font-medium transition ${!categoryId ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
-              }`}
+            className={`mt-5 block w-full text-left text-sm font-medium transition ${
+              !categoryId
+                ? "text-[#f16d59]"
+                : "text-gray-900 hover:text-[#f16d59]"
+            }`}
           >
             All Products
           </button>
@@ -190,7 +195,9 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
 
               <button
                 type="button"
-                onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                onClick={() =>
+                  setSortOrder(sortOrder === "desc" ? "asc" : "desc")
+                }
                 className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
               >
                 {sortOrder === "desc" ? (
@@ -209,10 +216,11 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "list"
-                  ? "border-[#f16d59] bg-[#f16d59] text-white"
-                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                  }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
+                  viewMode === "list"
+                    ? "border-[#f16d59] bg-[#f16d59] text-white"
+                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                }`}
               >
                 <List className="h-6 w-6" />
               </button>
@@ -220,17 +228,16 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "grid"
-                  ? "border-[#f16d59] bg-[#f16d59] text-white"
-                  : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
-                  }`}
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
+                  viewMode === "grid"
+                    ? "border-[#f16d59] bg-[#f16d59] text-white"
+                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                }`}
               >
                 <Grid2X2 className="h-6 w-6" />
               </button>
             </div>
-
           </div>
-
 
           {/* Product Grid */}
           {productItems.length > 0 ? (
@@ -241,14 +248,14 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   : "grid grid-cols-1 gap-6"
               }
             >
-
               {/* check filteredProducts */}
 
               {products?.items.map((product) => (
                 <ProductCard
                   viewMode={viewMode}
                   key={product.id}
-                  product={product} />
+                  product={product}
+                />
               ))}
             </div>
           ) : (
@@ -270,7 +277,6 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
             </div>
           )}
         </div>
-        
       </div>
     </section>
   );
