@@ -103,8 +103,6 @@ const BrandDetails = () => {
             </p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <InfoItem label="Sort Order" value={brand.sortOrder} />
-
               <InfoItem label="Products" value={brand._count?.products ?? 0} />
 
               <InfoItem

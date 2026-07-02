@@ -92,8 +92,6 @@ const ViewCategoryDetails = () => {
             </p>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <InfoItem label="Sort Order" value={category.sortOrder} />
-
               <InfoItem
                 label="Children"
                 value={category._count?.children ?? 0}
@@ -129,10 +127,6 @@ const ViewCategoryDetails = () => {
               >
                 <div>
                   <h4 className="m-0 font-medium">{child.name}</h4>
-
-                  <p className="m-0 text-sm text-gray-500">
-                    Sort Order: {child.sortOrder}
-                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">

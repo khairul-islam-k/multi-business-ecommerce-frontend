@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  message,
-  Select,
-  Space,
-} from "antd";
+import { Button, Card, Form, Input, message, Select, Space } from "antd";
 import { useEffect, useMemo, useState } from "react";
 
 import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
@@ -32,7 +24,6 @@ export type ProductCategory = {
   imageUrl?: string | null;
   parentId?: string | null;
   status: CategoryStatus;
-  sortOrder: number;
 };
 
 export type ProductCategoryFormValues = {

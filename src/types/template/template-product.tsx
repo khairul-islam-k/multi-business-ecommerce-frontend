@@ -23,7 +23,6 @@ export type ProductCategory = AuditFields & {
   imageUrl: string | null;
 
   status: ProductStatus;
-  sortOrder: number;
 };
 
 export type ProductBrand = AuditFields & {
@@ -35,7 +34,6 @@ export type ProductBrand = AuditFields & {
   logoUrl: string | null;
 
   status: ProductStatus;
-  sortOrder: number;
 };
 
 export type ProductTag = AuditFields & {
@@ -57,7 +55,6 @@ export type ProductImage = AuditFields & {
   imageUrl: string;
   altText: string | null;
   isThumbnail: boolean;
-  sortOrder: number;
 };
 
 export type ProductStockSummary = {
@@ -91,7 +88,7 @@ export type ProductReview = AuditFields & {
   status: ReviewStatus;
 };
 
-// variant 
+// variant
 
 export type StockSummary = {
   totalQuantity: number;
@@ -161,7 +158,6 @@ export type StorefrontProduct = AuditFields & {
   reviewSummary: ProductReviewSummary;
   reviews: ProductReview[];
 };
-
 
 export type ProductQuery = ListQuery & {
   tagId?: string;

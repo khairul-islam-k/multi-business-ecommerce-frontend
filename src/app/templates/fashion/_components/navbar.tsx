@@ -27,7 +27,6 @@ type Category = {
   description?: string | null;
   imageUrl?: string | null;
   status?: string;
-  sortOrder?: number;
 };
 
 type CategoryTreeItem = {

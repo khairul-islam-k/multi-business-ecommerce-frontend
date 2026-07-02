@@ -5,7 +5,6 @@ export type BrandPayload = {
   description: string;
   logoUrl: string;
   status: BrandStatus;
-  sortOrder?: number;
 };
 
 export type ResponseBrand = {
@@ -15,7 +14,6 @@ export type ResponseBrand = {
   description: string | null;
   logoUrl: string | null;
   status: BrandStatus;
-  sortOrder: number;
 
   createdBy: string | null;
   updatedBy: string | null;

@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  CircleMinus,
-  CirclePlus
-} from "lucide-react";
-
+import { CircleMinus, CirclePlus } from "lucide-react";
 
 import {
   Button,
@@ -52,7 +48,6 @@ export default function PackagePlanForm({
       freeTrialDays: initialValue?.freeTrialDays ?? 0,
       isDefault: initialValue?.isDefault ?? false,
       status: initialValue?.status ?? "ACTIVE",
-      sortOrder: initialValue?.sortOrder ?? 0,
 
       limits:
         initialValue?.limits?.map((limit) => ({
@@ -66,7 +61,6 @@ export default function PackagePlanForm({
         initialValue?.features?.map((feature) => ({
           title: feature.title,
           description: feature.description ?? undefined,
-          sortOrder: feature.sortOrder ?? 0,
           isActive: feature.isActive ?? true,
         })) ?? [],
     });
@@ -110,12 +104,6 @@ export default function PackagePlanForm({
 
         <Col xs={24} md={8}>
           <Form.Item name="freeTrialDays" label="Free trial days">
-            <InputNumber min={0} precision={0} style={{ width: "100%" }} />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} md={8}>
-          <Form.Item name="sortOrder" label="Sort order">
             <InputNumber min={0} precision={0} style={{ width: "100%" }} />
           </Form.Item>
         </Col>
@@ -258,7 +246,7 @@ export default function PackagePlanForm({
       <Form.List name="features">
         {(fields, { add, remove }) => (
           <Card
-            style={{ marginTop: '20px' }}
+            style={{ marginTop: "20px" }}
             title="Plan Features"
             extra={
               <Button

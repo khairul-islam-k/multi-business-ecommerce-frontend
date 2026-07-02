@@ -157,11 +157,6 @@ const Categories = () => {
       render: (row) => row._count?.products ?? 0,
     },
     {
-      key: "sortOrder",
-      label: "Sort",
-      render: (row) => row.sortOrder,
-    },
-    {
       key: "createdAt",
       label: "Updated",
       render: (row) =>
