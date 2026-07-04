@@ -25,39 +25,39 @@ type DashboardLayoutProps = {
 };
 
 const sidebarItems = [
-  {
-    label: "Dashboard",
-    href: "/store/dashboard",
-    icon: Home,
-  },
+//   {
+//     label: "Dashboard",
+//     href: "/store/dashboard",
+//     icon: Home,
+//   },
   {
     label: "Orders",
     href: "/store/dashboard/order-history",
     icon: ReceiptText,
   },
   {
-    label: "My Active Cart",
+    label: "Active Cart",
     href: "/store/dashboard/active-cart",
     icon: ShoppingCart,
   },
   {
-    label: "My Reviews",
+    label: "Reviews",
     href: "/store/dashboard/review",
     icon: Star,
   },
   {
-    label: "Customer Address",
+    label: "Addresses",
     href: "/store/dashboard/customer-address",
     icon: MapPinHouse,
   },
   {
-    label: "Return Order",
+    label: "Return Orders",
     href: "/store/dashboard/return",
     icon: PackageSearch,
   },
   {
-    label: "Wish List",
-    href: "/store/dashboard/wish-list",
+    label: "Wishlist",
+    href: "/store/dashboard/wishlist",
     icon: Heart,
   },
 //   {

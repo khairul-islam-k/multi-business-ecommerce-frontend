@@ -33,6 +33,106 @@ async function parseRequestBody(request: NextRequest) {
 }
 
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<PaymentRouteParams> },
+) {
+  try {
+    const { method, paymentId } = (await params) as {
+      method: PaymentGatewayProvider;
+      paymentId: ApiId;
+    };
+
+    const searchParams = request.nextUrl.searchParams;
+
+    const queryBody = Object.fromEntries(searchParams.entries());
+
+    console.log("GET payment callback method:", method);
+    console.log("GET payment callback paymentId:", paymentId);
+    console.log("GET payment callback query:", queryBody);
+
+    let res: any;
+
+    if (method === "SHURJOPAY") {
+      res = await templatePaymentApi.verifyPayment(
+        method,
+        paymentId,
+        "success",
+        {
+          order_id: queryBody.order_id,
+          // sp_order_id: queryBody.sp_order_id,
+          // bank_trx_id: queryBody.bank_trx_id,
+          // customer_order_id: queryBody.customer_order_id,
+        },
+      );
+    }
+
+    const verifyData = res?.data ?? res;
+
+    console.log("SHURJOPAY verify response:", verifyData);
+
+    const isPaid = verifyData?.paymentStatus === "PAID";
+
+    const isShurjoPaySuccess =
+      method === "SHURJOPAY" &&
+      (verifyData?.gatewayPayload?.sp_message === "Success" ||
+        verifyData?.gatewayPayload?.message === "Success" ||
+        verifyData?.gatewayPayload?.status === "VALID" ||
+        verifyData?.paymentStatus === "PAID");
+
+    if (isPaid && isShurjoPaySuccess) {
+      const successUrl = new URL("/payment/success", request.url);
+
+      successUrl.searchParams.set("orderId", paymentId);
+      successUrl.searchParams.set("OrderId", verifyData?.orderId ?? "");
+      successUrl.searchParams.set(
+        "paidAmount",
+        String(
+          verifyData?.gatewayPayload?.amount ??
+            verifyData?.gatewayPayload?.payable_amount ??
+            verifyData?.amount ??
+            "",
+        ),
+      );
+      successUrl.searchParams.set(
+        "transactionReference",
+        String(
+          verifyData?.transactionReference ??
+            verifyData?.gatewayPayload?.bank_trx_id ??
+            verifyData?.gatewayPayload?.sp_order_id ??
+            "",
+        ),
+      );
+      successUrl.searchParams.set("method", method);
+
+      return NextResponse.redirect(successUrl, {
+        status: 303,
+      });
+    }
+
+    const failedUrl = new URL("/payment/failed", request.url);
+
+    failedUrl.searchParams.set("orderId", paymentId);
+    failedUrl.searchParams.set("method", method);
+    failedUrl.searchParams.set("reason", "payment-not-verified");
+
+    return NextResponse.redirect(failedUrl, {
+      status: 303,
+    });
+  } catch (error) {
+    console.error("SHURJOPAY GET callback error:", error);
+
+    const failedUrl = new URL("/payment/failed", request.url);
+
+    failedUrl.searchParams.set("reason", "invalid-shurjopay-request");
+
+    return NextResponse.redirect(failedUrl, {
+      status: 303,
+    });
+  }
+}
+
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<PaymentRouteParams> },
@@ -45,55 +145,68 @@ export async function POST(
 
     const body = await parseRequestBody(request);
 
-    console.log('body', body);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let res: any;
+    console.log("payment callback method:", method);
+    console.log("payment callback paymentId:", paymentId);
+    console.log("payment callback body:", body);
 
-    if (method === "SHURJOPAY") {
-      res = await templatePaymentApi.verifyPayment(
-        method,
-        paymentId,
-        "success",
-        {
-          val_id: body.val_id,
-          tran_id: body.tran_id,
-        },
-      );
+    let verifyPayload: Record<string, unknown> = {};
+
+    if (method === "SSLCOMMERZ") {
+      verifyPayload = {
+        val_id: body.val_id,
+        tran_id: body.tran_id,
+      };
     }
 
     if (method === "AAMARPAY") {
-      res = await templatePaymentApi.verifyPayment(
-        method,
-        paymentId,
-        "success",
-        {
-          mer_txnid: body.mer_txnid
-        },
+      verifyPayload = {
+        mer_txnid: body.mer_txnid,
+      };
+    }
+
+    const verifyResponse = await templatePaymentApi.verifyPayment(
+      method,
+      paymentId,
+      "success",
+      verifyPayload,
+    );
+
+    /**
+     * If your API function returns axios response, data will be inside .data.
+     * If your API function already returns data, this still works.
+     */
+    const res = verifyResponse?.data ?? verifyResponse;
+
+    console.log("verify response:", res);
+
+    const isPaid = res?.paymentStatus === "PAID";
+
+    const isSSLCommerzSuccess =
+      method === "SSLCOMMERZ" && res?.gatewayPayload?.status === "VALID";
+
+    const isAamarPaySuccess =
+      method === "AAMARPAY" &&
+      (res?.gatewayPayload?.pay_status === "Successful" ||
+        res?.gatewayPayload?.status === "VALID" ||
+        res?.paymentStatus === "PAID");
+
+    if (
+      isPaid &&
+      (isSSLCommerzSuccess || isAamarPaySuccess)
+    ) {
+      const successUrl = new URL("/payment/success", request.url);
+
+      successUrl.searchParams.set("orderId", paymentId);
+      successUrl.searchParams.set("OrderId", res?.orderId ?? "");
+      successUrl.searchParams.set(
+        "paidAmount",
+        String(res?.gatewayPayload?.amount ?? res?.amount ?? ""),
       );
-    }
-
-    console.log('verify', res);
-
-    if ((res?.paymentStatus === "PAID")&& (res?.gatewayPayload?.status === "VALID") && (method === 'SSLCOMMERZ')) {
-      const successUrl = new URL("/payment/success", request.url);
-
-      successUrl.searchParams.set("orderId", paymentId);
-      successUrl.searchParams.set("paidAmount", res?.gatewayPayload?.amount);
-      successUrl.searchParams.set("OrderId", res?.orderId);
-      successUrl.searchParams.set("transactionReference", res.transactionReference);
-
-      return NextResponse.redirect(successUrl, {
-        status: 303,
-      });
-    }
-
-    if ((res?.paymentStatus === "PAID")&& (res?.gatewayPayload?.status === "VALID") && (method === 'AAMARPAY')) {
-      const successUrl = new URL("/payment/success", request.url);
-
-      successUrl.searchParams.set("orderId", paymentId);
-      successUrl.searchParams.set("paidAmount", res?.amount);
-      successUrl.searchParams.set("OrderId", res?.orderId);
-      successUrl.searchParams.set("transactionReference", res.transactionReference);
+      successUrl.searchParams.set(
+        "transactionReference",
+        String(res?.transactionReference ?? ""),
+      );
+      successUrl.searchParams.set("method", method);
 
       return NextResponse.redirect(successUrl, {
         status: 303,
@@ -104,6 +217,7 @@ export async function POST(
 
     failedUrl.searchParams.set("orderId", paymentId);
     failedUrl.searchParams.set("method", method);
+    failedUrl.searchParams.set("reason", "payment-not-verified");
 
     return NextResponse.redirect(failedUrl, {
       status: 303,

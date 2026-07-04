@@ -29,13 +29,13 @@ export default function PaymentGatewayModal({
 }: PaymentGatewayModalProps) {
     const { data: gateways, isLoading, isFetching } = useTemplatePaymentGateway();
 
+    const baseUrl = window.location.origin ?? '';
+
     const router = useRouter()
 
     const { createProvidePayment } = useTemplatePaymentMutation();
 
     if (!open) return null;
-
-    console.log('payment', orderId);
 
     const handleSelectGateway = async (gateway: PaymentGateway) => {
         console.log("selected gateway name:", gateway.code);
@@ -44,9 +44,9 @@ export default function PaymentGatewayModal({
 
         const payload = {
             provider: gateway.code,
-            successRedirectUrl: "http://localhost:3000/routes/payment",
-            failRedirectUrl: "http://localhost:3000/routes/failed",
-            cancelRedirectUrl: "http://localhost:3000/routes/cancel"
+            successRedirectUrl: `${baseUrl}/routes/payment`,
+            failRedirectUrl: `${baseUrl}/routes/failed`,
+            cancelRedirectUrl: `${baseUrl}/routes/cancel`
         }
 
         const res = await createProvidePayment.mutateAsync({

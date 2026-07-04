@@ -319,7 +319,7 @@ const FashionNavbar = () => {
             </IconButton> */}
 
             <IconButton
-              href="/store/dashboard/wish-list"
+              href="/store/dashboard/wishlist"
               label="Wishlist"
               count={favoriteCount}
               className="hidden lg:grid"
