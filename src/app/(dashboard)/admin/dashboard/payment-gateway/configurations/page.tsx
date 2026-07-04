@@ -413,14 +413,14 @@ export default function PaymentGatewayConfigurations() {
                   >
                     <Radio.Button
                       value="SANDBOX"
-                      className="h-9 rounded-lg! text-center text-xs leading-9! sm:h-10 sm:text-sm sm:leading-10!"
+                      className="text-center"
                     >
                       SANDBOX
                     </Radio.Button>
 
                     <Radio.Button
                       value="LIVE"
-                      className="h-9 rounded-lg! text-center text-xs leading-9! sm:h-10 sm:text-sm sm:leading-10!"
+                      className="text-center"
                     >
                       LIVE
                     </Radio.Button>

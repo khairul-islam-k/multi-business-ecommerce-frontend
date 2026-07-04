@@ -60,7 +60,7 @@ const CategorySidebarItem = ({
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
         className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${
-          isActive ? "text-[#f16d59]" : "text-gray-900 hover:text-[#f16d59]"
+          isActive ? "text-[#f16d59]" : " hover:text-[#f16d59]"
         }`}
       >
         <span>{item.category.name}</span>
@@ -130,12 +130,12 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   if (isLoading || isFetching) return <Loader />;
 
   return (
-    <section className="bg-[#f6f6f6] py-8">
+    <section className="bg-[var(--store-bg-3)] py-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:px-6 lg:grid-cols-[270px_1fr] lg:px-8">
         {/* Left Sidebar */}
-        <aside className="h-fit bg-white p-5 shadow-sm">
+        <aside className="h-fit bg-[var(--store-bg-1)] p-5 shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-            <h2 className="text-xl font-bold text-gray-950">
+            <h2 className="text-xl font-bold">
               Product categories
             </h2>
 
@@ -148,7 +148,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
             className={`mt-5 block w-full text-left text-sm font-medium transition ${
               !categoryId
                 ? "text-[#f16d59]"
-                : "text-gray-900 hover:text-[#f16d59]"
+                : "hover:text-[#f16d59]"
             }`}
           >
             All Products
@@ -169,13 +169,13 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
         {/* Right Content */}
         <div>
           {/* Top Filter Bar */}
-          <div className="mb-8 flex flex-col gap-4 bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
-            <h1 className="text-xl font-bold text-gray-950 md:text-2xl">
+          <div className="mb-8 flex flex-col gap-4 bg-[var(--store-bg-1)] p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+            <h1 className="text-xl font-bold md:text-2xl">
               Total Products Found: {products?.items.length}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3">
-              <label className="text-lg font-semibold text-gray-950">
+              <label className="text-lg font-semibold">
                 Sort by:
               </label>
 
@@ -183,7 +183,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 <select
                   value={sortBy}
                   onChange={(event) => setSortBy(event.target.value)}
-                  className="h-12 w-48 appearance-none rounded-md border border-gray-300 bg-white px-4 pr-10 text-sm text-gray-700 outline-none focus:border-[#f16d59]"
+                  className="h-12 w-48 appearance-none rounded-md border border-gray-300 bg-[var(--store-bg-1)] px-4 pr-10 text-sm outline-none focus:border-[#f16d59]"
                 >
                   <option value="name">Name</option>
                   <option value="price">Price</option>
@@ -198,7 +198,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 onClick={() =>
                   setSortOrder(sortOrder === "desc" ? "asc" : "desc")
                 }
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-[var(--store-bg-1)] px-4 py-2 text-sm font-semibold shadow-sm transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white"
               >
                 {sortOrder === "desc" ? (
                   <>
@@ -219,7 +219,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 className={`grid h-12 w-12 place-items-center rounded-md border transition ${
                   viewMode === "list"
                     ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                    : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
                 }`}
               >
                 <List className="h-6 w-6" />
@@ -231,7 +231,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                 className={`grid h-12 w-12 place-items-center rounded-md border transition ${
                   viewMode === "grid"
                     ? "border-[#f16d59] bg-[#f16d59] text-white"
-                    : "border-gray-300 bg-white text-gray-500 hover:text-[#f16d59]"
+                    : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
                 }`}
               >
                 <Grid2X2 className="h-6 w-6" />
@@ -259,7 +259,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               ))}
             </div>
           ) : (
-            <div className="rounded-xl bg-white px-6 py-16 text-center shadow-sm">
+            <div className="rounded-xl bg-[var(--store-bg-1)] px-6 py-16 text-center shadow-sm">
               <h3 className="text-xl font-bold text-gray-950">
                 No products found
               </h3>

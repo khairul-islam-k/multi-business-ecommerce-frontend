@@ -51,8 +51,8 @@ const sidebarItems = [
     icon: MapPinHouse,
   },
   {
-    label: "Products",
-    href: "/store/dashboard/products",
+    label: "Return Order",
+    href: "/store/dashboard/return",
     icon: PackageSearch,
   },
   {

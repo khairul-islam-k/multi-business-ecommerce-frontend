@@ -19,7 +19,7 @@ const DealOfDay = () => {
               CLICK SHOP NOW FOR ALL DEAL OF THE PRODUCT
             </p>
 
-            <p className="mt-6 max-w-xl text-base leading-8 text-gray-600">
+            <p className="mt-6 max-w-xl text-base leading-8">
               Donec condimentum Lorem ipsum dolor sit amet, consectetur
               adipiscing elit. Cras cursus pretium sapien, in pulvinar ipsum
               molestie id. Aliquam erat volutpat. Duis quam tellus,

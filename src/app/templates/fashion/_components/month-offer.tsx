@@ -14,7 +14,7 @@ const MonthOffer = () => {
             Best Month Offer
           </h2>
 
-          <p className="mt-4 text-base leading-8 text-gray-600">
+          <p className="mt-4 text-base leading-8">
             Erat pellentesque curabitur euismod dui etiam pellentesque rhoncus
             fermentum tristique lobortis lectus magnis. Consequat porta turpis
             maecenas.

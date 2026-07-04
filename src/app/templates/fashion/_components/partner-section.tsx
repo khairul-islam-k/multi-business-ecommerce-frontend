@@ -92,7 +92,7 @@ const PartnerSection = () => {
             Our Partners
           </h2>
 
-          <p className="mt-4 text-base leading-7 text-gray-600">
+          <p className="mt-4 text-base leading-7">
             We work with trusted fashion brands and partners to bring you the
             best quality products and shopping experience.
           </p>

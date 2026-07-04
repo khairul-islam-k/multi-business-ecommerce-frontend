@@ -1,7 +1,9 @@
 "use client";
 
+import { useMessage } from "@/app/store/_components/message/message-hook";
 import { OrderStatus } from "@/lib/api";
-import { useTemplateOrderHistoryQuery } from "@/lib/api/hooks/template-order-history";
+import { useTemplateOrderHistoryQuery, useTemplateOrderMutation } from "@/lib/api/hooks/template-order-history";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { CustomerOrderResponse } from "@/types/template/order-history";
 import { PaymentStatus } from "@/types/template/template-payment";
 import {
@@ -181,9 +183,8 @@ function Pagination({
             key={page}
             type="button"
             onClick={() => goToPage(page)}
-            className={`${baseButtonClass} ${
-              isActive ? activeButtonClass : normalButtonClass
-            }`}
+            className={`${baseButtonClass} ${isActive ? activeButtonClass : normalButtonClass
+              }`}
           >
             {page}
           </button>
@@ -215,11 +216,19 @@ function OrderActionDropdown({
 }: OrderActionDropdownProps) {
   const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const message = useMessage();
+
+  // cancel modal
+  const [cancelModalOpen, setCancelModalOpen] = useState<boolean>(false);
+  const [cancelReason, setCancelReason] = useState<string>("");
+  const [isCancelling, setIsCancelling] = useState<boolean>(false);
 
   const [menuPosition, setMenuPosition] = useState({
     top: 0,
     left: 0,
   });
+
+  const { cancelOrder } = useTemplateOrderMutation();
 
   const isOpen = openActionId === order.id;
 
@@ -257,24 +266,47 @@ function OrderActionDropdown({
     router.push(`/store/dashboard/order-history/detail/${order.id}`);
   };
 
+
+  // cancel
+
   const handleCancelOrder = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
     closeMenu();
 
-    console.log("cancel order", order.id);
-
-    // cancelOrder.mutate(order.id);
+    setCancelModalOpen(true);
   };
+
+  const handleSubmitCancelOrder = async () => {
+
+    try {
+      setIsCancelling(true);
+
+      await cancelOrder.mutateAsync({
+        orderId: order.id,
+        payload: {
+          reason: cancelReason
+        },
+      });
+
+      message.success("Order cancelled successfully");
+
+      setCancelModalOpen(false);
+      setCancelReason("");
+    } catch (error) {
+      message.error(getWebErrorMessage(error));
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
 
   const handleReturnOrder = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
     closeMenu();
-
-    console.log("return order", order.id);
     router.push(`/store/dashboard/order-history/return/${order.id}`)
   };
 
@@ -334,6 +366,84 @@ function OrderActionDropdown({
             </button>
           </div>
         </>
+      )}
+
+      {/* modal cancel */}
+      {cancelModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  Cancel Order
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Please write why you want to cancel this order.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCancelModalOpen(false);
+                  setCancelReason("");
+                }}
+                className="grid size-9 place-items-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-red-500 hover:text-white"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5">
+              <div className="mb-4 rounded-2xl bg-gray-50 px-4 py-3">
+                <p className="text-xs font-semibold text-gray-500">Order No</p>
+                <p className="mt-1 text-sm font-bold text-gray-900">
+                  {order.orderNo}
+                </p>
+              </div>
+
+              <label className="mb-2 block text-sm font-semibold text-gray-800">
+                Cancel Reason <span className="text-red-500">*</span>
+              </label>
+
+              <textarea
+                value={cancelReason}
+                onChange={(event) => setCancelReason(event.target.value)}
+                rows={5}
+                placeholder="Example: I placed the wrong order."
+                className="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#f16d59] focus:bg-white"
+              />
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
+              <button
+                type="button"
+                disabled={isCancelling}
+                onClick={() => {
+                  setCancelModalOpen(false);
+                  setCancelReason("");
+                }}
+                className="inline-flex h-11 items-center justify-center rounded-2xl border border-gray-300 px-5 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                Close
+              </button>
+
+              <button
+                type="button"
+                disabled={isCancelling}
+                onClick={handleSubmitCancelOrder}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isCancelling && <Loader2 className="size-4 animate-spin" />}
+                Confirm Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
@@ -674,7 +784,7 @@ export default function FashionOrderHistory() {
               })}
             </div>
 
-            <div className="hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm md:block">
+            <div className="hidden lg:p-6 rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm md:block">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1100px] border-collapse">
                   <thead>

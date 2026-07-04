@@ -38,7 +38,7 @@ const toFormValues = (
   data?: Partial<WebsiteTemplatePayload>,
 ): TemplateFormValues => {
   return {
-    template: data?.template ?? 'ELECTRONIC',
+    template: data?.template ?? 'FASHION',
     status: data?.status ?? 'DRAFT',
 
     config: {

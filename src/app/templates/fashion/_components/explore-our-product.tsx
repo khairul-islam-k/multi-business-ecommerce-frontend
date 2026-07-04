@@ -31,7 +31,7 @@ const ExploreOurProduct = () => {
             Explore Our Products
           </h2>
 
-          <p className="mt-4 text-base leading-7 text-gray-600">
+          <p className="mt-4 text-base leading-7">
             Discover our latest fashion collection and trending products.
           </p>
         </div>
@@ -49,7 +49,7 @@ const ExploreOurProduct = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`relative pb-2 whitespace-nowrap text-sm font-semibold transition-all duration-300 ${isActive
                       ? "text-[#f16d59]"
-                      : "text-gray-600 hover:text-[#f16d59]"
+                      : "hover:text-[#f16d59]"
                     }`}
                 >
                   {tab.name}

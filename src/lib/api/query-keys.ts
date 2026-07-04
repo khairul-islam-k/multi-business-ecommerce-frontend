@@ -377,6 +377,15 @@ export const apiQueryKeys = {
     detail: (orderId: ApiId) =>
       ["orderHistory", orderId, "detail"] as const,
   },
+
+  templateOrderReturn: {
+    all: ()=> ["templateOrderReturn"] as const,
+    list: (query?: CategoriesQuery) =>
+      ["templateOrderReturn", "list", query] as const,
+
+    detail: (orderId: ApiId) =>
+      ["templateOrderReturn", orderId, "detail"] as const,
+  },
   templateProductWishList: {
     all: ()=> ["wishList"] as const,
     list: (query?: CategoriesQuery) =>

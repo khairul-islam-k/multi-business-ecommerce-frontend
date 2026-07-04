@@ -40,15 +40,15 @@ const contactInfo = [
 
 const FashionContactPage = () => {
   return (
-    <main className="bg-[#fffdf9]">
+    <main className="">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#f8eee8] py-20">
+      <section className="relative overflow-hidden bg-[var(--store-bg-2)] py-20">
         <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
           <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#f16d59]">
             Contact Us
           </p>
 
-          <h1 className="text-4xl font-bold text-gray-950 sm:text-5xl lg:text-6xl">
+          <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">
             Get In Touch
           </h1>
 
@@ -69,13 +69,13 @@ const FashionContactPage = () => {
               return (
                 <div
                   key={item.id}
-                  className="rounded-3xl border border-gray-200 bg-white p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-[#f16d59] hover:shadow-lg"
+                  className="rounded-3xl border border-gray-200 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-[#f16d59] hover:shadow-lg"
                 >
                   <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#f16d59]/10 text-[#f16d59]">
                     <Icon className="h-6 w-6" />
                   </div>
 
-                  <h3 className="mt-5 text-lg font-bold text-gray-950">
+                  <h3 className="mt-5 text-lg font-bold">
                     {item.title}
                   </h3>
 
@@ -181,8 +181,8 @@ const FashionContactPage = () => {
             </div>
 
             {/* Form */}
-            <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
-              <h2 className="text-3xl font-bold text-gray-950">
+            <div className="rounded-3xl border border-gray-200 bg-[var(--store-bg-1)] p-8 shadow-sm sm:p-10">
+              <h2 className="text-3xl font-bold">
                 Send Message
               </h2>
 
@@ -194,58 +194,58 @@ const FashionContactPage = () => {
               <form className="mt-8 space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    <label className="mb-2 block text-sm font-semibold">
                       Your Name
                     </label>
                     <input
                       type="text"
                       placeholder="Enter your name"
-                      className="h-12 w-full rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
+                      className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-semibold text-gray-700">
+                    <label className="mb-2 block text-sm font-semibold">
                       Phone Number
                     </label>
                     <input
                       type="text"
                       placeholder="Enter phone number"
-                      className="h-12 w-full rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
+                      className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold">
                     Email Address
                   </label>
                   <input
                     type="email"
                     placeholder="Enter email address"
-                    className="h-12 w-full rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
+                    className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold">
                     Subject
                   </label>
                   <input
                     type="text"
                     placeholder="Enter subject"
-                    className="h-12 w-full rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
+                    className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                   />
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
+                  <label className="mb-2 block text-sm font-semibold">
                     Message
                   </label>
                   <textarea
                     rows={5}
                     placeholder="Write your message..."
-                    className="w-full resize-none rounded-3xl border border-gray-200 px-5 py-4 text-sm outline-none transition focus:border-[#f16d59]"
+                    className="w-full bg-[var(--store-bg-1)] resize-none rounded-3xl border border-gray-200 px-5 py-4 text-sm outline-none transition focus:border-[#f16d59]"
                   />
                 </div>
 
@@ -265,12 +265,12 @@ const FashionContactPage = () => {
       {/* Map */}
       <section className="pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="overflow-hidden rounded-3xl border border-gray-200 bg-gray-100">
+          <div className="overflow-hidden rounded-3xl border border-gray-200 bg-[var(--store-bg-3)]">
             <div className="flex min-h-[360px] items-center justify-center p-8 text-center">
               <div>
                 <MapPin className="mx-auto mb-4 h-12 w-12 text-[#f16d59]" />
 
-                <h3 className="text-2xl font-bold text-gray-950">
+                <h3 className="text-2xl font-bold">
                   Our Store Location
                 </h3>
 

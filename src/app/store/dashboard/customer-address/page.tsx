@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import React from 'react';
 
 const CustomerAddress = async () => {
-    const header = await headers()
+  const header = await headers()
 
   const res = await publicApi.get('/storefront/resolve', {
     headers: {
