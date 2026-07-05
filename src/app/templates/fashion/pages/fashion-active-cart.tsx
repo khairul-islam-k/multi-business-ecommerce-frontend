@@ -8,9 +8,8 @@ import { CartImage, CartItem } from "@/types/template/add-cart";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PaymentModal from "../_components/payment/payment-modal";
-import { useTemplatePaymentGateway } from "@/lib/api/hooks/template-payment";
 import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
 import { PaymentMethodStatus } from "@/types/template/template-payment";
 
@@ -46,16 +45,7 @@ const FashionActiveCart = () => {
 
     const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
-    const [items, setItems] = useState<CartItem[]>([]);
-
-    useEffect(() => {
-        if (cart?.items) {
-            const handleCart = () => {
-                setItems(cart.items);
-            }
-            handleCart();
-        }
-    }, [cart]);
+    const items: CartItem[] = cart?.items ?? [];
 
     const handleIncrease = async (item: CartItem) => {
 
@@ -112,14 +102,14 @@ const FashionActiveCart = () => {
     };
 
     const summary = useMemo(() => {
-        const subtotal = items.reduce((total, item) => {
+        const subtotal = items?.reduce((total, item) => {
             const price = getItemPrice(item);
             const quantity = getItemQuantity(item);
 
             return total + price * quantity;
         }, 0);
 
-        const totalQuantity = items.reduce((total, item) => {
+        const totalQuantity = items?.reduce((total, item) => {
             return total + getItemQuantity(item);
         }, 0);
 
@@ -190,7 +180,7 @@ const FashionActiveCart = () => {
                             </div>
 
                             <div className="divide-y divide-gray-100">
-                                {items.map((item) => {
+                                {items?.map((item) => {
                                     const price = getItemPrice(item);
                                     const quantity = getItemQuantity(item);
                                     const itemTotal = price * quantity;

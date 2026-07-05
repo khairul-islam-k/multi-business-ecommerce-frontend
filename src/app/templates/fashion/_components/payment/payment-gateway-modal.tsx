@@ -1,6 +1,8 @@
 "use client";
 
+import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useTemplatePaymentGateway, useTemplatePaymentMutation } from "@/lib/api/hooks/template-payment";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { PaymentGatewayProvider } from "@/types/payment-gateway";
 import { CreditCard, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -28,6 +30,7 @@ export default function PaymentGatewayModal({
     onClose,
 }: PaymentGatewayModalProps) {
     const { data: gateways, isLoading, isFetching } = useTemplatePaymentGateway();
+    const message = useMessage();
 
     const baseUrl = window.location.origin ?? '';
 
@@ -49,14 +52,18 @@ export default function PaymentGatewayModal({
             cancelRedirectUrl: `${baseUrl}/routes/cancel`
         }
 
-        const res = await createProvidePayment.mutateAsync({
-            orderId,
-            payload
-        });
+        try {
+            const res = await createProvidePayment.mutateAsync({
+                orderId,
+                payload
+            });
 
-        router.push(res?.redirectUrl)
+            router.push(res?.redirectUrl)
 
-        onClose();
+            onClose();
+        } catch (error) {
+            message.error(getWebErrorMessage(error));
+        }
     };
 
     const gatewayLength = gateways?.length ?? 0;

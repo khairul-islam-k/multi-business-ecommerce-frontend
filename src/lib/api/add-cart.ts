@@ -1,19 +1,24 @@
 import { normalizePaginatedResponse, unwrapApiResponse, unwrapArrayResponse } from "./response";
-import { ApiArrayResponse, ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
-import api from "../axios";
+import { ApiArrayResponse, ApiId, ApiPaginatedResponse, ApiResponse} from "./types";
 import { buildQueryString } from "./params";
 import webApi from "../public-api-hook/web-api";
-import { AddToCartPayload, CustomerCartResponse, UpdateQuantity } from "@/types/template/add-cart";
+import { AddToCartPayload, CartQuery, CustomerCartResponse, UpdateQuantity } from "@/types/template/add-cart";
 
 const basePath = () => `/storefront/customer/cart/items`;
 export const addCartApi = {
-    //   list(businessId: ApiId, query?: CategoriesQuery) {
-    //     return api
-    //       .get<ApiPaginatedResponse<ResponseBrand>>(
-    //         `${basePath(businessId)}${buildQueryString(query)}`,
-    //       )
-    //       .then((res) => normalizePaginatedResponse(res.data));
-    //   },
+    listCart(query?: CartQuery) {
+        return webApi
+            .get<ApiPaginatedResponse<CustomerCartResponse>>(
+                `/storefront/customer/carts${buildQueryString(query)}`,
+            )
+            .then((res) => normalizePaginatedResponse(res.data));
+    },
+
+    getOldCart(cartId: ApiId) {
+        return webApi
+            .get<ApiArrayResponse<CustomerCartResponse>>(`/storefront/customer/carts/${cartId}`)
+            .then((res) => unwrapApiResponse(res.data));
+    },
 
     get() {
         return webApi
@@ -45,12 +50,12 @@ export const addCartApi = {
             .then((res) => unwrapApiResponse(res.data));
     },
 
-      removeActiveCartItem(itemId: ApiId) {
+    removeActiveCartItem(itemId: ApiId) {
         return webApi
-          .delete<ApiResponse<null>>(`${basePath()}/${itemId}`)
-          .then((res) => ({
-            message: res.data.message ?? "Employee deleted successfully",
-          }));
-      },
+            .delete<ApiResponse<null>>(`${basePath()}/${itemId}`)
+            .then((res) => ({
+                message: res.data.message ?? "Employee deleted successfully",
+            }));
+    },
 
 };

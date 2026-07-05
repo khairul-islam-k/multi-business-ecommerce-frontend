@@ -31,56 +31,57 @@ export function useTemplatePaymentMutation() {
   const queryClient = useQueryClient();
 
   const invalidate = async () => {
+    await queryClient.cancelQueries({
+      queryKey: apiQueryKeys.addCart.detailActive(),
+      exact: true,
+    });
+
     await Promise.all([
       queryClient.invalidateQueries({
         queryKey: apiQueryKeys.paymentTemplate.all(),
+        exact: false,
+        refetchType: "all",
       }),
 
       queryClient.invalidateQueries({
         queryKey: apiQueryKeys.addCart.all(),
+        exact: false,
+        refetchType: "all",
       }),
     ]);
+
+    await queryClient.refetchQueries({
+      queryKey: apiQueryKeys.addCart.detailActive(),
+      exact: true,
+      type: "all",
+    });
   };
 
   return {
     createPayment: useMutation({
-      mutationFn: (payload: PaymentPayload) =>
-        templatePaymentApi.create(payload),
+      mutationFn: async (payload: PaymentPayload) => {
+        return templatePaymentApi.create(payload);
+      },
+
       onSuccess: async () => {
         await invalidate();
       },
     }),
 
     createProvidePayment: useMutation({
-      mutationFn: ({
+      mutationFn: async ({
         orderId,
-        payload
+        payload,
       }: {
         orderId: ApiId;
         payload: PaymentInitPayload;
-      }) =>
-        templatePaymentApi.createProvidePayment(orderId, payload),
+      }) => {
+        return templatePaymentApi.createProvidePayment(orderId, payload);
+      },
+
       onSuccess: async () => {
         await invalidate();
       },
     }),
-
-    // updateBrand: useMutation({
-    //   mutationFn: ({
-    //     brandId,
-    //     payload,
-    //   }: {
-    //     brandId: ApiId;
-    //     payload: BrandPayload;
-    //   }) => productBrandApi.update(businessId, brandId, payload),
-    //   onSuccess: invalidate,
-    // }),
-
-    // removeBrand: useMutation({
-    //   mutationFn: (brandId: ApiId) =>
-    //     productBrandApi.remove(businessId, brandId),
-    //   onSuccess: invalidate,
-    // }),
-
   };
 }

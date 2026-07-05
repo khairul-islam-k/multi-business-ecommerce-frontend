@@ -348,6 +348,9 @@ export const apiQueryKeys = {
     detail: () =>
       ["addCart", "detail"] as const,
 
+    detailOldCart: (cartId: ApiId) =>
+      ["addCart", cartId, "detail"] as const,
+
     detailActive: () =>
       ["addCart", "detailActive"] as const,
   },

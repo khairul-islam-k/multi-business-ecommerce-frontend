@@ -5,7 +5,7 @@ import { OrderStatus } from "@/lib/api";
 import { useTemplateOrderHistoryQuery, useTemplateOrderMutation } from "@/lib/api/hooks/template-order-history";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { CustomerOrderResponse } from "@/types/template/order-history";
-import { PaymentStatus } from "@/types/template/template-payment";
+import { PaymentMethodStatus, PaymentStatus } from "@/types/template/template-payment";
 import {
   CalendarDays,
   CreditCard,
@@ -24,6 +24,8 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
+import PaymentModal from "../_components/payment/payment-modal";
+import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
 
 type PaginationMeta = {
   page: number;
@@ -218,6 +220,8 @@ function OrderActionDropdown({
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const message = useMessage();
 
+  console.log('order', order);
+
   // cancel modal
   const [cancelModalOpen, setCancelModalOpen] = useState<boolean>(false);
   const [cancelReason, setCancelReason] = useState<string>("");
@@ -227,6 +231,12 @@ function OrderActionDropdown({
     top: 0,
     left: 0,
   });
+
+  // payment modal 
+
+  // payment
+  const [openPayment, setOpenPayment] = useState<boolean>(false);
+  const [orderId, setOrderId] = useState<string>('');
 
   const { cancelOrder } = useTemplateOrderMutation();
 
@@ -301,6 +311,17 @@ function OrderActionDropdown({
     }
   };
 
+  // start payment
+  const handleGoToPayment = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setOpenPayment(true);
+    setOrderId(order.id);
+    closeMenu?.();
+
+  };
+
 
   const handleReturnOrder = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
@@ -346,6 +367,19 @@ function OrderActionDropdown({
               <Eye className="size-4" />
               Detail
             </button>
+
+            {
+              (!order.isCod && !(order.paymentStatus === 'PAID'))  &&
+              <button
+                type="button"
+                onClick={handleGoToPayment}
+                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold text-[var(--store-text,#111827)] transition hover:bg-[var(--store-secondary,#f8f5f1)]"
+              >
+                <CreditCard className="size-4" />
+                Pay
+              </button>
+
+            }
 
             <button
               type="button"
@@ -445,6 +479,12 @@ function OrderActionDropdown({
           </div>
         </div>
       )}
+
+      <PaymentGatewayModal
+        open={openPayment}
+        orderId={orderId}
+        onClose={() => setOpenPayment(false)}
+      />
     </>
   );
 }

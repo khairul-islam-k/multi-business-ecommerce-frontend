@@ -5,7 +5,7 @@ import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
 import electronicImg from "@/assets/template/electronic-template.png";
-import fashionImg from "@/assets/template/electronic-template.png";
+import fashionImg from "@/assets/template/fashion.png";
 import groceryImg from "@/assets/template/electronic-template.png";
 
 type TemplateItem = {

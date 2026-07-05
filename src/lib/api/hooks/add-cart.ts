@@ -1,16 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
-import { ApiId, CategoriesQuery } from "../types";
+import { ApiId } from "../types";
 import { addCartApi } from "../add-cart";
-import { AddToCartPayload, UpdateQuantity } from "@/types/template/add-cart";
+import { AddToCartPayload, CartQuery, UpdateQuantity } from "@/types/template/add-cart";
 
-// export function useProductBrandQuery(businessId: ApiId, query?: CategoriesQuery) {
-//   return useQuery({
-//     queryKey: apiQueryKeys.ProductBrands.list(businessId, query),
-//     queryFn: () => productBrandApi.list(businessId, query),
-//     enabled: Boolean(businessId),
-//   });
-// }
+export function useCartListQuery(query?: CartQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.addCart.list(query),
+    queryFn: () => addCartApi.listCart(query),
+  });
+}
 
 export function useAddCArt() {
   return useQuery({
@@ -18,6 +17,16 @@ export function useAddCArt() {
 
     queryFn: () => {
       return addCartApi.get();
+    },
+  });
+}
+
+export function useOldCart(cartId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.addCart.detailOldCart(cartId),
+
+    queryFn: () => {
+      return addCartApi.getOldCart(cartId);
     },
   });
 }

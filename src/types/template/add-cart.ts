@@ -1,10 +1,13 @@
+import { ListQuery } from "@/lib/api";
+
 export type AddToCartPayload = {
   productId: string;
   variantId?: string;
   quantity: number;
 };
 
-export type CartStatus = "ACTIVE" | "ORDERED" | "ABANDONED" | "EXPIRED";
+export type CartStatus = "ACTIVE" | "ORDERED";
+export type CartStatusForFilter = "ACTIVE" | "ORDERED"| string;
 export type ProductStatus = "ACTIVE" | "INACTIVE";
 export type VariantStatus = "ACTIVE" | "INACTIVE";
 
@@ -109,4 +112,8 @@ export type CustomerCartResponse = {
 
 export type UpdateQuantity = {
   quantity: number;
+};
+
+export type CartQuery = ListQuery & {
+  status?: CartStatusForFilter;
 };

@@ -15,12 +15,6 @@ export const templatePaymentApi = {
       .then((res) => unwrapArrayResponse(res.data));
   },
 
-//   get(businessId: ApiId, brandId: ApiId) {
-//     return api
-//       .get<ApiResponse<ResponseBrand>>(`${basePath(businessId)}/${brandId}`)
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
-
   create(payload: PaymentPayload) {
     return webApi
       .post<ApiResponse<OrderResponse>>(basePath(), payload)
@@ -39,25 +33,5 @@ export const templatePaymentApi = {
       .post<ApiResponse<any>>(`/payment-gateways/callbacks/${provider}/${paymentId}/${eventType}${buildQueryString(query)}`)
       .then((res) => unwrapApiResponse(res.data));
   },
-//   update(
-//     businessId: ApiId,
-//     brandId: ApiId,
-//     payload: BrandPayload,
-//   ) {
-//     return api
-//       .patch<ApiResponse<ResponseBrand>>(
-//         `${basePath(businessId)}/${brandId}`,
-//         payload,
-//       )
-//       .then((res) => unwrapApiResponse(res.data));
-//   },
-
-//   remove(businessId: ApiId, brandId: ApiId) {
-//     return api
-//       .delete<ApiResponse<null>>(`${basePath(businessId)}/${brandId}`)
-//       .then((res) => ({
-//         message: res.data.message ?? "Employee deleted successfully",
-//       }));
-//   },
 
 };

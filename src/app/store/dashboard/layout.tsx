@@ -19,57 +19,64 @@ import {
     X,
 } from "lucide-react";
 import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown";
+import LogoComponent from "@/app/templates/fashion/_components/logo/logo-component";
 
 type DashboardLayoutProps = {
     children: React.ReactNode;
 };
 
 const sidebarItems = [
-//   {
-//     label: "Dashboard",
-//     href: "/store/dashboard",
-//     icon: Home,
-//   },
-  {
-    label: "Orders",
-    href: "/store/dashboard/order-history",
-    icon: ReceiptText,
-  },
-  {
-    label: "Active Cart",
-    href: "/store/dashboard/active-cart",
-    icon: ShoppingCart,
-  },
-  {
-    label: "Reviews",
-    href: "/store/dashboard/review",
-    icon: Star,
-  },
-  {
-    label: "Addresses",
-    href: "/store/dashboard/customer-address",
-    icon: MapPinHouse,
-  },
-  {
-    label: "Return Orders",
-    href: "/store/dashboard/return",
-    icon: PackageSearch,
-  },
-  {
-    label: "Wishlist",
-    href: "/store/dashboard/wishlist",
-    icon: Heart,
-  },
-//   {
-//     label: "Settings",
-//     href: "/store/dashboard/settings",
-//     icon: Settings,
-//   },
+    //   {
+    //     label: "Dashboard",
+    //     href: "/store/dashboard",
+    //     icon: Home,
+    //   },
+    {
+        label: "Orders",
+        href: "/store/dashboard/order-history",
+        icon: ReceiptText,
+    },
+    {
+        label: "Active Cart",
+        href: "/store/dashboard/active-cart",
+        icon: ShoppingCart,
+    },
+    // {
+    //     label: "Carts",
+    //     href: "/store/dashboard/carts",
+    //     icon: ShoppingCart,
+    // },
+    {
+        label: "Reviews",
+        href: "/store/dashboard/review",
+        icon: Star,
+    },
+    {
+        label: "Addresses",
+        href: "/store/dashboard/customer-address",
+        icon: MapPinHouse,
+    },
+    {
+        label: "Return Orders",
+        href: "/store/dashboard/return",
+        icon: PackageSearch,
+    },
+    {
+        label: "Wishlist",
+        href: "/store/dashboard/wishlist",
+        icon: Heart,
+    },
+    //   {
+    //     label: "Settings",
+    //     href: "/store/dashboard/settings",
+    //     icon: Settings,
+    //   },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -94,17 +101,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             >
                 {/* Sidebar Header */}
                 <div className="flex h-16 items-center justify-between border-b px-5">
-                    <Link href="/store" className="flex items-center gap-2">
-                        <div className="flex size-9 items-center justify-center rounded-xl bg-gray-900 text-white">
-                            E
-                        </div>
 
-                        {!sidebarCollapsed && (
-                            <span className="text-lg font-bold text-gray-900">
-                                EasyCom
-                            </span>
-                        )}
-                    </Link>
+                    <LogoComponent sidebarCollapsed={sidebarCollapsed} />
+
 
                     <button
                         type="button"

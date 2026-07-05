@@ -247,7 +247,7 @@ const VariantModal = ({
                                             </p>
 
                                             <p
-                                                className={`mt-2 text-xs font-medium ${variant.status === "ACTIVE"
+                                                className={`mt-2 text-xs font-medium ${variant.stockSummary.inStock
                                                     ? "text-green-600"
                                                     : "text-red-500"
                                                     }`}
