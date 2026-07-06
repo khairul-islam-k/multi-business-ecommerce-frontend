@@ -35,6 +35,8 @@ export default function CreateWarehousePage() {
 
       const res = await createWarehouse.mutateAsync(payload);
 
+      console.log('res', res);
+
       message.success("Warehouse created successfully");
       router.push("/admin/dashboard/inventory/warehouses");
     } catch (error) {

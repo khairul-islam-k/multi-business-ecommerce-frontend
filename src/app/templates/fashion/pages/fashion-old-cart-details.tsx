@@ -40,96 +40,96 @@ const FashionOldCartDetails = () => {
     const message = useMessage();
 
     // payment
-    const [openPayment, setOpenPayment] = useState<boolean>(false);
-    const [orderId, setOrderId] = useState<string>('');
+    // const [openPayment, setOpenPayment] = useState<boolean>(false);
+    // const [orderId, setOrderId] = useState<string>('');
 
-    const [open, setOpen] = useState<boolean>(false);
+    // const [open, setOpen] = useState<boolean>(false);
 
-    const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
+    // const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
-    const items: CartItem[] = cartDetails?.items ?? [];
+    // const items: CartItem[] = cartDetails?.items ?? [];
 
-    const handleIncrease = async (item: CartItem) => {
+    // const handleIncrease = async (item: CartItem) => {
 
-        try {
-            const payload = {
-                quantity: Number(item.quantity) + 1
-            };
+    //     try {
+    //         const payload = {
+    //             quantity: Number(item.quantity) + 1
+    //         };
 
-            await updateQuantity.mutateAsync({
-                itemId: item.id,
-                payload,
-            })
-        } catch (error) {
-            message.error(getWebErrorMessage(error));
-        }
+    //         await updateQuantity.mutateAsync({
+    //             itemId: item.id,
+    //             payload,
+    //         })
+    //     } catch (error) {
+    //         message.error(getWebErrorMessage(error));
+    //     }
 
-    };
+    // };
 
-    const handleDecrease = async (item: CartItem) => {
-        try {
-            const payload = {
-                quantity: Number(item.quantity) - 1
-            };
+    // const handleDecrease = async (item: CartItem) => {
+    //     try {
+    //         const payload = {
+    //             quantity: Number(item.quantity) - 1
+    //         };
 
-            await updateQuantity.mutateAsync({
-                itemId: item.id,
-                payload,
-            })
-        } catch (error) {
-            message.error(getWebErrorMessage(error));
-        }
-    };
+    //         await updateQuantity.mutateAsync({
+    //             itemId: item.id,
+    //             payload,
+    //         })
+    //     } catch (error) {
+    //         message.error(getWebErrorMessage(error));
+    //     }
+    // };
 
-    const handleDelete = (itemId: string) => {
-        message.confirm({
-            title: "Remove cart item?",
-            content: "Are you sure you want to remove this item from your cart?",
-            okText: "Remove",
-            cancelText: "Cancel",
-            danger: true,
+    // const handleDelete = (itemId: string) => {
+    //     message.confirm({
+    //         title: "Remove cart item?",
+    //         content: "Are you sure you want to remove this item from your cart?",
+    //         okText: "Remove",
+    //         cancelText: "Cancel",
+    //         danger: true,
 
-            onConfirm: async () => {
-                try {
-                    const res = await removeActiveCartItem.mutateAsync(itemId);
+    //         onConfirm: async () => {
+    //             try {
+    //                 const res = await removeActiveCartItem.mutateAsync(itemId);
 
-                    console.log("res", res);
+    //                 console.log("res", res);
 
-                    message.success("Cart item removed successfully");
-                } catch (error) {
-                    message.error(getWebErrorMessage(error));
-                }
-            },
-        });
-    };
+    //                 message.success("Cart item removed successfully");
+    //             } catch (error) {
+    //                 message.error(getWebErrorMessage(error));
+    //             }
+    //         },
+    //     });
+    // };
 
-    const summary = useMemo(() => {
-        const subtotal = items?.reduce((total, item) => {
-            const price = getItemPrice(item);
-            const quantity = getItemQuantity(item);
+    // const summary = useMemo(() => {
+    //     const subtotal = items?.reduce((total, item) => {
+    //         const price = getItemPrice(item);
+    //         const quantity = getItemQuantity(item);
 
-            return total + price * quantity;
-        }, 0);
+    //         return total + price * quantity;
+    //     }, 0);
 
-        const totalQuantity = items?.reduce((total, item) => {
-            return total + getItemQuantity(item);
-        }, 0);
+    //     const totalQuantity = items?.reduce((total, item) => {
+    //         return total + getItemQuantity(item);
+    //     }, 0);
 
-        const total = subtotal;
+    //     const total = subtotal;
 
-        return {
-            subtotal,
-            totalQuantity,
-            total,
-        };
-    }, [items]);
+    //     return {
+    //         subtotal,
+    //         totalQuantity,
+    //         total,
+    //     };
+    // }, [items]);
 
-    const handleOrderModal = (id: string, method: PaymentMethodStatus) => {
-        if (method !== 'COD') {
-            setOpenPayment(true);
-            setOrderId(id);
-        }
-    }
+    // const handleOrderModal = (id: string, method: PaymentMethodStatus) => {
+    //     if (method !== 'COD') {
+    //         setOpenPayment(true);
+    //         setOrderId(id);
+    //     }
+    // }
 
     if (isLoading) {
         return (
@@ -145,7 +145,7 @@ const FashionOldCartDetails = () => {
 
     return (
         <section className="bg-[#f8f5f1] px-4 py-10 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
+            {/* <div className="mx-auto max-w-7xl">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-950">Shopping Cart</h1>
                     <p className="mt-2 text-sm text-gray-500">
@@ -361,7 +361,7 @@ const FashionOldCartDetails = () => {
                 open={openPayment}
                 orderId={orderId}
                 onClose={() => setOpenPayment(false)}
-            />
+            /> */}
         </section>
     );
 };

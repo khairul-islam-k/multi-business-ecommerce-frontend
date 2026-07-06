@@ -546,63 +546,64 @@ const allItems: MenuProps["items"] = [
   //   ],
   // },
 
-  // {
-  //   key: "couriers",
-  //   icon: <Truck />, // Couriers main
-  //   label: "Couriers",
-  //   children: [
-  //     {
-  //       key: "courier-companies",
-  //       icon: <Store />, // Courier companies
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/courier-companies">
-  //           Courier Companies
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "courier-config",
-  //       icon: <Settings />, // Config / API / setup
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/courier-config">
-  //           Courier Config
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "delivery-zones",
-  //       icon: <MapPin />, // Zones / areas
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/delivery-zones">
-  //           Delivery Zones
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "shipments",
-  //       icon: <FileText />, // Shipments / tracking
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "charge-setting",
-  //       icon: <Banknote />, // Charges / pricing
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/charge-setting">
-  //           Shipping Charge
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "performances",
-  //       icon: <ChartBar />, // Performance analytics
-  //       label: (
-  //         <Link href="/admin/dashboard/couriers/performance">Performances</Link>
-  //       ),
-  //     },
-  //   ],
-  // },
+  // couriers 
+  {
+    key: "couriers",
+    icon: <Truck />, // Couriers main
+    label: "Couriers",
+    children: [
+      {
+        key: "courier-companies",
+        icon: <Store />, // Courier companies
+        label: (
+          <Link href="/admin/dashboard/couriers/courier-provider">
+            Courier Provider
+          </Link>
+        ),
+      },
+      {
+        key: "courier-config",
+        icon: <Settings />, // Config / API / setup
+        label: (
+          <Link href="/admin/dashboard/couriers/courier-config">
+            Courier Config
+          </Link>
+        ),
+      },
+      {
+        key: "pickup-stores",
+        icon: <MapPin />, // Zones / areas
+        label: (
+          <Link href="/admin/dashboard/couriers/pickup-stores">
+            PickUp Stores
+          </Link>
+        ),
+      },
+      {
+        key: "shipments",
+        icon: <FileText />, // Shipments / tracking
+        label: (
+          <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
+        ),
+      },
+      {
+        key: "charge-setting",
+        icon: <Banknote />, // Charges / pricing
+        label: (
+          <Link href="/admin/dashboard/couriers/charge-setting">
+            Shipping Charge
+          </Link>
+        ),
+      },
+      {
+        key: "performances",
+        icon: <ChartBar />, // Performance analytics
+        label: (
+          <Link href="/admin/dashboard/couriers/performance">Performances</Link>
+        ),
+      },
+    ],
+  },
 
   {
     key: "website-builder",

@@ -2,9 +2,15 @@ export type WarehouseStatus = "ACTIVE" | "INACTIVE";
 
 export type WarehousePayload = {
   name: string;
-  phone: string;
-  address: string;
-  status: WarehouseStatus;
+  phone?: string;
+  address?: string;
+
+  redxAreaId?: string;
+  redxAreaName?: string;
+  redxPostCode?: string;
+  redxPickupStoreId?: string;
+
+  status?: WarehouseStatus;
 };
 
 export type WarehouseResponse = {

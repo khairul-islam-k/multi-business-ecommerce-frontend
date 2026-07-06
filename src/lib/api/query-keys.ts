@@ -147,6 +147,17 @@ export const apiQueryKeys = {
     configs: (businessId: ApiId, query?: PaymentGatewayConfigQuery) =>
       ["paymentGateway", businessId, "configs", query] as const,
   },
+  courierConfig: {
+    all: (businessId: ApiId) => ["courierConfig", businessId] as const,
+    list: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["courierConfig", businessId, "gateways", query] as const,
+    listAreas: (businessId: ApiId,configId: ApiId, query?: CategoriesQuery) =>
+      ["courierConfig", businessId, configId, "gateways", query] as const,
+    configs: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["courierConfig", businessId, "configs", query] as const,
+    pickUp: (businessId: ApiId, configId: ApiId) =>
+      ["courierConfig", businessId, configId,  "configs"] as const,
+  },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>

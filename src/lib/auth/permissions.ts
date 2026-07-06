@@ -65,6 +65,10 @@ export const PERMISSIONS = {
   websiteRead: { feature: "WEBSITE_MANAGEMENT", action: "READ" },
   websiteUpdate: { feature: "WEBSITE_MANAGEMENT", action: "UPDATE" },
   websiteDelete: { feature: "WEBSITE_MANAGEMENT", action: "DELETE" },
+  courierCreate: { feature: "COURIER_MANAGEMENT", action: "CREATE" },
+  courierRead: { feature: "COURIER_MANAGEMENT", action: "READ" },
+  courierUpdate: { feature: "COURIER_MANAGEMENT", action: "UPDATE" },
+  courierDelete: { feature: "COURIER_MANAGEMENT", action: "DELETE" },
 } satisfies Record<string, PermissionRequirement>;
 
 export function getDashboardPath(userType?: SystemUserType | null) {
@@ -191,6 +195,20 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
   const financePath = `${TENANT_DASHBOARD_PATH}/finance`;
   if (pathname.startsWith(financePath)) {
     if (pathname.includes("/create")) return PERMISSIONS.financeCreate;
+    if (
+      pathname.includes("/edit/") ||
+      pathname.includes("/update/") ||
+      pathname.includes("/pay")
+    ) {
+      return PERMISSIONS.financeUpdate;
+    }
+
+    return PERMISSIONS.financeRead;
+  }
+
+  const courierPath = `${TENANT_DASHBOARD_PATH}/couriers`;
+  if (pathname.startsWith(courierPath)) {
+    if (pathname.includes("/courier-config")) return PERMISSIONS.courierUpdate;
     if (
       pathname.includes("/edit/") ||
       pathname.includes("/update/") ||

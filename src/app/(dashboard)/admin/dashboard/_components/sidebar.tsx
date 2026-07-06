@@ -40,6 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const orderAccess = usePermissionAccess(PERMISSIONS.orderRead);
   const financeAccess = usePermissionAccess(PERMISSIONS.financeRead);
   const websiteAccess = usePermissionAccess(PERMISSIONS.websiteRead);
+  const courierAccess = usePermissionAccess(PERMISSIONS.courierRead);
 
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -57,6 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
         if (key === "media") return mediaAccess.allowed ? item : null;
         if (key === "billing") return packageAccess.allowed ? item : null;
         if (key === "inventory") return inventoryAccess.allowed ? item : null;
+        if (key === "couriers") return courierAccess.allowed ? item : null;
         if (key === "suppliers-procurement") {
           return supplierAccess.allowed ? item : null;
         }
@@ -115,6 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     supplierAccess.allowed,
     userType,
     websiteAccess.allowed,
+    courierAccess.allowed
   ]);
 
   const primaryMenuItems = useMemo(
