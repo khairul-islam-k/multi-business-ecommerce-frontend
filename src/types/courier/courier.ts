@@ -87,3 +87,43 @@ export type PickupStorePayload = {
   address: string;
   areaId: string;
 };
+
+// template courier charge 
+
+export type CourierDeliveryPayload = {
+  deliveryAreaId: string;
+  deliveryAreaName: string;
+  deliveryPostCode: string;
+  deliveryDivisionName: string;
+  weight: number;
+  specialInstruction?: string;
+};
+
+// charge calculate response template
+export type CourierChargeCalculationResponse = {
+  courierId: string;
+  configId: string;
+  weight: number;
+  collectableAmount: number;
+  shippingCharge: number;
+  deliveryCharge: number;
+  codCharge: number;
+  courierFee: number;
+  raw: {
+    deliveryCharge: number;
+    codCharge: number;
+  };
+  pickupWarehouse: {
+    id: string;
+    redxAreaId: string;
+    redxAreaName: string;
+    redxPostCode: string;
+    redxPickupStoreId: string;
+  };
+  delivery: {
+    areaId: string;
+    areaName: string;
+    postCode: string;
+    divisionName: string;
+  };
+};

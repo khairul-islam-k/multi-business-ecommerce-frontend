@@ -4,6 +4,7 @@ import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useCustomerAddressList } from "@/lib/api/hooks/template-customer-address";
 import { useTemplatePaymentMutation } from "@/lib/api/hooks/template-payment";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { CourierDeliveryPayload } from "@/types/courier/courier";
 import { PaymentMethodStatus, PaymentPayload } from "@/types/template/template-payment";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreditCard, Loader2, MapPin, X } from "lucide-react";
@@ -53,15 +54,21 @@ export type PaymentFormValues = z.infer<typeof paymentSchema>;
 type PaymentModalProps = {
     open: boolean;
     onClose: () => void;
+    getCourierInfo: CourierDeliveryPayload;
+    courierConfigId: string;
     handleOrderModal: (id: string, method: PaymentMethodStatus) => void;
 };
 
 export default function PaymentModal({
     open,
     onClose,
+    getCourierInfo,
+    courierConfigId,
     handleOrderModal,
 }: PaymentModalProps) {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+    const {weight, ...withoutWeight} = getCourierInfo;
 
     const message = useMessage();
     const { createPayment } = useTemplatePaymentMutation();
@@ -149,6 +156,8 @@ export default function PaymentModal({
                 payload = {
                     paymentMethod,
                     shippingAddressId: values.shippingAddressId.trim(),
+                    courierConfigId,
+                    courierQuote: withoutWeight,
                 };
 
                 if (note) {
@@ -157,6 +166,8 @@ export default function PaymentModal({
             } else {
                 payload = {
                     paymentMethod,
+                    courierConfigId,
+                    courierQuote: withoutWeight,
                     shippingAddressSnapshot: {
                         address: values.shippingAddressSnapshot.address?.trim() || "",
                     },

@@ -409,6 +409,17 @@ export const apiQueryKeys = {
       ["wishList", orderId, "detail"] as const,
   },
 
+  templateCourier: {
+    all: ()=> ["templateCourier"] as const,
+    list: () =>
+      ["templateCourier", "list"] as const,
+    listArea: (configId: ApiId) =>
+      ["templateCourier", configId, "listArea"] as const,
+
+    detail: (orderId: ApiId) =>
+      ["templateCourier", orderId, "detail"] as const,
+  },
+
   templateResolve: {
     detail: () =>
       ["categories", "detail"] as const,

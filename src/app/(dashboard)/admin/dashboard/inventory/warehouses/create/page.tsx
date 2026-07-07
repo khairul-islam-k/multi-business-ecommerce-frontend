@@ -25,9 +25,38 @@ export default function CreateWarehousePage() {
   const handleCreateWarehouse = async (values: WarehousePayload) => {
     const payload: WarehousePayload = {
       name: values.name.trim(),
-      phone: values.phone.trim(),
-      address: values.address.trim(),
-      status: values.status,
+
+      ...(values.phone?.trim()
+        ? {
+          phone: values.phone.trim(),
+        }
+        : {}),
+
+      ...(values.address?.trim()
+        ? {
+          address: values.address.trim(),
+        }
+        : {}),
+
+      ...(values.redxAreaId
+        ? {
+          redxAreaId: values.redxAreaId,
+          redxAreaName: values.redxAreaName,
+          redxPostCode: values.redxPostCode,
+        }
+        : {}),
+
+      ...(values.redxPickupStoreId
+        ? {
+          redxPickupStoreId: values.redxPickupStoreId,
+        }
+        : {}),
+
+      ...(values.status
+        ? {
+          status: values.status,
+        }
+        : {}),
     };
 
     try {
@@ -35,7 +64,7 @@ export default function CreateWarehousePage() {
 
       const res = await createWarehouse.mutateAsync(payload);
 
-      console.log('res', res);
+      console.log("res", res);
 
       message.success("Warehouse created successfully");
       router.push("/admin/dashboard/inventory/warehouses");

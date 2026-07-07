@@ -12,6 +12,8 @@ import React, { useMemo, useState } from "react";
 import PaymentModal from "../_components/payment/payment-modal";
 import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
 import { PaymentMethodStatus } from "@/types/template/template-payment";
+import CourierSellectModal from "../_components/payment/courier-sellect-modal";
+import { CourierDeliveryPayload } from "@/types/courier/courier";
 
 
 
@@ -42,6 +44,17 @@ const FashionActiveCart = () => {
     const [orderId, setOrderId] = useState<string>('');
 
     const [open, setOpen] = useState<boolean>(false);
+
+    // courier modal
+    const [openCourierModal, setOpenCourierModal] = useState<boolean>(false);
+    const [courierConfigId, setCourierConfigId] = useState<string>('');
+    const [getCourierInfo, setGetCourierInfo] = useState<CourierDeliveryPayload>({
+        deliveryAreaId: '',
+        deliveryAreaName: '',
+        deliveryPostCode: '',
+        deliveryDivisionName: '',
+        weight: 0
+    });
 
     const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
@@ -332,7 +345,7 @@ const FashionActiveCart = () => {
 
                             <button
                                 type="button"
-                                onClick={() => setOpen(true)}
+                                onClick={() => setOpenCourierModal(true)}
                                 className="mt-6 w-full rounded-full bg-[#f16d59] px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-950"
                             >
                                 Proceed to Checkout
@@ -349,8 +362,22 @@ const FashionActiveCart = () => {
                 )}
             </div>
 
+            {/* courier */}
+            <CourierSellectModal
+                setCourierConfigId={setCourierConfigId}
+                weight={cart?.weight ?? '0'}
+                open={openCourierModal}
+                onClose={() => setOpenCourierModal(false)}
+                onSuccess={(values) => {
+                    setGetCourierInfo(values);
+                    setOpen(true);
+                }}
+            />
+
             <PaymentModal
                 open={open}
+                getCourierInfo={getCourierInfo}
+                courierConfigId={courierConfigId}
                 onClose={() => setOpen(false)}
                 handleOrderModal={handleOrderModal}
             />

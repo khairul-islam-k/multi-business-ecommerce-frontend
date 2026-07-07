@@ -25,23 +25,54 @@ const UpdateWarehousePage = () => {
   const { data: warehouse } = useWarehouse(businessId, id);
   const { updateWarehouse } = useWarehouseMutation(businessId);
 
+  
+
   const handleUpdateWarehouse = async (values: WarehousePayload) => {
     const payload: WarehousePayload = {
       name: values.name.trim(),
-      phone: values.phone.trim(),
-      address: values.address.trim(),
-      status: values.status,
+
+      ...(values.phone?.trim()
+        ? {
+          phone: values.phone.trim(),
+        }
+        : {}),
+
+      ...(values.address?.trim()
+        ? {
+          address: values.address.trim(),
+        }
+        : {}),
+
+      ...(values.redxAreaId
+        ? {
+          redxAreaId: values.redxAreaId,
+          redxAreaName: values.redxAreaName,
+          redxPostCode: values.redxPostCode,
+        }
+        : {}),
+
+      ...(values.redxPickupStoreId
+        ? {
+          redxPickupStoreId: values.redxPickupStoreId,
+        }
+        : {}),
+
+      ...(values.status
+        ? {
+          status: values.status,
+        }
+        : {}),
     };
 
-    setSubmitting(true);
-
     try {
+      setSubmitting(true);
+
       await updateWarehouse.mutateAsync({
         warehouseId: id,
         payload,
       });
 
-      message.success("Warehouse updated successfully");
+      message.success("Warehouse created successfully");
       router.push("/admin/dashboard/inventory/warehouses");
     } catch (error) {
       message.error(getApiErrorMessage(error));
@@ -49,7 +80,7 @@ const UpdateWarehousePage = () => {
       setSubmitting(false);
     }
   };
-
+  
   return (
     <div>
       <div

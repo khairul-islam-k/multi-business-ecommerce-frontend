@@ -3,19 +3,28 @@ import { CustomerAddressType } from "./customer-address";
 
 export type PaymentMethodStatus = "ONLINE" | "COD";
 
-export type PaymentPayload =
-    | {
-        paymentMethod: PaymentMethodStatus;
-        shippingAddressId: string;
-        note?: string;
-    }
-    | {
-        paymentMethod: PaymentMethodStatus;
-        shippingAddressSnapshot: {
-            address: string;
-        };
-        note?: string;
-    };
+export type CourierQuotePayload = {
+  deliveryAreaId: string;
+  deliveryAreaName: string;
+  deliveryPostCode: string;
+  deliveryDivisionName: string;
+  specialInstruction?: string;
+};
+
+export type PaymentPayload = {
+  paymentMethod: PaymentMethodStatus;
+
+  shippingAddressId?: string;
+
+  shippingAddressSnapshot?: {
+    address: string;
+  };
+
+  courierConfigId: string;
+  courierQuote: CourierQuotePayload;
+
+  note?: string;
+};
 
 
 

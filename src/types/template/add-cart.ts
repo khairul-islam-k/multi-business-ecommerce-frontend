@@ -100,6 +100,7 @@ export type CustomerCartResponse = {
   businessId: string;
   customerId: string | null;
   sessionId: string | null;
+  weight: string;
 
   status: CartStatus;
   expiresAt: string | null;
