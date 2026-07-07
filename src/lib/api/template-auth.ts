@@ -3,7 +3,7 @@ import { unwrapApiResponse } from "@/lib/api/response";
 import type {
   ApiResponse
 } from "@/lib/api/types";
-import webApi from "../public-api-hook/web-api";
+import webApi, { webPublicApi } from "../public-api-hook/web-api";
 import { CustomerAuthRegistrationResponse, CustomerRegisterPayload, ForgetOtpResponse, LoginCustomerResponse, LoginPayload, otpPayload, RefreshTokenPayload, ResetPasswordPayload } from "@/types/template/auth";
 import { publicApi } from "../axios";
 import { WebsiteTemplatePayload, WebsiteTemplateResolve } from "@/types/website/website";
@@ -52,7 +52,7 @@ export const templateAuthApi = {
   },
 
   refreshAuth(payload: RefreshTokenPayload) {
-    return webApi
+    return webPublicApi
       .post<ApiResponse<LoginCustomerResponse>>("/storefront/auth/refresh", payload)
       .then((res) => unwrapApiResponse(res.data));
   },

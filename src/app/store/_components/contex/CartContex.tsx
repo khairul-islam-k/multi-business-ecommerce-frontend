@@ -22,6 +22,7 @@ type CartContextType = {
   LOginUser: (values: User) => void;
   user: User | null;
   handleLogout: () => Promise<void>;
+  getAuthUser: () => User | null;
   newAccessToken: () => Promise<string | null>;
   getTotalCartQuantity: (cart?: CustomerCartResponse | null) => number;
 };
@@ -40,6 +41,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const getAuthUser = (): User | null => {
+    if (typeof window === "undefined") {
+      return null;
+    }
+    
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
 
     if (!storedUser) return null;
@@ -128,6 +133,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     <CartContext.Provider
       value={{
         LOginUser,
+        getAuthUser,
         user,
         handleLogout,
         newAccessToken,

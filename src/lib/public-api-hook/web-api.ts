@@ -1,10 +1,8 @@
 import axios, {
   AxiosHeaders,
-  type InternalAxiosRequestConfig,
 } from "axios";
 import { templateAuthApi } from "../api/template-auth";
 import { Customer } from "@/types/template/auth";
-
 const baseURL = `${process.env.NEXT_PUBLIC_API_BASE_URL!}/api/v1`;
 
 const AUTH_USER_KEY = "auth_user";
@@ -15,9 +13,7 @@ type User = Pick<Customer, "id" | "name" | "email" | "phone"> & {
   refreshToken: string;
 };
 
-type RetryableRequestConfig = InternalAxiosRequestConfig & {
-  _retry?: boolean;
-};
+
 
 let isRefreshing = false;
 
@@ -92,9 +88,32 @@ const newAccessToken = async () => {
   }
 };
 
+const logoutUser = () => {
+  if (typeof window === "undefined") return null;
+  localStorage.removeItem(AUTH_USER_KEY);
+};
+
 const webApi = axios.create({
   baseURL,
 });
+
+export const webPublicApi = axios.create({
+  baseURL,
+});
+
+
+webPublicApi.interceptors.request.use((config) => {
+  const host = typeof window !== "undefined" ? window.location.host : "";
+
+  const headers = AxiosHeaders.from(config.headers);
+
+  headers.set("x-forwarded-host", host);
+
+  config.headers = headers;
+
+  return config;
+});
+
 
 webApi.interceptors.request.use((config) => {
   const host = typeof window !== "undefined" ? window.location.host : "";
@@ -120,6 +139,8 @@ webApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // console.log('error',error.response?.status)
+
     if (error.response?.status === 500) {
       if (typeof window !== "undefined") {
         window.location.href = "/internal-error";
@@ -137,8 +158,6 @@ webApi.interceptors.response.use(
     if (originalRequest._retry || isRefreshRequest) {
       return Promise.reject(error);
     }
-
-    // const { refreshAuth, logout } = useAuthStore.getState();
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -167,7 +186,7 @@ webApi.interceptors.response.use(
       return webApi(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      // logout();
+      logoutUser()
       return Promise.reject(err);
     } finally {
       isRefreshing = false;
