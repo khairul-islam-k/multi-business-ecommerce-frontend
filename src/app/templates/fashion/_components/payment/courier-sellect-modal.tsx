@@ -25,21 +25,6 @@ import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 
-// type CourierConfig = {
-//     id: string;
-//     businessId: string;
-//     courierId: string;
-//     mode: string;
-//     status: string;
-//     courier: {
-//         id: string;
-//         name: string;
-//         code: string;
-//         description?: string;
-//         status: string;
-//     };
-// };
-
 type CourierArea = {
     id: number;
     name: string;

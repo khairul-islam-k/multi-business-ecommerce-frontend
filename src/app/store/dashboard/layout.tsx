@@ -66,6 +66,11 @@ const sidebarItems = [
         href: "/store/dashboard/wishlist",
         icon: Heart,
     },
+    {
+        label: "Invoice",
+        href: "/store/dashboard/invoice",
+        icon: Heart,
+    },
     //   {
     //     label: "Settings",
     //     href: "/store/dashboard/settings",

@@ -5,7 +5,7 @@ import { OrderStatus } from "@/lib/api";
 import { useTemplateOrderHistoryQuery, useTemplateOrderMutation } from "@/lib/api/hooks/template-order-history";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { CustomerOrderResponse } from "@/types/template/order-history";
-import { PaymentMethodStatus, PaymentStatus } from "@/types/template/template-payment";
+import { PaymentStatus } from "@/types/template/template-payment";
 import {
   CalendarDays,
   CreditCard,
@@ -24,7 +24,6 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
-import PaymentModal from "../_components/payment/payment-modal";
 import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
 
 type PaginationMeta = {
@@ -219,8 +218,6 @@ function OrderActionDropdown({
   const router = useRouter();
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const message = useMessage();
-
-  console.log('order', order);
 
   // cancel modal
   const [cancelModalOpen, setCancelModalOpen] = useState<boolean>(false);

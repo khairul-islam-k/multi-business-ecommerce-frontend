@@ -18,6 +18,7 @@ import type {
 } from "@/types/payment-gateway";
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
+import { invoiceQuery } from "@/types/template/invoice";
 
 export const apiQueryKeys = {
   auth: {
@@ -390,6 +391,15 @@ export const apiQueryKeys = {
 
     detail: (orderId: ApiId) =>
       ["orderHistory", orderId, "detail"] as const,
+  },
+
+  templateInvoice: {
+    all: ()=> ["templateInvoice"] as const,
+    list: (query?: invoiceQuery) =>
+      ["templateInvoice", "list", query] as const,
+
+    detail: (orderId: ApiId) =>
+      ["templateInvoice", orderId, "detail"] as const,
   },
 
   templateOrderReturn: {
