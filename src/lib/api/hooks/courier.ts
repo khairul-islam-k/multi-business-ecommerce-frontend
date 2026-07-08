@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { courierApi } from "../courier";
-import { PickupStorePayload, ShipmentQuery, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { AssignToCourierPayload, PickupStorePayload, ShipmentQuery, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 export function useCourierProviderQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -117,6 +117,18 @@ export function useCourierMutation(businessId: ApiId) {
         payload: PickupStorePayload
       }) =>
         courierApi.createPickUp(businessId, configId, payload),
+      onSuccess: invalidate,
+    }),
+
+    courierAssign: useMutation({
+      mutationFn: ({
+        orderId,
+        payload
+      }: {
+        orderId: ApiId;
+        payload: AssignToCourierPayload
+      }) =>
+        courierApi.courierAssign(businessId, orderId, payload),
       onSuccess: invalidate,
     }),
 

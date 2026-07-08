@@ -64,6 +64,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    console.log('error', error.response);
+
     if (error.response?.status === 500) {
       if (typeof window !== "undefined") {
         window.location.href = "/internal-error";
@@ -82,7 +84,7 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const { refreshAuth, logout } = useAuthStore.getState();
+    const { refreshAuth, logoutFromCookie } = useAuthStore.getState();
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
@@ -100,8 +102,10 @@ api.interceptors.response.use(
     isRefreshing = true;
 
     try {
+      console.log('logout')
       const newToken = await refreshAuth();
-
+      console.log('logout after')
+      
       if (!newToken) throw new Error("Refresh failed");
 
       processQueue(null, newToken);
@@ -111,7 +115,8 @@ api.interceptors.response.use(
       return api(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      logout();
+      console.log('logout call')
+      logoutFromCookie();
       return Promise.reject(err);
     } finally {
       isRefreshing = false;

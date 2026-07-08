@@ -41,6 +41,8 @@ import type {
   OrderReturnStatus,
   OrderStatus,
 } from "@/lib/api";
+import AssignToCourierModal from "./_components/assign-to-courier-modal";
+import { useState } from "react";
 
 const { Text } = Typography;
 
@@ -105,6 +107,10 @@ export default function OrderDetails() {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+
+  // courier assign modal
+  const [courierModalOpen, setCourierModalOpen] = useState<boolean>(false);
+
   const accounts = useFinanceAccountQuery(businessId ?? "", {
     page: 1,
     limit: 100,
@@ -202,8 +208,6 @@ export default function OrderDetails() {
   const returns = orderReturns.data?.items ?? [];
   const statusLogs = current.statusLogs ?? [];
 
-  console.log('imt', items);
-
   // order status 
   const orderStatus = current.status ?? '';
   const canShip = ["CONFIRMED", "PROCESSING"].includes(orderStatus ?? "");
@@ -285,7 +289,7 @@ export default function OrderDetails() {
                   key: "lineTotal",
                   render: (_, row) =>
                     money(
-                      (row.item.lineTotal),
+                      (row?.item?.lineTotal),
                     ),
                 },
               ]}
@@ -549,6 +553,7 @@ export default function OrderDetails() {
 
               <Button
                 block
+                onClick={()=> setCourierModalOpen(true)}
                 icon={<Truck size={16} />}
                 className={lifecycleButtonClass.courier}
               >
@@ -560,6 +565,14 @@ export default function OrderDetails() {
 
         </Col>
       </Row>
+
+      {/* courier assign modal */}
+      <AssignToCourierModal
+        open={courierModalOpen}
+        orderId={orderId}
+        onClose={() => setCourierModalOpen(false)}
+      />
+
     </div>
   );
 }

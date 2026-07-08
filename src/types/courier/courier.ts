@@ -465,3 +465,13 @@ export type ShipmentTrackingResponse = {
   shipment: ShipmentTrackingShipment;
   providerTracking: ProviderTrackingResponse;
 };
+
+// courier assign payload
+export type AssignToCourierPayload = {
+    deliveryAreaId: string;
+    deliveryAreaName: string;
+    deliveryPostCode: string;
+    deliveryDivisionName: string;
+    specialInstruction?: string;
+    courierConfigId: string;
+};

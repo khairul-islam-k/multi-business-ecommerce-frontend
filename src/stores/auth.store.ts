@@ -58,6 +58,7 @@ type AuthState = {
   setSelectedBusiness: (business: AuthBusiness | null) => void;
   setBusinesses: (businesses: AuthBusiness[]) => void;
   applyAuthPayload: (payload: Partial<AuthPayload>) => void;
+  logoutFromCookie: () => void;
 
   register: (payload: RegisterPayload) => Promise<void>;
   login: (email: string, password: string) => Promise<AuthPayload>;
@@ -139,13 +140,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const updatedCart = currentCart.map((item) =>
       item.id === itemId
         ? {
-            ...item,
-            ...values,
-            discountAmount: Math.min(
-              Number(values.discountAmount ?? item.discountAmount),
-              Number(values.quantity ?? item.quantity) * item.unitPrice,
-            ),
-          }
+          ...item,
+          ...values,
+          discountAmount: Math.min(
+            Number(values.discountAmount ?? item.discountAmount),
+            Number(values.quantity ?? item.quantity) * item.unitPrice,
+          ),
+        }
         : item,
     );
 
@@ -278,12 +279,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;
-
-        console.log("refresh error status:", status);
-
-        if (status === 401) {
-          await get().logout();
-        }
+        // if (status === 401) {
+        //   await get().logout();
+        // }
       } else {
         console.log("unknown refresh error:", error);
       }
@@ -342,6 +340,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         initialized: true,
       });
     }
+  },
+
+  logoutFromCookie: () => {
+    Cookies.remove(REFRESH_TOKEN_COOKIE, COOKIE_OPTIONS);
+    Cookies.remove(ACCESS_TOKEN_COOKIE, COOKIE_OPTIONS);
+    Cookies.remove(USER_COOKIE, COOKIE_OPTIONS);
+    Cookies.remove(BUSINESS_COOKIE, COOKIE_OPTIONS);
   },
 
   logoutAll: async () => {

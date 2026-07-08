@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { CourierAreaResponse, CourierConfigResponse, CourierProvider, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { AssignToCourierPayload, CourierAreaResponse, CourierConfigResponse, CourierProvider, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 const basePath = (businessId: ApiId) => `/couriers/businesses/${businessId}/configs`;
 export const courierApi = {
@@ -63,6 +63,13 @@ export const courierApi = {
   createPickUp(businessId: ApiId, configId: ApiId, payload: PickupStorePayload) {
     return api
       .post<ApiResponse<PickupStore>>(`${basePath(businessId)}/${configId}/redx/pickup-stores`, payload)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  courierAssign(businessId: ApiId, configId: ApiId, payload: AssignToCourierPayload) {
+    return api
+      .post<ApiResponse<unknown>>(`/couriers/businesses/${businessId}/orders/${configId}/assign
+`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 
