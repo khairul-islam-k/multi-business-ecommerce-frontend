@@ -21,9 +21,11 @@ import {
   ArrowRight,
   CheckCircle,
   CreditCard,
+  PackageCheck,
   RotateCcw,
   StopCircle,
   Truck,
+  UserCheck,
 } from "lucide-react";
 
 import Loader from "@/components/shared/loader";
@@ -34,6 +36,7 @@ import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useOrder, useOrderMutations, useOrderReturnsQuery } from "@/lib/api";
 import type {
+  OrderItemResponse,
   OrderPaymentPayload,
   OrderReturnStatus,
   OrderStatus,
@@ -41,11 +44,28 @@ import type {
 
 const { Text } = Typography;
 
+const lifecycleButtonClass = {
+  confirm:
+    "border-blue-200 bg-blue-50 text-blue-700 hover:!border-blue-400 hover:!bg-blue-100 hover:!text-blue-800",
+  process:
+    "border-purple-200 bg-purple-50 text-purple-700 hover:!border-purple-400 hover:!bg-purple-100 hover:!text-purple-800",
+  payment:
+    "border-green-200 bg-green-50 text-green-700 hover:!border-green-400 hover:!bg-green-100 hover:!text-green-800",
+  courier:
+    "border-cyan-200 bg-cyan-50 text-cyan-700 hover:!border-cyan-400 hover:!bg-cyan-100 hover:!text-cyan-800",
+  ship:
+    "border-orange-200 bg-orange-50 text-orange-700 hover:!border-orange-400 hover:!bg-orange-100 hover:!text-orange-800",
+  deliver:
+    "border-emerald-200 bg-emerald-50 text-emerald-700 hover:!border-emerald-400 hover:!bg-emerald-100 hover:!text-emerald-800",
+  cancel:
+    "border-red-200 bg-red-50 text-red-700 hover:!border-red-400 hover:!bg-red-100 hover:!text-red-800",
+};
+
 const statusColor: Record<OrderStatus, string> = {
   CANCELLED: "red",
   CONFIRMED: "cyan",
   DELIVERED: "green",
-  PENDING: "blue",
+  PLACED: "blue",
   PROCESSING: "purple",
   RETURNED: "orange",
   SHIPPED: "geekblue",
@@ -90,6 +110,7 @@ export default function OrderDetails() {
     limit: 100,
     status: "ACTIVE",
   });
+
   const mutations = useOrderMutations(businessId ?? "");
 
   const runAction = (
@@ -176,10 +197,25 @@ export default function OrderDetails() {
   if (!order.data) return <Empty description="Order not found" />;
 
   const current = order.data;
-  const items = (current.items ?? []) as Array<Record<string, unknown>>;
+  const items = (current.items ?? []) as OrderItemResponse[];
   const payments = current.payments ?? [];
   const returns = orderReturns.data?.items ?? [];
   const statusLogs = current.statusLogs ?? [];
+
+  console.log('imt', items);
+
+  // order status 
+  const orderStatus = current.status ?? '';
+  const canShip = ["CONFIRMED", "PROCESSING"].includes(orderStatus ?? "");
+
+  const canDeliver = ["SHIPPED", "CONFIRMED", "PROCESSING"].includes(
+    orderStatus ?? "",
+  );
+  const canCancel = !["DELIVERED", "CANCELLED"].includes(orderStatus ?? "");
+  const canProcess = !(orderStatus === 'CONFIRMED');
+  const canConfirm = !(orderStatus === 'PLACED');
+
+  const isPayment = payments.map(singleData => singleData.paymentStatus).includes('PAID');
 
   return (
     <div className="space-y-6">
@@ -231,8 +267,7 @@ export default function OrderDetails() {
                   title: "Product",
                   key: "product",
                   render: (_, row) =>
-                    displayName(row.product) ||
-                    String(row.productNameSnapshot ?? row.productId ?? "-"),
+                    displayName(row.product),
                 },
                 {
                   title: "Variant",
@@ -243,16 +278,14 @@ export default function OrderDetails() {
                   title: "Qty",
                   key: "quantity",
                   render: (_, row) =>
-                    String(row.quantity ?? row.qty ?? row.quantityOrdered ?? "-"),
+                    String(row?.item?.quantity),
                 },
                 {
                   title: "Total",
                   key: "lineTotal",
                   render: (_, row) =>
                     money(
-                      (row.lineTotal ??
-                        row.totalPrice ??
-                        row.total_amount) as string | number | null,
+                      (row.item.lineTotal),
                     ),
                 },
               ]}
@@ -422,15 +455,52 @@ export default function OrderDetails() {
             <Space direction="vertical" className="w-full">
               <Button
                 block
+                disabled={canConfirm}
+                icon={<UserCheck size={16} />}
+                className={lifecycleButtonClass.confirm}
+                onClick={() =>
+                  runAction(
+                    "Mark this order as Confirm?",
+                    () => mutations.confirm.mutateAsync(orderId),
+                    "Order Confirm successfully",
+                  )
+                }
+              >
+                Confirm Order
+              </Button>
+
+              <Button
+                block
+                disabled={canProcess}
+                icon={<PackageCheck size={16} />}
+                className={lifecycleButtonClass.process}
+                onClick={() =>
+                  runAction(
+                    "Mark this order as Process?",
+                    () => mutations.process.mutateAsync(orderId),
+                    "Order Process successfully",
+                  )
+                }
+              >
+                Process Order
+              </Button>
+
+              <Button
+                block
+                disabled={isPayment}
                 icon={<CreditCard size={16} />}
+                className={lifecycleButtonClass.payment}
                 onClick={openPaymentModal}
                 loading={mutations.addPayment.isPending}
               >
-                Add payment
+                Add Payment
               </Button>
+
               <Button
                 block
                 icon={<Truck size={16} />}
+                className={lifecycleButtonClass.ship}
+                disabled={!canShip}
                 onClick={() =>
                   runAction(
                     "Mark this order as shipped?",
@@ -440,11 +510,14 @@ export default function OrderDetails() {
                 }
                 loading={mutations.shipOrder.isPending}
               >
-                Ship order
+                Ship Order
               </Button>
+
               <Button
                 block
                 icon={<CheckCircle size={16} />}
+                className={lifecycleButtonClass.deliver}
+                disabled={!canDeliver}
                 onClick={() =>
                   runAction(
                     "Mark this order as delivered?",
@@ -454,12 +527,14 @@ export default function OrderDetails() {
                 }
                 loading={mutations.deliverOrder.isPending}
               >
-                Deliver order
+                Deliver Order
               </Button>
+
               <Button
                 block
-                danger
                 icon={<StopCircle size={16} />}
+                className={lifecycleButtonClass.cancel}
+                disabled={!canCancel}
                 onClick={() =>
                   runAction(
                     "Cancel this order?",
@@ -469,10 +544,20 @@ export default function OrderDetails() {
                 }
                 loading={mutations.cancelOrder.isPending}
               >
-                Cancel order
+                Cancel Order
               </Button>
+
+              <Button
+                block
+                icon={<Truck size={16} />}
+                className={lifecycleButtonClass.courier}
+              >
+                Assign to Courier
+              </Button>
+
             </Space>
           </Card>
+
         </Col>
       </Row>
     </div>

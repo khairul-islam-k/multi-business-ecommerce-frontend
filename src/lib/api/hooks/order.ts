@@ -73,10 +73,22 @@ export function useOrderMutations(businessId: ApiId) {
       }) => ordersApi.addPayment(businessId, orderId, payload),
       onSuccess: invalidate,
     }),
+
+    confirm: useMutation({
+      mutationFn: (orderId: ApiId) => ordersApi.confirm(businessId, orderId),
+      onSuccess: invalidate,
+    }),
+
+    process: useMutation({
+      mutationFn: (orderId: ApiId) => ordersApi.process(businessId, orderId),
+      onSuccess: invalidate,
+    }),
+
     shipOrder: useMutation({
       mutationFn: (orderId: ApiId) => ordersApi.ship(businessId, orderId),
       onSuccess: invalidate,
     }),
+
     deliverOrder: useMutation({
       mutationFn: (orderId: ApiId) => ordersApi.deliver(businessId, orderId),
       onSuccess: invalidate,

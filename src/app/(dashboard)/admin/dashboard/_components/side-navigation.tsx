@@ -351,6 +351,11 @@ const allItems: MenuProps["items"] = [
           <Link href="/admin/dashboard/orders/returns">Order Returns</Link>
         ),
       },
+      {
+        key: "invoices",
+        icon: <FileText />,
+        label: <Link href="/admin/dashboard/orders/invoices">Invoices</Link>,
+      },
     ],
   },
 
@@ -489,35 +494,6 @@ const allItems: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/payment-gateway/configurations">
             Configurations
-          </Link>
-        ),
-      },
-    ],
-  },
-
-  {
-    key: "invoices",
-    icon: <FileText />, // Main menu (Invoices)
-    label: "Invoices",
-    children: [
-      {
-        key: "invoice-list",
-        icon: <List />,
-        label: <Link href="/admin/dashboard/invoices">Invoice List</Link>,
-      },
-      {
-        key: "create",
-        icon: <Pencil />,
-        label: (
-          <Link href="/admin/dashboard/invoices/create">Create Invoice</Link>
-        ),
-      },
-      {
-        key: "templates",
-        icon: <Copy />,
-        label: (
-          <Link href="/admin/dashboard/invoices/templates">
-            Invoice Templates
           </Link>
         ),
       },

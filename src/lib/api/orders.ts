@@ -11,7 +11,7 @@ import type {
 export type OrderType = "ONLINE" | "POS" | "ADMIN";
 export type OrderSource = "WEBSITE" | "POS" | "ADMIN_PANEL" | "MOBILE_APP";
 export type OrderStatus =
-  | "PENDING"
+  | "PLACED"
   | "CONFIRMED"
   | "PROCESSING"
   | "SHIPPED"
@@ -89,6 +89,24 @@ export type OrderReturnQuery = ListQuery & {
   orderId?: ApiId;
 };
 
+export type OrderItem = {
+  id: string;
+  orderId: string;
+  productId: string;
+  variantId: string | null;
+  taxId: string;
+
+  quantity: string;
+  unitPrice: string;
+  discountAmount: string;
+  taxAmount: string;
+  taxRate: string;
+  lineTotal: string;
+
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type OrderItemResponse = {
   id: ApiId;
   orderId: ApiId;
@@ -96,6 +114,7 @@ export type OrderItemResponse = {
   variantId?: ApiId | null;
   taxId?: ApiId | null;
   quantity?: string | number;
+  item: OrderItem;
   unitPrice?: string | number;
   discountAmount?: string | number;
   taxAmount?: string | number;
@@ -235,6 +254,18 @@ export const ordersApi = {
         `${basePath(businessId)}/${orderId}/payments`,
         payload,
       )
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  confirm(businessId: ApiId, orderId: ApiId) {
+    return api
+      .patch<ApiResponse<OrderResponse>>(`${basePath(businessId)}/${orderId}/confirm`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  process(businessId: ApiId, orderId: ApiId) {
+    return api
+      .patch<ApiResponse<OrderResponse>>(`${basePath(businessId)}/${orderId}/process`)
       .then((res) => unwrapApiResponse(res.data));
   },
 

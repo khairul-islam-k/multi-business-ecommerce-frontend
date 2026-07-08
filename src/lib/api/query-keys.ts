@@ -217,6 +217,13 @@ export const apiQueryKeys = {
     detail: (businessId: ApiId, supplierInvoiceId: ApiId) =>
       ["supplierInvoices", businessId, "detail", supplierInvoiceId] as const,
   },
+  orderInvoices: {
+    all: (businessId: ApiId) => ["orderInvoices", businessId] as const,
+    list: (businessId: ApiId, query?: invoiceQuery) =>
+      ["orderInvoices", businessId, "list", query] as const,
+    detail: (businessId: ApiId, supplierInvoiceId: ApiId) =>
+      ["orderInvoices", businessId, "detail", supplierInvoiceId] as const,
+  },
   tax: {
     all: (businessId: ApiId) => ["tax", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>

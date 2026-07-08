@@ -17,7 +17,7 @@ const statusColor: Record<OrderStatus, string> = {
   CANCELLED: "red",
   CONFIRMED: "cyan",
   DELIVERED: "green",
-  PENDING: "blue",
+  PLACED: "blue",
   PROCESSING: "purple",
   RETURNED: "orange",
   SHIPPED: "geekblue",
