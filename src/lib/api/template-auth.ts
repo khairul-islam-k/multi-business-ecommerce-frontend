@@ -6,7 +6,7 @@ import type {
 import webApi, { webPublicApi } from "../public-api-hook/web-api";
 import { CustomerAuthRegistrationResponse, CustomerRegisterPayload, ForgetOtpResponse, LoginCustomerResponse, LoginPayload, otpPayload, RefreshTokenPayload, ResetPasswordPayload } from "@/types/template/auth";
 import { publicApi } from "../axios";
-import { WebsiteTemplatePayload, WebsiteTemplateResolve } from "@/types/website/website";
+import { WebsiteTemplateResolve } from "@/types/website/website";
 
 export const templateAuthApi = {
   register(payload: CustomerRegisterPayload) {

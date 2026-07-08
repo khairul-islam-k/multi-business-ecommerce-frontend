@@ -1,187 +1,250 @@
 "use client";
 
-import {
-  Search
-} from "lucide-react";
+import { Button, Card, Dropdown, MenuProps, Select, Tag} from "antd";
+import { Eye, MapPinned, MoreHorizontal, PackageCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
-
-import Link from "next/link";
-import { useState } from "react";
-import {
-  Button,
-  Card,
-  Flex,
-  Grid,
-  Input,
-  Select,
-  Space,
-  Table,
-  Tag,
-} from "antd";
-
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useCourierMutation, useCourierQuery, useShipmentQuery } from "@/lib/api/hooks/courier";
+import { useAuthStore } from "@/stores/auth.store";
+// import type { ShipmentDetailsResponse } from "@/types/courier/shipment";
+import { ShipmentResponse, ShipmentStatus } from "@/types/courier/courier";
+import { useSwal } from "@/hooks/use-swal";
+import { getApiErrorMessage } from "@/lib/axios";
 
-const shipmentData = [
-  {
-    id: 1,
-    Tracking: "TCS-78901234",
-    Order: "ORD-2026-101",
-    Courier: "TCS Express",
-    Customer: "Ahmed Khan",
-    City: "Islamabad",
-    Shipped: "3/25/2026",
-    Status: "Delivered",
-  },
-  {
-    id: 2,
-    Tracking: "TCS-78901235",
-    Order: "ORD-2026-102",
-    Courier: "TCS Express",
-    Customer: "Sara Ali",
-    City: "Karachi",
-    Shipped: "3/26/2026",
-    Status: "In Transit",
-  },
-  {
-    id: 3,
-    Tracking: "LEO-45678901",
-    Order: "ORD-2026-103",
-    Courier: "Leopards Courier",
-    Customer: "Bilal Ahmed",
-    City: "Lahore",
-    Shipped: "3/26/2026",
-    Status: "Pending",
-  },
-  {
-    id: 4,
-    Tracking: "DHL-12345678",
-    Order: "ORD-2026-104",
-    Courier: "DHL Express",
-    Customer: "Ayesha Khan",
-    City: "Islamabad",
-    Shipped: "3/27/2026",
-    Status: "Delivered",
-  },
-  {
-    id: 5,
-    Tracking: "FDX-98765432",
-    Order: "ORD-2026-105",
-    Courier: "FedEx",
-    Customer: "Hassan Shah",
-    City: "Karachi",
-    Shipped: "3/27/2026",
-    Status: "In Transit",
-  },
+const shipmentStatusOptions: { label: string; value: ShipmentStatus }[] = [
+  { label: "Pending", value: "PENDING" },
+  { label: "Booked", value: "BOOKED" },
+  { label: "Picked Up", value: "PICKED_UP" },
+  { label: "In Transit", value: "IN_TRANSIT" },
+  { label: "Delivered", value: "DELIVERED" },
+  { label: "Failed", value: "FAILED" },
+  { label: "Returned", value: "RETURNED" },
+  { label: "Cancelled", value: "CANCELLED" },
 ];
 
-const ShipmentPage = () => {
-  const screens = Grid.useBreakpoint();
-  const [filterProduct, setFilterProduct] = useState<string>("All");
-
-  const columns = [
-    { title: "Tracking #", dataIndex: "Tracking", key: "tracking" },
-    { title: "Order #", dataIndex: "Order", key: "order" },
-    { title: "Courier", dataIndex: "Courier", key: "courier" },
-    { title: "Customer", dataIndex: "Customer", key: "customer" },
-    { title: "City", dataIndex: "City", key: "city" },
-    { title: "Shipped", dataIndex: "Shipped", key: "shipped" },
-    {
-      title: "Status",
-      dataIndex: "Status",
-      key: "status",
-      render: (status: string) => {
-        let color = "blue";
-        if (status === "Delivered") color = "green";
-        else if (status === "Pending") color = "orange";
-        else if (status === "In Transit") color = "purple";
-        return <Tag color={color}>{status}</Tag>;
-      },
-    },
-    {
-      title: "Action",
-      key: "action",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render: (record: any) => (
-        <Link
-          href={`/admin/dashboard/couriers/shipments/tracking/${record.id}`}
-        >
-          <Button type="primary">Track</Button>
-        </Link>
-      ),
-    },
-  ];
-
-  const handleSearch = (searchData: string) => {
-    console.log("search", searchData);
+const getShipmentStatusColor = (status: ShipmentStatus) => {
+  const colors: Record<ShipmentStatus, string> = {
+    PENDING: "orange",
+    BOOKED: "blue",
+    PICKED_UP: "cyan",
+    IN_TRANSIT: "processing",
+    DELIVERED: "green",
+    FAILED: "red",
+    RETURNED: "purple",
+    CANCELLED: "default",
   };
 
-  return (
-    <div>
-      <div style={{ marginBottom: "24px" }}>
-        <PageHeader
-          title="Courier Shipments"
-          breadcrumb={adminBreadcrumb}
-        ></PageHeader>
-      </div>
+  return colors[status] ?? "default";
+};
 
-      {/* Search and filter */}
-      <Card>
-        <Flex
-          justify="space-between"
-          wrap="wrap"
-          style={{ marginBottom: "10px" }}
-        >
-          <div>
-            <h3
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              Shipments
-            </h3>
-          </div>
+const formatDate = (date?: string | null) => {
+  if (!date) return "-";
 
-          <Space style={{ marginBottom: 16 }}>
-            <Input
-              style={{
-                width: screens.lg ? "330px" : "100%",
-              }}
-              prefix={<Search />}
-              placeholder="Search packages..."
-              onChange={(e) => handleSearch(e.target.value)}
-            />
+  return new Date(date).toLocaleDateString("en-BD", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+};
 
-            <Select
-              value={filterProduct}
-              style={{ width: 140 }}
-              onChange={setFilterProduct}
-            >
-              <option value="All">Status All</option>
-              <option value="Pending">Pending</option>
-              <option value="IN Tracking">IN Tracking</option>
-              <option value="Out for Delivery">Out for Delivery</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Returned">Returned</option>
-            </Select>
-          </Space>
-        </Flex>
+const ShipmentPage = () => {
+  const router = useRouter();
+  const swal = useSwal();
 
-        <div
-          style={{
-            overflowX: "auto",
-            overflowY: "hidden",
-          }}
-        >
-          <Table
-            rowKey="id"
-            columns={columns}
-            dataSource={shipmentData}
-            bordered
-            pagination={{ pageSize: 5 }}
-          />
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ShipmentStatus | undefined>();
+  const [courierId, setCourierId] = useState("");
+
+  const limit = 10;
+
+  const {
+    data: shipments,
+    isLoading,
+    isFetching,
+  } = useShipmentQuery(businessId, {
+    page: currentPage,
+    limit,
+    search,
+    status: statusFilter,
+    courierId: courierId || undefined,
+  });
+
+  const total = shipments?.meta?.total || 0;
+  const totalPages = Math.ceil(total / limit);
+
+  const { data: courier } = useCourierQuery(businessId);
+  const { shipmentBook } = useCourierMutation(businessId);
+
+  const courierOptions = useMemo(() => {
+    return (
+      courier?.items?.map((item) => ({
+        label: item.courier?.name ?? "Unknown Courier",
+        value: item.courierId,
+      })) ?? []
+    );
+  }, [courier?.items]);
+
+  const handleBook = async (id: string) => {
+    try {
+      await shipmentBook.mutateAsync(id);
+      swal.success('Shipment booked successfully');
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
+  };
+
+  const columns: Column<ShipmentResponse>[] = [
+    {
+      key: "shipmentNo",
+      label: "Shipment No",
+      type: "primary",
+      render: (row) => <strong>{row.shipmentNo}</strong>,
+    },
+    {
+      key: "order",
+      label: "Order",
+      render: (row) => (
+        <div className="space-y-1">
+          <p className="m-0 font-medium">{row.order?.orderNo ?? "-"}</p>
         </div>
+      ),
+    },
+    {
+      key: "courier",
+      label: "Courier",
+      render: (row) => (
+        <div className="space-y-1">
+          <p className="m-0 font-medium">{row.courier?.name ?? "-"}</p>
+        </div>
+      ),
+    },
+    {
+      key: "recipientName",
+      label: "Recipient",
+      render: (row) => (
+        <div className="space-y-1">
+          <p className="m-0 font-medium">{row.recipientName}</p>
+        </div>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      type: "meta",
+      render: (row) => (
+        <Tag color={getShipmentStatusColor(row.status as ShipmentStatus)}>
+          {row.status}
+        </Tag>
+      ),
+    },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (row) => formatDate(row.createdAt),
+    },
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => {
+        const items: MenuProps["items"] = [
+          {
+            key: "view",
+            label: "View",
+            icon: <Eye size={15} />,
+            onClick: () =>
+              router.push(`/admin/dashboard/couriers/shipments/view/${row.id}`),
+          },
+
+          row.consignmentId
+            ? {
+              key: "track",
+              label: "Track",
+              icon: <MapPinned size={15} />,
+              onClick: () =>
+                router.push(
+                  `/admin/dashboard/couriers/shipments/tracking/${row.id}`,
+                ),
+            }
+            : null,
+
+          {
+            key: "book",
+            label: row.status === 'BOOKED' ? 'Rebook': "Book",
+            icon: <PackageCheck size={15} />,
+            onClick: () =>
+              handleBook(row.id)
+          },
+        ].filter(Boolean) as MenuProps["items"];
+
+        return (
+          <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
+            <Button size="small" icon={<MoreHorizontal size={16} />} />
+          </Dropdown>
+        );
+      },
+    }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title="Shipments"
+        subtitle="Manage courier shipments, delivery status, recipient details, courier charge, and order shipment tracking."
+        breadcrumb={adminBreadcrumb}
+      />
+
+      <Card>
+        <DataTable
+          data={shipments?.items ?? []}
+          toolbarEnd={
+            <div className="flex flex-col gap-3 md:flex-row">
+              <Select
+                placeholder="Filter by status"
+                allowClear
+                style={{ width: 180 }}
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setCurrentPage(1);
+                }}
+                options={shipmentStatusOptions}
+              />
+
+              <Select
+                placeholder="Filter by courier"
+                allowClear
+                showSearch
+                style={{ width: 180 }}
+                value={courierId || undefined}
+                onChange={(value) => {
+                  setCourierId(value || "");
+                  setCurrentPage(1);
+                }}
+                options={courierOptions}
+                optionFilterProp="label"
+              />
+            </div>
+          }
+          columns={columns}
+          onSearch={(value) => {
+            setSearch(value);
+            setCurrentPage(1);
+          }}
+          loading={isLoading || isFetching}
+          pagination={{
+            currentPage,
+            onPageChange: setCurrentPage,
+            totalPages,
+          }}
+        />
       </Card>
     </div>
   );

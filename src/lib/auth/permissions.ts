@@ -182,6 +182,11 @@ export function getAdminRoutePermission(pathname: string): RoutePermission {
     return PERMISSIONS.orderRead;
   }
 
+  const invoicePath = `${TENANT_DASHBOARD_PATH}/invoices`;
+  if (pathname.startsWith(invoicePath)) {
+    return PERMISSIONS.orderRead;
+  }
+
   const customersPath = `${TENANT_DASHBOARD_PATH}/customers`;
   if (pathname.startsWith(customersPath)) {
     if (pathname.includes("/create")) return PERMISSIONS.orderCreate;

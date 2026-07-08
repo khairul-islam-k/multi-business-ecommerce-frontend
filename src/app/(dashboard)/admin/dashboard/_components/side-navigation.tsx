@@ -1,25 +1,14 @@
 import {
   ArrowLeftRight,
   ArrowUp,
-  Award,
   BadgeInfo,
   Banknote,
-  Bell,
-  BookOpen,
-  Bot,
   Boxes,
   Building,
   Building2,
   Calculator,
-  Calendar,
-  CalendarClock,
-  ChartBar,
-  ChartLine,
   CircleDollarSign,
-  CircleHelp,
-  CirclePlus,
   ClipboardList,
-  CloudUpload,
   Copy,
   ContactRound,
   CreditCard,
@@ -33,38 +22,27 @@ import {
   HandCoins,
   Handshake,
   History,
-  Home,
   Image as ImageIcon,
   KeyRound,
   Landmark,
   LayoutDashboard,
-  Lightbulb,
-  Link as LinkIcon,
-  List,
   ListOrdered,
   MapPin,
-  Menu as MenuIcon,
   MessageCircle,
   Network,
   Package as PackageIcon,
-  PackageCheck,
   PackageSearch,
   Palette,
-  Pencil,
   RefreshCw,
   RotateCcw,
   Scale,
-  Send,
   Settings,
   Shield,
   ShoppingBag,
   ShoppingCart,
   SlidersHorizontal,
-  SquarePlus,
   Store,
   Tags as TagsIcon,
-  TrendingUp,
-  TriangleAlert,
   Truck,
   Undo2,
   CircleUserRound,
@@ -73,8 +51,8 @@ import {
   WalletCards,
   Warehouse,
   FolderTree,
-  Wrench,
-  Zap
+  List,
+  Pencil,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -517,34 +495,34 @@ const allItems: MenuProps["items"] = [
     ],
   },
 
-  // {
-  //   key: "invoices",
-  //   icon: <FileText />, // Main menu (Invoices)
-  //   label: "Invoices",
-  //   children: [
-  //     {
-  //       key: "invoice-list",
-  //       icon: <List />,
-  //       label: <Link href="/admin/dashboard/invoices">Invoice List</Link>,
-  //     },
-  //     {
-  //       key: "create",
-  //       icon: <Pencil />,
-  //       label: (
-  //         <Link href="/admin/dashboard/invoices/create">Create Invoice</Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "templates",
-  //       icon: <Copy />,
-  //       label: (
-  //         <Link href="/admin/dashboard/invoices/templates">
-  //           Invoice Templates
-  //         </Link>
-  //       ),
-  //     },
-  //   ],
-  // },
+  {
+    key: "invoices",
+    icon: <FileText />, // Main menu (Invoices)
+    label: "Invoices",
+    children: [
+      {
+        key: "invoice-list",
+        icon: <List />,
+        label: <Link href="/admin/dashboard/invoices">Invoice List</Link>,
+      },
+      {
+        key: "create",
+        icon: <Pencil />,
+        label: (
+          <Link href="/admin/dashboard/invoices/create">Create Invoice</Link>
+        ),
+      },
+      {
+        key: "templates",
+        icon: <Copy />,
+        label: (
+          <Link href="/admin/dashboard/invoices/templates">
+            Invoice Templates
+          </Link>
+        ),
+      },
+    ],
+  },
 
   // couriers 
   {
@@ -585,23 +563,7 @@ const allItems: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
         ),
-      },
-      {
-        key: "charge-setting",
-        icon: <Banknote />, // Charges / pricing
-        label: (
-          <Link href="/admin/dashboard/couriers/charge-setting">
-            Shipping Charge
-          </Link>
-        ),
-      },
-      {
-        key: "performances",
-        icon: <ChartBar />, // Performance analytics
-        label: (
-          <Link href="/admin/dashboard/couriers/performance">Performances</Link>
-        ),
-      },
+      }
     ],
   },
 

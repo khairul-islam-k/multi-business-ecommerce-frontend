@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { CourierAreaResponse, CourierConfigResponse, CourierProvider, PickupStore, PickupStorePayload, PickupStoresResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { CourierAreaResponse, CourierConfigResponse, CourierProvider, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 const basePath = (businessId: ApiId) => `/couriers/businesses/${businessId}/configs`;
 export const courierApi = {
@@ -22,6 +22,26 @@ export const courierApi = {
       .then((res) => normalizePaginatedResponse(res.data));
   },
 
+  listShipment(businessId: ApiId, query?: ShipmentQuery) {
+    return api
+      .get<ApiPaginatedResponse<ShipmentResponse>>(
+        `/couriers/businesses/${businessId}/shipments${buildQueryString(query)}`,
+      )
+      .then((res) => normalizePaginatedResponse(res.data));
+  },
+
+  shipmentDetails(businessId: ApiId, shippingId: ApiId) {
+    return api
+      .get<ApiResponse<ShipmentResponse>>(`/couriers/businesses/${businessId}/shipments/${shippingId}`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  shipmentTracking(businessId: ApiId, shippingId: ApiId) {
+    return api
+      .get<ApiResponse<ShipmentTrackingResponse>>(`/couriers/businesses/${businessId}/shipments/${shippingId}/track`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
   getAreas(businessId: ApiId, configId: ApiId, query?: CategoriesQuery) {
     return api
       .get<ApiResponse<CourierAreaResponse>>(`${basePath(businessId)}/${configId}/redx/areas${buildQueryString(query)}`)
@@ -31,6 +51,12 @@ export const courierApi = {
   getPickUp(businessId: ApiId, configId: ApiId) {
     return api
       .get<ApiResponse<PickupStoresResponse>>(`${basePath(businessId)}/${configId}/redx/pickup-stores`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  shipmentBook(businessId: ApiId, shipmentId: ApiId) {
+    return api
+      .post<ApiResponse<PickupStore>>(`/couriers/businesses/${businessId}/shipments/${shipmentId}/book`)
       .then((res) => unwrapApiResponse(res.data));
   },
 

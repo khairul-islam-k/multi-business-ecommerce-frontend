@@ -1,13 +1,13 @@
 "use client";
 
-import { Button, Card, Tabs, Tooltip } from "antd";
+import { Button, Card, Tabs } from "antd";
 import { useEffect, useState } from "react";
 
 import { useCourierMutation, useCourierPickUp, useCourierQuery } from "@/lib/api/hooks/courier";
 import { useAuthStore } from "@/stores/auth.store";
 import { PickupStore } from "@/types/courier/courier";
 import { Column, DataTable } from "@/components/shared/data-table";
-import { CirclePlus, Pencil, Trash2 } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";

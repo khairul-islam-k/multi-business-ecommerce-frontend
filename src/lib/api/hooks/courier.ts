@@ -2,12 +2,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { courierApi } from "../courier";
-import { PickupStorePayload, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { PickupStorePayload, ShipmentQuery, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 export function useCourierProviderQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
     queryKey: apiQueryKeys.courierConfig.list(businessId, query),
     queryFn: () => courierApi.listProvider(businessId, query),
+    enabled: Boolean(businessId),
+  });
+}
+
+export function useShipmentQuery(businessId: ApiId, query?: ShipmentQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.courierConfig.listShipment(businessId, query),
+    queryFn: () => courierApi.listShipment(businessId, query),
     enabled: Boolean(businessId),
   });
 }
@@ -19,6 +27,39 @@ export function useCourierQuery(businessId: ApiId, query?: CategoriesQuery) {
     enabled: Boolean(businessId),
   });
 }
+
+export function useShippingDetails(businessId: ApiId, shippingId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.courierConfig.shippingDetails(businessId, shippingId),
+
+    queryFn: () => {
+      if (!businessId || !shippingId) {
+        throw new Error("Business ID and Category ID are required");
+      }
+
+      return courierApi.shipmentDetails(businessId, shippingId);
+    },
+
+    enabled: Boolean(businessId && shippingId),
+  });
+}
+
+export function useShipmentTracking(businessId: ApiId, shippingId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.courierConfig.shippingDetails(businessId, shippingId),
+
+    queryFn: () => {
+      if (!businessId || !shippingId) {
+        throw new Error("Business ID and Category ID are required");
+      }
+
+      return courierApi.shipmentTracking(businessId, shippingId);
+    },
+
+    enabled: Boolean(businessId && shippingId),
+  });
+}
+
 
 export function useAreasQuery(businessId: ApiId, courier: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -69,13 +110,19 @@ export function useCourierMutation(businessId: ApiId) {
 
     createPickupStore: useMutation({
       mutationFn: ({
-        configId, 
+        configId,
         payload
-      } : {
+      }: {
         configId: ApiId;
         payload: PickupStorePayload
       }) =>
         courierApi.createPickUp(businessId, configId, payload),
+      onSuccess: invalidate,
+    }),
+
+    shipmentBook: useMutation({
+      mutationFn: (shippingId: ApiId) =>
+        courierApi.shipmentBook(businessId, shippingId),
       onSuccess: invalidate,
     }),
 
@@ -98,7 +145,7 @@ export function useCourierMutation(businessId: ApiId) {
         storeId
       }: {
         configId: ApiId;
-        storeId : ApiId;
+        storeId: ApiId;
       }) =>
         courierApi.removePickUpStore(businessId, configId, storeId),
       onSuccess: invalidate,

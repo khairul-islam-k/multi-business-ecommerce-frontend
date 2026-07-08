@@ -19,6 +19,7 @@ import type {
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
 import { invoiceQuery } from "@/types/template/invoice";
+import { ShipmentQuery } from "@/types/courier/courier";
 
 export const apiQueryKeys = {
   auth: {
@@ -152,12 +153,16 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["courierConfig", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, "gateways", query] as const,
+    listShipment: (businessId: ApiId, query?: ShipmentQuery) =>
+      ["courierConfig", businessId, "listShipment", query] as const,
     listAreas: (businessId: ApiId,configId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, configId, "gateways", query] as const,
     configs: (businessId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, "configs", query] as const,
     pickUp: (businessId: ApiId, configId: ApiId) =>
       ["courierConfig", businessId, configId,  "configs"] as const,
+    shippingDetails: (businessId: ApiId, shippingId: ApiId) =>
+      ["courierConfig", businessId, shippingId,  "shippingDetails"] as const,
   },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,
