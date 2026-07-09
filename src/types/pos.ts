@@ -1,10 +1,7 @@
 export type PosPaymentMethod =
   | "CASH"
   | "COD"
-  | "BKASH"
-  | "NAGAD"
-  | "CARD"
-  | "BANK_TRANSFER"
+  | "ONLINE_PAYMENT"
   | "OTHER";
 
 export type PosSaleItemInput = {

@@ -42,6 +42,7 @@ import type {
   OrderPayload,
 } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
+import type { ResponseProduct } from "@/types/product/product";
 import { ProductPicker } from "../../pos/_components/product-picker";
 import { VariantSelector } from "../../pos/_components/variant-selector";
 import type { PosCartItem } from "../../pos/_components/types";
@@ -88,6 +89,12 @@ const trimOrUndefined = (value?: string | null) => {
 };
 
 const money = (value: number) => `BDT ${value.toLocaleString()}`;
+const toNumber = (value?: string | number | null) => Number(value ?? 0);
+
+const getProductAvailableQuantity = (product: ResponseProduct) => {
+  if (!product.stockSummary) return undefined;
+  return Number(product.stockSummary.availableQuantity ?? 0);
+};
 
 export default function CreateOrder() {
   const router = useRouter();
@@ -184,6 +191,29 @@ export default function CreateOrder() {
         id: createCartId(),
       },
     ]);
+  };
+
+  const handleProductSelect = (product: ResponseProduct) => {
+    const availableQuantity = getProductAvailableQuantity(product);
+
+    if (availableQuantity !== undefined && availableQuantity <= 0) {
+      message.warning("This product is out of stock.");
+      return;
+    }
+
+    if (product.variants?.length) {
+      setSelectedProductId(product.id);
+      return;
+    }
+
+    handleAddItem({
+      product: { id: product.id, name: product.name, taxId: product.taxId },
+      variant: null,
+      quantity: 1,
+      discountAmount: 0,
+      unitPrice: toNumber(product.price),
+      availableQuantity,
+    });
   };
 
   const handleItemChange = (
@@ -298,7 +328,7 @@ export default function CreateOrder() {
               setSearch(value);
               setCurrentPage(1);
             }}
-            onSelect={(product) => setSelectedProductId(product.id)}
+            onSelect={handleProductSelect}
           />
 
           {totalProducts > PAGE_LIMIT ? (
@@ -314,9 +344,9 @@ export default function CreateOrder() {
           ) : null}
 
           <VariantSelector
-            key={selectedProduct?.id ?? "no-product"}
-            businessId={businessId ?? ""}
+            open={Boolean(selectedProduct)}
             product={selectedProduct}
+            onClose={() => setSelectedProductId(undefined)}
             onAdd={handleAddItem}
           />
         </div>

@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  ShoppingCart,
-  Trash2
-} from "lucide-react";
-
-
-import {
   Alert,
   Button,
   Card,
@@ -20,21 +14,20 @@ import {
   Table,
   Typography,
 } from "antd";
+import { ShoppingCart, Trash2 } from "lucide-react";
+
 import { CustomerResponse } from "@/types/customer/customer";
 import { FinanceAccountResponse } from "@/types/finance/account";
 import { TaxResponse } from "@/types/finance/tax";
-import { WarehouseResponse } from "@/types/product/warehouse";
 import { PosPaymentMethod } from "@/types/pos";
+import { WarehouseResponse } from "@/types/product/warehouse";
+
 import { PosCartItem, PosCheckoutValues } from "./types";
 
 const { Text, Title } = Typography;
 
 const paymentMethods: Array<{ label: string; value: PosPaymentMethod }> = [
   { label: "Cash", value: "CASH" },
-  { label: "bKash", value: "BKASH" },
-  { label: "Nagad", value: "NAGAD" },
-  { label: "Card", value: "CARD" },
-  { label: "Bank Transfer", value: "BANK_TRANSFER" },
   { label: "Other", value: "OTHER" },
 ];
 
@@ -283,22 +276,21 @@ export function PosCart({
             </>
           )}
 
-          <div>
+          {/* <div>
             <Text type="secondary">Warehouse</Text>
             <Select
-              allowClear
               showSearch
               className="mt-1 w-full"
-              placeholder="Select warehouse"
+              placeholder="Select warehouse first"
               optionFilterProp="label"
               value={values.warehouseId}
+              disabled
               options={warehouses.map((warehouse) => ({
                 label: warehouse.name,
                 value: warehouse.id,
               }))}
-              onChange={(warehouseId) => onValuesChange({ warehouseId })}
             />
-          </div>
+          </div> */}
 
           <div>
             <Text type="secondary">Payment Method</Text>

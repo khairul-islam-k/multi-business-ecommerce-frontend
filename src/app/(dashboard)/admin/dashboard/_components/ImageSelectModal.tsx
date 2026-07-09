@@ -1,32 +1,30 @@
 "use client";
 
 import {
-  CircleCheck,
-  CirclePlus,
-  RefreshCw
-} from "lucide-react";
-
-
-import { useState } from "react";
-import {
   App,
   Button,
   Card,
   Col,
   Empty,
   Modal,
+  Pagination,
   Row,
   Spin,
+  theme,
   Typography,
   Upload,
-  theme,
 } from "antd";
-import { useAuthStore } from "@/stores/auth.store";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
+import { CircleCheck, CirclePlus, RefreshCw } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+
+import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
 
 const { Text } = Typography;
+
+const PAGE_LIMIT = 11;
 
 type MediaAsset = {
   id: string;
@@ -66,8 +64,14 @@ const ImageSelectModal = ({
   const businessId = business?.id ?? "";
 
   const [currentUrl, setCurrentUrl] = useState<string | undefined>(selectedUrl);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading } = useMediaAssets(businessId);
+  const { data, isLoading, isFetching } = useMediaAssets(businessId, {
+    page: currentPage,
+    limit: PAGE_LIMIT,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
   const { uploadMedia } = useMediaMutations(businessId);
 
   const isUploading = uploadMedia.isPending;
@@ -89,6 +93,7 @@ const ImageSelectModal = ({
 
       if (uploadedUrl) {
         setCurrentUrl(uploadedUrl);
+        setCurrentPage(1);
       }
 
       message.success("Image uploaded successfully.");
@@ -114,6 +119,7 @@ const ImageSelectModal = ({
       afterOpenChange={(isOpen) => {
         if (isOpen) {
           setCurrentUrl(selectedUrl);
+          setCurrentPage(1);
         }
       }}
       onCancel={isUploading ? undefined : onClose}
@@ -179,9 +185,7 @@ const ImageSelectModal = ({
                   style={{ color: token.colorPrimary }}
                 >
                   <Spin
-                    indicator={
-                      <RefreshCw className="animate-spin" size={34} />
-                    }
+                    indicator={<RefreshCw className="animate-spin" size={34} />}
                   />
 
                   <Text strong>Uploading image...</Text>
@@ -296,6 +300,21 @@ const ImageSelectModal = ({
               </Col>
             );
           })
+        )}
+
+        {data && data.meta.totalPages > 1 && (
+          <Col span={24}>
+            <div className="flex justify-end">
+              <Pagination
+                current={currentPage}
+                pageSize={PAGE_LIMIT}
+                total={data.meta.total}
+                showSizeChanger={false}
+                disabled={isUploading || isFetching}
+                onChange={setCurrentPage}
+              />
+            </div>
+          </Col>
         )}
       </Row>
     </Modal>
