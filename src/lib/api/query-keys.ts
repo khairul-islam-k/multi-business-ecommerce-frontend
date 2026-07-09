@@ -461,4 +461,11 @@ export const apiQueryKeys = {
       ["adminOverview", "detail", query] as const,
   },
 
+  customerOverview: {
+    all: () => ["customerOverview"] as const,
+
+    detail: (query?: CategoriesQuery) =>
+      ["customerOverview", "detail", query] as const,
+  },
+
 };

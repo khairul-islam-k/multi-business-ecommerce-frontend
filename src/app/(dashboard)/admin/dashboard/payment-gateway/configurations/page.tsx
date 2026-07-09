@@ -27,6 +27,7 @@ import {
   type CollapseProps,
   type FormInstance,
 } from "antd";
+import { Rule } from "antd/es/form";
 import { CreditCard, Save, ShieldCheck } from "lucide-react";
 import { useEffect, useMemo } from "react";
 
@@ -160,7 +161,7 @@ function buildInitialValues(
         id: item.id,
         gatewayId: item.gatewayId,
         provider,
-        financeAccountId: item.financeAccountId,
+        financeAccountId: item.financeAccountId ?? "",
         mode: item.mode ?? "SANDBOX",
         status: item.status ?? "INACTIVE",
         configData,
@@ -181,6 +182,41 @@ function cleanConfigData(
   }, {});
 }
 
+function isEmptyValue(value: unknown) {
+  if (value === undefined || value === null) return true;
+
+  if (typeof value === "string") {
+    return value.trim() === "";
+  }
+
+  return false;
+}
+
+function requiredWhenGatewayActive(
+  index: number,
+  message: string,
+): Rule[] {
+  return [
+    ({ getFieldValue }) => ({
+      validator(_: unknown, value: unknown) {
+        const status = getFieldValue(["gateways", index, "status"]);
+
+        // inactive gateway hole validation skip
+        if (status !== "ACTIVE") {
+          return Promise.resolve();
+        }
+
+        // active gateway hole required check
+        if (isEmptyValue(value)) {
+          return Promise.reject(new Error(message));
+        }
+
+        return Promise.resolve();
+      },
+    }),
+  ];
+}
+
 function GatewayStatusSwitch({
   form,
   index,
@@ -190,6 +226,25 @@ function GatewayStatusSwitch({
 }) {
   const status = Form.useWatch(["gateways", index, "status"], form);
   const isActive = status === "ACTIVE";
+
+  useEffect(() => {
+    if (status !== "ACTIVE") {
+      form.setFields([
+        {
+          name: ["gateways", index, "financeAccountId"],
+          errors: [],
+        },
+        {
+          name: ["gateways", index, "mode"],
+          errors: [],
+        },
+        {
+          name: ["gateways", index, "configData"],
+          errors: [],
+        },
+      ]);
+    }
+  }, [form, index, status]);
 
   return (
     <div
@@ -262,6 +317,7 @@ export default function PaymentGatewayConfigurations() {
   }, [financeAccounts?.items]);
 
   const gatewayConfigs = useMemo(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response = paymentGateway as any;
 
     if (Array.isArray(response)) {
@@ -290,32 +346,36 @@ export default function PaymentGatewayConfigurations() {
 
   const isSaving = updateConfigs?.isPending;
 
+  // handle submit
+
   const handleSubmit = async () => {
-  const values = form.getFieldsValue(true) as PaymentGatewayFormValues;
+    const values = form.getFieldsValue(true) as PaymentGatewayFormValues;
 
-  const payload: UpdatePaymentGatewayConfigPayload = {
-    configs: values.gateways.map((item: PaymentGatewayFormItem) => ({
-      id: item.id,
-      provider: item.provider,
-      financeAccountId: item.financeAccountId,
-      mode: item.mode,
-      status: item.status,
-      configData: cleanConfigData(item.provider, item.configData),
-    })),
+    const activeGateways = values.gateways.filter(
+      (item) => item.status === "ACTIVE",
+    );
+
+    const payload: UpdatePaymentGatewayConfigPayload = {
+      configs: activeGateways.map((item: PaymentGatewayFormItem) => ({
+        id: item.id,
+        provider: item.provider,
+        financeAccountId: item.financeAccountId,
+        mode: item.mode,
+        status: item.status,
+        configData: cleanConfigData(item.provider, item.configData),
+      })),
+    };
+
+    try {
+      await updateConfigs.mutateAsync({
+        payload,
+      });
+
+      swal.success("Payment gateway configurations updated successfully.");
+    } catch (error) {
+      swal.error(getApiErrorMessage(error));
+    }
   };
-
-  try {
-    console.log("payload", payload);
-
-    const res = await updateConfigs.mutateAsync({
-      payload,
-    });
-
-    swal.success("Payment gateway configurations updated successfully.");
-  } catch (error) {
-    swal.error(getApiErrorMessage(error));
-  }
-};
 
   const collapseItems: CollapseProps["items"] = gatewayConfigs.map(
     (gatewayItem, index) => {
@@ -380,12 +440,11 @@ export default function PaymentGatewayConfigurations() {
                 <Form.Item
                   label="Finance Account"
                   name={["gateways", index, "financeAccountId"]}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Finance account is required",
-                    },
-                  ]}
+                  dependencies={[["gateways", index, "status"]]}
+                  rules={requiredWhenGatewayActive(
+                    index,
+                    "Finance account is required",
+                  )}
                 >
                   <Select
                     showSearch
@@ -399,29 +458,22 @@ export default function PaymentGatewayConfigurations() {
                 <Form.Item
                   label="Gateway Mode"
                   name={["gateways", index, "mode"]}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Gateway mode is required",
-                    },
-                  ]}
+                  dependencies={[["gateways", index, "status"]]}
+                  rules={requiredWhenGatewayActive(
+                    index,
+                    "Gateway mode is required",
+                  )}
                 >
                   <Radio.Group
                     optionType="button"
                     buttonStyle="solid"
                     className="grid w-full grid-cols-2 gap-2"
                   >
-                    <Radio.Button
-                      value="SANDBOX"
-                      className="text-center"
-                    >
+                    <Radio.Button value="SANDBOX" className="text-center">
                       SANDBOX
                     </Radio.Button>
 
-                    <Radio.Button
-                      value="LIVE"
-                      className="text-center"
-                    >
+                    <Radio.Button value="LIVE" className="text-center">
                       LIVE
                     </Radio.Button>
                   </Radio.Group>
@@ -462,12 +514,11 @@ export default function PaymentGatewayConfigurations() {
                           "configData",
                           field.name,
                         ]}
-                        rules={[
-                          {
-                            required: true,
-                            message: `${field.label} is required`,
-                          },
-                        ]}
+                        dependencies={[["gateways", index, "status"]]}
+                        rules={requiredWhenGatewayActive(
+                          index,
+                          `${field.label} is required`,
+                        )}
                       >
                         <InputComponent placeholder={field.placeholder} />
                       </Form.Item>
@@ -511,6 +562,7 @@ export default function PaymentGatewayConfigurations() {
             form={form}
             layout="vertical"
             preserve
+            validateTrigger={["onChange", "onBlur"]}
             onFinish={handleSubmit}
             initialValues={buildInitialValues(gatewayConfigs)}
             className="gateway-config-form"

@@ -14,8 +14,6 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
 
   const user = getAuthUser();
 
-  console.log('user', user);
-
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {

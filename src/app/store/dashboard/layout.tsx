@@ -27,11 +27,11 @@ type DashboardLayoutProps = {
 };
 
 const sidebarItems = [
-    //   {
-    //     label: "Dashboard",
-    //     href: "/store/dashboard",
-    //     icon: Home,
-    //   },
+    {
+        label: "Dashboard",
+        href: "/store/dashboard",
+        icon: Home,
+    },
     {
         label: "Orders",
         href: "/store/dashboard/order-history",
