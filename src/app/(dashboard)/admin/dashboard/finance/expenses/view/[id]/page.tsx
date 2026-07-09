@@ -1,13 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
-  Pencil
-} from "lucide-react";
-
-
-import React from "react";
-import {
   Button,
   Card,
   Col,
@@ -19,12 +12,13 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 
-import { useExpense } from "@/lib/api/hooks/expense";
-import { useAuthStore } from "@/stores/auth.store";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useExpense } from "@/lib/api/hooks/expense";
+import { useAuthStore } from "@/stores/auth.store";
 import { ExpenseResponse, ExpenseStatus } from "@/types/stock/expense";
 
 const { Title, Text } = Typography;
@@ -128,7 +122,9 @@ const ViewExpense = () => {
               type="primary"
               icon={<Pencil />}
               onClick={() =>
-                router.push(`/admin/dashboard/finance/expenses/update/${item.id}`)
+                router.push(
+                  `/admin/dashboard/finance/expenses/update/${item.id}`,
+                )
               }
             >
               Edit
@@ -144,7 +140,9 @@ const ViewExpense = () => {
                   {item.expenseNo}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Title">{item.title}</Descriptions.Item>
+                <Descriptions.Item label="Title">
+                  {item.title}
+                </Descriptions.Item>
 
                 <Descriptions.Item label="Amount">
                   <strong>
@@ -193,14 +191,14 @@ const ViewExpense = () => {
                 <Descriptions.Item label="Opening Balance">
                   {formatAmount(
                     item.account?.openingBalance,
-                    item.account?.currencyCode
+                    item.account?.currencyCode,
                   )}
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Current Balance">
                   {formatAmount(
                     item.account?.currentBalance,
-                    item.account?.currencyCode
+                    item.account?.currencyCode,
                   )}
                 </Descriptions.Item>
 

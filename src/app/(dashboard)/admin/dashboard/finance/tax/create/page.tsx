@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { App } from "antd";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth.store";
-import TaxForm from "../_components/tax-form";
-import { getApiErrorMessage } from "@/lib/axios";
+import { useState } from "react";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { TaxPayload } from "@/types/finance/tax";
 import { useTaxMutation } from "@/lib/api/hooks/tax";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { TaxPayload } from "@/types/finance/tax";
+
+import TaxForm from "../_components/tax-form";
 
 export default function CreateTaxPage() {
   const router = useRouter();
@@ -33,7 +35,7 @@ export default function CreateTaxPage() {
     try {
       setSubmitting(true);
 
-     await createTax.mutateAsync(payload);
+      await createTax.mutateAsync(payload);
 
       message.success("Tax created successfully");
       router.push("/admin/dashboard/finance/tax");

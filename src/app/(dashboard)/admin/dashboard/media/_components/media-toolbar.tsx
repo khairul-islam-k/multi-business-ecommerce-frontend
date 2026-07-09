@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  Trash2
-} from "lucide-react";
-
-
 import { Button, Card, Flex, Input, Select, Space, theme } from "antd";
+import { Trash2 } from "lucide-react";
 
 import type { MediaQuery } from "@/lib/api";
 

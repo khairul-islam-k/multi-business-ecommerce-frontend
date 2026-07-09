@@ -1,15 +1,8 @@
 "use client";
 
+import { Button, Card, Col, Form, Input, Row, Select } from "antd";
 import { useEffect } from "react";
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  Row,
-  Select,
-} from "antd";
+
 import { CustomerPayload, CustomerStatus } from "@/types/customer/customer";
 
 const { TextArea } = Input;

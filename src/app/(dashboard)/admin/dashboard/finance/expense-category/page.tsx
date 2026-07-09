@@ -1,34 +1,34 @@
 "use client";
 
 import {
-  CirclePlus,
-  Pencil,
-  Trash2
-} from "lucide-react";
+  Button,
+  Card,
+  FormInstance,
+  Modal,
+  Popconfirm,
+  Select,
+  Tag,
+} from "antd";
+import { CirclePlus, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 
-
-import React, { useState } from "react";
-import { Button, Card, FormInstance, Modal, Popconfirm, Select, Tag } from "antd";
-
-import ExpenseCategoryForm from "./_components/expense-category-form";
-import PageHeader from "@/components/shared/page-header";
 import { Column, DataTable } from "@/components/shared/data-table";
+import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
-import {
-  ExpenseCategoryResponse,
-  ExpenseCategoryPayload,
-  ExpenseCategoryStatus,
-} from "@/types/stock/expense-category";
-
+import { useSwal } from "@/hooks/use-swal";
 import {
   useExpenseCategoryMutation,
   useExpenseCategoryQuery,
 } from "@/lib/api/hooks/expense-category";
-
-import { useAuthStore } from "@/stores/auth.store";
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  ExpenseCategoryPayload,
+  ExpenseCategoryResponse,
+  ExpenseCategoryStatus,
+} from "@/types/stock/expense-category";
+
+import ExpenseCategoryForm from "./_components/expense-category-form";
 
 type ModalMode = "create" | "update" | "view";
 
@@ -43,8 +43,9 @@ const ExpenseCategories = () => {
   const [selectedExpenseCategory, setSelectedExpenseCategory] =
     useState<ExpenseCategoryResponse | null>(null);
 
-  const [statusFilter, setStatusFilter] =
-    useState<ExpenseCategoryStatus | undefined>();
+  const [statusFilter, setStatusFilter] = useState<
+    ExpenseCategoryStatus | undefined
+  >();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
@@ -62,7 +63,7 @@ const ExpenseCategories = () => {
     page: currentPage,
     limit,
     search,
-    status: statusFilter
+    status: statusFilter,
   });
 
   const {
@@ -104,7 +105,7 @@ const ExpenseCategories = () => {
 
   const handleCreateExpenseCategory = async (
     values: ExpenseCategoryPayload,
-    form: FormInstance<ExpenseCategoryPayload>
+    form: FormInstance<ExpenseCategoryPayload>,
   ) => {
     setLoading(true);
 
@@ -130,7 +131,7 @@ const ExpenseCategories = () => {
 
   const handleUpdateExpenseCategory = async (
     values: ExpenseCategoryPayload,
-    form: FormInstance<ExpenseCategoryPayload>
+    form: FormInstance<ExpenseCategoryPayload>,
   ) => {
     if (!selectedExpenseCategory) return;
 
@@ -145,9 +146,9 @@ const ExpenseCategories = () => {
     try {
       await updateExpenseCategory.mutateAsync({
         expenseId: selectedExpenseCategory.id,
-        payload
+        payload,
       });
-      
+
       closeModal();
 
       swal.success("Expense category updated successfully");
@@ -199,7 +200,6 @@ const ExpenseCategories = () => {
       label: "Actions",
       render: (row) => (
         <div className="flex items-center gap-2">
-
           <Button
             size="small"
             icon={<Pencil />}

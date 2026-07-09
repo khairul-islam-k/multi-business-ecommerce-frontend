@@ -1,29 +1,28 @@
 "use client";
 
-import {
-  RefreshCw
-} from "lucide-react";
-
-
-import type { CSSProperties } from "react";
-import { useMemo, useState } from "react";
 import { App, Button, Card, Empty, Form, theme } from "antd";
-import type { UploadFile } from "antd/es/upload/interface";
+import { RefreshCw } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { getApiErrorMessage } from "@/lib/axios";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { useMediaAssets, useMediaMutations } from "@/lib/api";
-import type { ApiId, MediaAsset, MediaQuery } from "@/lib/api";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
 import Pagination from "@/components/shared/pagination";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useMediaAssets, useMediaMutations } from "@/lib/api";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import { getApiErrorMessage } from "@/lib/axios";
+
 import MediaGrid from "./_components/media-grid";
 import MediaToolbar from "./_components/media-toolbar";
 import MediaUploadPanel from "./_components/media-upload-panel";
 import { fileName } from "./_utils/media";
+
+import type { CSSProperties } from "react";
+import type { UploadFile } from "antd/es/upload/interface";
+
+import type { ApiId, MediaAsset, MediaQuery } from "@/lib/api";
 
 export default function MediaLibraryPage() {
   const [form] = Form.useForm();
@@ -69,12 +68,11 @@ export default function MediaLibraryPage() {
   const handleUpload = async (values: { altText?: string; tags?: string }) => {
     if (!businessId) return;
 
-
     const files = fileList
       .map((file) => file.originFileObj)
       .filter(Boolean) as File[];
 
-      console.log('image', files);
+    console.log("image", files);
 
     if (!files.length) {
       message.error("Choose at least one image to upload.");
@@ -131,30 +129,30 @@ export default function MediaLibraryPage() {
   };
 
   const handleBulkDelete = () => {
-  if (!businessId || !selectedIds.length || !deleteAccess.allowed) return;
+    if (!businessId || !selectedIds.length || !deleteAccess.allowed) return;
 
-  modal.confirm({
-    title: "Delete selected media?",
-    content: `${selectedIds.length} image(s) will be removed from this business library.`,
-    okText: "Delete selected",
-    cancelText: "Cancel",
-    centered: true,
-    okButtonProps: {
-      danger: true,
-    },
-    async onOk() {
-      try {
-        await removeMediaBulk.mutateAsync(selectedIds);
+    modal.confirm({
+      title: "Delete selected media?",
+      content: `${selectedIds.length} image(s) will be removed from this business library.`,
+      okText: "Delete selected",
+      cancelText: "Cancel",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await removeMediaBulk.mutateAsync(selectedIds);
 
-        setSelectedIds([]);
+          setSelectedIds([]);
 
-        message.success("Selected media deleted successfully.");
-      } catch (error) {
-        message.error(getApiErrorMessage(error));
-      }
-    },
-  });
-};
+          message.success("Selected media deleted successfully.");
+        } catch (error) {
+          message.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
 
   const toggleSelection = (assetId: ApiId, checked: boolean) => {
     setSelectedIds((ids) =>

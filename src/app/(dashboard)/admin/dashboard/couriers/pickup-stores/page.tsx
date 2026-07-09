@@ -1,18 +1,22 @@
 "use client";
 
 import { Button, Card, Tabs } from "antd";
-import { useEffect, useState } from "react";
-
-import { useCourierMutation, useCourierPickUp, useCourierQuery } from "@/lib/api/hooks/courier";
-import { useAuthStore } from "@/stores/auth.store";
-import { PickupStore } from "@/types/courier/courier";
-import { Column, DataTable } from "@/components/shared/data-table";
 import { CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
+import { useEffect, useState } from "react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+import {
+  useCourierMutation,
+  useCourierPickUp,
+  useCourierQuery,
+} from "@/lib/api/hooks/courier";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { PickupStore } from "@/types/courier/courier";
 
 const DeliveryZones = () => {
   const [selectedConfigId, setSelectedConfigId] = useState<string>("");
@@ -54,10 +58,10 @@ const DeliveryZones = () => {
         try {
           const res = await removePickUpStore.mutateAsync({
             configId: selectedConfigId,
-            storeId: id
+            storeId: id,
           });
 
-          console.log('res', res);
+          console.log("res", res);
 
           swal.success("Pickup store deleted successfully.");
         } catch (error) {
@@ -117,7 +121,6 @@ const DeliveryZones = () => {
     //         />
     //       </Tooltip>
 
-
     //       <Tooltip title="Delete pickup store">
     //         <Button danger
     //           onClick={() => handleDelete(row.id)}
@@ -135,7 +138,6 @@ const DeliveryZones = () => {
 
   return (
     <section>
-
       <PageHeader
         title="Pickup Stores"
         subtitle="Manage courier pickup stores, addresses, contact numbers, and delivery area information."
@@ -156,14 +158,15 @@ const DeliveryZones = () => {
                   data={pickUpStores?.pickup_stores ?? []}
                   columns={columns}
                   loading={courierLoading || courierFetching}
-
                   toolbarEnd={
                     <div>
                       <Button
                         type="primary"
                         icon={<CirclePlus size={16} />}
                         onClick={() =>
-                          router.push(`/admin/dashboard/couriers/pickup-stores/create/${selectedConfigId}`)
+                          router.push(
+                            `/admin/dashboard/couriers/pickup-stores/create/${selectedConfigId}`,
+                          )
                         }
                       >
                         Create Pickup Store
@@ -176,7 +179,6 @@ const DeliveryZones = () => {
           ),
         }))}
       />
-
     </section>
   );
 };

@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  Copy,
-  Trash2
-} from "lucide-react";
-
-
-import {
   Button,
   Card,
   Checkbox,
@@ -14,16 +8,14 @@ import {
   Flex,
   Image,
   Tag,
-  Typography,
   theme,
+  Typography,
 } from "antd";
+import { Copy, Trash2 } from "lucide-react";
+
+import { fileName, formatFileSize, mediaUrl } from "../_utils/media";
 
 import type { MediaAsset } from "@/lib/api";
-import {
-  fileName,
-  formatFileSize,
-  mediaUrl,
-} from "../_utils/media";
 
 const { Text, Title } = Typography;
 

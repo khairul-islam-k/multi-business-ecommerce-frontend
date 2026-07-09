@@ -1,5 +1,6 @@
 "use client";
 
+import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import {
   CircleCheck,
   CirclePlus,
@@ -7,24 +8,19 @@ import {
   Eye,
   MoreHorizontal,
   Pencil,
-  Trash2
+  Trash2,
 } from "lucide-react";
-
-
-import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { getApiErrorMessage } from "@/lib/axios";
+import { useSwal } from "@/hooks/use-swal";
 import { useExpenseMutation, useExpenseQuery } from "@/lib/api/hooks/expense";
+import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ExpenseResponse, ExpenseStatus } from "@/types/stock/expense";
-import { useSwal } from "@/hooks/use-swal";
-
-
 
 const getStatusColor = (status: ExpenseStatus) => {
   if (status === "PAID") return "green";
@@ -36,7 +32,7 @@ const ExpensesList = () => {
   const router = useRouter();
   const swal = useSwal();
 
-  const [statusFilter, setStatusFilter] = useState<ExpenseStatus | 'ALL'>();
+  const [statusFilter, setStatusFilter] = useState<ExpenseStatus | "ALL">();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
 
@@ -56,7 +52,8 @@ const ExpensesList = () => {
     ...(statusFilter === "ALL" ? {} : { status: statusFilter }),
   });
 
-  const { removeExpense, updateExpensePay, updateExpenseCancel } = useExpenseMutation(businessId);
+  const { removeExpense, updateExpensePay, updateExpenseCancel } =
+    useExpenseMutation(businessId);
 
   const total = expenses?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
@@ -84,44 +81,44 @@ const ExpensesList = () => {
   };
 
   const handleMarkAsPaid = (id: string) => {
-  swal.modal.confirm({
-    title: "Mark expense as paid?",
-    content: "This expense will be marked as paid.",
-    okText: "Mark as Paid",
-    cancelText: "Cancel",
-    centered: true,
-    async onOk() {
-      try {
-        const res = await updateExpensePay.mutateAsync(id);
-        console.log('res', res);
-        swal.success("Expense marked as paid successfully");
-      } catch (error) {
-        swal.error(getApiErrorMessage(error));
-      }
-    },
-  });
-};
+    swal.modal.confirm({
+      title: "Mark expense as paid?",
+      content: "This expense will be marked as paid.",
+      okText: "Mark as Paid",
+      cancelText: "Cancel",
+      centered: true,
+      async onOk() {
+        try {
+          const res = await updateExpensePay.mutateAsync(id);
+          console.log("res", res);
+          swal.success("Expense marked as paid successfully");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
 
-const handleCancel = (id: string) => {
-  swal.modal.confirm({
-    title: "Cancel expense?",
-    content: "This expense will be cancelled.",
-    okText: "Cancel Expense",
-    cancelText: "Close",
-    centered: true,
-    okButtonProps: {
-      danger: true,
-    },
-    async onOk() {
-      try {
-        await updateExpenseCancel.mutateAsync(id);
-        swal.success("Expense cancelled successfully");
-      } catch (error) {
-        swal.error(getApiErrorMessage(error));
-      }
-    },
-  });
-};
+  const handleCancel = (id: string) => {
+    swal.modal.confirm({
+      title: "Cancel expense?",
+      content: "This expense will be cancelled.",
+      okText: "Cancel Expense",
+      cancelText: "Close",
+      centered: true,
+      okButtonProps: {
+        danger: true,
+      },
+      async onOk() {
+        try {
+          await updateExpenseCancel.mutateAsync(id);
+          swal.success("Expense cancelled successfully");
+        } catch (error) {
+          swal.error(getApiErrorMessage(error));
+        }
+      },
+    });
+  };
 
   const columns: Column<ExpenseResponse>[] = [
     {
@@ -161,9 +158,7 @@ const handleCancel = (id: string) => {
       label: "Status",
       type: "meta",
       render: (row) => (
-        <Tag color={getStatusColor(row.status)}>
-          {row.status}
-        </Tag>
+        <Tag color={getStatusColor(row.status)}>{row.status}</Tag>
       ),
     },
     {
@@ -254,7 +249,7 @@ const handleCancel = (id: string) => {
           </Dropdown>
         );
       },
-    }
+    },
   ];
 
   return (

@@ -2,8 +2,9 @@
 
 import { Col, Row } from "antd";
 
-import type { ApiId, MediaAsset } from "@/lib/api";
 import MediaCard from "./media-card";
+
+import type { ApiId, MediaAsset } from "@/lib/api";
 
 type MediaGridProps = {
   assets: MediaAsset[];

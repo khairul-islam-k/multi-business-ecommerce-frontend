@@ -1,24 +1,13 @@
 "use client";
 
-import {
-  ArrowLeft
-} from "lucide-react";
-
+import { Button, Card, Descriptions, Empty, Skeleton, Table, Tag } from "antd";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useStock } from "@/lib/api/hooks/stock";
 import { useAuthStore } from "@/stores/auth.store";
-import {
-  Button,
-  Card,
-  Descriptions,
-  Empty,
-  Skeleton,
-  Table,
-  Tag,
-} from "antd";
-import { useParams, useRouter } from "next/navigation";
 
 const formatDate = (date?: string | null) => {
   if (!date) return "-";
@@ -42,7 +31,7 @@ const StockDetail = () => {
   const businessId = business?.id ?? "";
 
   const { data: stock, isLoading, isFetching } = useStock(businessId, id);
-  console.log('data', stock);
+  console.log("data", stock);
 
   const product = stock?.product;
   const variant = stock?.variant;
@@ -199,7 +188,9 @@ const StockDetail = () => {
                   title: "Status",
                   render: (_, row) => (
                     <Tag
-                      color={row.warehouse?.status === "ACTIVE" ? "green" : "red"}
+                      color={
+                        row.warehouse?.status === "ACTIVE" ? "green" : "red"
+                      }
                     >
                       {row.warehouse?.status ?? "-"}
                     </Tag>
@@ -216,7 +207,8 @@ const StockDetail = () => {
                 {
                   title: "Available",
                   render: (_, row) =>
-                    toNumber(row.totalQuantity) - toNumber(row.quantityReserved),
+                    toNumber(row.totalQuantity) -
+                    toNumber(row.quantityReserved),
                 },
                 {
                   title: "Updated At",

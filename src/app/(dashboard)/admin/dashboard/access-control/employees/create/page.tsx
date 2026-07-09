@@ -1,14 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { App, Button, Card, Col, Empty, Form, Input, Row, Select } from "antd";
 import { allCountries } from "country-telephone-data";
+import { useRouter } from "next/navigation";
 
-import { getApiErrorMessage } from "@/lib/axios";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { useEmployeeMutations, useRoles } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
+
 import type { ApiId } from "@/lib/api";
 
 type CreateEmployeeValues = {
@@ -70,7 +71,6 @@ export default function CreateUserPage() {
         : `+${dialCode}${phoneNumber.replace(/^0+/, "")}`
       : undefined;
 
-    console.log(fullPhoneNumber, 'phone');
     const payload = {
       name: values.name,
       email: values.email,
@@ -88,9 +88,7 @@ export default function CreateUserPage() {
         country: values.country,
         bio: values.bio,
       },
-    }
-
-    console.log('payload', payload);
+    };
 
     try {
       await createEmployee.mutateAsync(payload);
@@ -184,7 +182,7 @@ export default function CreateUserPage() {
                       }
 
                       return Promise.reject(
-                        new Error("Passwords do not match")
+                        new Error("Passwords do not match"),
                       );
                     },
                   }),

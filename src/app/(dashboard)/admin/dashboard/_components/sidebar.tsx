@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { Grid, Menu, theme } from "antd";
-import type { MenuProps } from "antd";
+import React, { useMemo } from "react";
 
-import { items } from "./side-navigation";
 import Logo from "@/components/shared/logo";
-import BusinessDropdown from "./business-owner";
-import { useAuthStore } from "@/stores/auth.store";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
 import { PERMISSIONS } from "@/lib/auth/permissions";
+import { useAuthStore } from "@/stores/auth.store";
+
+import BusinessDropdown from "./business-owner";
+import { items } from "./side-navigation";
+
+import type { MenuProps } from "antd";
 
 type SidebarProps = {
   close?: () => void;
@@ -33,7 +35,9 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const mediaAccess = usePermissionAccess(PERMISSIONS.mediaRead);
   const packageAccess = usePermissionAccess(PERMISSIONS.packageRead);
   const roleAccess = usePermissionAccess(PERMISSIONS.roleRead);
-  const productCatalogAccess = usePermissionAccess(PERMISSIONS.productCatalogRead);
+  const productCatalogAccess = usePermissionAccess(
+    PERMISSIONS.productCatalogRead,
+  );
   const posAccess = usePermissionAccess(PERMISSIONS.posCreate);
   const supplierAccess = usePermissionAccess(PERMISSIONS.supplierRead);
   const inventoryAccess = usePermissionAccess(PERMISSIONS.inventoryRead);
@@ -117,7 +121,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     supplierAccess.allowed,
     userType,
     websiteAccess.allowed,
-    courierAccess.allowed
+    courierAccess.allowed,
   ]);
 
   const primaryMenuItems = useMemo(

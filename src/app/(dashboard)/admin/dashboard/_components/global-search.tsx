@@ -1,13 +1,8 @@
 "use client";
 
-import {
-  Search,
-  X
-} from "lucide-react";
-
-
+import { Button, Input, Space, theme } from "antd";
+import { Search, X } from "lucide-react";
 import React, { useState } from "react";
-import { Input, Button, Space, theme } from "antd";
 
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
@@ -37,11 +32,7 @@ const GlobalSearch = () => {
           {!open ? (
             <Button
               type="text"
-              icon={
-                <Search
-                  style={{ color: token.colorText, fontSize: 18 }}
-                />
-              }
+              icon={<Search style={{ color: token.colorText, fontSize: 18 }} />}
               onClick={() => setOpen(true)}
             />
           ) : (
@@ -54,11 +45,7 @@ const GlobalSearch = () => {
                 style={{ width: 180, ...inputStyle }}
                 onBlur={() => setOpen(false)}
               />
-              <Button
-                type="text"
-                icon={<X />}
-                onClick={() => setOpen(false)}
-              />
+              <Button type="text" icon={<X />} onClick={() => setOpen(false)} />
             </Space>
           )}
         </div>

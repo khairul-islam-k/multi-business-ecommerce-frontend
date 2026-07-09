@@ -1,16 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
-  CheckCircle2,
-  MapPin,
-  PackageCheck,
-  Truck,
-  User,
-} from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-
-import {
   Button,
   Card,
   Col,
@@ -21,9 +11,18 @@ import {
   Spin,
   Statistic,
   Tag,
-  Timeline,
   theme,
+  Timeline,
 } from "antd";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  MapPin,
+  PackageCheck,
+  Truck,
+  User,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -97,9 +96,8 @@ const ShipmentTracking = () => {
 
   // If API returns direct object: { shipment, providerTracking }
   // If API returns wrapped object: { data: { shipment, providerTracking } }
-  const trackingData =
-    ((tracking as { data?: ShipmentTrackingResponse })?.data ??
-      tracking) as ShipmentTrackingResponse | undefined;
+  const trackingData = ((tracking as { data?: ShipmentTrackingResponse })
+    ?.data ?? tracking) as ShipmentTrackingResponse | undefined;
 
   const shipment = trackingData?.shipment;
   const providerTracking = trackingData?.providerTracking?.tracking ?? [];
@@ -124,13 +122,9 @@ const ShipmentTracking = () => {
     ),
     children: (
       <div className="pb-3">
-        <h3 className="m-0 text-[15px] font-semibold">
-          {item.message_en}
-        </h3>
+        <h3 className="m-0 text-[15px] font-semibold">{item.message_en}</h3>
 
-        <p className="m-0 mt-1 text-sm text-gray-500">
-          {item.message_bn}
-        </p>
+        <p className="m-0 mt-1 text-sm text-gray-500">{item.message_bn}</p>
 
         <p className="m-0 mt-1 text-xs text-gray-400">
           {formatDateTime(item.time)}
@@ -150,10 +144,7 @@ const ShipmentTracking = () => {
   if (!shipment) {
     return (
       <div className="space-y-6">
-        <PageHeader
-          title="Shipment Tracking"
-          breadcrumb={adminBreadcrumb}
-        />
+        <PageHeader title="Shipment Tracking" breadcrumb={adminBreadcrumb} />
 
         <Card>
           <Empty description="Tracking data not found" />
@@ -165,7 +156,9 @@ const ShipmentTracking = () => {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={shipment.trackingCode || shipment.consignmentId || shipment.shipmentNo}
+        title={
+          shipment.trackingCode || shipment.consignmentId || shipment.shipmentNo
+        }
         subtitle={`Shipment No: ${shipment.shipmentNo}`}
         breadcrumb={adminBreadcrumb}
       />

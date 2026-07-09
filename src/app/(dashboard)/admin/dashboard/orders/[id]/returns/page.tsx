@@ -7,11 +7,7 @@ import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import {
-  useOrder,
-  useOrderReturnsQuery,
-  type OrderReturnStatus,
-} from "@/lib/api";
+import { OrderReturnStatus, useOrder, useOrderReturnsQuery } from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -72,9 +68,7 @@ export default function OrderReturnHistory() {
               title: "Return No",
               dataIndex: "returnNo",
               key: "returnNo",
-              render: (value, record) => (
-                <Text code>{value ?? record.id}</Text>
-              ),
+              render: (value, record) => <Text code>{value ?? record.id}</Text>,
             },
             {
               title: "Reason",
@@ -86,7 +80,7 @@ export default function OrderReturnHistory() {
               title: "Items",
               dataIndex: "items",
               key: "items",
-              render: (items) => Array.isArray(items) ? items.length : 0,
+              render: (items) => (Array.isArray(items) ? items.length : 0),
             },
             {
               title: "Amount",

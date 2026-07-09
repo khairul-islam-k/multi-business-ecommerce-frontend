@@ -14,7 +14,6 @@ import {
   Table,
   Tag,
 } from "antd";
-import type { TableColumnsType } from "antd";
 import {
   ArrowLeft,
   Download,
@@ -30,6 +29,8 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useOrderInvoice } from "@/lib/api/hooks/invoice";
 import { useAuthStore } from "@/stores/auth.store";
+
+import type { TableColumnsType } from "antd";
 import type {
   InvoiceItem,
   InvoicePayment,
@@ -126,9 +127,8 @@ export default function InvoiceDetails() {
     isFetching,
   } = useOrderInvoice(businessId, id);
 
-  const invoiceData =
-    ((invoice as { data?: InvoiceTenantResponse })?.data ??
-      invoice) as InvoiceTenantResponse | undefined;
+  const invoiceData = ((invoice as { data?: InvoiceTenantResponse })?.data ??
+    invoice) as InvoiceTenantResponse | undefined;
 
   const handleDownload = async () => {
     if (!invoiceRef.current || !invoiceData) return;
@@ -157,13 +157,10 @@ export default function InvoiceDetails() {
         pagebreak: {
           mode: ["avoid-all", "css", "legacy"],
         },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any;
 
-      await html2pdf()
-        .set(options)
-        .from(invoiceRef.current)
-        .save();
+      await html2pdf().set(options).from(invoiceRef.current).save();
 
       message.success("Invoice downloaded successfully");
     } catch (error) {
@@ -313,9 +310,7 @@ export default function InvoiceDetails() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <h1 className="m-0 text-2xl font-bold">Invoice</h1>
-              <p className="m-0 mt-1 text-gray-500">
-                {invoiceData.invoiceNo}
-              </p>
+              <p className="m-0 mt-1 text-gray-500">{invoiceData.invoiceNo}</p>
             </div>
 
             <Tag
@@ -464,7 +459,9 @@ export default function InvoiceDetails() {
             </Descriptions.Item>
 
             <Descriptions.Item label="Payment Status">
-              <Tag color={getPaymentStatusColor(invoiceData.order?.paymentStatus)}>
+              <Tag
+                color={getPaymentStatusColor(invoiceData.order?.paymentStatus)}
+              >
                 {invoiceData.order?.paymentStatus ?? "-"}
               </Tag>
             </Descriptions.Item>

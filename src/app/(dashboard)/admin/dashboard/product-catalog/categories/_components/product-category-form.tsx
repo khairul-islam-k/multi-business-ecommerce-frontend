@@ -11,7 +11,7 @@ import {
 } from "@/lib/product/category-options";
 import { useAuthStore } from "@/stores/auth.store";
 
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import ImageSelectModal from "../../../_components/image-select-modal";
 
 const { TextArea } = Input;
 

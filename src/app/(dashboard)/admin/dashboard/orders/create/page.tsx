@@ -1,14 +1,6 @@
 "use client";
 
 import {
-  ShoppingCart,
-  Trash2
-} from "lucide-react";
-
-
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
   App,
   Button,
   Card,
@@ -24,6 +16,9 @@ import {
   Table,
   Typography,
 } from "antd";
+import { ShoppingCart, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -36,15 +31,17 @@ import {
   useWarehousesQuery,
 } from "@/lib/api";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
+import { getApiErrorMessage } from "@/lib/axios";
+
+import { ProductPicker } from "../../pos/_components/product-picker";
+import { VariantSelector } from "../../pos/_components/variant-selector";
+
 import type {
   OrderPaymentMethod,
   OrderPaymentPayload,
   OrderPayload,
 } from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/axios";
 import type { ResponseProduct } from "@/types/product/product";
-import { ProductPicker } from "../../pos/_components/product-picker";
-import { VariantSelector } from "../../pos/_components/variant-selector";
 import type { PosCartItem } from "../../pos/_components/types";
 
 const { Text, Title } = Typography;
@@ -262,7 +259,11 @@ export default function CreateOrder() {
       return;
     }
 
-    if (values.paymentMethod && values.paymentMethod !== "COD" && !values.financeAccountId) {
+    if (
+      values.paymentMethod &&
+      values.paymentMethod !== "COD" &&
+      !values.financeAccountId
+    ) {
       message.error("Select a finance account for this payment method.");
       return;
     }
@@ -537,7 +538,9 @@ export default function CreateOrder() {
                   className="mt-1 w-full"
                   value={values.shippingCharge}
                   onChange={(shippingCharge) =>
-                    updateValues({ shippingCharge: Number(shippingCharge ?? 0) })
+                    updateValues({
+                      shippingCharge: Number(shippingCharge ?? 0),
+                    })
                   }
                 />
               </div>
@@ -607,7 +610,9 @@ export default function CreateOrder() {
                   rows={3}
                   placeholder="Internal order note"
                   value={values.note}
-                  onChange={(event) => updateValues({ note: event.target.value })}
+                  onChange={(event) =>
+                    updateValues({ note: event.target.value })
+                  }
                 />
               </div>
             </div>

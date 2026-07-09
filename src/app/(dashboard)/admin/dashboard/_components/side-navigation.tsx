@@ -8,13 +8,15 @@ import {
   Building2,
   Calculator,
   CircleDollarSign,
+  CircleUserRound,
   ClipboardList,
-  Copy,
   ContactRound,
+  Copy,
   CreditCard,
   ExternalLink,
   FileCheck,
   FileText,
+  FolderTree,
   Gauge,
   GitBranch,
   Globe,
@@ -45,17 +47,12 @@ import {
   Tags as TagsIcon,
   Truck,
   Undo2,
-  CircleUserRound,
   UserRound,
   Users,
   WalletCards,
   Warehouse,
-  FolderTree,
-  List,
-  Pencil,
 } from "lucide-react";
 import Link from "next/link";
-
 
 import type { MenuProps } from "antd";
 
@@ -195,15 +192,6 @@ const allItems: MenuProps["items"] = [
           <Link href="/admin/dashboard/inventory/warehouses">Warehouses</Link>
         ),
       },
-      // {
-      //   key: "warehouse-stocks",
-      //   icon: <Home />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/warehouse-stock">
-      //       Warehouse Stocks
-      //     </Link>
-      //   ),
-      // },
       {
         key: "inventory-transactions",
         icon: <ArrowLeftRight />,
@@ -213,13 +201,6 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
-      // {
-      //   key: "stock-entry",
-      //   icon: <SquarePlus />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/stock-entry">Stock Entry</Link>
-      //   ),
-      // },
       {
         key: "stock-adjustments",
         icon: <Scale />,
@@ -238,42 +219,6 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
-      // {
-      //   key: "damaged-product",
-      //   icon: <TriangleAlert />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/damaged-products">
-      //       Damaged Products
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "low-stock",
-      //   icon: <TriangleAlert />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/low-stock-alert">
-      //       Low Stocks
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "inventory-value",
-      //   icon: <Banknote />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/value-report">
-      //       Inventory Value
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "missing-products",
-      //   icon: <CircleHelp />,
-      //   label: (
-      //     <Link href="/admin/dashboard/inventory/missing-products">
-      //       Missing Products
-      //     </Link>
-      //   ),
-      // },
     ],
   },
 
@@ -319,18 +264,6 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
-      // {
-      //   key: "supplier-payment",
-      //   icon: <Banknote />,
-      //   label: <Link href="/admin/dashboard/suppliers/payments">Payments</Link>,
-      // },
-      // {
-      //   key: "supplier-performance",
-      //   icon: <ChartBar />,
-      //   label: (
-      //     <Link href="/admin/dashboard/suppliers/performance">Performance</Link>
-      //   ),
-      // },
     ],
   },
 
@@ -373,42 +306,6 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
-      // {
-      //   key: "order-history",
-      //   icon: <ShoppingCart />, // Orders
-      //   label: (
-      //     <Link href="/admin/dashboard/customers/order-history">
-      //       Order History
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "address-book",
-      //   icon: <Home />, // Addresses
-      //   label: (
-      //     <Link href="/admin/dashboard/customers/address-book">
-      //       Address Book
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "top-customers",
-      //   icon: <Award />, // Best customers
-      //   label: (
-      //     <Link href="/admin/dashboard/customers/top-customers">
-      //       Top Customers
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "reports",
-      //   icon: <ChartLine />, // Analytics / reports
-      //   label: (
-      //     <Link href="/admin/dashboard/customers/reports">
-      //       Acquisition Report
-      //     </Link>
-      //   ),
-      // },
     ],
   },
 
@@ -453,24 +350,6 @@ const allItems: MenuProps["items"] = [
           <Link href="/admin/dashboard/finance/receivables">Receivables</Link>
         ),
       },
-      // {
-      //   key: "overview",
-      //   icon: <Gauge />, // Overview
-      //   label: (
-      //     <Link href="/admin/dashboard/finance/accounts/overview">
-      //       Overview
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "profit-loss",
-      //   icon: <ChartLine />, // Profit & Loss
-      //   label: (
-      //     <Link href="/admin/dashboard/finance/accounts/profit-loss">
-      //       Profit & Loss
-      //     </Link>
-      //   ),
-      // },
     ],
   },
 
@@ -483,9 +362,7 @@ const allItems: MenuProps["items"] = [
         key: "gateway-list",
         icon: <WalletCards />,
         label: (
-          <Link href="/admin/dashboard/payment-gateway/gateways">
-            Gateways
-          </Link>
+          <Link href="/admin/dashboard/payment-gateway/gateways">Gateways</Link>
         ),
       },
       {
@@ -500,7 +377,7 @@ const allItems: MenuProps["items"] = [
     ],
   },
 
-  // couriers 
+  // couriers
   {
     key: "couriers",
     icon: <Truck />, // Couriers main
@@ -539,7 +416,7 @@ const allItems: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
         ),
-      }
+      },
     ],
   },
 
@@ -557,33 +434,6 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
-      // {
-      //   key: "section-editor",
-      //   icon: <LayoutDashboard />, // Sections & layouts
-      //   label: (
-      //     <Link href="/admin/dashboard/website-builder/section-editor">
-      //       Section Editor
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "page-builder",
-      //   icon: <FileText />, // Pages / content
-      //   label: (
-      //     <Link href="/admin/dashboard/website-builder/page-builder">
-      //       Page Builder
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "menu-builder",
-      //   icon: <MenuIcon />, // Navigation menus
-      //   label: (
-      //     <Link href="/admin/dashboard/website-builder/menu-builder">
-      //       Menu Builder
-      //     </Link>
-      //   ),
-      // },
       {
         key: "template",
         icon: <Copy />, // Templates
@@ -591,28 +441,9 @@ const allItems: MenuProps["items"] = [
           <Link href="/admin/dashboard/website-builder/template">Template</Link>
         ),
       },
-      // {
-      //   key: "domains",
-      //   icon: <LinkIcon />, // Domains
-      //   label: (
-      //     <Link href="/admin/dashboard/website-builder/domains">
-      //       Domain Manager
-      //     </Link>
-      //   ),
-      // },
-      // {
-      //   key: "publish-setting",
-      //   icon: <CloudUpload />, // Publish settings
-      //   label: (
-      //     <Link href="/admin/dashboard/website-builder/publish-setting">
-      //       Publish Setting
-      //     </Link>
-      //   ),
-      // },
     ],
   },
 
-  // {
   //   key: "sms-marketing",
   //   icon: <MessageCircle />, // SMS / messaging
   //   label: "SMS Marketing",
@@ -692,49 +523,6 @@ const allItems: MenuProps["items"] = [
   //       label: (
   //         <Link href="/admin/dashboard/sms/gateway-settings">
   //           Gateway Settings
-  //         </Link>
-  //       ),
-  //     },
-  //   ],
-  // },
-
-  // {
-  //   key: "marketing-assistant",
-  //   icon: <Bot />, // AI / assistant
-  //   label: "Marketing Assistant",
-  //   children: [
-  //     {
-  //       key: "marketing-chat",
-  //       icon: <MessageCircle />, // AI chat
-  //       label: <Link href="/admin/dashboard/ai/chat">Marketing Chat</Link>,
-  //     },
-  //     {
-  //       key: "generated-product-descriptions",
-  //       icon: <FileText />, // Product descriptions
-  //       label: (
-  //         <Link href="/admin/dashboard/ai/descriptions">
-  //           G Product Descriptions
-  //         </Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "generated-promo-text",
-  //       icon: <BookOpen />, // Promo / ad copy
-  //       label: <Link href="/admin/dashboard/ai/promos">G Promo Text</Link>,
-  //     },
-  //     {
-  //       key: "generated-slogans",
-  //       icon: <Lightbulb />, // Creative slogans
-  //       label: (
-  //         <Link href="/admin/dashboard/ai/slogans">Generated Slogans</Link>
-  //       ),
-  //     },
-  //     {
-  //       key: "generation-history",
-  //       icon: <History />, // Past generations
-  //       label: (
-  //         <Link href="/admin/dashboard/ai/generation-history">
-  //           Generation History
   //         </Link>
   //       ),
   //     },

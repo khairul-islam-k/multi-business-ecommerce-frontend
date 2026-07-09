@@ -1,24 +1,17 @@
 "use client";
 
 import {
-  MessageCircle,
-  Send,
-  Settings,
-  UserRound
-} from "lucide-react";
-
-
-import { useState, type ReactNode } from "react";
-import {
-  Card,
-  Input,
   Button,
+  Card,
+  Divider,
+  Input,
+  List,
   Select,
   Tag,
-  Divider,
-  List,
   Typography,
 } from "antd";
+import { MessageCircle, Send, Settings, UserRound } from "lucide-react";
+import { ReactNode, useState } from "react";
 
 import { useSwal } from "@/hooks/use-swal";
 

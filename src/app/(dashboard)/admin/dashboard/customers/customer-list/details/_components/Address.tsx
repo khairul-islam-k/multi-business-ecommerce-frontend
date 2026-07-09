@@ -1,20 +1,17 @@
 "use client";
 
-import {
-  Pencil,
-  Trash2
-} from "lucide-react";
-
+import { Button, Card, Modal, Tag, Tooltip } from "antd";
+import { Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import { useSwal } from "@/hooks/use-swal";
+import { useCustomerAddressMutation } from "@/lib/api/hooks/customer-address";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { CustomerAddressResponse } from "@/types/customer/customerAddress";
-import { Button, Card, Modal, Tag, Tooltip } from "antd";
-import { useState } from "react";
+
 import UpdateAddress from "./update-address";
-import { useCustomerAddressMutation } from "@/lib/api/hooks/customer-address";
 
 type Props = {
   address: CustomerAddressResponse[];
@@ -27,26 +24,26 @@ const formatDate = (date?: string | null) => {
 };
 
 const Address = ({ address, customerId }: Props) => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
   const swal = useSwal();
 
-  const {removeAddress} = useCustomerAddressMutation(businessId);
+  const { removeAddress } = useCustomerAddressMutation(businessId);
 
   // modal
   const [singleAddress, setSingleAddress] = useState<CustomerAddressResponse>({
-    id: '',
-    customerId: '',
-    addressType: 'HOME',
-    name: '',
-    address: '',
-    city: '',
-    country: '',
+    id: "",
+    customerId: "",
+    addressType: "HOME",
+    name: "",
+    address: "",
+    city: "",
+    country: "",
     isDefault: false,
-    createdAt: '',
-    updatedAt: '',
-    deletedAt: ''
+    createdAt: "",
+    updatedAt: "",
+    deletedAt: "",
   });
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -64,7 +61,7 @@ const Address = ({ address, customerId }: Props) => {
         try {
           await removeAddress.mutateAsync({
             customerId,
-            addressId
+            addressId,
           });
           swal.success("Address deleted successfully");
         } catch (error) {
@@ -107,11 +104,7 @@ const Address = ({ address, customerId }: Props) => {
       label: "Default",
       type: "meta",
       render: (row) =>
-        row.isDefault ? (
-          <Tag color="green">Default</Tag>
-        ) : (
-          <Tag>Normal</Tag>
-        ),
+        row.isDefault ? <Tag color="green">Default</Tag> : <Tag>Normal</Tag>,
     },
     {
       key: "createdAt",
@@ -144,32 +137,27 @@ const Address = ({ address, customerId }: Props) => {
           </Tooltip>
         </div>
       ),
-    }
+    },
   ];
 
   return (
-    <Card title='Customer Address'>
-
+    <Card title="Customer Address">
       <DataTable
         data={address}
         columns={addressColumns}
         onSearch={(value) => {
           setSearch(value);
         }}
-
       />
 
       <Modal
         title="Basic Modal"
-        closable={{ 'aria-label': 'Custom Close Button' }}
+        closable={{ "aria-label": "Custom Close Button" }}
         open={openModal}
         footer={null}
         onCancel={() => setOpenModal(false)}
       >
-        <UpdateAddress
-          customerId={customerId}
-          singleAddress={singleAddress}
-        />
+        <UpdateAddress customerId={customerId} singleAddress={singleAddress} />
       </Modal>
     </Card>
   );

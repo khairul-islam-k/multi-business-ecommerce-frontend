@@ -1,19 +1,22 @@
 "use client";
 
-import PageHeader from "@/components/shared/page-header";
+import { Empty } from "antd";
+import { useParams, useRouter } from "next/navigation";
+
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 import {
   useFinanceAccount,
   useFinanceAccountMutation,
 } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import type { FinanceAccountPayload } from "@/types/finance/account";
-import { Empty } from "antd";
-import { useParams, useRouter } from "next/navigation";
+
 import FinanceAccountForm from "../../_components/finance-account-form";
-import { useSwal } from "@/hooks/use-swal";
+
+import type { FinanceAccountPayload } from "@/types/finance/account";
 
 const UpdateFinanceAccountPage = () => {
   const swal = useSwal();
@@ -23,10 +26,11 @@ const UpdateFinanceAccountPage = () => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const { data: account, isLoading, isFetching } = useFinanceAccount(
-    businessId,
-    accountId
-  );
+  const {
+    data: account,
+    isLoading,
+    isFetching,
+  } = useFinanceAccount(businessId, accountId);
 
   const { updateFinanceAccount } = useFinanceAccountMutation(businessId);
 
@@ -37,7 +41,7 @@ const UpdateFinanceAccountPage = () => {
         payload: values,
       });
 
-      console.log('res', res);
+      console.log("res", res);
 
       swal.success("Account updated successfully.");
       router.push("/admin/dashboard/finance/accounts");

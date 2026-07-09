@@ -1,5 +1,6 @@
 "use client";
 
+import { Drawer, Layout, Menu, MenuProps, theme } from "antd";
 import {
   Bell,
   ChartBar,
@@ -7,15 +8,13 @@ import {
   Landmark,
   LayoutDashboard,
   Radar,
-  Settings
+  Settings,
 } from "lucide-react";
-
-
-import type React from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { theme, Layout, Menu, Drawer, MenuProps } from "antd";
 
 import Logo from "@/components/shared/logo";
+
+import type React from "react";
 
 const { Sider } = Layout;
 
@@ -75,7 +74,8 @@ const navItems: MenuProps["items"] = allNavItems
     };
   })
   .filter(
-    (group) => !group || !("children" in group) || Boolean(group.children?.length),
+    (group) =>
+      !group || !("children" in group) || Boolean(group.children?.length),
   );
 
 interface Props {

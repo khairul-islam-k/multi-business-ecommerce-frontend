@@ -80,6 +80,7 @@ const ImageSelectModal = ({
 
   const handleUploadImage = async (file: File) => {
     try {
+      // FIXME: why would i select a business id in here?
       if (!businessId) {
         message.error("Please select a business first.");
         return;

@@ -130,7 +130,7 @@ const ProductsList = () => {
       label: "Tags",
       render: (row) =>
         row.tags?.length ? (
-          <div className="grid grid-cols-3">
+          <div className="grid grid-cols-2">
             {row.tags.map((item) => (
               <Tag key={item.id}>{item.tag?.name ?? "-"}</Tag>
             ))}

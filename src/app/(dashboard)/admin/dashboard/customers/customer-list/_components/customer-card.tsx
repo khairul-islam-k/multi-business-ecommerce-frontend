@@ -1,10 +1,5 @@
-import {
-  Banknote,
-  TriangleAlert,
-  UserRoundX,
-  Users
-} from "lucide-react";
 import { Card, Grid, theme } from "antd";
+import { Banknote, TriangleAlert, UserRoundX, Users } from "lucide-react";
 
 const CustomerCard = () => {
   const { token } = theme.useToken();

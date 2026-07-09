@@ -14,7 +14,7 @@ import {
   Tabs,
 } from "antd";
 
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import ImageSelectModal from "../../../_components/image-select-modal";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { useWebsiteTemplates } from "@/lib/api/hooks/website";
 import {
@@ -38,15 +38,14 @@ const toFormValues = (
   data?: Partial<WebsiteTemplatePayload>,
 ): TemplateFormValues => {
   return {
-    template: data?.template ?? 'FASHION',
-    status: data?.status ?? 'DRAFT',
+    template: data?.template ?? "FASHION",
+    status: data?.status ?? "DRAFT",
 
     config: {
       headerConfig: {
-        slide:
-          data?.config?.headerConfig?.slide?.length
-            ? data.config.headerConfig.slide
-            : [
+        slide: data?.config?.headerConfig?.slide?.length
+          ? data.config.headerConfig.slide
+          : [
               {
                 id: Date.now(),
                 title: "",
@@ -68,10 +67,9 @@ const toFormValues = (
       },
 
       generalConfig: {
-        bestOfferImages:
-          data?.config?.generalConfig?.bestOfferImages?.length
-            ? data.config.generalConfig.bestOfferImages
-            : [
+        bestOfferImages: data?.config?.generalConfig?.bestOfferImages?.length
+          ? data.config.generalConfig.bestOfferImages
+          : [
               {
                 id: 1,
                 imageUrl: "",
@@ -148,10 +146,9 @@ export default function WebsiteTemplateForm({
   const [themeLogoModalOpen, setThemeLogoModalOpen] = useState(false);
   const [themeFaviconModalOpen, setThemeFaviconModalOpen] = useState(false);
 
-  const slides = Form.useWatch(
-    ["config", "headerConfig", "slide"],
-    form,
-  ) as HeaderSlide[] | undefined;
+  const slides = Form.useWatch(["config", "headerConfig", "slide"], form) as
+    | HeaderSlide[]
+    | undefined;
 
   const selectedSlideImage =
     activeSlideIndex !== null ? slides?.[activeSlideIndex]?.imageUrl : "";
@@ -178,10 +175,9 @@ export default function WebsiteTemplateForm({
     | string
     | undefined;
 
-  const themeFaviconUrl = Form.useWatch(
-    ["theme", "faviconUrl"],
-    form,
-  ) as string | undefined;
+  const themeFaviconUrl = Form.useWatch(["theme", "faviconUrl"], form) as
+    | string
+    | undefined;
 
   useEffect(() => {
     form.setFieldsValue(toFormValues(initialData));
@@ -241,7 +237,9 @@ export default function WebsiteTemplateForm({
   return (
     <Card
       title={
-        mode === "create" ? "Create Website Template" : "Update Website Template"
+        mode === "create"
+          ? "Create Website Template"
+          : "Update Website Template"
       }
     >
       <Form<TemplateFormValues>
@@ -277,8 +275,7 @@ export default function WebsiteTemplateForm({
                     />
                   </Form.Item>
 
-                  {
-                    (mode === "update") &&
+                  {mode === "update" && (
                     <Form.Item
                       label="Status"
                       name="status"
@@ -303,7 +300,7 @@ export default function WebsiteTemplateForm({
                         ]}
                       />
                     </Form.Item>
-                  }
+                  )}
 
                   <Collapse
                     accordion
@@ -314,9 +311,7 @@ export default function WebsiteTemplateForm({
                         label: "Header Config",
                         forceRender: true,
                         children: (
-                          <Form.List
-                            name={["config", "headerConfig", "slide"]}
-                          >
+                          <Form.List name={["config", "headerConfig", "slide"]}>
                             {(fields, { add, remove }) => (
                               <>
                                 <div className="mb-4 flex items-center justify-between">
@@ -528,11 +523,7 @@ export default function WebsiteTemplateForm({
                             <Col xs={24}>
                               <Form.Item
                                 label="Footer Description"
-                                name={[
-                                  "config",
-                                  "footerConfig",
-                                  "description",
-                                ]}
+                                name={["config", "footerConfig", "description"]}
                               >
                                 <TextArea
                                   rows={3}
@@ -585,8 +576,7 @@ export default function WebsiteTemplateForm({
                                 rules={[
                                   {
                                     required: true,
-                                    message:
-                                      "Please select big offer image",
+                                    message: "Please select big offer image",
                                   },
                                 ]}
                               >
@@ -678,10 +668,7 @@ export default function WebsiteTemplateForm({
                                     </p>
                                   </div>
 
-                                  <Button
-                                    type="dashed"
-                                    onClick={() => add("")}
-                                  >
+                                  <Button type="dashed" onClick={() => add("")}>
                                     Add Partner
                                   </Button>
                                 </div>
@@ -823,7 +810,7 @@ export default function WebsiteTemplateForm({
                     <Form.Item
                       label="Meta Title"
                       name={["seo", "metaTitle"]}
-                    // rules={[{ required: true }]}
+                      // rules={[{ required: true }]}
                     >
                       <Input placeholder="Acme Store" />
                     </Form.Item>
@@ -832,7 +819,7 @@ export default function WebsiteTemplateForm({
                   <Col xs={24} md={12}>
                     <Form.Item
                       label="Meta Keywords"
-                    // name={["seo", "metaKeywords"]}
+                      // name={["seo", "metaKeywords"]}
                     >
                       <Input placeholder="acme,shop,ecommerce" />
                     </Form.Item>
@@ -908,13 +895,7 @@ export default function WebsiteTemplateForm({
           if (activeSlideIndex === null) return;
 
           form.setFieldValue(
-            [
-              "config",
-              "headerConfig",
-              "slide",
-              activeSlideIndex,
-              "imageUrl",
-            ],
+            ["config", "headerConfig", "slide", activeSlideIndex, "imageUrl"],
             url,
           );
 

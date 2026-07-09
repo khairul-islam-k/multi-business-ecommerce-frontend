@@ -1,16 +1,6 @@
 "use client";
 
 import {
-  Check,
-  ChevronDown,
-  CirclePlus,
-  Landmark,
-} from "lucide-react";
-
-
-import { useMemo, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import {
   App,
   Avatar,
   Button,
@@ -24,20 +14,23 @@ import {
   Select,
   Space,
   Tag,
-  Typography,
   theme,
+  Typography,
 } from "antd";
+import { Check, ChevronDown, CirclePlus, Landmark } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { useBusinessMutations } from "@/lib/api";
+import { useBusinesses, useBusinessMutations } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
-import type { AuthBusiness, Business, BusinessPayload } from "@/lib/api";
-import { useBusinesses } from "@/lib/api";
-import { useAuthStore } from "@/stores/auth.store";
 import {
   countryOptions,
   currencyOptions,
   timezoneOptions,
 } from "@/lib/business/options";
+import { useAuthStore } from "@/stores/auth.store";
+import { useQueryClient } from "@tanstack/react-query";
+
+import type { AuthBusiness, Business, BusinessPayload } from "@/lib/api";
 
 const { Text } = Typography;
 
@@ -108,7 +101,7 @@ export default function BusinessDropdown() {
     try {
       await selectBusiness(businessId);
       await queryClient.invalidateQueries();
-      message.success("Business switched.");
+      message.success("Business created and switched successfully.");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
@@ -127,9 +120,7 @@ export default function BusinessDropdown() {
 
       const business = await createBusiness.mutateAsync({
         ...payload,
-        settings: {
-  
-        },
+        settings: {},
         branding: {
           seoTitle: payload.name,
         },

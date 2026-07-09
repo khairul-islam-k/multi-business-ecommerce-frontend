@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  CirclePlus,
-  Trash2
-} from "lucide-react";
-
+import { CirclePlus, Trash2 } from "lucide-react";
 
 import {
   Button,
@@ -24,7 +20,7 @@ import {
 import type { FormInstance } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import ImageSelectModal from "../../../_components/image-select-modal";
 import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
 import { useAuthStore } from "@/stores/auth.store";
 import { useProductBrandQuery } from "@/lib/api/hooks/product-brand";

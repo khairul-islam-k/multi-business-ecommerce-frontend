@@ -4,7 +4,7 @@ import { Tree } from "antd";
 import { useMemo } from "react";
 
 import Loader from "@/components/shared/loader";
-import { useAvailablePermissions, type PermissionItem } from "@/lib/api";
+import { PermissionItem, useAvailablePermissions } from "@/lib/api";
 
 const toKey = (permission: PermissionItem) =>
   `${permission.feature}:${permission.action}`;
@@ -44,7 +44,6 @@ export default function PermissionTree({
       })),
     }));
   }, [data]);
-
 
   if (isLoading) return <Loader />;
 

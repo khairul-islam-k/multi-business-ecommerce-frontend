@@ -1,8 +1,9 @@
 "use client";
 
-import { TaxPayload, TaxResponse, TaxStatus } from "@/types/finance/tax";
 import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
 import { useEffect } from "react";
+
+import { TaxPayload, TaxResponse, TaxStatus } from "@/types/finance/tax";
 
 const { TextArea } = Input;
 
@@ -104,7 +105,9 @@ const TaxForm = ({
                 }
 
                 if (rate < 0) {
-                  return Promise.reject(new Error("Tax rate cannot be negative"));
+                  return Promise.reject(
+                    new Error("Tax rate cannot be negative"),
+                  );
                 }
 
                 if (rate > 100) {

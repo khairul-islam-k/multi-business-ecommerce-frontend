@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  Inbox,
-  Upload as UploadIcon
-} from "lucide-react";
+import { Button, Card, Col, Form, Input, Row, theme, Upload } from "antd";
+import { Inbox, Upload as UploadIcon } from "lucide-react";
 
-
-import { Button, Card, Col, Form, Input, Row, Upload, theme } from "antd";
 import type { FormInstance } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
 
