@@ -21,8 +21,9 @@ import {
   mockCustomerGrowth,
   mockOrders,
   mockSalesOverview,
-  mockStats,
 } from "./data";
+import { useAuthStore } from "@/stores/auth.store";
+import { useTenantOverviewQuery } from "@/lib/api/hooks/tenant-overview";
 
 const { Title, Text } = Typography;
 
@@ -66,7 +67,14 @@ const orderColumns = [
 ];
 
 export default function AdminDashboardPage() {
+  const business = useAuthStore((s) => s.selectedBusiness);
+  const businessId = business?.id ? business?.id : "";
   const width = useWidth();
+
+  const {data: overviews} = useTenantOverviewQuery(businessId);
+  const statsCart = overviews?.cards ?? [];
+
+  console.log('card', overviews);
 
   return (
     <div className="space-y-6">
@@ -74,8 +82,8 @@ export default function AdminDashboardPage() {
 
       {/* Stats */}
       <Row gutter={[16, 16]}>
-        {mockStats.map((stat) => (
-          <Col xs={width < 360 ? 24 : 12} md={6} key={stat.label}>
+        {statsCart.map((stat) => (
+          <Col xs={width < 360 ? 24 : 12} md={8} key={stat.label}>
             <StatCard stat={stat} />
           </Col>
         ))}
