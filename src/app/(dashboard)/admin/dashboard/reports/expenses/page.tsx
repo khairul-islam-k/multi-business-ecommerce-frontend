@@ -15,36 +15,36 @@ export default function ExpenseReports() {
     <ReportPage
       title="Expense Reports"
       description="Track operating expenses, cost categories, and budget utilization"
-      stats={[
-        {
-          label: "Total Expenses",
-          value: "৳8,20,000",
-          change: "+5.2%",
-          up: false,
-          icon: Banknote,
-        },
-        {
-          label: "Marketing",
-          value: "৳2,40,000",
-          change: "29% of total",
-          up: true,
-          icon: ChartBar,
-        },
-        {
-          label: "Operations",
-          value: "৳3,80,000",
-          change: "46% of total",
-          up: true,
-          icon: ChartNoAxesColumnIncreasing,
-        },
-        {
-          label: "Budget Utilization",
-          value: "78%",
-          change: "On track",
-          up: true,
-          icon: ChartLine,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Total Expenses",
+      //     value: "৳8,20,000",
+      //     change: "+5.2%",
+      //     up: false,
+      //     icon: Banknote,
+      //   },
+      //   {
+      //     label: "Marketing",
+      //     value: "৳2,40,000",
+      //     change: "29% of total",
+      //     up: true,
+      //     icon: ChartBar,
+      //   },
+      //   {
+      //     label: "Operations",
+      //     value: "৳3,80,000",
+      //     change: "46% of total",
+      //     up: true,
+      //     icon: ChartNoAxesColumnIncreasing,
+      //   },
+      //   {
+      //     label: "Budget Utilization",
+      //     value: "78%",
+      //     change: "On track",
+      //     up: true,
+      //     icon: ChartLine,
+      //   },
+      // ]}
       chartData={[
         { name: "Jan", value: 120 },
         { name: "Feb", value: 135 },

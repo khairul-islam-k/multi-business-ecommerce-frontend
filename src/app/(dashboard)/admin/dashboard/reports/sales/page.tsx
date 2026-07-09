@@ -17,36 +17,36 @@ export default function SalesReports() {
     <ReportPage
       title="Sales Reports"
       description="Analyze revenue trends, top-selling products, and sales performance"
-      stats={[
-        {
-          label: "Total Sales",
-          value: "₹32,45,000",
-          change: "+12.5%",
-          up: true,
-          icon: Banknote,
-        },
-        {
-          label: "Avg. Order Value",
-          value: "₹1,325",
-          change: "-2.1%",
-          up: false,
-          icon: ChartBar,
-        },
-        {
-          label: "Conversion Rate",
-          value: "3.8%",
-          change: "+0.5%",
-          up: true,
-          icon: ChartLine,
-        },
-        {
-          label: "Refund Rate",
-          value: "2.1%",
-          change: "-0.3%",
-          up: false,
-          icon: Undo2,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Total Sales",
+      //     value: "₹32,45,000",
+      //     change: "+12.5%",
+      //     up: true,
+      //     icon: Banknote,
+      //   },
+      //   {
+      //     label: "Avg. Order Value",
+      //     value: "₹1,325",
+      //     change: "-2.1%",
+      //     up: false,
+      //     icon: ChartBar,
+      //   },
+      //   {
+      //     label: "Conversion Rate",
+      //     value: "3.8%",
+      //     change: "+0.5%",
+      //     up: true,
+      //     icon: ChartLine,
+      //   },
+      //   {
+      //     label: "Refund Rate",
+      //     value: "2.1%",
+      //     change: "-0.3%",
+      //     up: false,
+      //     icon: Undo2,
+      //   },
+      // ]}
       chartData={months.map((m, i) => ({
         name: m,
         value: [420, 580, 510, 640, 720, 690][i],

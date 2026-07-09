@@ -224,13 +224,13 @@ export default function StockOverviewPage() {
     <div className="space-y-6">
       <PageHeader title="Stock Overview" breadcrumb={adminBreadcrumb} />
 
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         {mockStats.map((stat) => (
           <Col xs={24} sm={12} lg={6} key={stat.label}>
             <StatCard stat={stat} />
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       <Card>
         <DataTable

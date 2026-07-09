@@ -26,13 +26,13 @@ export default function OverviewPage() {
     <div className="space-y-6">
       <PageHeader title="Account Overview" breadcrumb={adminBreadcrumb} />
 
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         {mockStats.map((stat) => (
           <Col lg={6} md={12} xs={24} key={stat.value}>
             <StatCard stat={stat} />
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>

@@ -103,13 +103,13 @@ export default function OrderAnalytics() {
     <div className="space-y-6">
       <PageHeader title="Order Analytics" breadcrumb={adminBreadcrumb} />
 
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         {mockStats.map((stat, i) => (
           <Col key={i} xs={24} md={12} lg={6}>
             <StatCard stat={stat} />
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>

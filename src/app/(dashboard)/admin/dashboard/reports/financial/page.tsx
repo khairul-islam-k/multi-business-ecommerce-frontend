@@ -16,36 +16,36 @@ export default function FinancialReports() {
     <ReportPage
       title="Financial Reports"
       description="P&L statements, balance sheet overview, and cash flow analysis"
-      stats={[
-        {
-          label: "Net Revenue",
-          value: "₹24,25,000",
-          change: "+10.2%",
-          up: true,
-          icon: Banknote,
-        },
-        {
-          label: "COGS",
-          value: "₹14,50,000",
-          change: "59.8%",
-          up: false, // higher COGS reduces margin
-          icon: ShoppingCart,
-        },
-        {
-          label: "Gross Profit",
-          value: "₹9,75,000",
-          change: "40.2% margin",
-          up: true,
-          icon: ChartNoAxesColumnIncreasing,
-        },
-        {
-          label: "Net Profit",
-          value: "₹4,42,000",
-          change: "18.2% margin",
-          up: true,
-          icon: ChartPie,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Net Revenue",
+      //     value: "₹24,25,000",
+      //     change: "+10.2%",
+      //     up: true,
+      //     icon: Banknote,
+      //   },
+      //   {
+      //     label: "COGS",
+      //     value: "₹14,50,000",
+      //     change: "59.8%",
+      //     up: false, // higher COGS reduces margin
+      //     icon: ShoppingCart,
+      //   },
+      //   {
+      //     label: "Gross Profit",
+      //     value: "₹9,75,000",
+      //     change: "40.2% margin",
+      //     up: true,
+      //     icon: ChartNoAxesColumnIncreasing,
+      //   },
+      //   {
+      //     label: "Net Profit",
+      //     value: "₹4,42,000",
+      //     change: "18.2% margin",
+      //     up: true,
+      //     icon: ChartPie,
+      //   },
+      // ]}
       chartData={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({
         name: m,
         value: [380, 420, 410, 460, 490, 485][i],

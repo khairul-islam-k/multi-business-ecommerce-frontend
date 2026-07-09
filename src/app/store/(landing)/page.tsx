@@ -19,7 +19,7 @@ const Homepage = async () => {
   }
 
   if (res?.data?.data?.template === "FASHION") {
-    return <FashionHomePage />;
+    return <FashionHomePage resolveData={res?.data?.data} />;
   }
 
 };

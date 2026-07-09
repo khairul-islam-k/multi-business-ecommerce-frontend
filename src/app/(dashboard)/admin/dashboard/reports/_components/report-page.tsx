@@ -29,7 +29,7 @@ import {
   Bar,
 } from "recharts";
 
-import StatCard, { Stat } from "@/components/shared/stat-card";
+// import StatCard, { Stat } from "@/components/shared/stat-card";
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -37,7 +37,7 @@ const { RangePicker } = DatePicker;
 interface ReportPageProps {
   title: string;
   description: string;
-  stats: Stat[];
+  // stats: Stat[];
   chartData: { name: string; value: number; value2?: number }[];
   chartType?: "bar" | "line";
   tableHeaders: string[];
@@ -47,7 +47,7 @@ interface ReportPageProps {
 export default function ReportPage({
   title,
   description,
-  stats,
+  // stats,
   chartData,
   chartType = "bar",
   tableHeaders,
@@ -107,13 +107,13 @@ export default function ReportPage({
       </Card>
 
       {/* Stats */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+      {/* <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         {stats.map((stat, i) => (
           <Col xs={24} sm={12} lg={6} key={i}>
             <StatCard stat={stat} />
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       {/* Chart */}
       <Card title="Trend" style={{ marginBottom: 16 }}>

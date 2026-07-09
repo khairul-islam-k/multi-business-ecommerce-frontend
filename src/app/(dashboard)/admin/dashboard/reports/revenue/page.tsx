@@ -16,36 +16,36 @@ export default function RevenueReports() {
     <ReportPage
       title="Revenue Reports"
       description="Revenue breakdown by channel, category, and growth trends"
-      stats={[
-        {
-          label: "Total Revenue",
-          value: "₹32,45,000",
-          change: "+12.5%",
-          up: true,
-          icon: Banknote,
-        },
-        {
-          label: "Online Revenue",
-          value: "₹28,20,000",
-          change: "87% of total",
-          up: true,
-          icon: Cloud,
-        },
-        {
-          label: "Offline Revenue",
-          value: "₹4,25,000",
-          change: "13% of total",
-          up: true,
-          icon: Store,
-        },
-        {
-          label: "MoM Growth",
-          value: "8.3%",
-          change: "+2.1% vs prior",
-          up: true,
-          icon: TrendingUp,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Total Revenue",
+      //     value: "₹32,45,000",
+      //     change: "+12.5%",
+      //     up: true,
+      //     icon: Banknote,
+      //   },
+      //   {
+      //     label: "Online Revenue",
+      //     value: "₹28,20,000",
+      //     change: "87% of total",
+      //     up: true,
+      //     icon: Cloud,
+      //   },
+      //   {
+      //     label: "Offline Revenue",
+      //     value: "₹4,25,000",
+      //     change: "13% of total",
+      //     up: true,
+      //     icon: Store,
+      //   },
+      //   {
+      //     label: "MoM Growth",
+      //     value: "8.3%",
+      //     change: "+2.1% vs prior",
+      //     up: true,
+      //     icon: TrendingUp,
+      //   },
+      // ]}
       chartData={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({
         name: m,
         value: [480, 520, 510, 580, 640, 690][i],

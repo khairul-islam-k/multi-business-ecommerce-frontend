@@ -16,36 +16,36 @@ export default function SupplierReports() {
     <ReportPage
       title="Supplier Reports"
       description="Evaluate supplier performance, lead times, and procurement costs"
-      stats={[
-        {
-          label: "Active Suppliers",
-          value: "34",
-          change: "+3 this quarter",
-          up: true,
-          icon: Users,
-        },
-        {
-          label: "Avg Lead Time",
-          value: "5.2 days",
-          change: "-0.8 days",
-          up: false,
-          icon: Clock,
-        },
-        {
-          label: "On-Time Delivery",
-          value: "92.4%",
-          change: "+1.2%",
-          up: true,
-          icon: CircleCheck,
-        },
-        {
-          label: "Total Procurement",
-          value: "₹18,50,000",
-          change: "+6%",
-          up: true,
-          icon: Banknote,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Active Suppliers",
+      //     value: "34",
+      //     change: "+3 this quarter",
+      //     up: true,
+      //     icon: Users,
+      //   },
+      //   {
+      //     label: "Avg Lead Time",
+      //     value: "5.2 days",
+      //     change: "-0.8 days",
+      //     up: false,
+      //     icon: Clock,
+      //   },
+      //   {
+      //     label: "On-Time Delivery",
+      //     value: "92.4%",
+      //     change: "+1.2%",
+      //     up: true,
+      //     icon: CircleCheck,
+      //   },
+      //   {
+      //     label: "Total Procurement",
+      //     value: "₹18,50,000",
+      //     change: "+6%",
+      //     up: true,
+      //     icon: Banknote,
+      //   },
+      // ]}
       chartData={["Q1", "Q2", "Q3", "Q4"].map((q, i) => ({
         name: q,
         value: [1450, 1680, 1520, 1850][i],

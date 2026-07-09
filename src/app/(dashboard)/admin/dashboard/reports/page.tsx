@@ -13,40 +13,40 @@ import {
 import Link from "next/link";
 import { Card, Row, Col, Typography } from "antd";
 
-import StatCard, { Stat } from "@/components/shared/stat-card";
+// import StatCard, { Stat } from "@/components/shared/stat-card";
 
 const { Title, Text } = Typography;
 
-const stats: Stat[] = [
-  {
-    label: "Total Revenue",
-    value: "₹32,45,000",
-    change: "+12.5% vs last month",
-    up: true,
-    icon: Banknote,
-  },
-  {
-    label: "Total Orders",
-    value: "2,450",
-    change: "+8.3% vs last month",
-    up: true,
-    icon: ShoppingBag,
-  },
-  {
-    label: "Avg Order Value",
-    value: "₹1,325",
-    change: "-2.1% vs last month",
-    up: false,
-    icon: ChartBar,
-  },
-  {
-    label: "Net Profit Margin",
-    value: "18.2%",
-    change: "+1.5% vs last month",
-    up: true,
-    icon: TrendingUp,
-  },
-];
+// const stats: Stat[] = [
+//   {
+//     label: "Total Revenue",
+//     value: "₹32,45,000",
+//     change: "+12.5% vs last month",
+//     up: true,
+//     icon: Banknote,
+//   },
+//   {
+//     label: "Total Orders",
+//     value: "2,450",
+//     change: "+8.3% vs last month",
+//     up: true,
+//     icon: ShoppingBag,
+//   },
+//   {
+//     label: "Avg Order Value",
+//     value: "₹1,325",
+//     change: "-2.1% vs last month",
+//     up: false,
+//     icon: ChartBar,
+//   },
+//   {
+//     label: "Net Profit Margin",
+//     value: "18.2%",
+//     change: "+1.5% vs last month",
+//     up: true,
+//     icon: TrendingUp,
+//   },
+// ];
 
 const reportModules = [
   {
@@ -130,13 +130,13 @@ export default function ReportsOverview() {
       </div>
 
       {/* Stats */}
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         {stats.map((stat, i) => (
           <Col xs={24} sm={12} lg={6} key={i}>
             <StatCard stat={stat} />
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       {/* Modules */}
       <Title level={5}>Report Modules</Title>

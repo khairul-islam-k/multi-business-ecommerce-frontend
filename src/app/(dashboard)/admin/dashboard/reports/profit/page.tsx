@@ -16,36 +16,36 @@ export default function ProfitReports() {
     <ReportPage
       title="Profit Reports"
       description="Analyze profit margins, COGS breakdown, and net profit trends"
-      stats={[
-        {
-          label: "Gross Profit",
-          value: "₹9,75,000",
-          change: "40.2% margin",
-          up: true,
-          icon: ChartNoAxesColumnIncreasing,
-        },
-        {
-          label: "Operating Profit",
-          value: "₹5,55,000",
-          change: "22.9% margin",
-          up: true,
-          icon: Calculator,
-        },
-        {
-          label: "Net Profit",
-          value: "₹4,42,000",
-          change: "18.2% margin",
-          up: true,
-          icon: ChartPie,
-        },
-        {
-          label: "COGS Ratio",
-          value: "59.8%",
-          change: "-1.2% vs prior",
-          up: false,
-          icon: ShoppingCart,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Gross Profit",
+      //     value: "₹9,75,000",
+      //     change: "40.2% margin",
+      //     up: true,
+      //     icon: ChartNoAxesColumnIncreasing,
+      //   },
+      //   {
+      //     label: "Operating Profit",
+      //     value: "₹5,55,000",
+      //     change: "22.9% margin",
+      //     up: true,
+      //     icon: Calculator,
+      //   },
+      //   {
+      //     label: "Net Profit",
+      //     value: "₹4,42,000",
+      //     change: "18.2% margin",
+      //     up: true,
+      //     icon: ChartPie,
+      //   },
+      //   {
+      //     label: "COGS Ratio",
+      //     value: "59.8%",
+      //     change: "-1.2% vs prior",
+      //     up: false,
+      //     icon: ShoppingCart,
+      //   },
+      // ]}
       chartData={["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((m, i) => ({
         name: m,
         value: [140, 165, 155, 180, 200, 195][i],

@@ -16,36 +16,36 @@ export default function OrderReports() {
     <ReportPage
       title="Order Reports"
       description="Track order volume, fulfillment rates, and order status distribution"
-      stats={[
-        {
-          label: "Total Orders",
-          value: "2,450",
-          change: "+8.3%",
-          up: true,
-          icon: ShoppingCart,
-        },
-        {
-          label: "Fulfilled",
-          value: "2,180",
-          change: "89%",
-          up: true,
-          icon: CircleCheck,
-        },
-        {
-          label: "Pending",
-          value: "185",
-          change: "7.5%",
-          up: false,
-          icon: Clock,
-        },
-        {
-          label: "Cancelled",
-          value: "85",
-          change: "3.5%",
-          up: false,
-          icon: CircleX,
-        },
-      ]}
+      // stats={[
+      //   {
+      //     label: "Total Orders",
+      //     value: "2,450",
+      //     change: "+8.3%",
+      //     up: true,
+      //     icon: ShoppingCart,
+      //   },
+      //   {
+      //     label: "Fulfilled",
+      //     value: "2,180",
+      //     change: "89%",
+      //     up: true,
+      //     icon: CircleCheck,
+      //   },
+      //   {
+      //     label: "Pending",
+      //     value: "185",
+      //     change: "7.5%",
+      //     up: false,
+      //     icon: Clock,
+      //   },
+      //   {
+      //     label: "Cancelled",
+      //     value: "85",
+      //     change: "3.5%",
+      //     up: false,
+      //     icon: CircleX,
+      //   },
+      // ]}
       chartData={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
         (d, i) => ({ name: d, value: [120, 145, 135, 160, 180, 210, 190][i] }),
       )}

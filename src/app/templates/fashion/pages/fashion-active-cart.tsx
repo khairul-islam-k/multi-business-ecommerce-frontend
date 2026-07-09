@@ -14,6 +14,7 @@ import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
 import { PaymentMethodStatus } from "@/types/template/template-payment";
 import CourierSellectModal from "../_components/payment/courier-sellect-modal";
 import { CourierDeliveryPayload } from "@/types/courier/courier";
+import Cookies from "js-cookie";
 
 
 
@@ -38,7 +39,6 @@ const getThumbnailImage = (images: CartImage[]) => {
 const FashionActiveCart = () => {
     const { data: cart, isLoading } = useAddActiveCArt();
     const message = useMessage();
-
     // payment
     const [openPayment, setOpenPayment] = useState<boolean>(false);
     const [orderId, setOrderId] = useState<string>('');
@@ -55,6 +55,16 @@ const FashionActiveCart = () => {
         deliveryDivisionName: '',
         weight: 0
     });
+
+
+    const host = typeof window !== "undefined" ? window.location.host : "";
+    console.log('url', host);
+    const setBaseUrlInCookie = () => {
+        Cookies.set('website', JSON.stringify(host), {
+            path: "/",
+            sameSite: "lax" as const,
+        });
+    }
 
     const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
@@ -345,7 +355,10 @@ const FashionActiveCart = () => {
 
                             <button
                                 type="button"
-                                onClick={() => setOpenCourierModal(true)}
+                                onClick={() => {
+                                    setOpenCourierModal(true)
+                                    setBaseUrlInCookie();
+                                }}
                                 className="mt-6 w-full rounded-full bg-[#f16d59] px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-950"
                             >
                                 Proceed to Checkout
