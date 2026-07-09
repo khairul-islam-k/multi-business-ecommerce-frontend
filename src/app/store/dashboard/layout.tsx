@@ -3,19 +3,16 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-    BarChart3,
+    FileText,
     Heart,
     Home,
     LogOut,
     MapPinHouse,
     Menu,
-    Package,
-    PackageSearch,
-    ReceiptText,
-    Settings,
+    RotateCcw,
+    ShoppingBag,
     ShoppingCart,
     Star,
-    User,
     X,
 } from "lucide-react";
 import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown";
@@ -35,18 +32,13 @@ const sidebarItems = [
     {
         label: "Orders",
         href: "/store/dashboard/order-history",
-        icon: ReceiptText,
+        icon: ShoppingBag,
     },
     {
         label: "Active Cart",
         href: "/store/dashboard/active-cart",
         icon: ShoppingCart,
     },
-    // {
-    //     label: "Carts",
-    //     href: "/store/dashboard/carts",
-    //     icon: ShoppingCart,
-    // },
     {
         label: "Reviews",
         href: "/store/dashboard/review",
@@ -60,7 +52,7 @@ const sidebarItems = [
     {
         label: "Return Orders",
         href: "/store/dashboard/return",
-        icon: PackageSearch,
+        icon: RotateCcw,
     },
     {
         label: "Wishlist",
@@ -70,13 +62,8 @@ const sidebarItems = [
     {
         label: "Invoice",
         href: "/store/dashboard/invoice",
-        icon: Heart,
+        icon: FileText,
     },
-    //   {
-    //     label: "Settings",
-    //     href: "/store/dashboard/settings",
-    //     icon: Settings,
-    //   },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
