@@ -1,3 +1,5 @@
+import { ListQuery } from "@/lib/api";
+
 export type DashboardCardFormat = "number" | "currency";
 
 export type DashboardChartType = "line" | "donut";
@@ -66,4 +68,10 @@ export type DashboardOverviewResponse = {
   range: DashboardRange;
   cards: DashboardCard[];
   charts: DashboardChart[];
+};
+
+// query
+export type overviewQuery = ListQuery & {
+  from?: string;
+  to?: string;
 };
