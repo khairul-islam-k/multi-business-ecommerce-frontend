@@ -41,7 +41,7 @@ type OrderHistoryResponse = {
 };
 
 const orderStatusOptions: OrderStatus[] = [
-  "PENDING",
+  "PLACED",
   "CONFIRMED",
   "PROCESSING",
   "SHIPPED",
@@ -102,7 +102,7 @@ const getPaymentStatusClass = (status: PaymentStatus) => {
 
 const getOrderStatusClass = (status: OrderStatus) => {
   switch (status) {
-    case "PENDING":
+    case "PLACED":
       return "bg-yellow-100 text-yellow-700";
     case "CONFIRMED":
       return "bg-blue-100 text-blue-700";

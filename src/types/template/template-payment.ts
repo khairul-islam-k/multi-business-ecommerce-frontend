@@ -42,7 +42,7 @@ export type PaymentInitResponse = {
 // order Response
 
 export type OrderStatus =
-    | "PENDING"
+    | "PLACED"
     | "CONFIRMED"
     | "PROCESSING"
     | "SHIPPED"
