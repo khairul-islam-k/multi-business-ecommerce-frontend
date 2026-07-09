@@ -45,7 +45,6 @@ const PurchaseDetail = () => {
     isFetching,
   } = usePurchaseOrder(businessId, id);
 
-  console.log("status", purchase);
   const cancelOrReceiveStatus = !(
     purchase?.status === "CANCELLED" || purchase?.status === "RECEIVED"
   );
@@ -62,7 +61,6 @@ const PurchaseDetail = () => {
         purchaseId: id,
         payload,
       });
-      console.log("res", res);
       message.success("Purchase order have been received");
     } catch (error) {
       message.error(getApiErrorMessage(error));
@@ -73,13 +71,11 @@ const PurchaseDetail = () => {
 
   const handleCancel = async (id: string) => {
     const payload = { note };
-    console.log("can", payload, id);
     try {
       const res = await updateCancelPO.mutateAsync({
         purchaseId: id,
         payload,
       });
-      console.log("res", res);
       message.success("Purchase order have been cancel");
     } catch (error) {
       message.error(getApiErrorMessage(error));

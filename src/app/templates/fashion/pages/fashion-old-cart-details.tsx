@@ -1,151 +1,147 @@
-'use client';
-import { useMessage } from '@/app/store/_components/message/message-hook';
-import { useAddCartMutation, useOldCart } from '@/lib/api/hooks/add-cart';
-import { getWebErrorMessage } from '@/lib/public-api-hook/web-api';
-import { CartImage, CartItem } from '@/types/template/add-cart';
-import { PaymentMethodStatus } from '@/types/template/template-payment';
-import { useParams } from 'next/navigation';
-import React, { useMemo, useState } from 'react';
-import PaymentModal from '../_components/payment/payment-modal';
-import PaymentGatewayModal from '../_components/payment/payment-gateway-modal';
-import Link from 'next/link';
-import { Minus, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import { imageUrlSet } from '@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url';
+"use client";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { useAddCartMutation, useOldCart } from "@/lib/api/hooks/add-cart";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { CartImage, CartItem } from "@/types/template/add-cart";
+import { PaymentMethodStatus } from "@/types/template/template-payment";
+import { useParams } from "next/navigation";
+import React, { useMemo, useState } from "react";
+import PaymentModal from "../_components/payment/payment-modal";
+import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
+import Link from "next/link";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
 const getItemPrice = (item: CartItem) => {
-    if (item.variant) {
-        return Number(item.variant.priceOverride);
-    }
+  if (item.variant) {
+    return Number(item.variant.priceOverride);
+  }
 
-    return Number(item.product.price);
+  return Number(item.product.price);
 };
 
 const getItemQuantity = (item: CartItem) => {
-    return Number(item.quantity);
+  return Number(item.quantity);
 };
 
 const getThumbnailImage = (images: CartImage[]) => {
-    const thumbnailImage = images.find((image) => image.isThumbnail === true);
+  const thumbnailImage = images.find((image) => image.isThumbnail === true);
 
-    return thumbnailImage?.imageUrl || null;
+  return thumbnailImage?.imageUrl || null;
 };
 
 const FashionOldCartDetails = () => {
-    const { id } = useParams<{ id: string }>();
-    const { data: cartDetails, isLoading } = useOldCart(id);
+  const { id } = useParams<{ id: string }>();
+  const { data: cartDetails, isLoading } = useOldCart(id);
 
-    console.log('details', cartDetails);
+  const message = useMessage();
 
-    const message = useMessage();
+  // payment
+  // const [openPayment, setOpenPayment] = useState<boolean>(false);
+  // const [orderId, setOrderId] = useState<string>('');
 
-    // payment
-    // const [openPayment, setOpenPayment] = useState<boolean>(false);
-    // const [orderId, setOrderId] = useState<string>('');
+  // const [open, setOpen] = useState<boolean>(false);
 
-    // const [open, setOpen] = useState<boolean>(false);
+  // const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
 
-    // const { updateQuantity, removeActiveCartItem } = useAddCartMutation();
+  // const items: CartItem[] = cartDetails?.items ?? [];
 
-    // const items: CartItem[] = cartDetails?.items ?? [];
+  // const handleIncrease = async (item: CartItem) => {
 
-    // const handleIncrease = async (item: CartItem) => {
+  //     try {
+  //         const payload = {
+  //             quantity: Number(item.quantity) + 1
+  //         };
 
-    //     try {
-    //         const payload = {
-    //             quantity: Number(item.quantity) + 1
-    //         };
+  //         await updateQuantity.mutateAsync({
+  //             itemId: item.id,
+  //             payload,
+  //         })
+  //     } catch (error) {
+  //         message.error(getWebErrorMessage(error));
+  //     }
 
-    //         await updateQuantity.mutateAsync({
-    //             itemId: item.id,
-    //             payload,
-    //         })
-    //     } catch (error) {
-    //         message.error(getWebErrorMessage(error));
-    //     }
+  // };
 
-    // };
+  // const handleDecrease = async (item: CartItem) => {
+  //     try {
+  //         const payload = {
+  //             quantity: Number(item.quantity) - 1
+  //         };
 
-    // const handleDecrease = async (item: CartItem) => {
-    //     try {
-    //         const payload = {
-    //             quantity: Number(item.quantity) - 1
-    //         };
+  //         await updateQuantity.mutateAsync({
+  //             itemId: item.id,
+  //             payload,
+  //         })
+  //     } catch (error) {
+  //         message.error(getWebErrorMessage(error));
+  //     }
+  // };
 
-    //         await updateQuantity.mutateAsync({
-    //             itemId: item.id,
-    //             payload,
-    //         })
-    //     } catch (error) {
-    //         message.error(getWebErrorMessage(error));
-    //     }
-    // };
+  // const handleDelete = (itemId: string) => {
+  //     message.confirm({
+  //         title: "Remove cart item?",
+  //         content: "Are you sure you want to remove this item from your cart?",
+  //         okText: "Remove",
+  //         cancelText: "Cancel",
+  //         danger: true,
 
-    // const handleDelete = (itemId: string) => {
-    //     message.confirm({
-    //         title: "Remove cart item?",
-    //         content: "Are you sure you want to remove this item from your cart?",
-    //         okText: "Remove",
-    //         cancelText: "Cancel",
-    //         danger: true,
+  //         onConfirm: async () => {
+  //             try {
+  //                 const res = await removeActiveCartItem.mutateAsync(itemId);
 
-    //         onConfirm: async () => {
-    //             try {
-    //                 const res = await removeActiveCartItem.mutateAsync(itemId);
+  //                 message.success("Cart item removed successfully");
+  //             } catch (error) {
+  //                 message.error(getWebErrorMessage(error));
+  //             }
+  //         },
+  //     });
+  // };
 
-    //                 console.log("res", res);
+  // const summary = useMemo(() => {
+  //     const subtotal = items?.reduce((total, item) => {
+  //         const price = getItemPrice(item);
+  //         const quantity = getItemQuantity(item);
 
-    //                 message.success("Cart item removed successfully");
-    //             } catch (error) {
-    //                 message.error(getWebErrorMessage(error));
-    //             }
-    //         },
-    //     });
-    // };
+  //         return total + price * quantity;
+  //     }, 0);
 
-    // const summary = useMemo(() => {
-    //     const subtotal = items?.reduce((total, item) => {
-    //         const price = getItemPrice(item);
-    //         const quantity = getItemQuantity(item);
+  //     const totalQuantity = items?.reduce((total, item) => {
+  //         return total + getItemQuantity(item);
+  //     }, 0);
 
-    //         return total + price * quantity;
-    //     }, 0);
+  //     const total = subtotal;
 
-    //     const totalQuantity = items?.reduce((total, item) => {
-    //         return total + getItemQuantity(item);
-    //     }, 0);
+  //     return {
+  //         subtotal,
+  //         totalQuantity,
+  //         total,
+  //     };
+  // }, [items]);
 
-    //     const total = subtotal;
+  // const handleOrderModal = (id: string, method: PaymentMethodStatus) => {
+  //     if (method !== 'COD') {
+  //         setOpenPayment(true);
+  //         setOrderId(id);
+  //     }
+  // }
 
-    //     return {
-    //         subtotal,
-    //         totalQuantity,
-    //         total,
-    //     };
-    // }, [items]);
-
-    // const handleOrderModal = (id: string, method: PaymentMethodStatus) => {
-    //     if (method !== 'COD') {
-    //         setOpenPayment(true);
-    //         setOrderId(id);
-    //     }
-    // }
-
-    if (isLoading) {
-        return (
-            <section className="bg-[#f8f5f1] px-4 py-10">
-                <div className="mx-auto max-w-7xl">
-                    <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-                        <p className="text-gray-500">Cart is loading...</p>
-                    </div>
-                </div>
-            </section>
-        );
-    }
-
+  if (isLoading) {
     return (
-        <section className="bg-[#f8f5f1] px-4 py-10 sm:px-6 lg:px-8">
-            {/* <div className="mx-auto max-w-7xl">
+      <section className="bg-[#f8f5f1] px-4 py-10">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+            <p className="text-gray-500">Cart is loading...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="bg-[#f8f5f1] px-4 py-10 sm:px-6 lg:px-8">
+      {/* <div className="mx-auto max-w-7xl">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-950">Shopping Cart</h1>
                     <p className="mt-2 text-sm text-gray-500">
@@ -362,8 +358,8 @@ const FashionOldCartDetails = () => {
                 orderId={orderId}
                 onClose={() => setOpenPayment(false)}
             /> */}
-        </section>
-    );
+    </section>
+  );
 };
 
 export default FashionOldCartDetails;

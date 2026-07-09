@@ -24,7 +24,6 @@ const CreateFinanceAccountPage = () => {
   const handleSubmit = async (values: FinanceAccountPayload) => {
     try {
       const res = await createFinanceAccount.mutateAsync(values);
-      console.log("res", res);
 
       swal.success("Account created successfully.");
       router.push("/admin/dashboard/finance/accounts");

@@ -35,7 +35,6 @@ const UpdateAddress = ({ customerId, singleAddress }: AddressProps) => {
         addressId: singleAddress.id,
         payload: values,
       });
-      console.log("res", res);
       swal.success("Customer address created successfully.");
     } catch (error) {
       swal.error(getApiErrorMessage(error));

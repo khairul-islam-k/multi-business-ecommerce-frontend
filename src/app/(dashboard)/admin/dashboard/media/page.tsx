@@ -72,8 +72,6 @@ export default function MediaLibraryPage() {
       .map((file) => file.originFileObj)
       .filter(Boolean) as File[];
 
-    console.log("image", files);
-
     if (!files.length) {
       message.error("Choose at least one image to upload.");
       return;

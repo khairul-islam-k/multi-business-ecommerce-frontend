@@ -98,8 +98,6 @@ export default function InventoryTransactionsPage() {
     search,
   });
 
-  console.log("data", movements);
-
   const total = movements?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 

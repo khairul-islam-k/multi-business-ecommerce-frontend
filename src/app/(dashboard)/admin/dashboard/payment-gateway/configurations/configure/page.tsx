@@ -320,13 +320,9 @@ const PaymentGateway = () => {
 
     try {
       if (savedGatewayItems.length) {
-        console.log("payload", payload);
       } else {
         const res = await createAllConfig.mutateAsync(payload);
-        console.log("Payment gateway response:", res);
       }
-
-      console.log("payload", payload);
 
       swal.success("Payment gateway configuration saved successfully.");
     } catch (error: unknown) {

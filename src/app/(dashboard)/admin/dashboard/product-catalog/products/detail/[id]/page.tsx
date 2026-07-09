@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  ArrowLeft,
-  Pencil
-} from "lucide-react";
-
+import { ArrowLeft, Pencil } from "lucide-react";
 
 import { Button, Card, Col, Empty, Row, Statistic, Tag } from "antd";
 import Image from "next/image";
@@ -48,8 +44,6 @@ export default function ProductDetailPage() {
   const businessId = business?.id ?? "";
 
   const { data: product, isLoading, isFetching } = useProduct(businessId, id);
-
-  console.log("product", product);
 
   if (isLoading || isFetching) {
     return <Loader />;

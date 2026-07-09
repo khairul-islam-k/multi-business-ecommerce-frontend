@@ -62,8 +62,6 @@ const PayPayable = ({ payableId, payModalOpen }: PayPayableProps) => {
   const [selectSingleAccount, setSelectSingleAccount] =
     useState<FinanceAccountResponse>();
 
-  console.log("select", selectSingleAccount);
-
   const accountOptions = useMemo(() => {
     return (
       accounts?.items?.map((account) => ({
@@ -98,7 +96,6 @@ const PayPayable = ({ payableId, payModalOpen }: PayPayableProps) => {
         payload,
       });
 
-      console.log("res", res);
       swal.success("Payable paid successfully.");
       form.resetFields();
       payModalOpen(false);

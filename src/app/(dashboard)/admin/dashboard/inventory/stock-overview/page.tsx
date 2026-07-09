@@ -83,13 +83,11 @@ export default function StockOverviewPage() {
         lowStockAlertQty: Number(values.lowStockAlertQty),
       };
 
-      console.log("payload", payload, "id", stockId);
       const res = await updateLowAlert.mutateAsync({
         stockId,
         payload,
       });
 
-      console.log("res", res);
       message.success("Low stock alert updated successfully");
       setIsModalOpen(false);
     } catch (error) {

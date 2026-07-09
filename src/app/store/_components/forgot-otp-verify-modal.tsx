@@ -89,11 +89,11 @@ export default function ForgotOtpVerifyModal({
     try {
       const res = await templateAuthApi.forgetOtpVerify({
         email,
-        otp
-      })
+        otp,
+      });
 
-      message.success('Verified successfully')
-      const id = res?.resetRequestId
+      message.success("Verified successfully");
+      const id = res?.resetRequestId;
 
       if (!id) {
         setOtpError("Verification id not found from server response");
@@ -106,7 +106,7 @@ export default function ForgotOtpVerifyModal({
     } catch (error) {
       setOtpError(getWebErrorMessage(error));
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -119,14 +119,13 @@ export default function ForgotOtpVerifyModal({
     const payload = {
       password: values.newPassword,
       email,
-      resetRequestId: verificationId
-    }
+      resetRequestId: verificationId,
+    };
 
     setLoading(true);
 
     try {
       const res = await templateAuthApi.forgetResentPassword(payload);
-      console.log('res reset', res);
       message.success("Password reset successfully");
 
       resetModalState();
@@ -140,7 +139,6 @@ export default function ForgotOtpVerifyModal({
   };
 
   if (!open) return null;
-
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
@@ -244,9 +242,7 @@ export default function ForgotOtpVerifyModal({
               disabled={loading}
               className="h-11 w-full rounded-xl bg-slate-900 text-sm font-semibold text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading
-                ? "Resetting..."
-                : "Reset Password"}
+              {loading ? "Resetting..." : "Reset Password"}
             </button>
           </form>
         ) : (

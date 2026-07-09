@@ -56,12 +56,10 @@ const DeliveryZones = () => {
       },
       onConfirm: async () => {
         try {
-          const res = await removePickUpStore.mutateAsync({
+          await removePickUpStore.mutateAsync({
             configId: selectedConfigId,
             storeId: id,
           });
-
-          console.log("res", res);
 
           swal.success("Pickup store deleted successfully.");
         } catch (error) {

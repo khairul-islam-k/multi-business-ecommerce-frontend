@@ -24,8 +24,6 @@ const CreatePickupStorePage = () => {
 
   const handleCreate = async (payload: PickupStorePayload) => {
     try {
-      console.log("create payload", payload);
-
       await createPickupStore.mutateAsync({
         configId,
         payload,

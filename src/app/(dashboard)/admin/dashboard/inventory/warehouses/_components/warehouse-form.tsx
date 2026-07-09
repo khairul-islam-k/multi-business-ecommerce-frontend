@@ -229,8 +229,6 @@ const WarehouseForm = ({
         : {}),
     };
 
-    console.log("warehouse payload", payload);
-
     onSubmit(payload);
   };
 

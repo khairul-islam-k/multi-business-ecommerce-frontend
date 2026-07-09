@@ -22,7 +22,6 @@ export default function OtpVerifyModal({
   const [isOtpSent, setIsOtpSent] = React.useState(Boolean(email));
   const message = useMessage();
 
-
   React.useEffect(() => {
     if (open) {
       setOtp("");
@@ -61,14 +60,12 @@ export default function OtpVerifyModal({
       return;
     }
 
-    const payload = {email: verifyEmail, otp}
+    const payload = { email: verifyEmail, otp };
 
     try {
       const res = await templateAuthApi.otpVerify(payload);
 
       message.success("Email verified successfully");
-
-      console.log('res', res);
 
       setOtp("");
       setVerifyEmail("");
@@ -82,7 +79,6 @@ export default function OtpVerifyModal({
   };
 
   const handleClose = () => {
-
     setOtp("");
     setVerifyEmail("");
     setIsOtpSent(false);

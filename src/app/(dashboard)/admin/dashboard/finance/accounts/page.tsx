@@ -115,7 +115,6 @@ const AccountsList = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [accountId, setAccountId] = useState<string>("");
-  console.log(accountId);
 
   const handleFinish = async (values: AddMoneyPayload) => {
     if (!accountId) {
@@ -134,8 +133,6 @@ const AccountsList = () => {
         accountId,
         payload,
       });
-
-      console.log("res", res);
 
       swal.success("Money added successfully.");
 
@@ -226,7 +223,6 @@ const AccountsList = () => {
         ];
 
         const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-          console.log("ant", key);
           if (key === "view") {
             router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`);
           }

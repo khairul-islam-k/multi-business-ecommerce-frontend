@@ -62,8 +62,6 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
     try {
       const result = await login(data.email, data.password);
 
-      console.log('result', result);
-
       const fallbackPath = getDashboardPath(result.user.type);
       const redirectPath =
         redirectTo && isSafeInternalPath(redirectTo)
@@ -71,12 +69,9 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
           : fallbackPath;
 
       if (result?.user?.type === "ADMIN") {
-
         toast.success("Signed in successfully!");
         router.push(redirectPath);
-
       } else if (result?.user?.type === "TENANT") {
-
         if (result.activeSubscription) {
           toast.success("Signed in successfully!");
           router.push(redirectPath);
@@ -84,16 +79,16 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
           toast.success("your subscription has been expire");
           router.push("/pricing");
         }
-
       } else {
         if (result.activeSubscription) {
           toast.success("Signed in successfully!");
           router.push(redirectPath);
         } else {
-          toast.success("Your subscription has expired. Please inform your tenant.");
+          toast.success(
+            "Your subscription has expired. Please inform your tenant.",
+          );
         }
       }
-
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }
@@ -111,17 +106,14 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
       return;
     }
 
-    console.log(email, 'email');
-
     try {
-      const res = await api.post('/auth/forgot-password', { email });
-      setVerifyEmail(email)
+      const res = await api.post("/auth/forgot-password", { email });
+      setVerifyEmail(email);
       setForgetOpen(true);
-
     } catch (error) {
       toast.error(getApiErrorMessage(error));
     }
-  }
+  };
 
   return (
     <main className="min-h-dvh bg-background px-3 py-4 text-foreground sm:p-5">
@@ -311,7 +303,7 @@ export default function SignInClient({ redirectTo }: SignInClientProps) {
 
       <OtpVerifyDialog
         open={otpOpen}
-        email={''}
+        email={""}
         onClose={() => setOtpOpen(false)}
         onVerified={() => router.push("/sign-in")}
       />

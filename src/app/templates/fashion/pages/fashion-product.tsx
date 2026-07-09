@@ -117,7 +117,6 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   const handleCategoryClick = (id: string) => {
-    console.log("id", id);
     router.push(`${pathname}?categoryId=${id}`);
   };
 
@@ -135,9 +134,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
         {/* Left Sidebar */}
         <aside className="h-fit bg-[var(--store-bg-1)] p-5 shadow-sm">
           <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-            <h2 className="text-xl font-bold">
-              Product categories
-            </h2>
+            <h2 className="text-xl font-bold">Product categories</h2>
 
             <SlidersHorizontal className="h-5 w-5 text-gray-500 lg:hidden" />
           </div>
@@ -146,9 +143,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
             type="button"
             onClick={handleClearCategory}
             className={`mt-5 block w-full text-left text-sm font-medium transition ${
-              !categoryId
-                ? "text-[#f16d59]"
-                : "hover:text-[#f16d59]"
+              !categoryId ? "text-[#f16d59]" : "hover:text-[#f16d59]"
             }`}
           >
             All Products
@@ -175,9 +170,7 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
             </h1>
 
             <div className="flex flex-wrap items-center gap-3">
-              <label className="text-lg font-semibold">
-                Sort by:
-              </label>
+              <label className="text-lg font-semibold">Sort by:</label>
 
               <div className="relative">
                 <select

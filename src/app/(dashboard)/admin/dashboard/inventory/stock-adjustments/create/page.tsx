@@ -209,8 +209,6 @@ export default function CreateStockAdjustmentPage() {
       })),
     };
 
-    console.log("stock adjustment payload", payload);
-
     try {
       await createStockAdjustment.mutateAsync(payload);
 

@@ -67,7 +67,6 @@ const UpdatePurchaseOrder = () => {
         note: values.note?.trim() || undefined,
       };
 
-      console.log("payload", payload);
       await updatePurchase.mutateAsync({
         purchaseId: id,
         payload,

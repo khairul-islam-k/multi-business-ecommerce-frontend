@@ -328,7 +328,7 @@ export default function PackagesPage() {
                 toolbarEnd={
                   <Button
                     type="primary"
-                    icon={<CirclePlus />}
+                    icon={<CirclePlus size={16} />}
                     onClick={() => setPlanModalOpen(true)}
                   >
                     Create plan
@@ -337,7 +337,7 @@ export default function PackagesPage() {
                 actions={(plan) => (
                   <Space>
                     <Button
-                      icon={<Pencil />}
+                      icon={<Pencil size={16} />}
                       onClick={() => {
                         setEditingPlan(plan);
                         setPlanModalOpen(true);
@@ -345,7 +345,7 @@ export default function PackagesPage() {
                     />
                     <Button
                       danger
-                      icon={<Trash2 />}
+                      icon={<Trash2 size={16} />}
                       onClick={() => deletePlan(plan)}
                     />
                   </Space>
@@ -370,7 +370,7 @@ export default function PackagesPage() {
                 toolbarEnd={
                   <Button
                     type="primary"
-                    icon={<CirclePlus />}
+                    icon={<CirclePlus size={16} />}
                     onClick={() => setSubscriptionModalOpen(true)}
                   >
                     Create subscription
@@ -380,7 +380,7 @@ export default function PackagesPage() {
                   <Space>
                     <Button
                       danger
-                      icon={<CircleStop />}
+                      icon={<CircleStop size={16} />}
                       disabled={subscription.status === "CANCELLED"}
                       onClick={() => cancelSubscription(subscription)}
                     />

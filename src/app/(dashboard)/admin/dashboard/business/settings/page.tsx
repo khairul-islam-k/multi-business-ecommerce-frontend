@@ -142,7 +142,6 @@ export default function BusinessSettingsPage() {
       status: "ACTIVE",
       // sortBy: "name",
     });
-  console.log(financeAccounts);
   const { data: units, isLoading: unitsLoading } = useProductUnitQuery(
     businessId ?? "",
     {

@@ -27,7 +27,6 @@ const ExpenseCreate = () => {
 
     try {
       const res = await createExpense.mutateAsync(values);
-      console.log("res", res);
       router.push("/admin/dashboard/finance/expenses/");
       swal.success("Expense created successfully.");
     } catch (error) {

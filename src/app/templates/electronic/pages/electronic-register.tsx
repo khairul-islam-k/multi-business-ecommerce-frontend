@@ -42,8 +42,6 @@ export default function ElectronicRegister() {
         throw new Error("Password and confirm password do not match");
       }
 
-      console.log("Register data:", form);
-
       // Later replace this with your API call
       // const res = await api.post("/auth/register", {
       //   name: form.name,
@@ -65,9 +63,7 @@ export default function ElectronicRegister() {
       <div className="mx-auto max-w-md">
         <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
           <div className="mb-8 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Create account
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900">Create account</h1>
 
             <p className="mt-2 text-sm text-gray-500">
               Register to start shopping.

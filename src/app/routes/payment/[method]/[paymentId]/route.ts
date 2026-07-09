@@ -32,7 +32,6 @@ async function parseRequestBody(request: NextRequest) {
   };
 }
 
-
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<PaymentRouteParams> },
@@ -46,10 +45,6 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
 
     const queryBody = Object.fromEntries(searchParams.entries());
-
-    console.log("GET payment callback method:", method);
-    console.log("GET payment callback paymentId:", paymentId);
-    console.log("GET payment callback query:", queryBody);
 
     let res: any;
 
@@ -68,8 +63,6 @@ export async function GET(
     }
 
     const verifyData = res?.data ?? res;
-
-    console.log("SHURJOPAY verify response:", verifyData);
 
     const isPaid = verifyData?.paymentStatus === "PAID";
 
@@ -132,7 +125,6 @@ export async function GET(
   }
 }
 
-
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<PaymentRouteParams> },
@@ -144,10 +136,6 @@ export async function POST(
     };
 
     const body = await parseRequestBody(request);
-
-    console.log("payment callback method:", method);
-    console.log("payment callback paymentId:", paymentId);
-    console.log("payment callback body:", body);
 
     let verifyPayload: Record<string, unknown> = {};
 
@@ -177,8 +165,6 @@ export async function POST(
      */
     const res = verifyResponse?.data ?? verifyResponse;
 
-    console.log("verify response:", res);
-
     const isPaid = res?.paymentStatus === "PAID";
 
     const isSSLCommerzSuccess =
@@ -190,10 +176,7 @@ export async function POST(
         res?.gatewayPayload?.status === "VALID" ||
         res?.paymentStatus === "PAID");
 
-    if (
-      isPaid &&
-      (isSSLCommerzSuccess || isAamarPaySuccess)
-    ) {
+    if (isPaid && (isSSLCommerzSuccess || isAamarPaySuccess)) {
       const successUrl = new URL("/payment/success", request.url);
 
       successUrl.searchParams.set("orderId", paymentId);

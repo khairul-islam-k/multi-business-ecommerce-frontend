@@ -18,7 +18,7 @@ const productReviewDefaultData: CreateProductReviewPayload = {
 type DetailsProps = {
   productId: string;
   slug: string;
-}
+};
 
 const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
   const [formData, setFormData] = useState<CreateProductReviewPayload>(
@@ -49,7 +49,6 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
     }));
   };
 
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -73,15 +72,13 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
 
       const res = await createReview.mutateAsync(payload);
 
-      console.log("Review created successfully:", res);
-
       message.success("Review submitted successfully.");
 
       setFormData({
         rating: 0,
         title: "",
         comment: "",
-        productId: ""
+        productId: "",
       });
     } catch (error) {
       message.error(getWebErrorMessage(error));
@@ -118,10 +115,11 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
                   className="transition hover:scale-110"
                 >
                   <Star
-                    className={`h-7 w-7 ${ratingValue <= activeRating
-                      ? "fill-[#f16d59] text-[#f16d59]"
-                      : "text-gray-300"
-                      }`}
+                    className={`h-7 w-7 ${
+                      ratingValue <= activeRating
+                        ? "fill-[#f16d59] text-[#f16d59]"
+                        : "text-gray-300"
+                    }`}
                   />
                 </button>
               );

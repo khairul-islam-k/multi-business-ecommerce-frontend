@@ -90,7 +90,6 @@ const ExpensesList = () => {
       async onOk() {
         try {
           const res = await updateExpensePay.mutateAsync(id);
-          console.log("res", res);
           swal.success("Expense marked as paid successfully");
         } catch (error) {
           swal.error(getApiErrorMessage(error));

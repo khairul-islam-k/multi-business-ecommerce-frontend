@@ -131,7 +131,7 @@ export default function TenantListPage() {
         }}
         toolbarEnd={
           <Link href="/super-admin/dashboard/tenants/create">
-            <Button type="primary" icon={<CirclePlus />}>
+            <Button type="primary" icon={<CirclePlus size={16} />}>
               Create Tenant
             </Button>
           </Link>
@@ -139,7 +139,7 @@ export default function TenantListPage() {
         actions={(row) => (
           <Flex gap={16}>
             <Link href={`/super-admin/dashboard/tenants/${row.id}`}>
-              <Button icon={<Eye />} />
+              <Button icon={<Eye size={16} />} />
             </Link>
 
             <Dropdown
@@ -155,7 +155,7 @@ export default function TenantListPage() {
               <Button
                 type="text"
                 aria-label="Tenant actions"
-                icon={<MoreHorizontal />}
+                icon={<MoreHorizontal size={16} />}
               />
             </Dropdown>
           </Flex>

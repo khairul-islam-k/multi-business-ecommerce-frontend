@@ -62,11 +62,7 @@ export default function CreateTenantForm() {
         >
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item
-                label="Owner Name"
-                name="ownerName"
-                rules={[{ required: true, message: "Owner name is required" }]}
-              >
+              <Form.Item label="Owner Name" name="ownerName">
                 <Input />
               </Form.Item>
             </Col>
@@ -83,7 +79,7 @@ export default function CreateTenantForm() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} md={12}>
+            <Col xs={24}>
               <Form.Item
                 name="email"
                 label="Email"

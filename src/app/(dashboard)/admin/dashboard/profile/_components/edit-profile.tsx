@@ -141,8 +141,6 @@ export default function EditProfile() {
         },
       };
 
-      console.log("backend payload", payload);
-
       const response = await api.patch("/auth/me", payload);
       return response.data;
     },

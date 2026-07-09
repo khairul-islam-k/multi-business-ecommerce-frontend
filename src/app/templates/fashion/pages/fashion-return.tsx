@@ -2,7 +2,10 @@
 
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { OrderReturnStatus } from "@/lib/api";
-import { useTemplateOrderReturnMutation, useTemplateOrderReturnQuery } from "@/lib/api/hooks/template-return";
+import {
+  useTemplateOrderReturnMutation,
+  useTemplateOrderReturnQuery,
+} from "@/lib/api/hooks/template-return";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { CustomerOrderReturnItemResponse } from "@/types/template/return-history";
 // import type {
@@ -108,9 +111,7 @@ const FashionReturn = () => {
     isFetching,
   } = useTemplateOrderReturnQuery();
 
-  console.log('return', returnsResponse);
-
-  const {cancelOrder} = useTemplateOrderReturnMutation()
+  const { cancelOrder } = useTemplateOrderReturnMutation();
 
   const response = returnsResponse as ReturnListResponse | undefined;
 
@@ -118,7 +119,7 @@ const FashionReturn = () => {
     returnsResponse,
   )
     ? returnsResponse
-    : response?.data ?? response?.items ?? [];
+    : (response?.data ?? response?.items ?? []);
 
   const totalReturns = response?.meta?.total ?? returns.length;
 
@@ -140,10 +141,8 @@ const FashionReturn = () => {
       cancelText: "No",
       danger: true,
       onConfirm: async () => {
-
         try {
-
-         await cancelOrder.mutateAsync(returnData.id);
+          await cancelOrder.mutateAsync(returnData.id);
 
           message.success("Return request cancelled successfully");
         } catch (error) {

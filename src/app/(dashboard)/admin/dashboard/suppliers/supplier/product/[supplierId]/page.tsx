@@ -55,8 +55,6 @@ const SupplierProducts = () => {
     status: statusFilter,
   });
 
-  console.log("data", products);
-
   const total = products?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 

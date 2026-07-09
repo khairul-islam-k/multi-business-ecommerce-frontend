@@ -140,13 +140,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const updatedCart = currentCart.map((item) =>
       item.id === itemId
         ? {
-          ...item,
-          ...values,
-          discountAmount: Math.min(
-            Number(values.discountAmount ?? item.discountAmount),
-            Number(values.quantity ?? item.quantity) * item.unitPrice,
-          ),
-        }
+            ...item,
+            ...values,
+            discountAmount: Math.min(
+              Number(values.discountAmount ?? item.discountAmount),
+              Number(values.quantity ?? item.quantity) * item.unitPrice,
+            ),
+          }
         : item,
     );
 
@@ -283,7 +283,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         //   await get().logout();
         // }
       } else {
-        console.log("unknown refresh error:", error);
       }
       return null;
     }

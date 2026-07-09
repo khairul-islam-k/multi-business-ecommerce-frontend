@@ -31,7 +31,6 @@ const StockDetail = () => {
   const businessId = business?.id ?? "";
 
   const { data: stock, isLoading, isFetching } = useStock(businessId, id);
-  console.log("data", stock);
 
   const product = stock?.product;
   const variant = stock?.variant;

@@ -99,7 +99,6 @@ const AssignToCourierModal = ({
         payload,
       });
 
-      console.log("res", res);
       swal.success("Courier Assigned successfully");
     } catch (error) {
       swal.error(getApiErrorMessage(error));

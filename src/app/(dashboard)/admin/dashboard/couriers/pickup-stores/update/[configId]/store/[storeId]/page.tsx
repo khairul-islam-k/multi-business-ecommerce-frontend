@@ -35,15 +35,11 @@ const UpdatePickupStorePage = () => {
 
   const handleUpdate = async (payload: PickupStorePayload) => {
     try {
-      console.log("update payload", payload);
-
-      const res = await updatePickupStore.mutateAsync({
+      await updatePickupStore.mutateAsync({
         configId,
         storeId,
         payload,
       });
-
-      console.log("res", res);
 
       message.success("Pickup store updated successfully");
     } catch (error) {

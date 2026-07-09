@@ -17,7 +17,6 @@ import TaxForm from "../../_components/tax-form";
 export default function UpdateTaxPage() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
-  console.log("id", id);
 
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
@@ -44,7 +43,6 @@ export default function UpdateTaxPage() {
         payload,
       });
 
-      console.log("tax", res);
       message.success("Tax updated successfully");
       router.push("/admin/dashboard/finance/tax");
     } catch (error) {

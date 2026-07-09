@@ -45,12 +45,8 @@ const ReturnPage = () => {
     isFetching,
   } = usePurchaseOrderReturnQuery(businessId);
 
-  console.log("return", returns);
-
   const { updateReturnComplete, updateReturnCancel } =
     usePurchaseOrderReturnMutation(businessId);
-
-  console.log("returns", returns);
 
   const returnItems: PurchaseReturnResponse[] = Array.isArray(returns)
     ? returns
@@ -85,7 +81,6 @@ const ReturnPage = () => {
     try {
       const res = await updateReturnComplete.mutateAsync(id);
       message.success("Return completed successfully");
-      console.log("res", res);
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
@@ -94,7 +89,6 @@ const ReturnPage = () => {
   const handleCancel = async (id: string) => {
     try {
       const res = await updateReturnCancel.mutateAsync(id);
-      console.log("res", res);
       message.success("Return cancelled successfully");
     } catch (error) {
       message.error(getApiErrorMessage(error));

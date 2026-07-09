@@ -41,8 +41,6 @@ const UpdateFinanceAccountPage = () => {
         payload: values,
       });
 
-      console.log("res", res);
-
       swal.success("Account updated successfully.");
       router.push("/admin/dashboard/finance/accounts");
     } catch (error) {

@@ -44,7 +44,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") {
       return null;
     }
-    
+
     const storedUser = localStorage.getItem(AUTH_USER_KEY);
 
     if (!storedUser) return null;
@@ -72,7 +72,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     try {
       if (currentUser?.refreshToken) {
-        console.log('current', currentUser.refreshToken);
         await templateAuthApi.logOut({
           refreshToken: currentUser.refreshToken,
         });
@@ -117,7 +116,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return null;
     }
   };
-
 
   const getTotalCartQuantity = (cart?: CustomerCartResponse | null) => {
     return (

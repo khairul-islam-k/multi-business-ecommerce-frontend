@@ -1,19 +1,14 @@
-import axios, {
-  AxiosHeaders,
-} from "axios";
+import axios, { AxiosHeaders } from "axios";
 import { templateAuthApi } from "../api/template-auth";
 import { Customer } from "@/types/template/auth";
 const baseURL = `${process.env.NEXT_PUBLIC_API_BASE_URL!}/api/v1`;
 
 const AUTH_USER_KEY = "auth_user";
 
-
 type User = Pick<Customer, "id" | "name" | "email" | "phone"> & {
   accessToken: string;
   refreshToken: string;
 };
-
-
 
 let isRefreshing = false;
 
@@ -101,7 +96,6 @@ export const webPublicApi = axios.create({
   baseURL,
 });
 
-
 webPublicApi.interceptors.request.use((config) => {
   const host = typeof window !== "undefined" ? window.location.host : "";
 
@@ -113,7 +107,6 @@ webPublicApi.interceptors.request.use((config) => {
 
   return config;
 });
-
 
 webApi.interceptors.request.use((config) => {
   const host = typeof window !== "undefined" ? window.location.host : "";
@@ -133,13 +126,10 @@ webApi.interceptors.request.use((config) => {
   return config;
 });
 
-
 webApi.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-
-    // console.log('error',error.response?.status)
 
     if (error.response?.status === 500) {
       if (typeof window !== "undefined") {
@@ -186,7 +176,7 @@ webApi.interceptors.response.use(
       return webApi(originalRequest);
     } catch (err) {
       processQueue(err, null);
-      logoutUser()
+      logoutUser();
       return Promise.reject(err);
     } finally {
       isRefreshing = false;
@@ -199,8 +189,6 @@ export const getWebErrorMessage = (error: unknown) => {
     const data = error.response?.data as
       | { message?: string; errors?: string[] }
       | undefined;
-
-    console.log("api message", data);
 
     return data?.message ?? error.message;
   }

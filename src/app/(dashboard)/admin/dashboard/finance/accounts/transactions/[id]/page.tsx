@@ -59,8 +59,6 @@ const Transactions = () => {
     limit,
   });
 
-  console.log("data", transactions);
-
   const transactionItems = transactions?.items ?? [];
 
   const total = transactions?.meta?.total || 0;

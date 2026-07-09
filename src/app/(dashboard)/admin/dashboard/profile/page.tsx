@@ -11,9 +11,7 @@ import ResetPassword from "./_components/reset-password";
 import UserProfilePage from "./_components/user-profilepage";
 
 const Profile = () => {
-  const onChange = (key: string) => {
-    console.log(key);
-  };
+  const onChange = (key: string) => {};
 
   const items: TabsProps["items"] = [
     {

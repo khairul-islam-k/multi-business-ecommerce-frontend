@@ -35,8 +35,6 @@ export default function ElectronicLogin() {
     setError("");
 
     try {
-      console.log("Login data:", form);
-
       // Later replace this with your API call
       // const res = await api.post("/auth/login", form);
 
