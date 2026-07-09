@@ -1,183 +1,345 @@
 "use client";
 
-import { Card, Row, Col, Typography, Table, Space, Badge } from "antd";
+import { Card, Col, DatePicker, Row, Segmented, Space, Typography } from "antd";
+import { useState } from "react";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
-  BarChart,
-  Bar,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from "recharts";
 
-import useWidth from "@/hooks/use-width";
-import StatCard from "@/components/shared/stat-card";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import {
-  mockStats,
-  mockMrrData,
-  mockTenantGrowth,
-  mockTenants,
-  mockAlerts,
-} from "./data";
+import useWidth from "@/hooks/use-width";
+import { useAdminOverviewQuery } from "@/lib/api/hooks/admin-overview";
 
-const { Title, Text } = Typography;
+import PlatformStatCard from "./_components/platform-stat-card";
 
-const tenantColumns = [
-  {
-    title: "Business",
-    dataIndex: "business",
-    key: "business",
-    render: (v: string) => <Text strong>{v}</Text>,
-  },
-  {
-    title: "Owner",
-    dataIndex: "owner",
-    key: "owner",
-    render: (v: string) => <Text type="secondary">{v}</Text>,
-  },
-  {
-    title: "Package",
-    dataIndex: "package",
-    key: "package",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (status: string) => {
-      if (status === "Active") return <Badge status="success" text="Active" />;
+import type { Dayjs } from "dayjs";
 
-      if (status === "Trial") return <Badge status="processing" text="Trial" />;
+const { Title } = Typography;
 
-      return <Badge status="error" text={status} />;
-    },
-  },
-];
+const formatChartDate = (date: string, view: "date" | "month") => {
+  return new Date(date).toLocaleDateString("en-BD", {
+    day: view === "date" ? "2-digit" : undefined,
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat("en-BD").format(value);
+};
+
+const formatCurrency = (value: number) => {
+  return new Intl.NumberFormat("en-BD", {
+    style: "currency",
+    currency: "BDT",
+    maximumFractionDigits: 0,
+  }).format(value);
+};
+
+const formatCompactCurrency = (value: number) => {
+  return new Intl.NumberFormat("en-BD", {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(value);
+};
+
+type ChartDataItem = Record<string, string | number>;
+
+const getChartData = (
+  charts: {
+    key: string;
+    label: string;
+    type: string;
+    data: ChartDataItem[];
+  }[],
+  key: string,
+) => {
+  return charts.find((chart) => chart.key === key);
+};
 
 export default function DashboardPage() {
   const width = useWidth();
+
+  const [chartView, setChartView] = useState<"date" | "month">("month");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
+
+  const { data: overviews } = useAdminOverviewQuery({
+    from: fromDate || undefined,
+    to: toDate || undefined,
+  });
+
+  const cards = overviews?.cards ?? [];
+  const charts = (overviews?.charts ?? []) as {
+    key: string;
+    label: string;
+    type: string;
+    data: ChartDataItem[];
+  }[];
+
+  const tenantsChart = getChartData(charts, "tenantsOverTime");
+  const businessesChart = getChartData(charts, "businessesOverTime");
+  const ordersChart = getChartData(charts, "ordersOverTime");
+  const revenueChart = getChartData(charts, "revenueOverTime");
+
+  const tenantsOverTime =
+    tenantsChart?.data?.map((item) => ({
+      label: formatChartDate(String(item.date), chartView),
+      tenants: Number(item.tenants ?? 0),
+    })) ?? [];
+
+  const businessesOverTime =
+    businessesChart?.data?.map((item) => ({
+      label: formatChartDate(String(item.date), chartView),
+      businesses: Number(item.businesses ?? 0),
+    })) ?? [];
+
+  const ordersOverTime =
+    ordersChart?.data?.map((item) => ({
+      label: formatChartDate(String(item.date), chartView),
+      orders: Number(item.orders ?? 0),
+    })) ?? [];
+
+  const revenueOverTime =
+    revenueChart?.data?.map((item) => ({
+      label: formatChartDate(String(item.date), chartView),
+      revenue: Number(item.revenue ?? 0),
+    })) ?? [];
+
+  const handleFromDateChange = (date: Dayjs | null) => {
+    if (!date) {
+      setFromDate("");
+      return;
+    }
+
+    setFromDate(date.startOf("day").toISOString());
+  };
+
+  const handleToDateChange = (date: Dayjs | null) => {
+    if (!date) {
+      setToDate("");
+      return;
+    }
+
+    setToDate(date.endOf("day").toISOString());
+  };
 
   return (
     <div className="space-y-6">
       <PageHeader title="Dashboard" breadcrumb={superAdminBreadcrumb} />
 
+      {/* Chart Controls */}
+      <Card>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <Segmented
+            value={chartView}
+            onChange={(value) => setChartView(value as "date" | "month")}
+            options={[
+              { label: "Date", value: "date" },
+              { label: "Month", value: "month" },
+            ]}
+          />
+
+          <Space wrap>
+            <DatePicker
+              placeholder="From date"
+              format="YYYY-MM-DD"
+              onChange={handleFromDateChange}
+            />
+
+            <DatePicker
+              placeholder="To date"
+              format="YYYY-MM-DD"
+              onChange={handleToDateChange}
+            />
+          </Space>
+        </div>
+      </Card>
+
       {/* Stats */}
       <Row gutter={[16, 16]}>
-        {mockStats.map((stat) => {
-          return (
-            <Col xs={width < 360 ? 24 : 12} md={8} lg={4} key={stat.label}>
-              <StatCard stat={stat} />
-            </Col>
-          );
-        })}
+        {cards.map((stat) => (
+          <Col xs={width < 360 ? 24 : 12} md={6} lg={6} key={stat.key}>
+            <PlatformStatCard stat={stat} />
+          </Col>
+        ))}
       </Row>
 
       {/* Charts */}
-      <Row gutter={[24, 24]}>
-        <Col xs={24} lg={16}>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={12}>
           <Card>
-            <Title level={5}>MRR Growth</Title>
+            <Title level={5}>Tenants Over Time</Title>
 
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={mockMrrData}>
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart
+                data={tenantsOverTime}
+                margin={{ top: 10, right: 20, left: 10, bottom: 55 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis dataKey="month" />
+                <XAxis
+                  dataKey="label"
+                  angle={90}
+                  textAnchor="start"
+                  interval={0}
+                  height={90}
+                  tick={{ fontSize: 12 }}
+                />
 
-                <YAxis tickFormatter={(v) => `$${v / 1000}k`} />
+                <YAxis allowDecimals={false} />
 
                 <Tooltip
-                  formatter={(value) =>
-                    typeof value === "number"
-                      ? `$${value.toLocaleString()}`
-                      : value
+                  formatter={(value) => formatNumber(Number(value))}
+                  labelFormatter={(label) =>
+                    chartView === "date" ? `Date: ${label}` : `Month: ${label}`
                   }
                 />
 
                 <Line
                   type="monotone"
-                  dataKey="value"
+                  dataKey="tenants"
                   stroke="#1677ff"
                   strokeWidth={2}
-                  dot={false}
+                  dot
                 />
               </LineChart>
             </ResponsiveContainer>
           </Card>
         </Col>
 
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={12}>
           <Card>
-            <Title level={5}>Tenant Growth</Title>
+            <Title level={5}>Businesses Over Time</Title>
 
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={mockTenantGrowth}>
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart
+                data={businessesOverTime}
+                margin={{ top: 10, right: 20, left: 10, bottom: 55 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis dataKey="month" />
+                <XAxis
+                  dataKey="label"
+                  angle={90}
+                  textAnchor="start"
+                  interval={0}
+                  height={90}
+                  tick={{ fontSize: 12 }}
+                />
 
-                <YAxis />
+                <YAxis allowDecimals={false} />
 
-                <Tooltip />
+                <Tooltip
+                  formatter={(value) => formatNumber(Number(value))}
+                  labelFormatter={(label) =>
+                    chartView === "date" ? `Date: ${label}` : `Month: ${label}`
+                  }
+                />
 
-                <Bar dataKey="value" fill="#52c41a" radius={[6, 6, 0, 0]} />
-              </BarChart>
+                <Line
+                  type="monotone"
+                  dataKey="businesses"
+                  stroke="#52c41a"
+                  strokeWidth={2}
+                  dot
+                />
+              </LineChart>
             </ResponsiveContainer>
           </Card>
         </Col>
-      </Row>
 
-      {/* Table + Alerts */}
-      <Row gutter={[24, 24]}>
-        <Col xs={24} lg={16}>
+        <Col xs={24} lg={12}>
           <Card>
-            <Title level={5}>Recent Tenant Sign-ups</Title>
+            <Title level={5}>Orders Over Time</Title>
 
-            <Table
-              columns={tenantColumns}
-              dataSource={mockTenants.slice(0, 4)}
-              pagination={false}
-              rowKey="id"
-              size="small"
-              scroll={{ x: "max-content" }}
-            />
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart
+                data={ordersOverTime}
+                margin={{ top: 10, right: 20, left: 10, bottom: 55 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+
+                <XAxis
+                  dataKey="label"
+                  angle={90}
+                  textAnchor="start"
+                  interval={0}
+                  height={90}
+                  tick={{ fontSize: 12 }}
+                />
+
+                <YAxis allowDecimals={false} />
+
+                <Tooltip
+                  formatter={(value) => formatNumber(Number(value))}
+                  labelFormatter={(label) =>
+                    chartView === "date" ? `Date: ${label}` : `Month: ${label}`
+                  }
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="orders"
+                  stroke="#faad14"
+                  strokeWidth={2}
+                  dot
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </Card>
         </Col>
 
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={12}>
           <Card>
-            <Title level={5}>System Alerts</Title>
+            <Title level={5}>Revenue Over Time</Title>
 
-            <Space orientation="vertical" style={{ width: "100%" }}>
-              {mockAlerts.map((a, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <div
-                    className={`h-2 w-2 rounded-full mt-2 ${
-                      a.severity === "error"
-                        ? "bg-red-500"
-                        : a.severity === "warning"
-                          ? "bg-yellow-500"
-                          : "bg-blue-500"
-                    }`}
-                  />
+            <ResponsiveContainer width="100%" height={320}>
+              <LineChart
+                data={revenueOverTime}
+                margin={{ top: 10, right: 20, left: 10, bottom: 55 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
 
-                  <div>
-                    <Text>{a.message}</Text>
+                <XAxis
+                  dataKey="label"
+                  angle={90}
+                  textAnchor="start"
+                  interval={0}
+                  height={90}
+                  tick={{ fontSize: 12 }}
+                />
 
-                    <br />
+                <YAxis
+                  tickFormatter={(value) =>
+                    `৳${formatCompactCurrency(Number(value))}`
+                  }
+                />
 
-                    <Text type="secondary" className="text-xs">
-                      {a.time}
-                    </Text>
-                  </div>
-                </div>
-              ))}
-            </Space>
+                <Tooltip
+                  formatter={(value) => formatCurrency(Number(value))}
+                  labelFormatter={(label) =>
+                    chartView === "date" ? `Date: ${label}` : `Month: ${label}`
+                  }
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#722ed1"
+                  strokeWidth={2}
+                  dot
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </Card>
         </Col>
       </Row>

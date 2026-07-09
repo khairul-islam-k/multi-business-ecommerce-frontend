@@ -16,14 +16,14 @@ import { Save } from "lucide-react";
 import { useEffect, useMemo } from "react";
 
 import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useSwal } from "@/hooks/use-swal";
 import {
   useFinanceAccountQuery,
   usePaymentGatewayConfigMutations,
   usePaymentGatewayConfigsQuery,
 } from "@/lib/api";
-import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
-import { useSwal } from "@/hooks/use-swal";
 import { getApiErrorMessage } from "@/lib/axios";
+import { GatewayMode, PaymentGatewayPayload } from "@/types/payment-gateway";
 
 const { Title, Text } = Typography;
 
@@ -319,15 +319,14 @@ const PaymentGateway = () => {
     }
 
     try {
-
       if (savedGatewayItems.length) {
-        console.log('payload', payload);
+        console.log("payload", payload);
       } else {
         const res = await createAllConfig.mutateAsync(payload);
         console.log("Payment gateway response:", res);
       }
 
-      console.log('payload', payload);
+      console.log("payload", payload);
 
       swal.success("Payment gateway configuration saved successfully.");
     } catch (error: unknown) {

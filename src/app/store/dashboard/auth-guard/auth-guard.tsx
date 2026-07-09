@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import { useCart } from "../../_components/contex/CartContex";
 
 type AuthGuardProps = {
@@ -13,8 +14,6 @@ const AuthGuard = ({ children }: AuthGuardProps) => {
   const { getAuthUser } = useCart();
 
   const user = getAuthUser();
-
-  console.log('user', user);
 
   const [isChecking, setIsChecking] = useState(true);
 

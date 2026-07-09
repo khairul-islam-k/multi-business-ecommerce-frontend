@@ -1,8 +1,5 @@
 "use client";
 
-import React, { useEffect } from "react";
-import dayjs, { type Dayjs } from "dayjs";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   App,
   Button,
@@ -14,11 +11,15 @@ import {
   Row,
   Select,
 } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { useEffect } from "react";
 
 import api, { getApiErrorMessage } from "@/lib/axios";
-import ImageUpload from "./image-upload";
-import { useAuthStore } from "@/stores/auth.store";
 import { countryOptions } from "@/lib/business/options";
+import { useAuthStore } from "@/stores/auth.store";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import ImageUpload from "./image-upload";
 
 type Gender = "MALE" | "FEMALE" | "OTHER";
 
@@ -86,7 +87,7 @@ export default function EditProfile() {
   const [form] = Form.useForm<EditProfileFormValues>();
   const queryClient = useQueryClient();
   const { message } = App.useApp();
-  const setUser = useAuthStore(s=> s.fetchProfile)
+  const setUser = useAuthStore((s) => s.fetchProfile);
 
   const { data: me, isLoading } = useQuery({
     queryKey: ["auth", "me"],
@@ -241,10 +242,7 @@ export default function EditProfile() {
 
           <Col xs={24} md={12}>
             <Form.Item name={["profile", "country"]} label="Country">
-              <Select
-                placeholder="Select gender"
-                options={countryOptions}
-              />
+              <Select placeholder="Select gender" options={countryOptions} />
             </Form.Item>
           </Col>
 
@@ -262,10 +260,7 @@ export default function EditProfile() {
 
           <Col xs={24}>
             <Form.Item name={["profile", "bio"]} label="Bio">
-              <Input.TextArea
-                rows={4}
-                placeholder="Senior sales employee."
-              />
+              <Input.TextArea rows={4} placeholder="Senior sales employee." />
             </Form.Item>
           </Col>
         </Row>

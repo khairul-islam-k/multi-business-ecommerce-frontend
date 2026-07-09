@@ -18,8 +18,8 @@ import type {
 } from "@/types/payment-gateway";
 import type { ProductReviewQuery } from "./product-reviews";
 import type { SupplierInvoiceQuery } from "./supplier-invoices";
-import { invoiceQuery } from "@/types/template/invoice";
 import { ShipmentQuery } from "@/types/courier/courier";
+import { invoiceQuery } from "@/types/template/invoice";
 
 export const apiQueryKeys = {
   auth: {
@@ -133,8 +133,18 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["variant", businessId] as const,
     list: (businessId: ApiId, productId: ApiId, search?: string) =>
       ["variant", businessId, productId, "list", search] as const,
-    options: (businessId: ApiId, productId: ApiId, selectedAttributes?: unknown) =>
-      ["variant", businessId, productId, "options", selectedAttributes] as const,
+    options: (
+      businessId: ApiId,
+      productId: ApiId,
+      selectedAttributes?: unknown,
+    ) =>
+      [
+        "variant",
+        businessId,
+        productId,
+        "options",
+        selectedAttributes,
+      ] as const,
 
     detail: (businessId: ApiId, productId: ApiId, variantId: ApiId) =>
       ["variant", businessId, "detail", productId, variantId] as const,
@@ -155,14 +165,14 @@ export const apiQueryKeys = {
       ["courierConfig", businessId, "gateways", query] as const,
     listShipment: (businessId: ApiId, query?: ShipmentQuery) =>
       ["courierConfig", businessId, "listShipment", query] as const,
-    listAreas: (businessId: ApiId,configId: ApiId, query?: CategoriesQuery) =>
+    listAreas: (businessId: ApiId, configId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, configId, "gateways", query] as const,
     configs: (businessId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, "configs", query] as const,
     pickUp: (businessId: ApiId, configId: ApiId) =>
-      ["courierConfig", businessId, configId,  "configs"] as const,
+      ["courierConfig", businessId, configId, "configs"] as const,
     shippingDetails: (businessId: ApiId, shippingId: ApiId) =>
-      ["courierConfig", businessId, shippingId,  "shippingDetails"] as const,
+      ["courierConfig", businessId, shippingId, "shippingDetails"] as const,
   },
   ProductAttribute: {
     all: (businessId: ApiId) => ["attribute", businessId] as const,
@@ -186,7 +196,13 @@ export const apiQueryKeys = {
       ["supplierProduct", businessId, supplierId, "list", query] as const,
 
     detail: (businessId: ApiId, CategoryId: ApiId, productMId: ApiId) =>
-      ["supplierProduct", businessId, "detail", CategoryId, productMId] as const,
+      [
+        "supplierProduct",
+        businessId,
+        "detail",
+        CategoryId,
+        productMId,
+      ] as const,
   },
   warehouse: {
     all: (businessId: ApiId) => ["warehouse", businessId] as const,
@@ -264,7 +280,11 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["financeAccount", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>
       ["financeAccount", businessId, "list", query] as const,
-    listTransaction: (businessId: ApiId, accountId: ApiId, query?: CategoriesQuery) =>
+    listTransaction: (
+      businessId: ApiId,
+      accountId: ApiId,
+      query?: CategoriesQuery,
+    ) =>
       ["financeAccount", businessId, accountId, "listTraction", query] as const,
 
     detail: (businessId: ApiId, CategoryId: ApiId) =>
@@ -351,8 +371,7 @@ export const apiQueryKeys = {
     listProducts: (query?: CategoriesQuery) =>
       ["publicWebsite", "listProducts", query] as const,
 
-    detail: (slug: ApiId) =>
-      ["publicWebsite", slug, "detail"] as const,
+    detail: (slug: ApiId) => ["publicWebsite", slug, "detail"] as const,
   },
 
   productReview: {
@@ -360,62 +379,50 @@ export const apiQueryKeys = {
     list: (query?: CategoriesQuery) =>
       ["productReview", "list", query] as const,
 
-    detailProfile: () =>
-      ["detailProfile"] as const,
+    detailProfile: () => ["detailProfile"] as const,
   },
 
   addCart: {
     all: () => ["addCart"] as const,
-    list: (query?: CategoriesQuery) =>
-      ["addCart", "list", query] as const,
+    list: (query?: CategoriesQuery) => ["addCart", "list", query] as const,
 
-    detail: () =>
-      ["addCart", "detail"] as const,
+    detail: () => ["addCart", "detail"] as const,
 
-    detailOldCart: (cartId: ApiId) =>
-      ["addCart", cartId, "detail"] as const,
+    detailOldCart: (cartId: ApiId) => ["addCart", cartId, "detail"] as const,
 
-    detailActive: () =>
-      ["addCart", "detailActive"] as const,
+    detailActive: () => ["addCart", "detailActive"] as const,
   },
 
   customerAddressTemplate: {
     all: () => ["customer"] as const,
-    list: () =>
-      ["customer", "list"] as const,
+    list: () => ["customer", "list"] as const,
 
-    detail: (addressId: ApiId) =>
-      ["customer", "detail", addressId] as const,
+    detail: (addressId: ApiId) => ["customer", "detail", addressId] as const,
   },
   paymentTemplate: {
     all: () => ["paymentTemplate"] as const,
-    list: () =>
-      ["paymentTemplate", "list"] as const,
+    list: () => ["paymentTemplate", "list"] as const,
 
     detail: (addressId: ApiId) =>
       ["paymentTemplate", "detail", addressId] as const,
   },
 
   templateOrderHistory: {
-    all: ()=> ["orderHistory"] as const,
-    list: (query?: CategoriesQuery) =>
-      ["orderHistory", "list", query] as const,
+    all: () => ["orderHistory"] as const,
+    list: (query?: CategoriesQuery) => ["orderHistory", "list", query] as const,
 
-    detail: (orderId: ApiId) =>
-      ["orderHistory", orderId, "detail"] as const,
+    detail: (orderId: ApiId) => ["orderHistory", orderId, "detail"] as const,
   },
 
   templateInvoice: {
-    all: ()=> ["templateInvoice"] as const,
-    list: (query?: invoiceQuery) =>
-      ["templateInvoice", "list", query] as const,
+    all: () => ["templateInvoice"] as const,
+    list: (query?: invoiceQuery) => ["templateInvoice", "list", query] as const,
 
-    detail: (orderId: ApiId) =>
-      ["templateInvoice", orderId, "detail"] as const,
+    detail: (orderId: ApiId) => ["templateInvoice", orderId, "detail"] as const,
   },
 
   templateOrderReturn: {
-    all: ()=> ["templateOrderReturn"] as const,
+    all: () => ["templateOrderReturn"] as const,
     list: (query?: CategoriesQuery) =>
       ["templateOrderReturn", "list", query] as const,
 
@@ -423,28 +430,43 @@ export const apiQueryKeys = {
       ["templateOrderReturn", orderId, "detail"] as const,
   },
   templateProductWishList: {
-    all: ()=> ["wishList"] as const,
-    list: (query?: CategoriesQuery) =>
-      ["wishList", "list", query] as const,
+    all: () => ["wishList"] as const,
+    list: (query?: CategoriesQuery) => ["wishList", "list", query] as const,
 
-    detail: (orderId: ApiId) =>
-      ["wishList", orderId, "detail"] as const,
+    detail: (orderId: ApiId) => ["wishList", orderId, "detail"] as const,
   },
 
   templateCourier: {
-    all: ()=> ["templateCourier"] as const,
-    list: () =>
-      ["templateCourier", "list"] as const,
+    all: () => ["templateCourier"] as const,
+    list: () => ["templateCourier", "list"] as const,
     listArea: (configId: ApiId) =>
       ["templateCourier", configId, "listArea"] as const,
 
-    detail: (orderId: ApiId) =>
-      ["templateCourier", orderId, "detail"] as const,
+    detail: (orderId: ApiId) => ["templateCourier", orderId, "detail"] as const,
   },
 
   templateResolve: {
-    detail: () =>
-      ["categories", "detail"] as const,
+    detail: () => ["categories", "detail"] as const,
   },
 
+  tenantOverview: {
+    all: (businessId: ApiId) => ["tenantOverview", businessId] as const,
+
+    detail: (businessId: ApiId, query?: CategoriesQuery) =>
+      ["tenantOverview", businessId, "detail", query] as const,
+  },
+
+  adminOverview: {
+    all: () => ["adminOverview"] as const,
+
+    detail: (query?: CategoriesQuery) =>
+      ["adminOverview", "detail", query] as const,
+  },
+
+  customerOverview: {
+    all: () => ["customerOverview"] as const,
+
+    detail: (query?: CategoriesQuery) =>
+      ["customerOverview", "detail", query] as const,
+  },
 };
