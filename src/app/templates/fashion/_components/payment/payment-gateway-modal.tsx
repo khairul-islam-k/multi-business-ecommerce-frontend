@@ -34,6 +34,8 @@ export default function PaymentGatewayModal({
 
     const baseUrl = window.location.origin ?? '';
 
+    console.log('url', baseUrl);
+
     const router = useRouter()
 
     const { createProvidePayment } = useTemplatePaymentMutation();

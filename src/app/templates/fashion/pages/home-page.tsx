@@ -10,10 +10,8 @@ import PolicyLabel from '../_components/policy-label';
 import { WebsiteTemplatePayload } from '@/types/website/website';
 
 const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
-    console.log('resolvle', resolveData);
     const bannerSlide = resolveData?.config?.headerConfig?.slide;
-    console.log('slide', bannerSlide);
-
+    const partners = resolveData?.config?.generalConfig?.partners ?? [];
     return (
         <div>
             <HeroSection bannerSlide={bannerSlide ?? []} />
@@ -28,7 +26,7 @@ const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) =
 
             <DealOfDay />
 
-            <PartnerSection />
+            <PartnerSection partners={partners} />
 
             <BestSellingProducts />
         </div>

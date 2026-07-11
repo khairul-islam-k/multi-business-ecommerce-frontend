@@ -70,7 +70,6 @@ export default function CreateUserPage() {
         : `+${dialCode}${phoneNumber.replace(/^0+/, "")}`
       : undefined;
 
-    console.log(fullPhoneNumber, 'phone');
     const payload = {
       name: values.name,
       email: values.email,
@@ -89,8 +88,6 @@ export default function CreateUserPage() {
         bio: values.bio,
       },
     }
-
-    console.log('payload', payload);
 
     try {
       await createEmployee.mutateAsync(payload);

@@ -47,10 +47,7 @@ export async function GET(
 
     const queryBody = Object.fromEntries(searchParams.entries());
 
-    console.log("GET payment callback method:", method);
-    console.log("GET payment callback paymentId:", paymentId);
-    console.log("GET payment callback query:", queryBody);
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let res: any;
 
     if (method === "SHURJOPAY") {
@@ -83,6 +80,7 @@ export async function GET(
     if (isPaid && isShurjoPaySuccess) {
       const successUrl = new URL("/payment/success", request.url);
 
+      console.log('success', successUrl);
       successUrl.searchParams.set("orderId", paymentId);
       successUrl.searchParams.set("OrderId", verifyData?.orderId ?? "");
       successUrl.searchParams.set(

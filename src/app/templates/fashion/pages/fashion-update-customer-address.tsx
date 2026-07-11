@@ -23,8 +23,6 @@ const FashionUpdateCustomerAddress = ({
   const { data: address, isLoading } = useCustomerAddress(addressId);
   const { updateCustomerAddress } = useTemplateCustomerAddressMutation();
 
-  console.log('address', address);
-
 
   const handleUpdate = async (values: CustomerAddressFormValues) => {
     try {

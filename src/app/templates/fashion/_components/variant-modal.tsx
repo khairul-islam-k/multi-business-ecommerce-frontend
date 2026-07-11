@@ -30,8 +30,6 @@ const VariantModal = ({
     const { createAddCart } = useAddCartMutation();
     const { addWishList } = useTemplateProductWishListMutation();
 
-    console.log('product', product);
-
     useEffect(() => {
         if (!open) return;
 

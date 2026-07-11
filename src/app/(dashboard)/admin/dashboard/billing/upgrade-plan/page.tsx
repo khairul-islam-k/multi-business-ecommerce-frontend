@@ -40,7 +40,6 @@ export default function UpgradePlanPage() {
       async onOk() {
         try {
           const payment = await mutations.checkoutPlan.mutateAsync(plan.id);
-          console.log("paymentId", payment);
           modal.confirm({
             title: "Confirm mock payment?",
             content: `Confirm payment ${money(

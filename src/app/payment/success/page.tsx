@@ -132,7 +132,7 @@ export default async function FashionPaymentSuccessPage({
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
-                href={`${website}/store`}
+                href={`/store`}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] px-6 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
               >
                 <Home className="size-5" />

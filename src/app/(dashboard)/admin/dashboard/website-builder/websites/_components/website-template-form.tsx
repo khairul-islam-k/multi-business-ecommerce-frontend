@@ -23,6 +23,8 @@ import {
   WebsiteTemplatePayload,
 } from "@/types/website/website";
 
+import { useSwal } from "@/hooks/use-swal";
+
 const { TextArea } = Input;
 
 type TemplateFormValues = WebsiteTemplatePayload;
@@ -117,6 +119,7 @@ const toFormValues = (
   };
 };
 
+
 export default function WebsiteTemplateForm({
   mode,
   initialData,
@@ -131,6 +134,8 @@ export default function WebsiteTemplateForm({
       label: template.name,
       value: template.key,
     })) ?? [];
+
+  const message = useSwal();
 
   const [slideImageModalOpen, setSlideImageModalOpen] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number | null>(null);
@@ -238,6 +243,16 @@ export default function WebsiteTemplateForm({
     await onSubmit(payload);
   };
 
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFinishFailed = (errorInfo: any) => {
+    const firstError = errorInfo.errorFields?.[0]?.errors?.[0];
+
+    if (firstError) {
+      message.error(String(firstError));
+    }
+  };
+
   return (
     <Card
       title={
@@ -251,6 +266,7 @@ export default function WebsiteTemplateForm({
           template: "ELECTRONIC",
         }}
         onFinish={handleFinish}
+        onFinishFailed={handleFinishFailed}
       >
         <Tabs
           defaultActiveKey="config"
@@ -306,6 +322,7 @@ export default function WebsiteTemplateForm({
                   }
 
                   <Collapse
+                    className="mb-5"
                     accordion
                     defaultActiveKey={["headerConfig"]}
                     items={[

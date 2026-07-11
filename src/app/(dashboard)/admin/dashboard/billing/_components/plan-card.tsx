@@ -24,7 +24,6 @@ export default function PlanCard({
   const { token } = theme.useToken();
   const isCurrent = plan.id === currentPlanId;
   const [loadingId, setLoadingId] = useState<string>('');
-  console.log('loading', loadingId);
 
   const cardLoading = (loadingId === plan.id) && loading;
 

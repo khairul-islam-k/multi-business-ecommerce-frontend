@@ -13,7 +13,6 @@ const HeroSection = ({bannerSlide}:{bannerSlide: HeaderSlide[]}) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
     const activeHero = bannerSlide[activeIndex];
-    console.log('active', activeHero);
 
     const handleNext = () => {
         setActiveIndex((prev) => (prev + 1) % bannerSlide.length);

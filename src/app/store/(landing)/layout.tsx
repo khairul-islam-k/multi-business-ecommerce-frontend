@@ -32,7 +32,7 @@ const WebsiteLayout = async ({
           {children}
 
         {isElectronic ? <ElectronicFooter /> : null}
-        {isFashion ? <FashionFooter /> : null}
+        {isFashion ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
     </div>
   );
 };

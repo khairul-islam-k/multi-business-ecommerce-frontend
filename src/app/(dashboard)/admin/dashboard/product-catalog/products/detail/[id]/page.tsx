@@ -49,8 +49,6 @@ export default function ProductDetailPage() {
 
   const { data: product, isLoading, isFetching } = useProduct(businessId, id);
 
-  console.log("product", product);
-
   if (isLoading || isFetching) {
     return <Loader />;
   }
