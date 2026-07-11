@@ -20,8 +20,7 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCustomer } from "@/lib/api/hooks/customer";
 import { useAuthStore } from "@/stores/auth.store";
-
-import Address from "../_components/address";
+import Address from "../_components/Address";
 
 const { Title, Text } = Typography;
 

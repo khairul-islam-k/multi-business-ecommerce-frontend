@@ -1,5 +1,4 @@
-// import ElectronicProductsPage from "@/app/templates/electronic/pages/Products";
-import ElectronicProductsPage from '@/app/templates/electronic/pages/products';
+import ElectronicProductsPage from '@/app/templates/electronic/pages/Products';
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';

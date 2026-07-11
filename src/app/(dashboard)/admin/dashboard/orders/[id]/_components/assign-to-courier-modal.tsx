@@ -94,12 +94,13 @@ const AssignToCourierModal = ({
     };
 
     try {
-      const res = await courierAssign.mutateAsync({
+      await courierAssign.mutateAsync({
         orderId,
         payload,
       });
 
       swal.success("Courier Assigned successfully");
+      // handleClose();
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     } finally {

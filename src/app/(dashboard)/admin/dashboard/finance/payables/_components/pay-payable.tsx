@@ -32,9 +32,7 @@ type PayPayableProps = {
 const accountTypeOptions = [
   { label: "Cash", value: "CASH" },
   { label: "Bank Transfer", value: "BANK_TRANSFER" },
-  { label: "bKash", value: "BKASH" },
-  { label: "Nagad", value: "NAGAD" },
-  { label: "Cheque", value: "CHEQUE" },
+  { label: "MOBILE BANKING", value: "MOBILE_BANKING" },
   { label: "Other", value: "OTHER" },
 ];
 

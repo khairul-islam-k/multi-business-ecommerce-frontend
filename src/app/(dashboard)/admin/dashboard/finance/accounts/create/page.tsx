@@ -23,7 +23,7 @@ const CreateFinanceAccountPage = () => {
 
   const handleSubmit = async (values: FinanceAccountPayload) => {
     try {
-      const res = await createFinanceAccount.mutateAsync(values);
+      await createFinanceAccount.mutateAsync(values);
 
       swal.success("Account created successfully.");
       router.push("/admin/dashboard/finance/accounts");

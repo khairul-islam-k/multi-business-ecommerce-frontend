@@ -47,7 +47,7 @@ export const Navbar = () => {
 
         {/* CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <Link
             href="/sign-in"
             className="flex items-center h-10 px-5 rounded-full border border-foreground/80 text-sm font-semibold text-foreground hover:bg-foreground hover:text-background transition-colors"
@@ -65,7 +65,7 @@ export const Navbar = () => {
 
         {/* Mobile toggle */}
         <div className="lg:hidden flex items-center gap-2">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <button
             className="relative grid h-10 w-10 place-items-center rounded-lg border border-border bg-background"
             onClick={() => setOpen(!open)}

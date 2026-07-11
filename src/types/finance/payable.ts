@@ -78,9 +78,7 @@ export type ReceivableQuery = ListQuery & {
 type AccountType =
 |"CASH"
 |"BANK_TRANSFER"
-|"BKASH"
-|"NAGAD"
-|"CHEQUE"
+|"MOBILE_BANKING"
 |"OTHER";
 
 export type PayPayableFormValues = {

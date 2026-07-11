@@ -11,13 +11,13 @@ const MonthOffer = () => {
         {/* Header Text */}
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
-            Best Month Offer
+            Best Offers of the Month
           </h2>
 
           <p className="mt-4 text-base leading-8">
-            Erat pellentesque curabitur euismod dui etiam pellentesque rhoncus
-            fermentum tristique lobortis lectus magnis. Consequat porta turpis
-            maecenas.
+            Discover this month&apos;s best fashion deals on selected clothing,
+            accessories, and seasonal essentials. Shop your favorite styles at special
+            prices while stocks last.
           </p>
         </div>
 

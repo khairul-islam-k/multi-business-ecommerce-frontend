@@ -12,6 +12,9 @@ import { WebsiteTemplatePayload } from '@/types/website/website';
 const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
     const bannerSlide = resolveData?.config?.headerConfig?.slide;
     const partners = resolveData?.config?.generalConfig?.partners ?? [];
+
+    console.log('offer', resolveData?.config?.generalConfig?.bestOfferImages)
+
     return (
         <div>
             <HeroSection bannerSlide={bannerSlide ?? []} />

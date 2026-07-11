@@ -39,15 +39,15 @@ type CategoryTreeItem = {
 const pageLinks = [
   {
     label: "Contact Us",
-    href: "/contact",
+    href: "/store/contact",
   },
   {
     label: "Privacy & Policy",
-    href: "/privacy-policy",
+    href: "/store/privacy",
   },
   {
     label: "Term & Condition",
-    href: "/terms-condition",
+    href: "/store/term-condition",
   },
 ];
 
@@ -262,7 +262,7 @@ const FashionNavbar = () => {
             </div>
 
             <Link
-              href="/faq"
+              href="/store/faq"
               className="text-sm font-medium transition hover:text-[#f16d59]"
             >
               FAQ
@@ -392,7 +392,7 @@ const FashionNavbar = () => {
               </details>
 
               <Link
-                href="/faq"
+                href="/store/faq"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
               >
