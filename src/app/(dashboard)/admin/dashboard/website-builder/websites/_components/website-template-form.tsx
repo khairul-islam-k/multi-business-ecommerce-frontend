@@ -22,6 +22,7 @@ import {
   HeaderSlide,
   WebsiteTemplatePayload,
 } from "@/types/website/website";
+import { useSwal } from "@/hooks/use-swal";
 
 const { TextArea } = Input;
 
@@ -46,15 +47,15 @@ const toFormValues = (
         slide: data?.config?.headerConfig?.slide?.length
           ? data.config.headerConfig.slide
           : [
-              {
-                id: Date.now(),
-                title: "",
-                imageUrl: "",
-                subTitle: "",
-                buttonText: "",
-                description: "",
-              },
-            ],
+            {
+              id: Date.now(),
+              title: "",
+              imageUrl: "",
+              subTitle: "",
+              buttonText: "",
+              description: "",
+            },
+          ],
       },
 
       footerConfig: {
@@ -70,22 +71,22 @@ const toFormValues = (
         bestOfferImages: data?.config?.generalConfig?.bestOfferImages?.length
           ? data.config.generalConfig.bestOfferImages
           : [
-              {
-                id: 1,
-                imageUrl: "",
-                size: "large",
-              },
-              {
-                id: 2,
-                imageUrl: "",
-                size: "small",
-              },
-              {
-                id: 3,
-                imageUrl: "",
-                size: "small",
-              },
-            ],
+            {
+              id: 1,
+              imageUrl: "",
+              size: "large",
+            },
+            {
+              id: 2,
+              imageUrl: "",
+              size: "small",
+            },
+            {
+              id: 3,
+              imageUrl: "",
+              size: "small",
+            },
+          ],
 
         partners: data?.config?.generalConfig?.partners?.length
           ? data.config.generalConfig.partners
@@ -129,6 +130,8 @@ export default function WebsiteTemplateForm({
       label: template.name,
       value: template.key,
     })) ?? [];
+
+  const swal = useSwal();
 
   const [slideImageModalOpen, setSlideImageModalOpen] = useState(false);
   const [activeSlideIndex, setActiveSlideIndex] = useState<number | null>(null);
@@ -234,6 +237,16 @@ export default function WebsiteTemplateForm({
     await onSubmit(payload);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFinishFailed = (errorInfo: any) => {
+    const firstError = errorInfo.errorFields?.[0]?.errors?.[0];
+
+    if (firstError) {
+      swal.error(String(firstError));
+    }
+  };
+
+
   return (
     <Card
       title={
@@ -249,6 +262,7 @@ export default function WebsiteTemplateForm({
           template: "ELECTRONIC",
         }}
         onFinish={handleFinish}
+        onFinishFailed={handleFinishFailed}
       >
         <Tabs
           defaultActiveKey="config"
@@ -810,7 +824,7 @@ export default function WebsiteTemplateForm({
                     <Form.Item
                       label="Meta Title"
                       name={["seo", "metaTitle"]}
-                      // rules={[{ required: true }]}
+                    // rules={[{ required: true }]}
                     >
                       <Input placeholder="Acme Store" />
                     </Form.Item>
@@ -819,7 +833,7 @@ export default function WebsiteTemplateForm({
                   <Col xs={24} md={12}>
                     <Form.Item
                       label="Meta Keywords"
-                      // name={["seo", "metaKeywords"]}
+                    // name={["seo", "metaKeywords"]}
                     >
                       <Input placeholder="acme,shop,ecommerce" />
                     </Form.Item>
