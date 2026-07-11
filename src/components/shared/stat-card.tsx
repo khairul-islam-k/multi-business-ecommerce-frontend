@@ -1,14 +1,14 @@
+import { Card, Space, Typography } from "antd";
 import {
   AlertTriangle,
   Banknote,
   GitBranch,
+  LucideIcon,
   Package,
   ShoppingCart,
   Users,
-  type LucideIcon,
 } from "lucide-react";
 
-import { Card, Space, Typography } from "antd";
 import type { DashboardCard } from "@/types/dashboard-overview/tenant";
 
 const { Text, Title } = Typography;
@@ -44,7 +44,6 @@ const formatCardValue = (stat: DashboardCard) => {
 };
 
 export default function StatCard({ stat }: { stat: DashboardCard }) {
-
   const Icon = cardIconMap[stat.key];
 
   return (

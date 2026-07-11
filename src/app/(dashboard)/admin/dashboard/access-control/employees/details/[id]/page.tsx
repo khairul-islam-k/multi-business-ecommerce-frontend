@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  UserRound
-} from "lucide-react";
-
-
-import { useParams } from "next/navigation";
-import {
   Avatar,
   Card,
   Col,
@@ -18,12 +12,14 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { UserRound } from "lucide-react";
+import { useParams } from "next/navigation";
 
-import { useEmployee } from "@/lib/api";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
-import PageHeader from "@/components/shared/page-header";
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useEmployee } from "@/lib/api";
 
 const { Title, Text } = Typography;
 

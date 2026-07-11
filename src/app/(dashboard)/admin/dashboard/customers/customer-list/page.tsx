@@ -1,28 +1,30 @@
 "use client";
 
+import { Button, Card, Dropdown, MenuProps, Select, Tag, Tooltip } from "antd";
 import {
   CirclePlus,
   Eye,
   MapPin,
   MoreHorizontal,
   Pencil,
-  Trash2
+  Trash2,
 } from "lucide-react";
-
-
-import React, { useState } from "react";
-import { Button, Card, Dropdown, MenuProps, Popconfirm, Select, Tag, Tooltip } from "antd";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useCustomerMutation, useCustomerQuery } from "@/lib/api/hooks/customer";
-import { useAuthStore } from "@/stores/auth.store";
-import CustomerCard from "./_components/CustomerCard";
-import { CustomerResponse, CustomerStatus } from "@/types/customer/customer";
 import { useSwal } from "@/hooks/use-swal";
+import {
+  useCustomerMutation,
+  useCustomerQuery,
+} from "@/lib/api/hooks/customer";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { CustomerResponse, CustomerStatus } from "@/types/customer/customer";
+
+import CustomerCard from "./_components/customer-card";
 
 const getStatusColor = (status: CustomerStatus) => {
   if (status === "ACTIVE") return "green";
@@ -34,7 +36,9 @@ const CustomerList = () => {
   const router = useRouter();
   const swal = useSwal();
 
-  const [statusFilter, setStatusFilter] = useState<CustomerStatus | undefined>();
+  const [statusFilter, setStatusFilter] = useState<
+    CustomerStatus | undefined
+  >();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
 
@@ -160,19 +164,19 @@ const CustomerList = () => {
         const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
           if (key === "view") {
             router.push(
-              `/admin/dashboard/customers/customer-list/details/${row.id}`
+              `/admin/dashboard/customers/customer-list/details/${row.id}`,
             );
           }
 
           if (key === "edit") {
             router.push(
-              `/admin/dashboard/customers/customer-list/update/${row.id}`
+              `/admin/dashboard/customers/customer-list/update/${row.id}`,
             );
           }
 
           if (key === "add-address") {
             router.push(
-              `/admin/dashboard/customers/customer-list/address/${row.id}`
+              `/admin/dashboard/customers/customer-list/address/${row.id}`,
             );
           }
 
@@ -200,7 +204,7 @@ const CustomerList = () => {
           </Dropdown>
         );
       },
-    }
+    },
   ];
 
   return (

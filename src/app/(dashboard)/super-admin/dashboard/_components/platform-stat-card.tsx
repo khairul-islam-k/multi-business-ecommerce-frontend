@@ -1,18 +1,17 @@
+import { Card, Space, Typography } from "antd";
 import {
   Banknote,
   Building2,
   CheckCircle2,
   CreditCard,
   Landmark,
+  LucideIcon,
   ShoppingCart,
   Store,
   Users,
-  type LucideIcon,
 } from "lucide-react";
 
-import { Card, Space, Typography } from "antd";
 import { PlatformDashboardCard } from "@/types/dashboard-overview/super-admin";
-// import type { PlatformDashboardCard } from "@/types/dashboard-overview/platform";
 
 const { Text, Title } = Typography;
 

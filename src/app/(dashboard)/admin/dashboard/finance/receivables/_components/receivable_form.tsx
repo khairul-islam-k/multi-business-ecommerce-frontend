@@ -1,15 +1,5 @@
 "use client";
 
-import Loader from "@/components/shared/loader";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
-import {
-  useFinanceReceivable,
-  useFinanceReceivableMutation,
-} from "@/lib/api/hooks/finance-payable-receivable";
-import { useSwal } from "@/hooks/use-swal";
-import { useAuthStore } from "@/stores/auth.store";
-import { FinanceAccountResponse } from "@/types/finance/account";
 import {
   Button,
   Card,
@@ -21,6 +11,17 @@ import {
   Select,
 } from "antd";
 import React, { useMemo, useState } from "react";
+
+import Loader from "@/components/shared/loader";
+import { useSwal } from "@/hooks/use-swal";
+import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
+import {
+  useFinanceReceivable,
+  useFinanceReceivableMutation,
+} from "@/lib/api/hooks/finance-payable-receivable";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { FinanceAccountResponse } from "@/types/finance/account";
 
 type ReceiveReceivableProps = {
   receivableId: string;
@@ -54,7 +55,6 @@ const ReceiveReceivable = ({
     isLoading,
     isFetching,
   } = useFinanceReceivable(businessId, receivableId);
-
 
   const { updateFinanceReceivable } = useFinanceReceivableMutation(businessId);
 
@@ -99,7 +99,8 @@ const ReceiveReceivable = ({
       receiveModalOpen(false);
     } catch (error) {
       swal.error(
-        `${getApiErrorMessage(error)}. The ${selectSingleAccount?.name ?? "selected account"
+        `${getApiErrorMessage(error)}. The ${
+          selectSingleAccount?.name ?? "selected account"
         } balance is ${selectSingleAccount?.currentBalance ?? 0}`,
       );
     }
@@ -130,9 +131,7 @@ const ReceiveReceivable = ({
             {receivedAmount}
           </Descriptions.Item>
 
-          <Descriptions.Item label="Due Amount">
-            {dueAmount}
-          </Descriptions.Item>
+          <Descriptions.Item label="Due Amount">{dueAmount}</Descriptions.Item>
         </Descriptions>
       </Card>
 

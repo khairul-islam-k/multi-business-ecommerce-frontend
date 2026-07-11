@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { useMemo, useState, type ReactNode } from "react";
 import {
   App,
   Button,
@@ -15,19 +13,21 @@ import {
   Tooltip,
 } from "antd";
 import { Ban, Check, CircleCheck, Eye, X } from "lucide-react";
+import Link from "next/link";
+import { ReactNode, useMemo, useState } from "react";
 
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import Pagination from "@/components/shared/pagination";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
-import { getApiErrorMessage } from "@/lib/axios";
 import {
+  OrderReturnResponse,
+  OrderReturnStatus,
   useOrderMutations,
   useOrderReturnsQuery,
-  type OrderReturnResponse,
-  type OrderReturnStatus,
 } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
 
 const { Search } = Input;
 const returnStatuses: OrderReturnStatus[] = [
@@ -53,13 +53,23 @@ const statusActions: Array<{
   danger?: boolean;
 }> = [
   { status: "APPROVED", label: "Approve return", icon: <Check size={16} /> },
-  { status: "REJECTED", label: "Reject return", icon: <X size={16} />, danger: true },
+  {
+    status: "REJECTED",
+    label: "Reject return",
+    icon: <X size={16} />,
+    danger: true,
+  },
   {
     status: "COMPLETED",
     label: "Complete return",
     icon: <CircleCheck size={16} />,
   },
-  { status: "CANCELLED", label: "Cancel return", icon: <Ban size={16} />, danger: true },
+  {
+    status: "CANCELLED",
+    label: "Cancel return",
+    icon: <Ban size={16} />,
+    danger: true,
+  },
 ];
 
 function money(value: string | number | null | undefined) {
@@ -212,7 +222,11 @@ export default function OrderReturnsPage() {
                     href={`/admin/dashboard/orders/${record.orderId}/returns`}
                   >
                     <Tooltip title="View order returns">
-                      <Button size="small" type="text" icon={<Eye size={16} />} />
+                      <Button
+                        size="small"
+                        type="text"
+                        icon={<Eye size={16} />}
+                      />
                     </Tooltip>
                   </Link>
                   {statusActions.map((action) => (

@@ -35,7 +35,6 @@ const UpdateUnitPage = () => {
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
-    console.log("Update unit payload:", payload);
   };
 
   return (

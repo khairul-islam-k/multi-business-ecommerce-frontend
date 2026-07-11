@@ -1,34 +1,34 @@
 "use client";
 
-import Loader from "@/components/shared/loader";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
-import {
-  useCourierMutation,
-  // useCourierConfigMutations,
-  useCourierQuery,
-} from "@/lib/api/hooks/courier";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth.store";
-import { CourierConfigData, UpdateCourierConfigPayload } from "@/types/courier/courier";
 import {
   Alert,
   Button,
   Card,
   Checkbox,
   Collapse,
+  CollapseProps,
   Empty,
   Form,
+  FormInstance,
   Input,
   Radio,
   Switch,
   Typography,
-  type CollapseProps,
-  type FormInstance,
 } from "antd";
 import { Save, ShieldCheck, Truck } from "lucide-react";
 import { useEffect, useMemo } from "react";
+
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+import { useCourierMutation, useCourierQuery } from "@/lib/api/hooks/courier";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import {
+  CourierConfigData,
+  UpdateCourierConfigPayload,
+} from "@/types/courier/courier";
 
 const { Text } = Typography;
 
@@ -39,7 +39,6 @@ export type CourierProviderCode = "REDX";
 export type CourierMode = "LIVE" | "SANDBOX";
 
 export type CourierStatus = "ACTIVE" | "INACTIVE";
-
 
 export type CourierProvider = {
   id: ApiId;
@@ -391,12 +390,7 @@ export default function CourierConfig() {
                       <Form.Item
                         key={field.name}
                         label={field.label}
-                        name={[
-                          "configs",
-                          index,
-                          "configData",
-                          field.name,
-                        ]}
+                        name={["configs", index, "configData", field.name]}
                         rules={[
                           {
                             required: true,
@@ -430,9 +424,7 @@ export default function CourierConfig() {
               valuePropName="checked"
               extra="Enable this only if you want to generate a new webhook token."
             >
-              <Checkbox>
-                Do you want to rotate the webhook token?
-              </Checkbox>
+              <Checkbox>Do you want to rotate the webhook token?</Checkbox>
             </Form.Item>
 
             {/* <Alert

@@ -4,11 +4,15 @@ import { ApiId } from "../types";
 import { ProductPayload, ProductQuery, ResponseProduct } from "@/types/product/product";
 import { productApi } from "../product";
 
-export function useProductsQuery(businessId: ApiId, query?: ProductQuery) {
+export function useProductsQuery(
+  businessId: ApiId,
+  query?: ProductQuery,
+  options?: { enabled?: boolean },
+) {
   return useQuery({
     queryKey: apiQueryKeys.Product.list(businessId, query),
     queryFn: () => productApi.list(businessId, query),
-    enabled: Boolean(businessId),
+    enabled: Boolean(businessId) && (options?.enabled ?? true),
   });
 }
 

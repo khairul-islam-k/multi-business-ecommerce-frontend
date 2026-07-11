@@ -4,7 +4,7 @@ import { ResponseVariant } from "@/types/product/variant";
 export type PosCartItem = {
   id: string;
   product: Pick<ResponseProduct, "id" | "name" | "taxId">;
-  variant: Pick<ResponseVariant, 'id'| 'title'> | null;
+  variant: Pick<ResponseVariant, "id" | "title"> | null;
   quantity: number;
   discountAmount: number;
   unitPrice: number;

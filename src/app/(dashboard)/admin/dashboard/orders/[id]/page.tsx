@@ -1,6 +1,5 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import {
   App,
   Button,
@@ -27,22 +26,25 @@ import {
   Truck,
   UserCheck,
 } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useState } from "react";
 
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
+import { useOrder, useOrderMutations, useOrderReturnsQuery } from "@/lib/api";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
-import { useOrder, useOrderMutations, useOrderReturnsQuery } from "@/lib/api";
+
+import AssignToCourierModal from "./_components/assign-to-courier-modal";
+
 import type {
   OrderItemResponse,
   OrderPaymentPayload,
   OrderReturnStatus,
   OrderStatus,
 } from "@/lib/api";
-import AssignToCourierModal from "./_components/assign-to-courier-modal";
-import { useState } from "react";
 
 const { Text } = Typography;
 
@@ -55,8 +57,7 @@ const lifecycleButtonClass = {
     "border-green-200 bg-green-50 text-green-700 hover:!border-green-400 hover:!bg-green-100 hover:!text-green-800",
   courier:
     "border-cyan-200 bg-cyan-50 text-cyan-700 hover:!border-cyan-400 hover:!bg-cyan-100 hover:!text-cyan-800",
-  ship:
-    "border-orange-200 bg-orange-50 text-orange-700 hover:!border-orange-400 hover:!bg-orange-100 hover:!text-orange-800",
+  ship: "border-orange-200 bg-orange-50 text-orange-700 hover:!border-orange-400 hover:!bg-orange-100 hover:!text-orange-800",
   deliver:
     "border-emerald-200 bg-emerald-50 text-emerald-700 hover:!border-emerald-400 hover:!bg-emerald-100 hover:!text-emerald-800",
   cancel:
@@ -88,7 +89,7 @@ function money(value: string | number | null | undefined) {
 function displayName(value: unknown) {
   if (!value || typeof value !== "object") return undefined;
   const record = value as { name?: unknown; title?: unknown; sku?: unknown };
-  return record.name ?? record.title ?? record.sku
+  return (record.name ?? record.title ?? record.sku)
     ? String(record.name ?? record.title ?? record.sku)
     : undefined;
 }
@@ -208,18 +209,20 @@ export default function OrderDetails() {
   const returns = orderReturns.data?.items ?? [];
   const statusLogs = current.statusLogs ?? [];
 
-  // order status 
-  const orderStatus = current.status ?? '';
+  // order status
+  const orderStatus = current.status ?? "";
   const canShip = ["CONFIRMED", "PROCESSING"].includes(orderStatus ?? "");
 
   const canDeliver = ["SHIPPED", "CONFIRMED", "PROCESSING"].includes(
     orderStatus ?? "",
   );
   const canCancel = !["DELIVERED", "CANCELLED"].includes(orderStatus ?? "");
-  const canProcess = !(orderStatus === 'CONFIRMED');
-  const canConfirm = !(orderStatus === 'PLACED');
+  const canProcess = !(orderStatus === "CONFIRMED");
+  const canConfirm = !(orderStatus === "PLACED");
 
-  const isPayment = payments.map(singleData => singleData.paymentStatus).includes('PAID');
+  const isPayment = payments
+    .map((singleData) => singleData.paymentStatus)
+    .includes("PAID");
 
   return (
     <div className="space-y-6">
@@ -270,8 +273,7 @@ export default function OrderDetails() {
                 {
                   title: "Product",
                   key: "product",
-                  render: (_, row) =>
-                    displayName(row.product),
+                  render: (_, row) => displayName(row.product),
                 },
                 {
                   title: "Variant",
@@ -281,16 +283,12 @@ export default function OrderDetails() {
                 {
                   title: "Qty",
                   key: "quantity",
-                  render: (_, row) =>
-                    String(row?.item?.quantity),
+                  render: (_, row) => String(row?.item?.quantity),
                 },
                 {
                   title: "Total",
                   key: "lineTotal",
-                  render: (_, row) =>
-                    money(
-                      (row?.item?.lineTotal),
-                    ),
+                  render: (_, row) => money(row?.item?.lineTotal),
                 },
               ]}
             />
@@ -398,7 +396,10 @@ export default function OrderDetails() {
             />
           </Card>
 
-          <Card title={`Status History (${statusLogs.length})`} className="mt-4">
+          <Card
+            title={`Status History (${statusLogs.length})`}
+            className="mt-4"
+          >
             {statusLogs.length ? (
               <Timeline
                 items={statusLogs.map((log) => ({
@@ -553,16 +554,14 @@ export default function OrderDetails() {
 
               <Button
                 block
-                onClick={()=> setCourierModalOpen(true)}
+                onClick={() => setCourierModalOpen(true)}
                 icon={<Truck size={16} />}
                 className={lifecycleButtonClass.courier}
               >
                 Assign to Courier
               </Button>
-
             </Space>
           </Card>
-
         </Col>
       </Row>
 
@@ -572,7 +571,6 @@ export default function OrderDetails() {
         orderId={orderId}
         onClose={() => setCourierModalOpen(false)}
       />
-
     </div>
   );
 }

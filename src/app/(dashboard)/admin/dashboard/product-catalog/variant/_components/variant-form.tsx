@@ -9,7 +9,7 @@ import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
 import { useAuthStore } from "@/stores/auth.store";
 import { ResponseVariant } from "@/types/product/variant";
 
-import ImageSelectModal from "../../../_components/ImageSelectModal";
+import ImageSelectModal from "../../../_components/image-select-modal";
 
 import type { ResponseProductAttribute } from "@/types/product/attribute";
 type VariantStatus = "ACTIVE" | "INACTIVE";

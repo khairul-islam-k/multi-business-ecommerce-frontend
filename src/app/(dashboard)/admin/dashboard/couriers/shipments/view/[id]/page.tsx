@@ -13,7 +13,6 @@ import {
   Table,
   Tag,
 } from "antd";
-import type { TableColumnsType } from "antd";
 import {
   ArrowLeft,
   Box,
@@ -26,11 +25,16 @@ import { useParams, useRouter } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useCourierMutation, useShippingDetails } from "@/lib/api/hooks/courier";
+import { useSwal } from "@/hooks/use-swal";
+import {
+  useCourierMutation,
+  useShippingDetails,
+} from "@/lib/api/hooks/courier";
+import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { ShipmentItem, ShipmentResponse } from "@/types/courier/courier";
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
+
+import type { TableColumnsType } from "antd";
 // import type {
 //   ShipmentDetailsResponse,
 //   ShipmentItem,
@@ -130,16 +134,14 @@ const ShipmentDetails = () => {
   const handleBook = async (id: string) => {
     try {
       await shipmentBook.mutateAsync(id);
-      swal.success('Shipment booked successfully');
+      swal.success("Shipment booked successfully");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
   };
 
-
-  const shipment =
-    ((shippingDetails as { data?: ShipmentResponse })?.data ??
-      shippingDetails) as ShipmentResponse | undefined;
+  const shipment = ((shippingDetails as { data?: ShipmentResponse })?.data ??
+    shippingDetails) as ShipmentResponse | undefined;
 
   const itemColumns: TableColumnsType<ShipmentItem> = [
     {
@@ -161,9 +163,7 @@ const ShipmentDetails = () => {
         row.variant ? (
           <div className="space-y-1">
             <p className="m-0 font-medium">{row.variant.title}</p>
-            <p className="m-0 text-xs text-gray-500">
-              SKU: {row.variant.sku}
-            </p>
+            <p className="m-0 text-xs text-gray-500">SKU: {row.variant.sku}</p>
           </div>
         ) : (
           "-"
@@ -232,16 +232,12 @@ const ShipmentDetails = () => {
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Button
-          icon={<ArrowLeft size={16} />}
-          onClick={() => router.back()}
-        >
+        <Button icon={<ArrowLeft size={16} />} onClick={() => router.back()}>
           Back
         </Button>
 
         <div className="flex flex-wrap items-center gap-2">
-          {
-            shipment.consignmentId ?
+          {shipment.consignmentId ? (
             <Button
               icon={<Truck size={16} />}
               onClick={() =>
@@ -251,15 +247,13 @@ const ShipmentDetails = () => {
               }
             >
               Track
-            </Button> : null
-          }
+            </Button>
+          ) : null}
 
           <Button
             type="primary"
             icon={<PackageCheck size={16} />}
-            onClick={() =>
-              handleBook(shipment.id)
-            }
+            onClick={() => handleBook(shipment.id)}
             disabled={shipment.status !== "PENDING"}
           >
             Book Shipment
@@ -524,7 +518,10 @@ const ShipmentDetails = () => {
           </Col>
 
           <Col xs={24} sm={12} lg={6}>
-            <Statistic title="COD Charge" value={formatMoney(shipment.codCharge)} />
+            <Statistic
+              title="COD Charge"
+              value={formatMoney(shipment.codCharge)}
+            />
           </Col>
 
           <Col xs={24} sm={12} lg={6}>

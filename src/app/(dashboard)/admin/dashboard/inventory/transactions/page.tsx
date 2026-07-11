@@ -1,16 +1,15 @@
 "use client";
 
-import { Eye } from "lucide-react";
-
 import { Button, Card, Tag } from "antd";
-import { useState } from "react";
+import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useAuthStore } from "@/stores/auth.store";
 import { useProductStockMovementQuery } from "@/lib/api/hooks/stock";
-import { Column, DataTable } from "@/components/shared/data-table";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   StockMovementResponse,
   StockMovementType,
@@ -98,8 +97,6 @@ export default function InventoryTransactionsPage() {
     limit,
     search,
   });
-
-  console.log("data", movements);
 
   const total = movements?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);

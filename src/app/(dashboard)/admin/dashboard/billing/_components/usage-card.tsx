@@ -2,8 +2,9 @@
 
 import { Card, Progress, Typography } from "antd";
 
-import type { PackageUsageSummaryItem } from "@/lib/api";
 import { optionLabel } from "../_utils/package-display";
+
+import type { PackageUsageSummaryItem } from "@/lib/api";
 
 const { Text } = Typography;
 

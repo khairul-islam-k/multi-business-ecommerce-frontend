@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  CirclePlus,
-  Trash2
-} from "lucide-react";
-
-
-import {
   Button,
   Card,
   Col,
@@ -21,28 +15,31 @@ import {
   Switch,
   Tag,
 } from "antd";
-import type { FormInstance } from "antd";
-import { useEffect, useMemo, useState } from "react";
+import { CirclePlus, Trash2 } from "lucide-react";
 import Image from "next/image";
-import ImageSelectModal from "../../../_components/ImageSelectModal";
-import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
-import { useAuthStore } from "@/stores/auth.store";
-import { useProductBrandQuery } from "@/lib/api/hooks/product-brand";
-import { useProductUnitQuery } from "@/lib/api/hooks/product-unit";
-import { useProductTagQuery } from "@/lib/api/hooks/product-tags";
-import { useTaxQuery } from "@/lib/api/hooks/tax";
-import { imageUrlSet } from "./image-url";
-import { ProductPayload, ResponseProduct } from "@/types/product/product";
+import { useEffect, useMemo, useState } from "react";
+
 import { useProductAttributeQuery } from "@/lib/api/hooks/product-attribute";
-import { ResponseProductAttribute } from "@/types/product/attribute";
+import { useProductBrandQuery } from "@/lib/api/hooks/product-brand";
+import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
+import { useProductTagQuery } from "@/lib/api/hooks/product-tags";
+import { useProductUnitQuery } from "@/lib/api/hooks/product-unit";
+import { useTaxQuery } from "@/lib/api/hooks/tax";
 import { buildCategoryOptions } from "@/lib/product/category-options";
+import { useAuthStore } from "@/stores/auth.store";
+import { ResponseProductAttribute } from "@/types/product/attribute";
+import { ProductPayload, ResponseProduct } from "@/types/product/product";
 import {
   BulkUpdateVariantItemPayload,
   ResponseVariant,
   VariantPayload,
 } from "@/types/product/variant";
-import MultiImageSelectModal from "../../../_components/multi-image-select-modal";
 
+import ImageSelectModal from "../../../_components/image-select-modal";
+import MultiImageSelectModal from "../../../_components/multi-image-select-modal";
+import { imageUrlSet } from "./image-url";
+
+import type { FormInstance } from "antd";
 type SelectOption = {
   label: string;
   value: string;
@@ -722,7 +719,6 @@ const ProductForm = ({
   onCancel,
 }: ProductFormProps) => {
   const [form] = Form.useForm<ProductFormValues>();
-  console.log("init", initialValues);
 
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [multiOpen, setMultiOpen] = useState(false);

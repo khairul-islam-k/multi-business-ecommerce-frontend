@@ -1,14 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
 import { Card, Empty, Flex, Space, Tag, Typography } from "antd";
+import { useMemo } from "react";
+
+import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useAvailablePermissions } from "@/lib/api";
 
 import type { PermissionItem } from "@/lib/api";
-import { useAvailablePermissions } from "@/lib/api";
-import PageHeader from "@/components/shared/page-header";
-import Loader from "@/components/shared/loader";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-
 const { Text } = Typography;
 
 const actionColors: Record<string, string> = {
@@ -19,7 +19,12 @@ const actionColors: Record<string, string> = {
 };
 
 export default function PermissionsPage() {
-  const { data = [], isLoading, isError, isFetching } = useAvailablePermissions();
+  const {
+    data = [],
+    isLoading,
+    isError,
+    isFetching,
+  } = useAvailablePermissions();
 
   const groupedPermissions = useMemo(() => {
     const grouped = new Map<string, PermissionItem[]>();

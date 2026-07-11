@@ -1,7 +1,5 @@
 "use client";
 
-import { CircleMinus, CirclePlus } from "lucide-react";
-
 import {
   Button,
   Card,
@@ -14,9 +12,9 @@ import {
   Select,
   Switch,
 } from "antd";
+import { CircleMinus, CirclePlus } from "lucide-react";
 import { useEffect } from "react";
 
-import type { PackagePlan, PackagePlanPayload } from "@/lib/api";
 import {
   billingCycleOptions,
   limitKeyOptions,
@@ -24,6 +22,9 @@ import {
   packageStatusOptions,
   resetCycleOptions,
 } from "../_utils/package-options";
+
+import type { PackagePlan, PackagePlanPayload } from "@/lib/api";
+import { number } from "currency-codes";
 
 type PackagePlanFormProps = {
   initialValue?: PackagePlan | null;
@@ -76,7 +77,11 @@ export default function PackagePlanForm({
         </Col>
 
         <Col xs={24} md={12}>
-          <Form.Item name="price" label="Price" rules={[{ required: true }]}>
+          <Form.Item
+            name="price"
+            label="Price"
+            rules={[{ required: true, type: "number" }]}
+          >
             <InputNumber min={0} style={{ width: "100%" }} />
           </Form.Item>
         </Col>
@@ -97,13 +102,7 @@ export default function PackagePlanForm({
         </Col>
 
         <Col xs={24} md={12}>
-          <Form.Item name="currencyCode" label="Currency">
-            <Input maxLength={10} />
-          </Form.Item>
-        </Col>
-
-        <Col xs={24} md={8}>
-          <Form.Item name="freeTrialDays" label="Free trial days">
+          <Form.Item name="freeTrialDays" label="Free trial days" rules={[]}>
             <InputNumber min={0} precision={0} style={{ width: "100%" }} />
           </Form.Item>
         </Col>
@@ -184,6 +183,7 @@ export default function PackagePlanForm({
                     rules={[
                       {
                         required: true,
+                        type: "number",
                         message: "Limit value is required",
                       },
                     ]}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Card, Select, Tag } from "antd";
-import { Download, Eye, Printer } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

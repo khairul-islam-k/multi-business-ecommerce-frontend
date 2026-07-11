@@ -1,6 +1,9 @@
 "use client";
 
-import { useTemplateOrder, useTemplateOrderMutation } from "@/lib/api/hooks/template-order-history";
+import {
+  useTemplateOrder,
+  useTemplateOrderMutation,
+} from "@/lib/api/hooks/template-order-history";
 import {
   CustomerOrderItem,
   CustomerOrderResponse,
@@ -36,8 +39,8 @@ export type ReturnRequestPayload = {
 type OrderDetailsResponse =
   | CustomerOrderResponse
   | {
-    data?: CustomerOrderResponse;
-  };
+      data?: CustomerOrderResponse;
+    };
 
 type ReturnableOrderItem = CustomerOrderItem & {
   product?: {
@@ -118,13 +121,9 @@ const FashionOrderReturn = () => {
 
   const { orderReturn } = useTemplateOrderMutation();
 
-  const message = useMessage()
+  const message = useMessage();
 
-  const {
-    data: details,
-    isLoading,
-    isFetching,
-  } = useTemplateOrder(orderId);
+  const { data: details, isLoading, isFetching } = useTemplateOrder(orderId);
 
   const order = useMemo(() => {
     return getOrderDetails(details as OrderDetailsResponse);
@@ -174,10 +173,7 @@ const FashionOrderReturn = () => {
     };
   }, [mainReason, selectedItems, itemStates]);
 
-  const updateItemState = (
-    itemId: string,
-    value: Partial<ReturnItemState>,
-  ) => {
+  const updateItemState = (itemId: string, value: Partial<ReturnItemState>) => {
     setItemStates((previous) => ({
       ...previous,
       [itemId]: {
@@ -238,14 +234,11 @@ const FashionOrderReturn = () => {
     try {
       setIsSubmitting(true);
 
-      console.log("return payload", payload);
-
-       const res = await orderReturn.mutateAsync({
-          orderId,
-          payload,
-        });
-        console.log('res', res);
-        message.success('Return has been successfully');
+      const res = await orderReturn.mutateAsync({
+        orderId,
+        payload,
+      });
+      message.success("Return has been successfully");
     } catch (error) {
       message.error(getWebErrorMessage(error));
     } finally {
@@ -356,10 +349,11 @@ const FashionOrderReturn = () => {
             return (
               <div
                 key={item.id}
-                className={`overflow-hidden rounded-3xl border bg-[var(--store-card,#ffffff)] shadow-sm transition-all duration-300 ${enabled
+                className={`overflow-hidden rounded-3xl border bg-[var(--store-card,#ffffff)] shadow-sm transition-all duration-300 ${
+                  enabled
                     ? "border-[var(--store-primary,#f16d59)] ring-4 ring-[var(--store-primary,#f16d59)]/10"
                     : "border-[var(--store-border,#e5e7eb)] hover:border-[var(--store-primary,#f16d59)]/40"
-                  }`}
+                }`}
               >
                 <div className="p-5">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -411,17 +405,19 @@ const FashionOrderReturn = () => {
                     <button
                       type="button"
                       onClick={() => handleToggleReturn(item)}
-                      className={`group/toggle inline-flex h-12 w-full items-center justify-between gap-3 rounded-2xl border px-4 text-sm font-bold transition-all duration-300 sm:w-[210px] ${enabled
+                      className={`group/toggle inline-flex h-12 w-full items-center justify-between gap-3 rounded-2xl border px-4 text-sm font-bold transition-all duration-300 sm:w-[210px] ${
+                        enabled
                           ? "border-[var(--store-primary,#f16d59)] bg-[var(--store-primary,#f16d59)] text-white shadow-lg shadow-[var(--store-primary,#f16d59)]/20"
                           : "border-[var(--store-border,#e5e7eb)] bg-white text-[var(--store-text,#111827)] hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
-                        }`}
+                      }`}
                     >
                       <span className="inline-flex items-center gap-2">
                         <span
-                          className={`grid size-6 place-items-center rounded-full transition ${enabled
+                          className={`grid size-6 place-items-center rounded-full transition ${
+                            enabled
                               ? "bg-white text-[var(--store-primary,#f16d59)]"
                               : "bg-gray-100 text-gray-400 group-hover/toggle:bg-[var(--store-primary,#f16d59)] group-hover/toggle:text-white"
-                            }`}
+                          }`}
                         >
                           {enabled ? (
                             <Check className="size-4" />
@@ -434,14 +430,16 @@ const FashionOrderReturn = () => {
                       </span>
 
                       <span
-                        className={`relative h-7 w-[58px] rounded-full transition ${enabled ? "bg-white/30" : "bg-gray-200"
-                          }`}
+                        className={`relative h-7 w-[58px] rounded-full transition ${
+                          enabled ? "bg-white/30" : "bg-gray-200"
+                        }`}
                       >
                         <span
-                          className={`absolute top-1 size-5 rounded-full bg-white shadow-md transition-all duration-300 ${enabled
+                          className={`absolute top-1 size-5 rounded-full bg-white shadow-md transition-all duration-300 ${
+                            enabled
                               ? "left-8"
                               : "left-1 group-hover/toggle:bg-[var(--store-primary,#f16d59)]"
-                            }`}
+                          }`}
                         />
                       </span>
                     </button>

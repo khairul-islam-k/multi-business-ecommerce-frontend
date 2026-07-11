@@ -1,13 +1,12 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+
+import { HeaderSlide } from "@/types/website/website";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { HeaderSlide } from "@/types/website/website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
-
-
 
 const HeroSection = ({bannerSlide}:{bannerSlide: HeaderSlide[]}) => {
     const [activeIndex, setActiveIndex] = useState(0);

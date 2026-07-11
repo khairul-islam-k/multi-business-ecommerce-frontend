@@ -1,5 +1,25 @@
 "use client";
 
+import {
+  Alert,
+  Button,
+  Card,
+  Collapse,
+  CollapseProps,
+  Empty,
+  Form,
+  FormInstance,
+  Input,
+  Radio,
+  Select,
+  Skeleton,
+  Switch,
+  Typography,
+} from "antd";
+import { Rule } from "antd/es/form";
+import { CreditCard, Save, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo } from "react";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useActiveBusinessId } from "@/hooks/use-active-business";
@@ -11,25 +31,6 @@ import {
 } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
 import { UpdatePaymentGatewayConfigPayload } from "@/types/payment-gateway";
-import {
-  Alert,
-  Button,
-  Card,
-  Collapse,
-  Empty,
-  Form,
-  Input,
-  Radio,
-  Select,
-  Skeleton,
-  Switch,
-  Typography,
-  type CollapseProps,
-  type FormInstance,
-} from "antd";
-import { Rule } from "antd/es/form";
-import { CreditCard, Save, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo } from "react";
 
 const { Text } = Typography;
 
@@ -192,10 +193,7 @@ function isEmptyValue(value: unknown) {
   return false;
 }
 
-function requiredWhenGatewayActive(
-  index: number,
-  message: string,
-): Rule[] {
+function requiredWhenGatewayActive(index: number, message: string): Rule[] {
   return [
     ({ getFieldValue }) => ({
       validator(_: unknown, value: unknown) {
@@ -301,15 +299,14 @@ export default function PaymentGatewayConfigurations() {
     isFetching: paymentGatewayFetching,
   } = usePaymentGatewayConfigsQuery(businessId ?? "");
 
-  const { updateConfigs } = usePaymentGatewayConfigMutations(
-    businessId ?? "",
-  );
+  const { updateConfigs } = usePaymentGatewayConfigMutations(businessId ?? "");
 
   const financeAccountOptions = useMemo(() => {
     return (
       financeAccounts?.items?.map((account) => ({
-        label: `${account.name}${account.accountType ? ` (${account.accountType})` : ""
-          }`,
+        label: `${account.name}${
+          account.accountType ? ` (${account.accountType})` : ""
+        }`,
         value: account.id,
       })) ?? []
     );
@@ -507,12 +504,7 @@ export default function PaymentGatewayConfigurations() {
                       <Form.Item
                         key={field.name}
                         label={field.label}
-                        name={[
-                          "gateways",
-                          index,
-                          "configData",
-                          field.name,
-                        ]}
+                        name={["gateways", index, "configData", field.name]}
                         dependencies={[["gateways", index, "status"]]}
                         rules={requiredWhenGatewayActive(
                           index,

@@ -1,6 +1,6 @@
-import { App, Layout } from "antd";
-
 import "antd/dist/reset.css";
+
+import { App, Layout } from "antd";
 
 import AntdRegistry from "@/providers/antd-registry";
 import AntdThemeProvider from "@/providers/antd-theme-provider";

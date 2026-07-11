@@ -67,7 +67,6 @@ export type WishlistImage = {
   imageUrl: string;
   altText: string | null;
   isThumbnail: boolean;
-  sortOrder: number;
 
   createdBy: ApiId | null;
   updatedBy: ApiId | null;

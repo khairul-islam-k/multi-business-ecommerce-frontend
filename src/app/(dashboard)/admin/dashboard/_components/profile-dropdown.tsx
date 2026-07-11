@@ -1,11 +1,4 @@
 import {
-  FileText,
-  LogOut,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-
-import {
   App,
   Avatar,
   Button,
@@ -13,12 +6,16 @@ import {
   Flex,
   Space,
   Tag,
-  Typography,
   theme,
+  Typography,
 } from "antd";
+import { FileText, LogOut } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { useAuthStore } from "@/stores/auth.store";
 import { getUserAvatarSeed, getUserAvatarUrl } from "@/lib/auth/avatar";
+import { useAuthStore } from "@/stores/auth.store";
+
 import { imageUrlSet } from "../product-catalog/products/_components/image-url";
 
 const { Text } = Typography;
@@ -35,7 +32,6 @@ const ProfileDropdown = () => {
   const imageUrl = user?.profile?.imageUrl ?? "";
 
   const imageAvatar = imageUrlSet(imageUrl);
-
 
   const handleLogout = () => {
     modal.confirm({
@@ -57,7 +53,6 @@ const ProfileDropdown = () => {
     });
   };
 
-
   return (
     <div className="cursor-pointer">
       <Dropdown
@@ -67,7 +62,11 @@ const ProfileDropdown = () => {
               key: "profile",
               label: (
                 <Link href="/admin/dashboard/profile">
-                  <Flex align="center" gap={8} style={{ color: token.colorText }}>
+                  <Flex
+                    align="center"
+                    gap={8}
+                    style={{ color: token.colorText }}
+                  >
                     <FileText />
                     <Text style={{ color: token.colorText }}>Profile</Text>
                   </Flex>
@@ -100,15 +99,11 @@ const ProfileDropdown = () => {
       >
         <Button type="text" style={{ height: 44, paddingInline: 8 }}>
           <Space size={10}>
-           {
-            imageAvatar ? <Avatar
-              alt={user?.name}
-              src={imageAvatar}
-            /> : <Avatar
-              alt={avatarSeed}
-              src={avatarSrc}
-            />
-           }
+            {imageAvatar ? (
+              <Avatar alt={user?.name} src={imageAvatar} />
+            ) : (
+              <Avatar alt={avatarSeed} src={avatarSrc} />
+            )}
             <div className="hidden min-w-0 text-left md:block">
               <Text
                 strong

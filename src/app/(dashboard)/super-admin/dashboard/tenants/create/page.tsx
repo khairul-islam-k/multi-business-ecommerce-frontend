@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { App, Button, Card, Col, Form, Input, Row } from "antd";
+import { useRouter } from "next/navigation";
 
-import { authApi } from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/axios";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { authApi } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
 
 type CreateTenantValues = {
   ownerName: string;
@@ -62,11 +62,7 @@ export default function CreateTenantForm() {
         >
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item
-                label="Owner Name"
-                name="ownerName"
-                rules={[{ required: true, message: "Owner name is required" }]}
-              >
+              <Form.Item label="Owner Name" name="ownerName">
                 <Input />
               </Form.Item>
             </Col>
@@ -83,7 +79,7 @@ export default function CreateTenantForm() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} md={12}>
+            <Col xs={24}>
               <Form.Item
                 name="email"
                 label="Email"

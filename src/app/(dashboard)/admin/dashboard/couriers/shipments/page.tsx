@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Dropdown, MenuProps, Select, Tag} from "antd";
+import { Button, Card, Dropdown, MenuProps, Select, Tag } from "antd";
 import { Eye, MapPinned, MoreHorizontal, PackageCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -8,12 +8,16 @@ import { useMemo, useState } from "react";
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useCourierMutation, useCourierQuery, useShipmentQuery } from "@/lib/api/hooks/courier";
+import { useSwal } from "@/hooks/use-swal";
+import {
+  useCourierMutation,
+  useCourierQuery,
+  useShipmentQuery,
+} from "@/lib/api/hooks/courier";
+import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 // import type { ShipmentDetailsResponse } from "@/types/courier/shipment";
 import { ShipmentResponse, ShipmentStatus } from "@/types/courier/courier";
-import { useSwal } from "@/hooks/use-swal";
-import { getApiErrorMessage } from "@/lib/axios";
 
 const shipmentStatusOptions: { label: string; value: ShipmentStatus }[] = [
   { label: "Pending", value: "PENDING" },
@@ -60,7 +64,9 @@ const ShipmentPage = () => {
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<ShipmentStatus | undefined>();
+  const [statusFilter, setStatusFilter] = useState<
+    ShipmentStatus | undefined
+  >();
   const [courierId, setCourierId] = useState("");
 
   const limit = 10;
@@ -95,7 +101,7 @@ const ShipmentPage = () => {
   const handleBook = async (id: string) => {
     try {
       await shipmentBook.mutateAsync(id);
-      swal.success('Shipment booked successfully');
+      swal.success("Shipment booked successfully");
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     }
@@ -165,32 +171,35 @@ const ShipmentPage = () => {
 
           row.consignmentId
             ? {
-              key: "track",
-              label: "Track",
-              icon: <MapPinned size={15} />,
-              onClick: () =>
-                router.push(
-                  `/admin/dashboard/couriers/shipments/tracking/${row.id}`,
-                ),
-            }
+                key: "track",
+                label: "Track",
+                icon: <MapPinned size={15} />,
+                onClick: () =>
+                  router.push(
+                    `/admin/dashboard/couriers/shipments/tracking/${row.id}`,
+                  ),
+              }
             : null,
 
           {
             key: "book",
-            label: row.status === 'BOOKED' ? 'Rebook': "Book",
+            label: row.status === "BOOKED" ? "Rebook" : "Book",
             icon: <PackageCheck size={15} />,
-            onClick: () =>
-              handleBook(row.id)
+            onClick: () => handleBook(row.id),
           },
         ].filter(Boolean) as MenuProps["items"];
 
         return (
-          <Dropdown menu={{ items }} trigger={["click"]} placement="bottomRight">
+          <Dropdown
+            menu={{ items }}
+            trigger={["click"]}
+            placement="bottomRight"
+          >
             <Button size="small" icon={<MoreHorizontal size={16} />} />
           </Dropdown>
         );
       },
-    }
+    },
   ];
 
   return (

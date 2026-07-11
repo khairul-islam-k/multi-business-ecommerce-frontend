@@ -1,34 +1,32 @@
 "use client";
 
 import {
-  CircleCheck,
-  CirclePlus,
-  RefreshCw,
-  Trash2
-} from "lucide-react";
-
-
-import { Dispatch, SetStateAction, useState } from "react";
-import {
   App,
   Button,
   Card,
   Col,
   Empty,
   Modal,
+  Pagination,
   Row,
   Spin,
+  theme,
   Typography,
   Upload,
-  theme,
 } from "antd";
-import { useAuthStore } from "@/stores/auth.store";
-import { getApiErrorMessage } from "@/lib/axios";
-import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
+import { CircleCheck, CirclePlus, RefreshCw, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { Dispatch, SetStateAction, useState } from "react";
+
+import { useMediaAssets, useMediaMutations } from "@/lib/api/hooks/media";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+
 import { ProductImage } from "../product-catalog/products/_components/product-form";
 
 const { Text } = Typography;
+
+const PAGE_LIMIT = 12;
 
 type MediaAsset = {
   id: string;
@@ -68,34 +66,21 @@ const MultiImageSelectModal = ({
   const businessId = business?.id ?? "";
 
   const [currentUrl, setCurrentUrl] = useState<ProductImage[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data, isLoading } = useMediaAssets(businessId);
+  const { data, isLoading, isFetching } = useMediaAssets(businessId, {
+    page: currentPage,
+    limit: PAGE_LIMIT,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
   const { uploadMedia, uploadMediaBulk } = useMediaMutations(businessId);
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-
-  const isUploading = uploadMedia.isPending;
+  const isUploading = uploadMedia.isPending || uploadMediaBulk.isPending;
 
   const images: MediaAsset[] = data?.items ?? [];
-
-  const handleUploadImage = async (file: File) => {
-
-    setImageFiles((prev) => {
-      const alreadyExists = prev.some(
-        (item) =>
-          item.name === file.name &&
-          item.size === file.size &&
-          item.lastModified === file.lastModified
-      );
-
-      if (alreadyExists) {
-        return prev;
-      }
-
-      return [...prev, file];
-    });
-  };
 
   const handleImageBulkUpload = async () => {
     if (!imageFiles.length) {
@@ -108,7 +93,7 @@ const MultiImageSelectModal = ({
         files: imageFiles,
       });
 
-      const uploadedImages: ProductImage[] = res.map((item, index) => ({
+      const uploadedImages: ProductImage[] = res.map((item) => ({
         imageUrl: item.fileUrl,
         altText: item.altText || item.fileName || "Product image",
         isThumbnail: false,
@@ -117,6 +102,7 @@ const MultiImageSelectModal = ({
       setCurrentUrl((prev) => [...prev, ...uploadedImages]);
 
       setImageFiles([]);
+      setCurrentPage(1);
 
       message.success("Images uploaded successfully.");
     } catch (error) {
@@ -154,6 +140,7 @@ const MultiImageSelectModal = ({
       afterOpenChange={(isOpen) => {
         if (isOpen) {
           setCurrentUrl(selectedUrl ?? []);
+          setCurrentPage(1);
         }
       }}
       onCancel={isUploading ? undefined : onClose}
@@ -200,9 +187,6 @@ const MultiImageSelectModal = ({
                   return [...prev, file as File];
                 });
 
-                // Do not upload here if you already use upload button
-                // void handleUploadImage(file);
-
                 return false;
               }}
             >
@@ -232,7 +216,9 @@ const MultiImageSelectModal = ({
                     style={{ color: token.colorPrimary }}
                   >
                     <Spin
-                      indicator={<RefreshCw className="animate-spin" size={34} />}
+                      indicator={
+                        <RefreshCw className="animate-spin" size={34} />
+                      }
                     />
 
                     <Text strong>Uploading image...</Text>
@@ -261,7 +247,7 @@ const MultiImageSelectModal = ({
 
           {imageFiles.length > 0 && (
             <div style={{ marginTop: 12 }}>
-              <Text strong>Selected Images:  {imageFiles.length}</Text>
+              <Text strong>Selected Images: {imageFiles.length}</Text>
 
               <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                 {imageFiles.map((file, index) => (
@@ -409,6 +395,21 @@ const MultiImageSelectModal = ({
               </Col>
             );
           })
+        )}
+
+        {data && data.meta.totalPages > 1 && (
+          <Col span={24}>
+            <div className="flex justify-end">
+              <Pagination
+                current={currentPage}
+                pageSize={PAGE_LIMIT}
+                total={data.meta.total}
+                showSizeChanger={false}
+                disabled={isUploading || isFetching}
+                onChange={setCurrentPage}
+              />
+            </div>
+          </Col>
         )}
       </Row>
     </Modal>

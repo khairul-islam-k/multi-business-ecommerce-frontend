@@ -29,7 +29,7 @@ import {
   getDashboardThemeTokens,
 } from "@/lib/theme/dashboard-theme";
 
-import ImageSelectModal from "../../_components/ImageSelectModal";
+import ImageSelectModal from "../../_components/image-select-modal";
 
 import type { BusinessBranding } from "@/lib/api";
 

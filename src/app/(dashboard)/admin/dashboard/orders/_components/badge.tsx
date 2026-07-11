@@ -8,7 +8,12 @@ type OrderStatus =
   | "cancelled"
   | "returned";
 type PaymentStatus = "paid" | "pending" | "refunded" | "failed";
-type ReturnStatus = "requested" | "approved" | "received" | "refunded" | "rejected";
+type ReturnStatus =
+  | "requested"
+  | "approved"
+  | "received"
+  | "refunded"
+  | "rejected";
 
 const statusConfig: Record<OrderStatus, { label: string; color: string }> = {
   pending: { label: "Pending", color: "orange" },

@@ -98,8 +98,6 @@ export default function PricingCards() {
     try {
       const payment = await mutations.checkoutPlan.mutateAsync(id);
 
-      console.log("payment", payment);
-
       const confirm = await Swal.fire({
         title: "Confirm mock payment?",
         text: "Confirm payment payment",
@@ -124,7 +122,6 @@ export default function PricingCards() {
         toast.success("Checkout created. Confirm it before it expires.");
       }
     } catch (error) {
-      console.log(getApiErrorMessage(error));
       toast.error("Please log in first.");
       router.push("/sign-in");
     }

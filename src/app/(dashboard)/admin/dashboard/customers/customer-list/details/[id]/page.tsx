@@ -1,14 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
-  MapPin,
-  Pencil
-} from "lucide-react";
-
-
-import React from "react";
-import {
   Button,
   Card,
   Col,
@@ -19,25 +11,23 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { ArrowLeft, MapPin, Pencil } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import React from "react";
 
-import PageHeader from "@/components/shared/page-header";
 import Loader from "@/components/shared/loader";
+import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCustomer } from "@/lib/api/hooks/customer";
 import { useAuthStore } from "@/stores/auth.store";
-import Address from "../_components/Address";
+
+import Address from "../_components/address";
 
 const { Title, Text } = Typography;
 
 type CustomerStatus = "ACTIVE" | "INACTIVE" | "BLOCKED";
 
-type CustomerAddressType =
-  | "HOME"
-  | "OFFICE"
-  | "SHIPPING"
-  | "BILLING"
-  | "OTHER";
+type CustomerAddressType = "HOME" | "OFFICE" | "SHIPPING" | "BILLING" | "OTHER";
 
 type CustomerAddress = {
   id: string;
@@ -136,7 +126,9 @@ const CustomerDetails = () => {
             </Title>
 
             <Space wrap>
-              <Text type="secondary">Customer since {formatDate(item.createdAt)}</Text>
+              <Text type="secondary">
+                Customer since {formatDate(item.createdAt)}
+              </Text>
 
               <Tag color={getStatusColor(item.status)}>{item.status}</Tag>
             </Space>
@@ -156,7 +148,7 @@ const CustomerDetails = () => {
               icon={<MapPin />}
               onClick={() =>
                 router.push(
-                  `/admin/dashboard/customers/customer-list/address/${id}`
+                  `/admin/dashboard/customers/customer-list/address/${id}`,
                 )
               }
             >
@@ -168,7 +160,7 @@ const CustomerDetails = () => {
               icon={<Pencil />}
               onClick={() =>
                 router.push(
-                  `/admin/dashboard/customers/customer-list/update/${item.id}`
+                  `/admin/dashboard/customers/customer-list/update/${item.id}`,
                 )
               }
             >
@@ -181,9 +173,7 @@ const CustomerDetails = () => {
           <Col xs={24} lg={12}>
             <Card title="Customer Information" size="small">
               <Descriptions column={1} bordered size="small">
-                <Descriptions.Item label="Name">
-                  {item.name}
-                </Descriptions.Item>
+                <Descriptions.Item label="Name">{item.name}</Descriptions.Item>
 
                 <Descriptions.Item label="Email">
                   {item.email ?? "-"}
@@ -231,12 +221,8 @@ const CustomerDetails = () => {
           </Col>
 
           <Col xs={24}>
-          <Address address={item?.addresses ?? []} 
-          customerId={id}
-          />
+            <Address address={item?.addresses ?? []} customerId={id} />
           </Col>
-
-
         </Row>
       </Card>
     </div>

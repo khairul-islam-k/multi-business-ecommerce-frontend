@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
     Facebook,
     Instagram,
@@ -10,7 +9,9 @@ import {
     Twitter,
     Youtube,
 } from "lucide-react";
+
 import { FooterConfig } from "@/types/website/website";
+import Link from "next/link";
 
 const footerLinks = [
     {

@@ -1,5 +1,8 @@
 "use client";
 
+import { Button, Card, Form, Input, Select, Space } from "antd";
+import { useEffect, useMemo, useState } from "react";
+
 import {
   useAreasQuery,
   useCourierPickUp,
@@ -7,8 +10,6 @@ import {
 } from "@/lib/api/hooks/courier";
 import { useAuthStore } from "@/stores/auth.store";
 import { WarehousePayload, WarehouseStatus } from "@/types/product/warehouse";
-import { Button, Card, Form, Input, Select, Space } from "antd";
-import { useEffect, useMemo, useState } from "react";
 
 const { TextArea } = Input;
 
@@ -227,8 +228,6 @@ const WarehouseForm = ({
           }
         : {}),
     };
-
-    console.log("warehouse payload", payload);
 
     onSubmit(payload);
   };

@@ -191,8 +191,6 @@ const FashionNavbar = () => {
   const favoriteCount = wishList?.meta.total ?? 0;
 
   const handleCategoryClick = (categoryId: string) => {
-    console.log("Clicked category id:", categoryId);
-
     setMobileMenuOpen(false);
 
     router.push(`/store/products?categoryId=${categoryId}`);
@@ -203,7 +201,7 @@ const FashionNavbar = () => {
       <header className="sticky top-0 z-50 bg-[var(--store-bg-1)]">
         <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
           {/* Logo */}
-          
+
           <LogoComponent />
 
           {/* Center Navigation */}

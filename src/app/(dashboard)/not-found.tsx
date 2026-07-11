@@ -1,12 +1,8 @@
 "use client";
 
-import {
-  StepBack
-} from "lucide-react";
-
-
 import { Button, Result } from "antd";
 import { motion } from "framer-motion";
+import { StepBack } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function NotFoundPage() {

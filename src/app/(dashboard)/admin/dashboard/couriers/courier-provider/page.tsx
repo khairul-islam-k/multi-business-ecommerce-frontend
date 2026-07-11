@@ -1,14 +1,18 @@
 "use client";
 
 import { Card, Select, Tag } from "antd";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCourierProviderQuery } from "@/lib/api/hooks/courier";
 import { useAuthStore } from "@/stores/auth.store";
-import { CourierProvider as TCourierProvider, CourierStatus } from "../courier-config/page";
+
+import {
+  CourierProvider as TCourierProvider,
+  CourierStatus,
+} from "../courier-config/page";
 
 const CourierProvider = () => {
   const [statusFilter, setStatusFilter] = useState<CourierStatus | undefined>();
@@ -28,10 +32,8 @@ const CourierProvider = () => {
     page: currentPage,
     limit,
     search,
-    status: statusFilter
+    status: statusFilter,
   });
-
-
 
   const total = couriers?.meta.total ?? 0;
   const totalPages = Math.ceil(total / limit);

@@ -1,24 +1,32 @@
 "use client";
 
+import { App, Card, Pagination, Select, Typography } from "antd";
 import { useMemo, useState } from "react";
-import { App, Card, Pagination } from "antd";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCustomerQuery } from "@/lib/api";
 import { useFinanceAccountQuery } from "@/lib/api/hooks/finance-account";
 import { usePosSaleMutation } from "@/lib/api/hooks/pos";
 import { useProductsQuery } from "@/lib/api/hooks/product";
+import { useProductBrandQuery } from "@/lib/api/hooks/product-brand";
+import { useProductCategoriesQuery } from "@/lib/api/hooks/product-categories";
+import { useProductTagQuery } from "@/lib/api/hooks/product-tags";
 import { useTaxQuery } from "@/lib/api/hooks/tax";
 import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { CreatePosSalePayload, PosPaymentMethod } from "@/types/pos";
-import { ProductPicker } from "./_components/product-picker";
+import { ResponseProduct } from "@/types/product/product";
+
 import { PosCart } from "./_components/pos-cart";
+import { ProductPicker } from "./_components/product-picker";
 import { PosCartItem, PosCheckoutValues } from "./_components/types";
 import { VariantSelector } from "./_components/variant-selector";
 
-const PAGE_LIMIT = 8;
+const { Text } = Typography;
+
+const PAGE_LIMIT = 12;
 
 const createCartId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -30,34 +38,54 @@ const trimOrUndefined = (value?: string) => {
   return trimmed ? trimmed : undefined;
 };
 
+const toNumber = (value?: string | number | null) => Number(value ?? 0);
+
+const getProductAvailableQuantity = (product: ResponseProduct) => {
+  if (!product.stockSummary) return undefined;
+  return Number(product.stockSummary.availableQuantity ?? 0);
+};
+
 const PosOrder = () => {
   const { message } = App.useApp();
   const business = useAuthStore((state) => state.selectedBusiness);
   const businessId = business?.id ?? "";
-  const addToCard = useAuthStore(s => s.addCartItem);
-  const cartPos = useAuthStore(s => s.cartPos);
-  const removeCartItem = useAuthStore(s => s.removeCartItem);
-  const updateCartItem = useAuthStore(s => s.updateCartItem);
-  const resetCard = useAuthStore(s => s.clearCart);
+  const addToCard = useAuthStore((s) => s.addCartItem);
+  const cartPos = useAuthStore((s) => s.cartPos);
+  const removeCartItem = useAuthStore((s) => s.removeCartItem);
+  const updateCartItem = useAuthStore((s) => s.updateCartItem);
+  const resetCard = useAuthStore((s) => s.clearCart);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [selectedProductId, setSelectedProductId] = useState<string>();
+  const [categoryId, setCategoryId] = useState<string>();
+  const [brandId, setBrandId] = useState<string>();
+  const [tagId, setTagId] = useState<string>();
+  const [variantProduct, setVariantProduct] = useState<ResponseProduct>();
   const [checkoutValues, setCheckoutValues] = useState<PosCheckoutValues>({
     customerMode: "walk-in",
   });
+
+  const selectedWarehouseId = checkoutValues.warehouseId;
 
   const {
     data: products,
     isLoading: productsLoading,
     isFetching: productsFetching,
-  } = useProductsQuery(businessId, {
-    page: currentPage,
-    limit: PAGE_LIMIT,
-    search,
-    status: "ACTIVE",
-    sortOrder: "desc",
-  });
+  } = useProductsQuery(
+    businessId,
+    {
+      page: currentPage,
+      limit: PAGE_LIMIT,
+      search,
+      status: "ACTIVE",
+      warehouseId: selectedWarehouseId,
+      categoryId,
+      brandId,
+      tagId,
+      sortOrder: "desc",
+    },
+    { enabled: Boolean(selectedWarehouseId) },
+  );
 
   const { data: taxes, isLoading: taxesLoading } = useTaxQuery(businessId, {
     status: "ACTIVE",
@@ -67,6 +95,37 @@ const PosOrder = () => {
     businessId,
     {
       status: "ACTIVE",
+    },
+  );
+
+  const { data: categories, isLoading: categoriesLoading } =
+    useProductCategoriesQuery(businessId, {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      sortBy: "name",
+      sortOrder: "asc",
+    });
+
+  const { data: brands, isLoading: brandsLoading } = useProductBrandQuery(
+    businessId,
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      sortBy: "name",
+      sortOrder: "asc",
+    },
+  );
+
+  const { data: tags, isLoading: tagsLoading } = useProductTagQuery(
+    businessId,
+    {
+      page: 1,
+      limit: 100,
+      status: "ACTIVE",
+      sortBy: "name",
+      sortOrder: "asc",
     },
   );
 
@@ -92,17 +151,80 @@ const PosOrder = () => {
   const warehouseItems = warehouses?.items ?? [];
   const accountItems = accounts?.items ?? [];
   const customerItems = customers?.items ?? [];
+  const categoryItems = categories?.items || [];
+  const brandItems = brands?.items ?? [];
+  const tagItems = tags?.items ?? [];
   const totalProducts = products?.meta?.total ?? 0;
 
-  const selectedProduct = useMemo(
-    () => productItems.find((product) => product.id === selectedProductId),
-    [productItems, selectedProductId],
-  );
-
   const handleAddItem = (item: Omit<PosCartItem, "id">) => {
+    const existingItem = cartPos.find((cartItem) => {
+      const sameProduct = cartItem.product.id === item.product.id;
+      const sameVariant = cartItem.variant?.id === item.variant?.id;
+
+      return sameProduct && sameVariant;
+    });
+    const nextQuantity = (existingItem?.quantity ?? 0) + item.quantity;
+
+    if (
+      item.availableQuantity !== undefined &&
+      nextQuantity > item.availableQuantity
+    ) {
+      message.warning("Requested quantity exceeds available stock.");
+      return;
+    }
+
     addToCard({
       ...item,
-      id: createCartId()
+      id: createCartId(),
+    });
+  };
+
+  const handleWarehouseChange = (warehouseId?: string) => {
+    if (warehouseId !== selectedWarehouseId && cartPos.length > 0) {
+      resetCard();
+      message.info("Cart cleared because the warehouse changed.");
+    }
+
+    setCheckoutValues((current) => ({ ...current, warehouseId }));
+    setCurrentPage(1);
+    setVariantProduct(undefined);
+  };
+
+  const resetProductFilters = () => {
+    setSearch("");
+    setCategoryId(undefined);
+    setBrandId(undefined);
+    setTagId(undefined);
+    setCurrentPage(1);
+  };
+
+  const handleProductSelect = (product: ResponseProduct) => {
+    if (!selectedWarehouseId) {
+      message.error("Select a warehouse first.");
+      return;
+    }
+
+    const availableQuantity = getProductAvailableQuantity(product);
+
+    if (availableQuantity !== undefined && availableQuantity <= 0) {
+      message.warning(
+        "This product is out of stock in the selected warehouse.",
+      );
+      return;
+    }
+
+    if (product.variants?.length) {
+      setVariantProduct(product);
+      return;
+    }
+
+    handleAddItem({
+      product: { id: product.id, name: product.name, taxId: product.taxId },
+      variant: null,
+      quantity: 1,
+      discountAmount: 0,
+      unitPrice: toNumber(product.price),
+      availableQuantity,
     });
   };
 
@@ -156,7 +278,7 @@ const PosOrder = () => {
       await createPosSale.mutateAsync(payload);
       resetCard();
       setCheckoutValues({ customerMode: "walk-in" });
-      setSelectedProductId(undefined);
+      setVariantProduct(undefined);
       message.success("POS sale completed successfully.");
     } catch (error) {
       message.error(getApiErrorMessage(error));
@@ -167,25 +289,74 @@ const PosOrder = () => {
     <div className="space-y-6">
       <PageHeader
         title="POS"
-        subtitle="Select products, resolve variants by attributes, add quantities and discounts, then complete the sale from one page."
+        subtitle="Select a warehouse, add products from available stock, adjust the cart, then complete the sale."
         breadcrumb={adminBreadcrumb}
       />
+
+      <Card>
+        <div className="flex flex-col gap-2 md:max-w-md">
+          <Text strong>Warehouse</Text>
+          <Select
+            allowClear
+            showSearch
+            size="large"
+            placeholder="Select warehouse first"
+            optionFilterProp="label"
+            loading={warehousesLoading}
+            value={selectedWarehouseId}
+            options={warehouseItems.map((warehouse) => ({
+              label: warehouse.name,
+              value: warehouse.id,
+            }))}
+            onChange={handleWarehouseChange}
+          />
+          <Text type="secondary">
+            Products and stock availability are loaded from this warehouse.
+          </Text>
+        </div>
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
         <div className="space-y-4">
           <ProductPicker
             products={productItems}
-            loading={productsLoading || productsFetching}
+            loading={
+              productsLoading ||
+              productsFetching ||
+              categoriesLoading ||
+              brandsLoading ||
+              tagsLoading
+            }
             search={search}
-            selectedProductId={selectedProductId}
+            requireWarehouse
+            selectedWarehouseId={selectedWarehouseId}
+            categoryId={categoryId}
+            brandId={brandId}
+            tagId={tagId}
+            categories={categoryItems}
+            brands={brandItems}
+            tags={tagItems}
             onSearch={(value) => {
               setSearch(value);
               setCurrentPage(1);
             }}
-            onSelect={(product) => setSelectedProductId(product.id)}
+            onCategoryChange={(value) => {
+              setCategoryId(value);
+              setCurrentPage(1);
+            }}
+            onBrandChange={(value) => {
+              setBrandId(value);
+              setCurrentPage(1);
+            }}
+            onTagChange={(value) => {
+              setTagId(value);
+              setCurrentPage(1);
+            }}
+            onClearFilters={resetProductFilters}
+            onSelect={handleProductSelect}
           />
 
-          {totalProducts > PAGE_LIMIT && (
+          {selectedWarehouseId && totalProducts > PAGE_LIMIT && (
             <Card>
               <Pagination
                 current={currentPage}
@@ -196,13 +367,6 @@ const PosOrder = () => {
               />
             </Card>
           )}
-
-          <VariantSelector
-            key={selectedProduct?.id ?? "no-product"}
-            businessId={businessId}
-            product={selectedProduct}
-            onAdd={handleAddItem}
-          />
         </div>
 
         <PosCart
@@ -227,6 +391,13 @@ const PosOrder = () => {
           onCheckout={handleCheckout}
         />
       </div>
+
+      <VariantSelector
+        open={Boolean(variantProduct)}
+        product={variantProduct}
+        onClose={() => setVariantProduct(undefined)}
+        onAdd={handleAddItem}
+      />
     </div>
   );
 };

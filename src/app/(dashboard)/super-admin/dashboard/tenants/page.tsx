@@ -1,23 +1,18 @@
 "use client";
 
-import {
-  CirclePlus,
-  Eye,
-  MoreHorizontal
-} from "lucide-react";
-
-
+import { App, Button, Dropdown, Flex, Tag } from "antd";
+import { CirclePlus, Eye, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { App, Button, Dropdown, Flex, Tag } from "antd";
 
-import { useSwal } from "@/hooks/use-swal";
-import type { SystemUserStatus, Tenant } from "@/lib/api";
-import { useTenantMutations, useTenants } from "@/lib/api";
-import { getApiErrorMessage } from "@/lib/axios";
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
-import { Column, DataTable } from "@/components/shared/data-table";
+import { useSwal } from "@/hooks/use-swal";
+import { useTenantMutations, useTenants } from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/axios";
+
+import type { SystemUserStatus, Tenant } from "@/lib/api";
 
 const statusOptions: Array<{ label: string; value: SystemUserStatus }> = [
   { label: "Activate", value: "ACTIVE" },
@@ -92,10 +87,7 @@ export default function TenantListPage() {
     },
   ];
 
-  const handleStatusChange = (
-    tenant: Tenant,
-    status: SystemUserStatus,
-  ) => {
+  const handleStatusChange = (tenant: Tenant, status: SystemUserStatus) => {
     if (tenant.status === status) return;
 
     swal.modal.confirm({
@@ -139,7 +131,7 @@ export default function TenantListPage() {
         }}
         toolbarEnd={
           <Link href="/super-admin/dashboard/tenants/create">
-            <Button type="primary" icon={<CirclePlus />}>
+            <Button type="primary" icon={<CirclePlus size={16} />}>
               Create Tenant
             </Button>
           </Link>
@@ -147,7 +139,7 @@ export default function TenantListPage() {
         actions={(row) => (
           <Flex gap={16}>
             <Link href={`/super-admin/dashboard/tenants/${row.id}`}>
-              <Button icon={<Eye />} />
+              <Button icon={<Eye size={16} />} />
             </Link>
 
             <Dropdown
@@ -163,7 +155,7 @@ export default function TenantListPage() {
               <Button
                 type="text"
                 aria-label="Tenant actions"
-                icon={<MoreHorizontal />}
+                icon={<MoreHorizontal size={16} />}
               />
             </Dropdown>
           </Flex>

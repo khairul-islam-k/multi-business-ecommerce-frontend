@@ -1,9 +1,10 @@
 "use client";
 
 import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from "antd";
-import type { FinanceAccountPayload } from "@/types/finance/account";
+
 import { currencyOptions } from "@/lib/business/options";
 
+import type { FinanceAccountPayload } from "@/types/finance/account";
 type FinanceAccountFormProps = {
   initialValues?: Partial<FinanceAccountPayload>;
   loading?: boolean;
@@ -103,8 +104,7 @@ const FinanceAccountForm = ({
             </Form.Item>
           </Col>
 
-          {
-            !(submitText === "Update Account") &&
+          {!(submitText === "Update Account") && (
             <Col xs={24} md={12}>
               <Form.Item
                 label="Opening balance amount"
@@ -131,8 +131,7 @@ const FinanceAccountForm = ({
                 />
               </Form.Item>
             </Col>
-          }
-
+          )}
 
           <Col xs={24} md={12}>
             <Form.Item

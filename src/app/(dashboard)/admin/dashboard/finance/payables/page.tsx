@@ -1,14 +1,5 @@
 "use client";
 
-import { Banknote, Eye } from "lucide-react";
-
-import { Column, DataTable } from "@/components/shared/data-table";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
-import { useFinancePayableQuery } from "@/lib/api/hooks/finance-payable-receivable";
-import { useAuthStore } from "@/stores/auth.store";
-import { PayableResponse, PayableStatus } from "@/types/finance/payable";
 import {
   Button,
   Card,
@@ -20,8 +11,18 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import { Banknote, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+import { Column, DataTable } from "@/components/shared/data-table";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+import { useFinancePayableQuery } from "@/lib/api/hooks/finance-payable-receivable";
+import { useAuthStore } from "@/stores/auth.store";
+import { PayableResponse, PayableStatus } from "@/types/finance/payable";
+
 import PayPayable from "./_components/pay-payable";
 
 const { Title, Text } = Typography;

@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  CirclePlus,
-  Save,
-  Trash2
-} from "lucide-react";
-
+import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
+import { CirclePlus, Save, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -17,18 +15,8 @@ import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockAdjustmentPayload } from "@/types/stock/adjustment";
-import {
-  Button,
-  Card,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-} from "antd";
+
 import type { FormInstance } from "antd";
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 
 type SelectOption = {
   label: string;
@@ -68,7 +56,9 @@ const VariantSelect = ({
         showSearch
         disabled={!productId}
         loading={isLoading || isFetching}
-        placeholder={productId ? "Select variant optional" : "Select product first"}
+        placeholder={
+          productId ? "Select variant optional" : "Select product first"
+        }
         optionFilterProp="label"
         options={variantOptions}
       />
@@ -219,8 +209,6 @@ export default function CreateStockAdjustmentPage() {
       })),
     };
 
-    console.log("stock adjustment payload", payload);
-
     try {
       await createStockAdjustment.mutateAsync(payload);
 
@@ -242,7 +230,7 @@ export default function CreateStockAdjustmentPage() {
         subtitle="Create stock increase or decrease adjustments for warehouse inventory with product, variant, quantity, and reason details."
         breadcrumb={adminBreadcrumb}
       />
-      
+
       <Card title="Create Stock Adjustment">
         <Form<StockAdjustmentPayload>
           form={form}

@@ -1,15 +1,6 @@
 "use client";
 
 import {
-  Landmark,
-  Mail,
-  Phone,
-  UserRound
-} from "lucide-react";
-
-
-import { useParams } from "next/navigation";
-import {
   Avatar,
   Card,
   Col,
@@ -22,11 +13,13 @@ import {
   Tag,
   Typography,
 } from "antd";
+import { Landmark, Mail, Phone, UserRound } from "lucide-react";
+import { useParams } from "next/navigation";
 
-import { useTenant } from "@/lib/api";
 import Loader from "@/components/shared/loader";
 import PageHeader from "@/components/shared/page-header";
 import { superAdminBreadcrumb } from "@/config/breadcrumb.config";
+import { useTenant } from "@/lib/api";
 
 const { Text, Title } = Typography;
 

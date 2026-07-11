@@ -1,31 +1,26 @@
 "use client";
 
 import {
-  CircleCheck,
-  Eye,
-  Search
-} from "lucide-react";
-
-
-import { useState } from "react";
-import {
-  Table,
-  Input,
-  Select,
   Badge,
-  Tooltip,
   Button,
   Card,
+  Input,
   Modal,
+  Select,
   Space,
+  Table,
+  Tooltip,
   Typography,
 } from "antd";
+import { CircleCheck, Eye, Search } from "lucide-react";
+import { useState } from "react";
 
-import { Notification } from "./type";
-import { useSwal } from "@/hooks/use-swal";
-import { mockNotifications } from "./data";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
+
+import { mockNotifications } from "./data";
+import { Notification } from "./type";
 
 const { Option } = Select;
 const { Text, Paragraph } = Typography;

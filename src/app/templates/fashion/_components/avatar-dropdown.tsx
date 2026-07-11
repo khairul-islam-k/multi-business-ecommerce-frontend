@@ -15,12 +15,10 @@ type User = {
   refreshToken: string;
 };
 
-
-
 export default function AvatarDropdown() {
   const [open, setOpen] = useState(false);
 
-  const {user, handleLogout, newAccessToken} = useCart();
+  const { user, handleLogout, newAccessToken } = useCart();
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,8 +45,7 @@ export default function AvatarDropdown() {
 
   const handleRefresh = async () => {
     const token = await newAccessToken();
-    console.log('token', token);
-  }
+  };
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -59,14 +56,13 @@ export default function AvatarDropdown() {
       >
         <div className="relative size-9 overflow-hidden rounded-full bg-gray-100">
           <Image
-                  src='https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128'
-                  alt={user.name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
+            src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128"
+            alt={user.name}
+            fill
+            className="object-cover"
+            unoptimized
+          />
         </div>
-
       </button>
 
       {open && (
@@ -75,7 +71,7 @@ export default function AvatarDropdown() {
             <div className="flex items-center gap-3">
               <div className="relative size-12 overflow-hidden rounded-full bg-gray-100">
                 <Image
-                  src='https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128'
+                  src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128"
                   alt={user.name}
                   fill
                   className="object-cover"

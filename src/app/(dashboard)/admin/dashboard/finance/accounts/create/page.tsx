@@ -1,17 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 import { useFinanceAccountMutation } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import type { FinanceAccountPayload } from "@/types/finance/account";
-import { useRouter } from "next/navigation";
-import FinanceAccountForm from "../_components/finance-account-form";
-import { useSwal } from "@/hooks/use-swal";
 
+import FinanceAccountForm from "../_components/finance-account-form";
+
+import type { FinanceAccountPayload } from "@/types/finance/account";
 const CreateFinanceAccountPage = () => {
-  const swal = useSwal()
+  const swal = useSwal();
   const router = useRouter();
 
   const business = useAuthStore((s) => s.selectedBusiness);
@@ -20,10 +22,8 @@ const CreateFinanceAccountPage = () => {
   const { createFinanceAccount } = useFinanceAccountMutation(businessId);
 
   const handleSubmit = async (values: FinanceAccountPayload) => {
-    
     try {
-    const res = await createFinanceAccount.mutateAsync(values);
-    console.log('res', res);
+      const res = await createFinanceAccount.mutateAsync(values);
 
       swal.success("Account created successfully.");
       router.push("/admin/dashboard/finance/accounts");

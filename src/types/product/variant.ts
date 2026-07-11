@@ -47,7 +47,6 @@ export type ResponseVariantImage = {
   imageUrl: string | undefined;
   altText: string | undefined;
   isThumbnail: boolean;
-  sortOrder: number;
 
   createdBy: string | null;
   updatedBy: string | null;

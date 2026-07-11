@@ -1,11 +1,17 @@
 "use client";
 
 import {
-  CirclePlus,
-  Save,
-  Trash2
-} from "lucide-react";
-
+  Button,
+  Card,
+  Form as AntdForm,
+  Input,
+  InputNumber,
+  Select,
+  Space,
+} from "antd";
+import { CirclePlus, Save, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
@@ -17,18 +23,8 @@ import { useWarehousesQuery } from "@/lib/api/hooks/warehouse";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { StockTransferPayload } from "@/types/stock/stock-tansfer";
-import {
-  Button,
-  Card,
-  Form as AntdForm,
-  Input,
-  InputNumber,
-  Select,
-  Space,
-} from "antd";
+
 import type { FormInstance } from "antd";
-import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 
 type SelectOption = {
   label: string;
@@ -53,9 +49,7 @@ const VariantSelect = ({
   } = useProductVariantQuery(businessId, productId ?? "", "");
 
   const variantOptions: SelectOption[] = useMemo(() => {
-    const variantItems = Array.isArray(variants)
-      ? variants
-      : variants ?? [];
+    const variantItems = Array.isArray(variants) ? variants : (variants ?? []);
 
     return variantItems.map((variant) => ({
       label: variant.title || "Untitled Variant",
@@ -142,9 +136,12 @@ const StockTransferItemRow = ({
       >
         <InputNumber
           style={{
-            width: '100%'
+            width: "100%",
           }}
-          min={1} className="w-full" placeholder="3" />
+          min={1}
+          className="w-full"
+          placeholder="3"
+        />
       </AntdForm.Item>
     </div>
   );
@@ -210,7 +207,6 @@ export default function CreateStockTransferPage() {
 
     try {
       const res = await createStockTransfer.mutateAsync(payload);
-      console.log('res', res);
       swal.success("Stock transfer created successfully.");
       form.resetFields();
 
@@ -350,8 +346,11 @@ export default function CreateStockTransferPage() {
 
           <Space className="mt-4">
             <Button
-            loading={createStockTransfer.isPending}
-            type="primary" htmlType="submit" icon={<Save />}>
+              loading={createStockTransfer.isPending}
+              type="primary"
+              htmlType="submit"
+              icon={<Save />}
+            >
               Create Transfer
             </Button>
 

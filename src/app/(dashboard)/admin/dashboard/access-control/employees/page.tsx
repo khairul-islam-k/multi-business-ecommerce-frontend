@@ -1,28 +1,32 @@
 "use client";
 
 import {
-  CirclePlus,
-  Eye,
-  MoreHorizontal,
-  UserRoundCog
-} from "lucide-react";
-
-
+  App,
+  Button,
+  Card,
+  Dropdown,
+  Empty,
+  Flex,
+  Modal,
+  Select,
+  Tag,
+} from "antd";
+import { CirclePlus, Eye, MoreHorizontal, UserRoundCog } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { App, Button, Card, Dropdown, Empty, Flex, Modal, Select, Tag } from "antd";
 
-import type { Employee } from "@/lib/api";
-import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
+import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { usePermissionAccess } from "@/hooks/use-permission-access";
+import { useEmployeeMutations, useEmployees, useRoles } from "@/lib/api";
 import { PERMISSIONS } from "@/lib/auth/permissions";
-import type { ApiId } from "@/lib/api";
 import { getApiErrorMessage } from "@/lib/axios";
+
+import type { Employee } from "@/lib/api";
+import type { ApiId } from "@/lib/api";
 
 const getEmployeeRoles = (employee: Employee) =>
   employee.roles ?? employee.userRoleMaps?.map((map) => map.role) ?? [];
@@ -202,42 +206,45 @@ export default function Users() {
                     items: [
                       ...(updateAccess.allowed
                         ? [
-                          {
-                            key: "edit",
-                            label: "Edit",
-                            onClick: () =>
-                              router.push(
-                                `/admin/dashboard/access-control/employees/edit/${row.id}`
-                              ),
-                          },
-                        ]
+                            {
+                              key: "edit",
+                              label: "Edit",
+                              onClick: () =>
+                                router.push(
+                                  `/admin/dashboard/access-control/employees/edit/${row.id}`,
+                                ),
+                            },
+                          ]
                         : []),
 
                       ...(deleteAccess.allowed
                         ? [
-                          {
-                            key: "delete",
-                            label: "Delete",
-                            danger: true,
-                            onClick: () => {
-                              modal.confirm({
-                                title: "Confirm Deletion",
-                                content: "Are you sure you want to delete this employee?",
-                                okText: "Delete",
-                                cancelText: "Cancel",
-                                centered: true,
-                                okButtonProps: {
-                                  danger: true,
-                                },
-                                async onOk() {
-                                  await employeeMutations.removeEmployee.mutateAsync(row.id);
+                            {
+                              key: "delete",
+                              label: "Delete",
+                              danger: true,
+                              onClick: () => {
+                                modal.confirm({
+                                  title: "Confirm Deletion",
+                                  content:
+                                    "Are you sure you want to delete this employee?",
+                                  okText: "Delete",
+                                  cancelText: "Cancel",
+                                  centered: true,
+                                  okButtonProps: {
+                                    danger: true,
+                                  },
+                                  async onOk() {
+                                    await employeeMutations.removeEmployee.mutateAsync(
+                                      row.id,
+                                    );
 
-                                  message.success("Deleted successfully.");
-                                },
-                              });
+                                    message.success("Deleted successfully.");
+                                  },
+                                });
+                              },
                             },
-                          },
-                        ]
+                          ]
                         : []),
                     ],
                   }}

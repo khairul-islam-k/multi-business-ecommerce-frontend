@@ -1,16 +1,11 @@
 "use client";
 
-import {
-  Image as ImageIcon,
-  Trash2
-} from "lucide-react";
-
-
 import { Button, Card, Space, Typography } from "antd";
+import { Image as ImageIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-import ImageSelectModal from "../../_components/ImageSelectModal";
+import ImageSelectModal from "../../_components/image-select-modal";
 import { imageUrlSet } from "../../product-catalog/products/_components/image-url";
 
 const { Text } = Typography;
@@ -51,7 +46,9 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
             )}
 
             <div>
-              <Text strong>{value ? "Profile image selected" : "No image selected"}</Text>
+              <Text strong>
+                {value ? "Profile image selected" : "No image selected"}
+              </Text>
               <div className="text-xs text-gray-500">
                 Use an image from the shared media library.
               </div>
@@ -60,11 +57,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
 
           <Space>
             {value ? (
-              <Button
-                danger
-                icon={<Trash2 />}
-                onClick={() => onChange?.("")}
-              />
+              <Button danger icon={<Trash2 />} onClick={() => onChange?.("")} />
             ) : null}
 
             <Button onClick={() => setOpen(true)}>

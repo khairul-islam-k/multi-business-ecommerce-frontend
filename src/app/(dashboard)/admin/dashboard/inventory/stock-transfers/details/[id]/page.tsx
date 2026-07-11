@@ -1,26 +1,19 @@
 "use client";
 
-import {
-  ArrowLeft
-} from "lucide-react";
-
+import { Button, Card, Descriptions, Empty, Spin, Table, Tag } from "antd";
+import { ArrowLeft } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useStockTransfer } from "@/lib/api/hooks/stock-transfer";
 import { useAuthStore } from "@/stores/auth.store";
-import { StockTransferResponse, StockTransferStatus } from "@/types/stock/stock-tansfer";
 import {
-  Button,
-  Card,
-  Descriptions,
-  Empty,
-  Spin,
-  Table,
-  Tag,
-} from "antd";
+  StockTransferResponse,
+  StockTransferStatus,
+} from "@/types/stock/stock-tansfer";
+
 import type { ColumnsType } from "antd/es/table";
-import { useParams, useRouter } from "next/navigation";
 
 type TransferItemRow = {
   serial: number;
@@ -145,7 +138,10 @@ export default function StockTransferDetails() {
     );
   }
 
-  const totalRequestedQty = getTotalQuantity(transfer.items, "requestedQuantity");
+  const totalRequestedQty = getTotalQuantity(
+    transfer.items,
+    "requestedQuantity",
+  );
   const totalTransferredQty = getTotalQuantity(
     transfer.items,
     "transferredQuantity",
@@ -166,7 +162,9 @@ export default function StockTransferDetails() {
 
       <Card
         title="Transfer Information"
-        extra={<Tag color={statusColor[transfer.status]}>{transfer.status}</Tag>}
+        extra={
+          <Tag color={statusColor[transfer.status]}>{transfer.status}</Tag>
+        }
       >
         <Descriptions bordered column={{ xs: 1, md: 2 }}>
           <Descriptions.Item label="Transfer No">

@@ -16,7 +16,6 @@ import { CustomerRegisterPayload } from "@/types/template/auth";
 import { templateAuthApi } from "@/lib/api/template-auth";
 import OtpVerifyModal from "@/app/store/_components/otp-verify-modal";
 
-
 export const customerRegisterSchema = z.object({
   name: z
     .string()
@@ -63,7 +62,7 @@ export default function FashionRegisterPage() {
 
   // otp
   const [openOtpModal, setOpenOtpModal] = useState<boolean>(false);
-  const [otpEmail, setOtpEmail] = useState<string>('');
+  const [otpEmail, setOtpEmail] = useState<string>("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -88,15 +87,12 @@ export default function FashionRegisterPage() {
       setServerError(null);
 
       const response = await templateAuthApi.register(data);
-      setOtpEmail(response?.customer?.email)
+      setOtpEmail(response?.customer?.email);
       setOpenOtpModal(true);
-      message.success('Registered successfully');
+      message.success("Registered successfully");
 
       // reset();
-
     } catch (error) {
-      console.log("register error", error);
-
       if (axios.isAxiosError(error)) {
         const message =
           error.response?.data?.message ||
@@ -294,7 +290,7 @@ export default function FashionRegisterPage() {
         email={otpEmail}
         onClose={() => setOpenOtpModal(false)}
         onVerified={() => {
-          router.push('/store/login')
+          router.push("/store/login");
         }}
       />
     </main>

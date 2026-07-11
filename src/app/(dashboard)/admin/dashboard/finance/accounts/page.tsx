@@ -1,16 +1,6 @@
 "use client";
 
 import {
-  CirclePlus,
-  Eye,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  WalletCards,
-} from "lucide-react";
-
-import { Column, DataTable } from "@/components/shared/data-table";
-import {
   Button,
   Card,
   Col,
@@ -26,22 +16,32 @@ import {
   Tooltip,
   Typography,
 } from "antd";
+import {
+  CirclePlus,
+  Eye,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  WalletCards,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useAuthStore } from "@/stores/auth.store";
+
+import { Column, DataTable } from "@/components/shared/data-table";
+import PageHeader from "@/components/shared/page-header";
+import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useSwal } from "@/hooks/use-swal";
 import {
   useFinanceAccountMutation,
   useFinanceAccountQuery,
 } from "@/lib/api/hooks/finance-account";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
 import {
   AccountStatus,
   AddMoneyPayload,
   FinanceAccountResponse,
 } from "@/types/finance/account";
-import PageHeader from "@/components/shared/page-header";
-import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useSwal } from "@/hooks/use-swal";
 
 const { Title, Text } = Typography;
 
@@ -115,7 +115,6 @@ const AccountsList = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [accountId, setAccountId] = useState<string>("");
-  console.log(accountId);
 
   const handleFinish = async (values: AddMoneyPayload) => {
     if (!accountId) {
@@ -134,8 +133,6 @@ const AccountsList = () => {
         accountId,
         payload,
       });
-
-      console.log("res", res);
 
       swal.success("Money added successfully.");
 
@@ -226,7 +223,6 @@ const AccountsList = () => {
         ];
 
         const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
-          console.log("ant", key);
           if (key === "view") {
             router.push(`/admin/dashboard/finance/accounts/detail/${row.id}`);
           }

@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { App } from "antd";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/stores/auth.store";
-import WarehouseForm from "../_components/warehouse-form";
-import { WarehousePayload } from "@/types/product/warehouse";
-import { useWarehouseMutation } from "@/lib/api/hooks/warehouse";
-import { getApiErrorMessage } from "@/lib/axios";
+import { useState } from "react";
+
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
+import { useWarehouseMutation } from "@/lib/api/hooks/warehouse";
+import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { WarehousePayload } from "@/types/product/warehouse";
+
+import WarehouseForm from "../_components/warehouse-form";
 
 export default function CreateWarehousePage() {
   const router = useRouter();
@@ -28,34 +30,34 @@ export default function CreateWarehousePage() {
 
       ...(values.phone?.trim()
         ? {
-          phone: values.phone.trim(),
-        }
+            phone: values.phone.trim(),
+          }
         : {}),
 
       ...(values.address?.trim()
         ? {
-          address: values.address.trim(),
-        }
+            address: values.address.trim(),
+          }
         : {}),
 
       ...(values.redxAreaId
         ? {
-          redxAreaId: values.redxAreaId,
-          redxAreaName: values.redxAreaName,
-          redxPostCode: values.redxPostCode,
-        }
+            redxAreaId: values.redxAreaId,
+            redxAreaName: values.redxAreaName,
+            redxPostCode: values.redxPostCode,
+          }
         : {}),
 
       ...(values.redxPickupStoreId
         ? {
-          redxPickupStoreId: values.redxPickupStoreId,
-        }
+            redxPickupStoreId: values.redxPickupStoreId,
+          }
         : {}),
 
       ...(values.status
         ? {
-          status: values.status,
-        }
+            status: values.status,
+          }
         : {}),
     };
 
@@ -63,8 +65,6 @@ export default function CreateWarehousePage() {
       setSubmitting(true);
 
       const res = await createWarehouse.mutateAsync(payload);
-
-      console.log("res", res);
 
       message.success("Warehouse created successfully");
       router.push("/admin/dashboard/inventory/warehouses");

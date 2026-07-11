@@ -1,7 +1,5 @@
 "use client";
 
-import { Eye, Pencil } from "lucide-react";
-
 import {
   App,
   Button,
@@ -14,21 +12,21 @@ import {
   Select,
   Tag,
 } from "antd";
-import { useEffect, useState } from "react";
+import { Eye, Pencil } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-import { mockStats } from "./data";
-import StatCard from "@/components/shared/stat-card";
+import { Column, DataTable } from "@/components/shared/data-table";
 import PageHeader from "@/components/shared/page-header";
+import StatCard from "@/components/shared/stat-card";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import { useAuthStore } from "@/stores/auth.store";
 import {
   useProductStockMutation,
   useProductStockQuery,
 } from "@/lib/api/hooks/stock";
-import { Column, DataTable } from "@/components/shared/data-table";
-import { InventoryStockResponse } from "@/types/stock/stock";
 import { getApiErrorMessage } from "@/lib/axios";
+import { useAuthStore } from "@/stores/auth.store";
+import { InventoryStockResponse } from "@/types/stock/stock";
 
 type LowStockAlertFormValues = {
   lowStockAlertQty: number;
@@ -85,13 +83,11 @@ export default function StockOverviewPage() {
         lowStockAlertQty: Number(values.lowStockAlertQty),
       };
 
-      console.log("payload", payload, "id", stockId);
       const res = await updateLowAlert.mutateAsync({
         stockId,
         payload,
       });
 
-      console.log("res", res);
       message.success("Low stock alert updated successfully");
       setIsModalOpen(false);
     } catch (error) {
@@ -223,14 +219,6 @@ export default function StockOverviewPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Stock Overview" breadcrumb={adminBreadcrumb} />
-
-      {/* <Row gutter={[16, 16]}>
-        {mockStats.map((stat) => (
-          <Col xs={24} sm={12} lg={6} key={stat.label}>
-            <StatCard stat={stat} />
-          </Col>
-        ))}
-      </Row> */}
 
       <Card>
         <DataTable

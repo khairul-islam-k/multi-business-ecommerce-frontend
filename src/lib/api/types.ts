@@ -513,7 +513,6 @@ export type PackageFeature = {
   title: string;
   description: string | null;
   isActive: boolean;
-  sortOrder?: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -528,7 +527,6 @@ export type PackagePlan = {
   freeTrialDays: number;
   isDefault: boolean;
   status: PackageStatus;
-  sortOrder: number;
   limits?: PackagePlanLimit[];
   features?: PackageFeature[];
   _count?: {
@@ -547,7 +545,6 @@ export type PackagePlanPayload = {
   freeTrialDays?: number;
   isDefault?: boolean;
   status?: PackageStatus;
-  sortOrder?: number;
   limits?: PackagePlanLimit[];
   features: PackageFeature[];
 };

@@ -64,8 +64,6 @@ const PurchaseOrderReturn = () => {
 
   const { purchaseOrderReturnRequest } = usePurchaseOrderMutation(businessId);
 
-  console.log("data", purchase);
-
   // Available Quantity
   const sumTotalQuantity = (stocks?: StockItem[]) => {
     return (
@@ -142,7 +140,6 @@ const PurchaseOrderReturn = () => {
       });
       router.push("/admin/dashboard/suppliers/purchase-order");
       message.success("Purchase Order returned successfully");
-      console.log("res", res);
     } catch (error) {
       message.error(getApiErrorMessage(error));
     } finally {

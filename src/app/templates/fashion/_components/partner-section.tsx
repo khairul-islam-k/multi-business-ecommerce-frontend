@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
 const PartnerSection = ({partners}:{partners: string[]}) => {

@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { Dayjs } from "dayjs";
 import { Card, Col, DatePicker, Row, Segmented, Space, Typography } from "antd";
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -23,8 +22,10 @@ import PageHeader from "@/components/shared/page-header";
 import StatCard from "@/components/shared/stat-card";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import useWidth from "@/hooks/use-width";
-import { useAuthStore } from "@/stores/auth.store";
 import { useTenantOverviewQuery } from "@/lib/api/hooks/tenant-overview";
+import { useAuthStore } from "@/stores/auth.store";
+
+import type { Dayjs } from "dayjs";
 
 const { Title } = Typography;
 
@@ -274,10 +275,7 @@ export default function AdminDashboardPage() {
                 </Pie>
 
                 <Tooltip
-                  formatter={(value) => [
-                    formatNumber(Number(value)),
-                    "Orders",
-                  ]}
+                  formatter={(value) => [formatNumber(Number(value)), "Orders"]}
                 />
 
                 <Legend />
@@ -309,10 +307,7 @@ export default function AdminDashboardPage() {
                 <YAxis allowDecimals={false} />
 
                 <Tooltip
-                  formatter={(value) => [
-                    formatNumber(Number(value)),
-                    "Orders",
-                  ]}
+                  formatter={(value) => [formatNumber(Number(value)), "Orders"]}
                 />
 
                 <Bar
