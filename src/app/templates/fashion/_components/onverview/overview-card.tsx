@@ -45,25 +45,28 @@ export default function OverviewCard({
   const Icon = cardIconMap[stat.key];
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-      <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+    <div className="w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+      <div className="flex w-full flex-col gap-3">
+        {/* Header: label left, icon right */}
+        <div className="flex w-full items-center justify-between gap-4">
+          <p className="min-w-0 flex-1 truncate text-xs font-medium uppercase tracking-wide text-slate-500">
             {stat.label}
           </p>
 
-          <h3 className="text-2xl font-bold text-slate-900">
-            {formatCardValue(stat)}
-          </h3>
-
-          <p className="text-xs text-slate-500">Last 30 days overview</p>
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBgMap[stat.key]}`}
+          >
+            <Icon size={22} />
+          </div>
         </div>
 
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconBgMap[stat.key]}`}
-        >
-          <Icon size={22} />
-        </div>
+        {/* Value */}
+        <h3 className="text-xl font-semibold text-slate-900">
+          {formatCardValue(stat)}
+        </h3>
+
+        {/* Footer text */}
+        <p className="text-xs text-slate-500">Last 30 days overview</p>
       </div>
     </div>
   );

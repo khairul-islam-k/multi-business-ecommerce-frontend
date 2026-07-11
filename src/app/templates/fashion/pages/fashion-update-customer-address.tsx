@@ -1,16 +1,14 @@
 "use client";
 
-import { useMessage } from "@/app/store/_components/message/message-hook";
+import { ArrowLeft, MapPin } from "lucide-react";
 import CustomerAddressForm, {
   CustomerAddressFormValues,
 } from "@/app/templates/fashion/_components/customer-address-form";
-import {
-  useCustomerAddress,
-  useTemplateCustomerAddressMutation,
-} from "@/lib/api/hooks/template-customer-address";
-import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { useCustomerAddress, useTemplateCustomerAddressMutation } from "@/lib/api/hooks/template-customer-address";
+
 import Link from "next/link";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useRouter } from "next/navigation";
 
 type FashionUpdateCustomerAddressProps = {
@@ -26,12 +24,18 @@ const FashionUpdateCustomerAddress = ({
   const { data: address, isLoading } = useCustomerAddress(addressId);
   const { updateCustomerAddress } = useTemplateCustomerAddressMutation();
 
+
   const handleUpdate = async (values: CustomerAddressFormValues) => {
     try {
+      console.log("address id", addressId);
+      console.log("update payload", values);
+
       const res = await updateCustomerAddress.mutateAsync({
         addressId,
         payload: values,
       });
+
+      console.log('res', res);
 
       message.success("Address updated successfully");
       router.push("/store/dashboard/customer-address");
@@ -63,7 +67,9 @@ const FashionUpdateCustomerAddress = ({
               </div>
 
               <div>
-                <h1 className="text-2xl font-bold">Update Customer Address</h1>
+                <h1 className="text-2xl font-bold">
+                  Update Customer Address
+                </h1>
                 <p className="mt-1 text-sm text-white/80">
                   Update your saved delivery address.
                 </p>

@@ -1,60 +1,24 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import Image, { StaticImageData } from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import banner_1 from "@/assets/fashion/banner/banner-1.png";
-import banner_2 from "@/assets/fashion/banner/banner-2.png";
-import banner_3 from "@/assets/fashion/banner/banner-3.png";
+import { HeaderSlide } from "@/types/website/website";
+import Image from "next/image";
+import Link from "next/link";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 
-type HeroItem = {
-    id: number;
-    photo: StaticImageData;
-    title: string;
-    subTitle: string;
-    description: string;
-};
-
-const heroData: HeroItem[] = [
-    {
-        id: 1,
-        photo: banner_1,
-        title: "Start Shopping Now!",
-        subTitle: "Dive in and Explore",
-        description:
-            "Explore our curated collection and find the perfect pieces that speak to your style and needs. Begin your fashion journey today.",
-    },
-    {
-        id: 2,
-        photo: banner_2,
-        title: "New Fashion Collection",
-        subTitle: "Fresh Styles Arrived",
-        description:
-            "Discover trendy outfits, premium fabrics, and modern designs made for your everyday lifestyle.",
-    },
-    {
-        id: 3,
-        photo: banner_3,
-        title: "Upgrade Your Wardrobe",
-        subTitle: "Style Made Simple",
-        description:
-            "Find clothing that matches your personality, comfort, and confidence in every season.",
-    },
-];
-
-const HeroSection = () => {
+const HeroSection = ({bannerSlide}:{bannerSlide: HeaderSlide[]}) => {
     const [activeIndex, setActiveIndex] = useState(0);
 
-    const activeHero = heroData[activeIndex];
+    const activeHero = bannerSlide[activeIndex];
 
     const handleNext = () => {
-        setActiveIndex((prev) => (prev + 1) % heroData.length);
+        setActiveIndex((prev) => (prev + 1) % bannerSlide.length);
     };
 
     const handlePrev = () => {
-        setActiveIndex((prev) => (prev === 0 ? heroData.length - 1 : prev - 1));
+        setActiveIndex((prev) => (prev === 0 ? bannerSlide.length - 1 : prev - 1));
     };
 
     useEffect(() => {
@@ -127,7 +91,7 @@ const HeroSection = () => {
 
                     {/* Dots */}
                     <div className="mt-10 flex items-center gap-3">
-                        {heroData.map((item, index) => (
+                        {bannerSlide.map((item, index) => (
                             <button
                                 key={item.id}
                                 type="button"
@@ -154,8 +118,8 @@ const HeroSection = () => {
                             className="absolute inset-0"
                         >
                             <Image
-                                src={activeHero.photo}
-                                alt={activeHero.title}
+                                src={imageUrlSet(activeHero.imageUrl)}
+                                alt={activeHero?.title ?? ''}
                                 fill
                                 priority={activeIndex === 0}
                                 sizes="(max-width: 1024px) 100vw, 50vw"

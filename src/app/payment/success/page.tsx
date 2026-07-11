@@ -6,6 +6,7 @@ import {
   ReceiptText,
   ShoppingBag,
 } from "lucide-react";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
 type PaymentSuccessPageProps = {
@@ -28,10 +29,14 @@ export default async function FashionPaymentSuccessPage({
   searchParams,
 }: PaymentSuccessPageProps) {
   const params = await searchParams;
-
   const orderId = getSearchParamValue(params.orderId);
   const amount = getSearchParamValue(params.paidAmount);
   const transactionReference = getSearchParamValue(params.transactionReference);
+
+  const cookieStore = await cookies();
+  const website = cookieStore.get("website")?.value;
+
+  console.log('website form cokie', website);
 
   return (
     <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-12 sm:px-6 lg:px-8">
@@ -127,7 +132,7 @@ export default async function FashionPaymentSuccessPage({
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link
-                href="/store"
+                href={`/store`}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] px-6 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
               >
                 <Home className="size-5" />

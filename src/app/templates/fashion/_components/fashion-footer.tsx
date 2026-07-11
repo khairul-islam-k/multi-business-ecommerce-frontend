@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
     Facebook,
     Instagram,
@@ -10,6 +9,9 @@ import {
     Twitter,
     Youtube,
 } from "lucide-react";
+
+import { FooterConfig } from "@/types/website/website";
+import Link from "next/link";
 
 const footerLinks = [
     {
@@ -40,7 +42,7 @@ const footerLinks = [
     },
 ];
 
-const FashionFooter = () => {
+const FashionFooter = ({footer}: {footer: FooterConfig}) => {
 
     return (
         <footer className="bg-gray-950 text-white">
@@ -58,25 +60,38 @@ const FashionFooter = () => {
                         </Link>
 
                         <p className="mt-5 max-w-md text-sm leading-7 text-gray-400">
-                            Discover stylish, comfortable, and premium quality fashion
-                            products for men, women, and kids.
+                            {
+                                footer ? footer?.description : '_'
+                            }
                         </p>
 
                         {/* Contact */}
                         <div className="mt-6 space-y-3 text-sm text-gray-400">
                             <div className="flex items-center gap-3">
                                 <MapPin className="h-5 w-5 text-[#f16d59]" />
-                                <span>Dhaka, Bangladesh</span>
+                                <span>
+                                    {
+                                        footer ? footer?.address : '_'
+                                    }
+                                </span>
                             </div>
 
                             <div className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-[#f16d59]" />
-                                <span>+880 1234 567 890</span>
+                                <span>
+                                    {
+                                        footer ? footer?.phone : '_'
+                                    }
+                                </span>
                             </div>
 
                             <div className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-[#f16d59]" />
-                                <span>support@fashionstore.com</span>
+                                <span>
+                                    {
+                                        footer ? footer?.email : '_'
+                                    }
+                                </span>
                             </div>
                         </div>
 
@@ -168,7 +183,11 @@ const FashionFooter = () => {
             {/* Bottom Footer */}
             <div className="border-t border-white/10">
                 <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-center text-sm text-gray-400 sm:flex-row sm:px-6 lg:px-8">
-                    <p>© 2026 Fashion Store. All rights reserved.</p>
+                    <p>
+                        {
+                            footer ? footer?.copyrightText : '_'
+                        }
+                    </p>
 
                     <p>
                         Developed by{" "}

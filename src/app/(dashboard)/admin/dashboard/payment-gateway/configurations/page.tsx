@@ -198,7 +198,6 @@ function requiredWhenGatewayActive(index: number, message: string): Rule[] {
     ({ getFieldValue }) => ({
       validator(_: unknown, value: unknown) {
         const status = getFieldValue(["gateways", index, "status"]);
-
         // inactive gateway hole validation skip
         if (status !== "ACTIVE") {
           return Promise.resolve();

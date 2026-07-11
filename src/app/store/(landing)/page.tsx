@@ -1,8 +1,8 @@
 import ElectronicHomePage from '@/app/templates/electronic/pages/home-page';
 import FashionHomePage from '@/app/templates/fashion/pages/home-page';
-import { publicApi } from '@/lib/axios';
-import { headers } from 'next/headers';
 import React from 'react';
+import { headers } from 'next/headers';
+import { publicApi } from '@/lib/axios';
 
 const Homepage = async () => {
 
@@ -19,7 +19,7 @@ const Homepage = async () => {
   }
 
   if (res?.data?.data?.template === "FASHION") {
-    return <FashionHomePage />;
+    return <FashionHomePage resolveData={res?.data?.data} />;
   }
 
 };

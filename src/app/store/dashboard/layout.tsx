@@ -1,80 +1,70 @@
 "use client";
 
 import {
-  Heart,
-  Home,
-  LogOut,
-  MapPinHouse,
-  Menu,
-  PackageSearch,
-  ReceiptText,
-  ShoppingCart,
-  Star,
-  X,
+    FileText,
+    Heart,
+    Home,
+    LogOut,
+    MapPinHouse,
+    Menu,
+    RotateCcw,
+    ShoppingBag,
+    ShoppingCart,
+    Star,
+    X,
 } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
-
-import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown";
-import LogoComponent from "@/app/templates/fashion/_components/logo/logo-component";
 
 import AuthGuard from "./auth-guard/auth-guard";
+import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown";
+import Link from "next/link";
+import LogoComponent from "@/app/templates/fashion/_components/logo/logo-component";
+import { useState } from "react";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
 const sidebarItems = [
-  {
-    label: "Dashboard",
-    href: "/store/dashboard",
-    icon: Home,
-  },
-  {
-    label: "Orders",
-    href: "/store/dashboard/order-history",
-    icon: ReceiptText,
-  },
-  {
-    label: "Active Cart",
-    href: "/store/dashboard/active-cart",
-    icon: ShoppingCart,
-  },
-  // {
-  //     label: "Carts",
-  //     href: "/store/dashboard/carts",
-  //     icon: ShoppingCart,
-  // },
-  {
-    label: "Reviews",
-    href: "/store/dashboard/review",
-    icon: Star,
-  },
-  {
-    label: "Addresses",
-    href: "/store/dashboard/customer-address",
-    icon: MapPinHouse,
-  },
-  {
-    label: "Return Orders",
-    href: "/store/dashboard/return",
-    icon: PackageSearch,
-  },
-  {
-    label: "Wishlist",
-    href: "/store/dashboard/wishlist",
-    icon: Heart,
-  },
-  {
-    label: "Invoice",
-    href: "/store/dashboard/invoice",
-    icon: Heart,
-  },
-  //   {
-  //     label: "Settings",
-  //     href: "/store/dashboard/settings",
-  //     icon: Settings,
-  //   },
+    {
+        label: "Dashboard",
+        href: "/store/dashboard",
+        icon: Home,
+    },
+    {
+        label: "Orders",
+        href: "/store/dashboard/order-history",
+        icon: ShoppingBag,
+    },
+    {
+        label: "Active Cart",
+        href: "/store/dashboard/active-cart",
+        icon: ShoppingCart,
+    },
+    {
+        label: "Reviews",
+        href: "/store/dashboard/review",
+        icon: Star,
+    },
+    {
+        label: "Addresses",
+        href: "/store/dashboard/customer-address",
+        icon: MapPinHouse,
+    },
+    {
+        label: "Return Orders",
+        href: "/store/dashboard/return",
+        icon: RotateCcw,
+    },
+    {
+        label: "Wishlist",
+        href: "/store/dashboard/wishlist",
+        icon: Heart,
+    },
+    {
+        label: "Invoice",
+        href: "/store/dashboard/invoice",
+        icon: FileText,
+    },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
