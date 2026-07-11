@@ -52,8 +52,8 @@ import {
   WalletCards,
   Warehouse,
 } from "lucide-react";
-import Link from "next/link";
 
+import Link from "next/link";
 import type { MenuProps } from "antd";
 
 const allItems: MenuProps["items"] = [
@@ -69,36 +69,41 @@ const allItems: MenuProps["items"] = [
   },
 
   {
-    key: "media",
-    icon: <ImageIcon />,
-    label: <Link href="/admin/dashboard/media">Media Library</Link>,
+    key: "orders",
+    icon: <ClipboardList />,
+    label: "Orders",
+    children: [
+      {
+        key: "all-orders",
+        icon: <ListOrdered />,
+        label: <Link href="/admin/dashboard/orders">All Orders</Link>,
+      },
+      {
+        key: "invoices",
+        icon: <FileText />,
+        label: <Link href="/admin/dashboard/orders/invoices">Invoices</Link>,
+      },
+      {
+        key: "order-returns",
+        icon: <RotateCcw />,
+        label: (
+          <Link href="/admin/dashboard/orders/returns">Order Returns</Link>
+        ),
+      },
+    ],
   },
 
   {
-    key: "access-control",
-    icon: <Shield />,
-    label: "Employees & Roles",
+    key: "customers",
+    icon: <ContactRound />, // Customers module
+    label: "Customers",
     children: [
       {
-        key: "employees",
-        icon: <UserRound />,
+        key: "customer-list",
+        icon: <CircleUserRound />, // Individual customers
         label: (
-          <Link href="/admin/dashboard/access-control/employees">
-            Employees
-          </Link>
-        ),
-      },
-      {
-        key: "roles",
-        icon: <Users />,
-        label: <Link href="/admin/dashboard/access-control/roles">Roles</Link>,
-      },
-      {
-        key: "permissions",
-        icon: <KeyRound />,
-        label: (
-          <Link href="/admin/dashboard/access-control/permissions">
-            Permissions
+          <Link href="/admin/dashboard/customers/customer-list">
+            Customer List
           </Link>
         ),
       },
@@ -110,6 +115,13 @@ const allItems: MenuProps["items"] = [
     icon: <ShoppingBag />,
     label: "Product",
     children: [
+      {
+        key: "products",
+        icon: <PackageIcon />,
+        label: (
+          <Link href="/admin/dashboard/product-catalog/products">Products</Link>
+        ),
+      },
       {
         key: "categories",
         icon: <Grid2X2Plus />,
@@ -127,29 +139,12 @@ const allItems: MenuProps["items"] = [
         ),
       },
       {
-        key: "units",
-        icon: <Network />,
-        label: <Link href="/admin/dashboard/product-catalog/units">Units</Link>,
-      },
-      {
-        key: "tags",
-        icon: <TagsIcon />,
-        label: <Link href="/admin/dashboard/product-catalog/tags">Tags</Link>,
-      },
-      {
         key: "attributes",
         icon: <SlidersHorizontal />,
         label: (
           <Link href="/admin/dashboard/product-catalog/attributes">
             Attributes
           </Link>
-        ),
-      },
-      {
-        key: "products",
-        icon: <PackageIcon />,
-        label: (
-          <Link href="/admin/dashboard/product-catalog/products">Products</Link>
         ),
       },
       {
@@ -160,6 +155,16 @@ const allItems: MenuProps["items"] = [
             Variant Manager
           </Link>
         ),
+      },
+      {
+        key: "units",
+        icon: <Network />,
+        label: <Link href="/admin/dashboard/product-catalog/units">Units</Link>,
+      },
+      {
+        key: "tags",
+        icon: <TagsIcon />,
+        label: <Link href="/admin/dashboard/product-catalog/tags">Tags</Link>,
       },
       {
         key: "reviews",
@@ -193,11 +198,11 @@ const allItems: MenuProps["items"] = [
         ),
       },
       {
-        key: "inventory-transactions",
-        icon: <ArrowLeftRight />,
+        key: "stock-transfers",
+        icon: <ExternalLink />,
         label: (
-          <Link href="/admin/dashboard/inventory/transactions">
-            Inventory Movements
+          <Link href="/admin/dashboard/inventory/stock-transfers">
+            Stock Transfers
           </Link>
         ),
       },
@@ -211,11 +216,11 @@ const allItems: MenuProps["items"] = [
         ),
       },
       {
-        key: "stock-transfers",
-        icon: <ExternalLink />,
+        key: "inventory-transactions",
+        icon: <ArrowLeftRight />,
         label: (
-          <Link href="/admin/dashboard/inventory/stock-transfers">
-            Stock Transfers
+          <Link href="/admin/dashboard/inventory/transactions">
+            Inventory Movements
           </Link>
         ),
       },
@@ -251,11 +256,6 @@ const allItems: MenuProps["items"] = [
         ),
       },
       {
-        key: "purchase-returns",
-        icon: <Undo2 />,
-        label: <Link href="/admin/dashboard/suppliers/returns">Returns</Link>,
-      },
-      {
         key: "supplier-invoices",
         icon: <FileText />,
         label: (
@@ -264,45 +264,51 @@ const allItems: MenuProps["items"] = [
           </Link>
         ),
       },
+      {
+        key: "purchase-returns",
+        icon: <Undo2 />,
+        label: <Link href="/admin/dashboard/suppliers/returns">Returns</Link>,
+      },
     ],
   },
 
+  // couriers
   {
-    key: "orders",
-    icon: <ClipboardList />,
-    label: "Orders",
+    key: "couriers",
+    icon: <Truck />, // Couriers main
+    label: "Couriers",
     children: [
       {
-        key: "all-orders",
-        icon: <ListOrdered />,
-        label: <Link href="/admin/dashboard/orders">All Orders</Link>,
-      },
-      {
-        key: "order-returns",
-        icon: <RotateCcw />,
+        key: "shipments",
+        icon: <FileText />, // Shipments / tracking
         label: (
-          <Link href="/admin/dashboard/orders/returns">Order Returns</Link>
+          <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
         ),
       },
       {
-        key: "invoices",
-        icon: <FileText />,
-        label: <Link href="/admin/dashboard/orders/invoices">Invoices</Link>,
-      },
-    ],
-  },
-
-  {
-    key: "customers",
-    icon: <ContactRound />, // Customers module
-    label: "Customers",
-    children: [
-      {
-        key: "customer-list",
-        icon: <CircleUserRound />, // Individual customers
+        key: "courier-companies",
+        icon: <Store />, // Courier companies
         label: (
-          <Link href="/admin/dashboard/customers/customer-list">
-            Customer List
+          <Link href="/admin/dashboard/couriers/courier-provider">
+            Courier Provider
+          </Link>
+        ),
+      },
+      {
+        key: "pickup-stores",
+        icon: <MapPin />, // Zones / areas
+        label: (
+          <Link href="/admin/dashboard/couriers/pickup-stores">
+            PickUp Stores
+          </Link>
+        ),
+      },
+      {
+        key: "courier-config",
+        icon: <Settings />, // Config / API / setup
+        label: (
+          <Link href="/admin/dashboard/couriers/courier-config">
+            Courier Config
           </Link>
         ),
       },
@@ -320,9 +326,16 @@ const allItems: MenuProps["items"] = [
         label: <Link href="/admin/dashboard/finance/accounts">Accounts</Link>,
       },
       {
-        key: "tax",
-        icon: <Calculator />,
-        label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
+        key: "receivable",
+        icon: <CircleDollarSign />,
+        label: (
+          <Link href="/admin/dashboard/finance/receivables">Receivables</Link>
+        ),
+      },
+      {
+        key: "payable",
+        icon: <HandCoins />,
+        label: <Link href="/admin/dashboard/finance/payables">Payable</Link>,
       },
       {
         key: "expenses",
@@ -339,16 +352,9 @@ const allItems: MenuProps["items"] = [
         ),
       },
       {
-        key: "payable",
-        icon: <HandCoins />,
-        label: <Link href="/admin/dashboard/finance/payables">Payable</Link>,
-      },
-      {
-        key: "receivable",
-        icon: <CircleDollarSign />,
-        label: (
-          <Link href="/admin/dashboard/finance/receivables">Receivables</Link>
-        ),
+        key: "tax",
+        icon: <Calculator />,
+        label: <Link href="/admin/dashboard/finance/tax">Tax</Link>,
       },
     ],
   },
@@ -377,49 +383,6 @@ const allItems: MenuProps["items"] = [
     ],
   },
 
-  // couriers
-  {
-    key: "couriers",
-    icon: <Truck />, // Couriers main
-    label: "Couriers",
-    children: [
-      {
-        key: "courier-companies",
-        icon: <Store />, // Courier companies
-        label: (
-          <Link href="/admin/dashboard/couriers/courier-provider">
-            Courier Provider
-          </Link>
-        ),
-      },
-      {
-        key: "courier-config",
-        icon: <Settings />, // Config / API / setup
-        label: (
-          <Link href="/admin/dashboard/couriers/courier-config">
-            Courier Config
-          </Link>
-        ),
-      },
-      {
-        key: "pickup-stores",
-        icon: <MapPin />, // Zones / areas
-        label: (
-          <Link href="/admin/dashboard/couriers/pickup-stores">
-            PickUp Stores
-          </Link>
-        ),
-      },
-      {
-        key: "shipments",
-        icon: <FileText />, // Shipments / tracking
-        label: (
-          <Link href="/admin/dashboard/couriers/shipments">Shipments</Link>
-        ),
-      },
-    ],
-  },
-
   {
     key: "website-builder",
     icon: <LayoutDashboard />, // Website Builder (main)
@@ -440,6 +403,39 @@ const allItems: MenuProps["items"] = [
         label: (
           <Link href="/admin/dashboard/website-builder/template">Template</Link>
         ),
+      },
+    ],
+  },
+
+  {
+    key: "media",
+    icon: <ImageIcon />,
+    label: <Link href="/admin/dashboard/media">Media Library</Link>,
+  },
+
+  {
+    key: "billing",
+    icon: <CreditCard />,
+    label: "Billing",
+    children: [
+      {
+        key: "subscription",
+        icon: <RefreshCw />,
+        label: (
+          <Link href="/admin/dashboard/billing/subscription">Subscription</Link>
+        ),
+      },
+      {
+        key: "upgrade-plan",
+        icon: <ArrowUp />,
+        label: (
+          <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>
+        ),
+      },
+      {
+        key: "history",
+        icon: <History />,
+        label: <Link href="/admin/dashboard/billing/history">History</Link>,
       },
     ],
   },
@@ -665,33 +661,6 @@ const allItems: MenuProps["items"] = [
   // },
 
   {
-    key: "billing",
-    icon: <CreditCard />,
-    label: "Billing",
-    children: [
-      {
-        key: "history",
-        icon: <History />,
-        label: <Link href="/admin/dashboard/billing/history">History</Link>,
-      },
-      {
-        key: "subscription",
-        icon: <RefreshCw />,
-        label: (
-          <Link href="/admin/dashboard/billing/subscription">Subscription</Link>
-        ),
-      },
-      {
-        key: "upgrade-plan",
-        icon: <ArrowUp />,
-        label: (
-          <Link href="/admin/dashboard/billing/upgrade-plan">Upgrade Plan</Link>
-        ),
-      },
-    ],
-  },
-
-  {
     key: "business",
     icon: <Building2 />,
     label: "Business Settings",
@@ -705,6 +674,37 @@ const allItems: MenuProps["items"] = [
         key: "branding",
         icon: <Palette />,
         label: <Link href="/admin/dashboard/business/branding">Branding</Link>,
+      },
+    ],
+  },
+
+  {
+    key: "access-control",
+    icon: <Shield />,
+    label: "Employees & Roles",
+    children: [
+      {
+        key: "employees",
+        icon: <UserRound />,
+        label: (
+          <Link href="/admin/dashboard/access-control/employees">
+            Employees
+          </Link>
+        ),
+      },
+      {
+        key: "roles",
+        icon: <Users />,
+        label: <Link href="/admin/dashboard/access-control/roles">Roles</Link>,
+      },
+      {
+        key: "permissions",
+        icon: <KeyRound />,
+        label: (
+          <Link href="/admin/dashboard/access-control/permissions">
+            Permissions
+          </Link>
+        ),
       },
     ],
   },

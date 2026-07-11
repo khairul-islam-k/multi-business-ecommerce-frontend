@@ -1,12 +1,5 @@
+import money from '@/assets/fashion/policy-label/money.png';
 import product_1 from '@/assets/fashion/products/product-1.jpg';
-import product_2 from '@/assets/fashion/products/product-2.jpg';
-import product_3 from '@/assets/fashion/products/product-3.jpg';
-import product_4 from '@/assets/fashion/products/product-4.jpg';
-import product_5 from '@/assets/fashion/products/product-5.jpg';
-import product_6 from '@/assets/fashion/products/product-6.jpg';
-import product_7 from '@/assets/fashion/products/product-7.jpg';
-import product_8 from '@/assets/fashion/products/product-8.jpg';
-import product_9 from '@/assets/fashion/products/product-9.jpg';
 import product_10 from '@/assets/fashion/products/product-10.jpg';
 import product_11 from '@/assets/fashion/products/product-11.jpg';
 import product_12 from '@/assets/fashion/products/product-12.jpg';
@@ -17,15 +10,19 @@ import product_16 from '@/assets/fashion/products/men-top-2.png';
 import product_17 from '@/assets/fashion/products/women-top-2.png';
 import product_18 from '@/assets/fashion/products/women-top-3.png';
 import product_19 from '@/assets/fashion/products/men-top-3.jpg';
+import product_2 from '@/assets/fashion/products/product-2.jpg';
 import product_20 from '@/assets/fashion/products/men-top-4.jpg';
 import product_21 from '@/assets/fashion/products/mens-hoodi.png';
-
+import product_3 from '@/assets/fashion/products/product-3.jpg';
+import product_4 from '@/assets/fashion/products/product-4.jpg';
+import product_5 from '@/assets/fashion/products/product-5.jpg';
+import product_6 from '@/assets/fashion/products/product-6.jpg';
+import product_7 from '@/assets/fashion/products/product-7.jpg';
+import product_8 from '@/assets/fashion/products/product-8.jpg';
+import product_9 from '@/assets/fashion/products/product-9.jpg';
 import quality from '@/assets/fashion/policy-label/quality.png';
-import support from '@/assets/fashion/policy-label/support.png';
-import money from '@/assets/fashion/policy-label/money.png';
 import shop from '@/assets/fashion/policy-label/shop.png';
-
-
+import support from '@/assets/fashion/policy-label/support.png';
 
 export const allProducts = [
     {
@@ -46,7 +43,6 @@ export const allProducts = [
                 imageUrl: product_1,
                 altText: "Classic Denim Jacket",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -62,7 +58,6 @@ export const allProducts = [
                         imageUrl: product_1,
                         altText: "Classic Denim Jacket Black M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -96,7 +91,6 @@ export const allProducts = [
                 imageUrl: product_2,
                 altText: "Casual Cotton Shirt",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -112,7 +106,6 @@ export const allProducts = [
                         imageUrl: product_2,
                         altText: "Casual Cotton Shirt White L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -146,7 +139,6 @@ export const allProducts = [
                 imageUrl: product_3,
                 altText: "Slim Fit T-Shirt",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -162,7 +154,6 @@ export const allProducts = [
                         imageUrl: product_3,
                         altText: "Slim Fit T-Shirt Blue M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -196,7 +187,6 @@ export const allProducts = [
                 imageUrl: product_4,
                 altText: "Premium Polo Shirt",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -212,7 +202,6 @@ export const allProducts = [
                         imageUrl: product_4,
                         altText: "Premium Polo Shirt Green L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -246,7 +235,6 @@ export const allProducts = [
                 imageUrl: product_5,
                 altText: "Men's Formal Pant",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -262,7 +250,6 @@ export const allProducts = [
                         imageUrl: product_5,
                         altText: "Men's Formal Pant Black 32",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -296,7 +283,6 @@ export const allProducts = [
                 imageUrl: product_6,
                 altText: "Women's Summer Dress",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -312,7 +298,6 @@ export const allProducts = [
                         imageUrl: product_6,
                         altText: "Women's Summer Dress Red M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -346,7 +331,6 @@ export const allProducts = [
                 imageUrl: product_7,
                 altText: "Oversized Hoodie",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -362,7 +346,6 @@ export const allProducts = [
                         imageUrl: product_7,
                         altText: "Oversized Hoodie Black XL",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -396,7 +379,6 @@ export const allProducts = [
                 imageUrl: product_8,
                 altText: "Kids Casual Set",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -412,7 +394,6 @@ export const allProducts = [
                         imageUrl: product_8,
                         altText: "Kids Casual Set Yellow S",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -446,7 +427,6 @@ export const allProducts = [
                 imageUrl: product_9,
                 altText: "Unisex Sweatshirt",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -462,7 +442,6 @@ export const allProducts = [
                         imageUrl: product_9,
                         altText: "Unisex Sweatshirt Gray L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -496,7 +475,6 @@ export const allProducts = [
                 imageUrl: product_10,
                 altText: "Athletic Joggers",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -512,7 +490,6 @@ export const allProducts = [
                         imageUrl: product_10,
                         altText: "Athletic Joggers Black L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -546,7 +523,6 @@ export const allProducts = [
                 imageUrl: product_11,
                 altText: "Printed T-Shirt",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -562,7 +538,6 @@ export const allProducts = [
                         imageUrl: product_11,
                         altText: "Printed T-Shirt White M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -596,7 +571,6 @@ export const allProducts = [
                 imageUrl: product_12,
                 altText: "Women Fashion Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -612,7 +586,6 @@ export const allProducts = [
                         imageUrl: product_12,
                         altText: "Women Fashion Top Pink M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -646,7 +619,6 @@ export const allProducts = [
                 imageUrl: product_13,
                 altText: "Men Casual Blazer",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -662,7 +634,6 @@ export const allProducts = [
                         imageUrl: product_13,
                         altText: "Men Casual Blazer Navy L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -696,7 +667,6 @@ export const allProducts = [
                 imageUrl: product_14,
                 altText: "Women Tops",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -712,7 +682,6 @@ export const allProducts = [
                         imageUrl: product_14,
                         altText: "Women Tops Red M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -746,7 +715,6 @@ export const allProducts = [
                 imageUrl: product_15,
                 altText: "Men Basic Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -762,7 +730,6 @@ export const allProducts = [
                         imageUrl: product_15,
                         altText: "Men Basic Top Black M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -796,7 +763,6 @@ export const allProducts = [
                 imageUrl: product_16,
                 altText: "Men Premium Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -812,7 +778,6 @@ export const allProducts = [
                         imageUrl: product_16,
                         altText: "Men Premium Top White L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -846,7 +811,6 @@ export const allProducts = [
                 imageUrl: product_17,
                 altText: "Women Casual Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -862,7 +826,6 @@ export const allProducts = [
                         imageUrl: product_17,
                         altText: "Women Casual Top Pink L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -896,7 +859,6 @@ export const allProducts = [
                 imageUrl: product_18,
                 altText: "Women Stylish Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -912,7 +874,6 @@ export const allProducts = [
                         imageUrl: product_18,
                         altText: "Women Stylish Top Blue M",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -946,7 +907,6 @@ export const allProducts = [
                 imageUrl: product_19,
                 altText: "Men Denim Top",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -962,7 +922,6 @@ export const allProducts = [
                         imageUrl: product_19,
                         altText: "Men Denim Top Denim L",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -996,7 +955,6 @@ export const allProducts = [
                 imageUrl: product_20,
                 altText: "Men Winter Jacket",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -1012,7 +970,6 @@ export const allProducts = [
                         imageUrl: product_20,
                         altText: "Men Winter Jacket Brown XL",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
@@ -1046,7 +1003,6 @@ export const allProducts = [
                 imageUrl: product_21,
                 altText: "Men's Hoodie",
                 isThumbnail: true,
-                sortOrder: 0,
             },
         ],
         variants: [
@@ -1062,7 +1018,6 @@ export const allProducts = [
                         imageUrl: product_21,
                         altText: "Men's Hoodie Black XL",
                         isThumbnail: true,
-                        sortOrder: 0,
                     },
                 ],
             },
