@@ -19,6 +19,7 @@ import AvatarDropdown from "@/app/templates/fashion/_components/avatar-dropdown"
 import Link from "next/link";
 import LogoComponent from "@/app/templates/fashion/_components/logo/logo-component";
 import { useState } from "react";
+import StoreThemeToggle from "../_components/store-theme-switcher";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -73,7 +74,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-[var(--store-bg-1)]">
         {/* Mobile overlay */}
         {sidebarOpen && (
           <button
@@ -87,14 +88,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={`
-          fixed left-0 top-0 z-50 h-screen bg-white shadow-xl transition-all duration-300
+          fixed left-0 top-0 z-50 h-screen bg-[var(--store-bg-3)] shadow-xl transition-all duration-300
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           ${sidebarCollapsed ? "lg:w-20" : "lg:w-72"}
           w-72 lg:translate-x-0
         `}
         >
           {/* Sidebar Header */}
-          <div className="flex h-16 items-center justify-between border-b px-5">
+          <div className="flex h-16 items-center justify-between border-[var(--store-border)] border-b px-5">
             <LogoComponent sidebarCollapsed={sidebarCollapsed} />
 
             <button
@@ -116,7 +117,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   key={item.href}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-gray-600 transition hover:bg-gray-100 hover:text-gray-900"
+                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-gray-100 hover:text-gray-900"
                 >
                   <Icon size={20} />
 
@@ -147,13 +148,13 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         `}
         >
           {/* Topbar */}
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-4 shadow-sm lg:px-6">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--store-border)] bg-[var(--store-bg-3)] px-4 shadow-sm lg:px-6">
             <div className="flex items-center gap-3">
               {/* Mobile sidebar button */}
               <button
                 type="button"
                 onClick={() => setSidebarOpen(true)}
-                className="rounded-xl p-2 text-gray-600 hover:bg-gray-100 lg:hidden"
+                className="rounded-xl p-2 hover:bg-gray-100 lg:hidden"
               >
                 <Menu size={22} />
               </button>
@@ -162,16 +163,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               <button
                 type="button"
                 onClick={() => setSidebarCollapsed((prev) => !prev)}
-                className="hidden rounded-xl p-2 text-gray-600 hover:bg-gray-100 lg:block"
+                className="hidden rounded-xl p-2 hover:bg-gray-100 lg:block"
               >
                 <Menu size={22} />
               </button>
 
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">
+                <h1 className="text-lg font-semibold">
                   Dashboard
                 </h1>
-                <p className="hidden text-xs text-gray-500 sm:block">
+                <p className="hidden text-xs sm:block">
                   Welcome back to your store dashboard
                 </p>
               </div>
@@ -179,9 +180,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Topbar Right */}
             <div className="flex items-center gap-3">
+              <StoreThemeToggle />
+
               <button
                 type="button"
-                className="hidden rounded-xl border px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:block"
+                className="hidden rounded-xl border px-4 py-2 text-sm font-medium transition hover:bg-gray-50 sm:block"
               >
                 View Store
               </button>

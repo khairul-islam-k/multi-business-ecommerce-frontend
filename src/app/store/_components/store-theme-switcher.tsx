@@ -16,7 +16,7 @@ export default function StoreThemeToggle() {
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
 
-      <span>{isDark ? "Light" : "Dark"}</span>
+      <span className='hidden md:block'>{isDark ? "Light" : "Dark"}</span>
     </button>
   );
 }

@@ -18,11 +18,11 @@ const cardIconMap: Record<CustomerDashboardCard["key"], LucideIcon> = {
 };
 
 const iconBgMap: Record<CustomerDashboardCard["key"], string> = {
-  orders: "bg-blue-50 text-blue-600",
-  totalSpent: "bg-green-50 text-green-600",
-  pendingOrders: "bg-orange-50 text-orange-600",
-  returns: "bg-red-50 text-red-600",
-  wishlistItems: "bg-pink-50 text-pink-600",
+  orders: "bg-[var(--store-bg-3)] text-blue-600",
+  totalSpent: "bg-[var(--store-bg-3)] text-green-600",
+  pendingOrders: "bg-[var(--store-bg-3)] text-orange-600",
+  returns: "bg-[var(--store-bg-3)] text-red-600",
+  wishlistItems: "bg-[var(--store-bg-3)] text-pink-600",
 };
 
 const formatCardValue = (stat: CustomerDashboardCard) => {
@@ -45,7 +45,7 @@ export default function OverviewCard({
   const Icon = cardIconMap[stat.key];
 
   return (
-    <div className="w-full rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
+    <div className="w-full rounded-2xl border border-[var(--store-border)] bg-[var(--var(--store-bg-1))] p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
       <div className="flex w-full flex-col gap-3">
         {/* Header: label left, icon right */}
         <div className="flex w-full items-center justify-between gap-4">
@@ -61,7 +61,7 @@ export default function OverviewCard({
         </div>
 
         {/* Value */}
-        <h3 className="text-xl font-semibold text-slate-900">
+        <h3 className="text-xl font-semibold">
           {formatCardValue(stat)}
         </h3>
 

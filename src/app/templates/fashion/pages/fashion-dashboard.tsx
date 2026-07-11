@@ -118,8 +118,8 @@ const ChartCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-4 text-base font-semibold text-slate-900">{title}</h2>
+    <div className="rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-5 shadow-sm">
+      <h2 className="mb-4 text-base font-semibold">{title}</h2>
       {children}
     </div>
   );
@@ -207,16 +207,16 @@ const FashionDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Filter and chart view controls */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-5 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           {/* Date / Month toggle */}
-          <div className="inline-flex w-fit rounded-xl bg-slate-100 p-1">
+          <div className="inline-flex w-fit rounded-xl bg-[var(--store-bg-3)] p-1">
             <button
               type="button"
               onClick={() => setChartView("date")}
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 chartView === "date"
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-[var(--store-bg-1)] shadow-sm"
                   : "text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -228,7 +228,7 @@ const FashionDashboard = () => {
               onClick={() => setChartView("month")}
               className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
                 chartView === "month"
-                  ? "bg-white text-slate-900 shadow-sm"
+                  ? "bg-[var(--store-bg-1)] shadow-sm"
                   : "text-slate-500 hover:text-slate-900"
               }`}
             >
@@ -246,7 +246,7 @@ const FashionDashboard = () => {
                   setFromPickerOpen((prev) => !prev);
                   setToPickerOpen(false);
                 }}
-                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
                 <span
                   className={fromDateValue ? "text-slate-800" : "text-slate-400"}
@@ -260,7 +260,7 @@ const FashionDashboard = () => {
               </button>
 
               {fromPickerOpen && (
-                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl">
+                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-[var(--store-bg-1)] p-3 shadow-xl">
                   <DayPicker
                     mode="single"
                     selected={fromDateValue}
@@ -311,7 +311,7 @@ const FashionDashboard = () => {
                   setToPickerOpen((prev) => !prev);
                   setFromPickerOpen(false);
                 }}
-                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
                 <span
                   className={toDateValue ? "text-slate-800" : "text-slate-400"}
@@ -323,7 +323,7 @@ const FashionDashboard = () => {
               </button>
 
               {toPickerOpen && (
-                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl">
+                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-[var(--store-bg-1)] p-3 shadow-xl">
                   <DayPicker
                     mode="single"
                     selected={toDateValue}

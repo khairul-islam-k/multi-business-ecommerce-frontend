@@ -334,7 +334,7 @@ function OrderActionDropdown({
         ref={buttonRef}
         type="button"
         onClick={openMenu}
-        className="grid size-9 place-items-center rounded-full border border-[var(--store-border,#e5e7eb)] bg-white text-[var(--store-muted,#6b7280)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+        className="grid size-9 place-items-center rounded-full border border-[var(--store-border)] bg-[var(--store-bg-1)] text-[var(--store-muted,#6b7280)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
         aria-label="Order actions"
       >
         <MoreVertical className="size-5" />
@@ -354,7 +354,7 @@ function OrderActionDropdown({
               top: menuPosition.top,
               left: menuPosition.left,
             }}
-            className="fixed z-[9999] w-44 overflow-hidden rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white shadow-xl"
+            className="fixed z-[9999] w-44 overflow-hidden rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] shadow-xl"
           >
             <button
               type="button"
@@ -538,11 +538,11 @@ export default function FashionOrderHistory() {
   };
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-8 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-1)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--store-text,#111827)]">
+            <h1 className="text-2xl font-bold">
               Order History
             </h1>
 
@@ -557,19 +557,19 @@ export default function FashionOrderHistory() {
           </div>
         </div>
 
-        <div className="mb-6 overflow-hidden rounded-3xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-card,#ffffff)] shadow-sm">
-          <div className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)]/70 px-5 py-4">
+        <div className="mb-6 overflow-hidden rounded-3xl border border-[var(--store-border)] bg-[var(--store-card)] shadow-sm">
+          <div className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary)]/70 px-5 py-4">
             <div className="flex items-center gap-3">
               <div className="grid size-10 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)]">
                 <SlidersHorizontal className="size-5" />
               </div>
 
               <div>
-                <h2 className="text-base font-bold text-[var(--store-text,#111827)]">
+                <h2 className="text-base font-bold]">
                   Filter Orders
                 </h2>
 
-                <p className="text-xs text-[var(--store-muted,#6b7280)]">
+                <p className="text-xs">
                   Search and filter your order history
                 </p>
               </div>
@@ -579,7 +579,7 @@ export default function FashionOrderHistory() {
           <div className="p-5">
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:items-end">
               <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                <label className="mb-2 block text-sm font-semibold">
                   Search Order
                 </label>
 
@@ -596,7 +596,7 @@ export default function FashionOrderHistory() {
                       setCurrentPage(1);
                     }}
                     placeholder="Search by order number..."
-                    className="h-[52px] w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)]/60 pl-16 pr-11 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:bg-white focus:shadow-sm"
+                    className="h-[52px] w-full rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] pl-16 pr-11 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:bg-[var(--store-bg-3)] focus:shadow-sm"
                   />
 
                   {search && (
@@ -616,7 +616,7 @@ export default function FashionOrderHistory() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                <label className="mb-2 block text-sm font-semibold">
                   Order Status
                 </label>
 
@@ -627,7 +627,7 @@ export default function FashionOrderHistory() {
                     setStatusFilter(value || undefined);
                     setCurrentPage(1);
                   }}
-                  className="h-[52px] w-full cursor-pointer rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)]/60 px-4 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-white focus:shadow-sm"
+                  className="h-[52px] w-full cursor-pointer rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-[var(--store-bg-3)] focus:shadow-sm"
                 >
                   <option value="">All Order Status</option>
 
@@ -651,7 +651,7 @@ export default function FashionOrderHistory() {
                     setPaymentStatusFilter(value || undefined);
                     setCurrentPage(1);
                   }}
-                  className="h-[52px] w-full cursor-pointer rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)]/60 px-4 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-white focus:shadow-sm"
+                  className="h-[52px] w-full cursor-pointer rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-[var(--store-bg-3)] focus:shadow-sm"
                 >
                   <option value="">All Payment Status</option>
 
@@ -668,7 +668,7 @@ export default function FashionOrderHistory() {
                   type="button"
                   disabled={!hasActiveFilter}
                   onClick={clearFilters}
-                  className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-5 text-sm font-bold text-[var(--store-text,#111827)] transition hover:border-red-500 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-[var(--store-border,#e5e7eb)] disabled:hover:bg-white disabled:hover:text-[var(--store-text,#111827)] lg:w-auto"
+                  className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-3)] px-5 text-sm font-bold transition hover:border-red-500 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-[var(--store-border)] disabled:hover:bg-[var(--store-bg-1)] disabled:hover:text-[var(--store-text,#111827)] lg:w-auto"
                 >
                   <X className="size-4" />
                   Clear
