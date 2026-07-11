@@ -42,6 +42,8 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const websiteAccess = usePermissionAccess(PERMISSIONS.websiteRead);
   const courierAccess = usePermissionAccess(PERMISSIONS.courierRead);
 
+  const loading =  businessAccess.loading;
+
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
 
@@ -129,6 +131,11 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
     () => (menuItems ?? []).filter((item) => itemKey(item) === "notifications"),
     [menuItems],
   );
+
+
+  if (loading) {
+    return <span>Loading...</span>
+  }
 
   return (
     <div
