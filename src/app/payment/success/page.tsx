@@ -140,7 +140,7 @@ export default async function FashionPaymentSuccessPage({
               </Link>
 
               <Link
-                href="/store/dashboard/orders"
+                href="/store/dashboard/order-history"
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-green-600 px-6 text-sm font-semibold text-white transition hover:opacity-90"
               >
                 View Orders

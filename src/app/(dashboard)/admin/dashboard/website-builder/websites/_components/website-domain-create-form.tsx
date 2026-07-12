@@ -1,22 +1,25 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
+import { Button, Card, Form, Input, Select, Space, Switch } from "antd";
+
 import { useSwal } from "@/hooks/use-swal";
 import { useWebsiteMutation } from "@/lib/api/hooks/website";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import { WebsiteDomainFormValues } from "@/types/website/website";
-import { Button, Card, Form, Input, Select, Space, Switch } from "antd";
-import { Dispatch, SetStateAction, useState } from "react";
+import type { ResponseWebsiteDomain, WebsiteDomainFormValues } from "@/types/website/website";
 
 type WebsiteDomainCreateFormProps = {
   websiteId: string;
+  activeSubDomain?: ResponseWebsiteDomain | null;
   setOpenDomainModal: Dispatch<SetStateAction<boolean>>;
 };
 
-const defaultValues: WebsiteDomainFormValues = {
+const fallbackValues: WebsiteDomainFormValues = {
   domainType: "SUBDOMAIN",
-  domain: "shop.example.com",
-  subdomain: "acme",
+  domain: "",
+  subdomain: "",
   isPrimary: true,
   verificationStatus: "PENDING",
   sslStatus: "PENDING",
@@ -24,32 +27,73 @@ const defaultValues: WebsiteDomainFormValues = {
 
 const WebsiteDomainCreateForm = ({
   websiteId,
+  activeSubDomain,
   setOpenDomainModal,
 }: WebsiteDomainCreateFormProps) => {
   const [form] = Form.useForm<WebsiteDomainFormValues>();
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const business = useAuthStore((s) => s.selectedBusiness);
-  const businessId = business?.id ? business?.id : "";
-  const swal = useSwal();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const business = useAuthStore((state) => state.selectedBusiness);
+  const businessId = business?.id ?? "";
+
+  const swal = useSwal();
   const { addDomain } = useWebsiteMutation(businessId);
 
   const domainType = Form.useWatch("domainType", form);
 
+  const defaultValues = useMemo<WebsiteDomainFormValues>(() => {
+    if (!activeSubDomain) {
+      return fallbackValues;
+    }
+
+    return {
+      domainType: activeSubDomain.domainType ?? "SUBDOMAIN",
+      domain: activeSubDomain.domain ?? "",
+      subdomain: activeSubDomain.subdomain ?? "",
+      isPrimary: activeSubDomain.isPrimary ?? true,
+      verificationStatus:
+        activeSubDomain.verificationStatus ?? "PENDING",
+      sslStatus: activeSubDomain.sslStatus ?? "PENDING",
+    };
+  }, [activeSubDomain]);
+
+  /*
+   * Ant Design initialValues only works during the first render.
+   * This updates the form when activeSubDomain arrives from the API.
+   */
+  useEffect(() => {
+    form.setFieldsValue(defaultValues);
+  }, [defaultValues, form]);
+
+  const handleDomainTypeChange = (
+    value: WebsiteDomainFormValues["domainType"],
+  ) => {
+    if (value === "SUBDOMAIN") {
+      form.setFieldValue("domain", "");
+    } else {
+      form.setFieldValue("subdomain", "");
+    }
+  };
+
   const handleFinish = async (values: WebsiteDomainFormValues) => {
+    const isSubdomain = values.domainType === "SUBDOMAIN";
+
     const payload: WebsiteDomainFormValues = {
       domainType: values.domainType,
-      domain: values.domain?.trim() || "",
-      subdomain: values.subdomain?.trim() || "",
+      domain: isSubdomain ? "" : values.domain?.trim() || "",
+      subdomain: isSubdomain
+        ? values.subdomain?.trim() || ""
+        : "",
       isPrimary: values.isPrimary ?? false,
-      verificationStatus: values.verificationStatus,
-      sslStatus: values.sslStatus,
+      verificationStatus:
+        values.verificationStatus ?? "PENDING",
+      sslStatus: values.sslStatus ?? "PENDING",
     };
 
     try {
       setIsSubmitting(true);
 
-      const res = await addDomain.mutateAsync({
+      await addDomain.mutateAsync({
         websiteId,
         payload,
       });
@@ -69,8 +113,9 @@ const WebsiteDomainCreateForm = ({
       <Form<WebsiteDomainFormValues>
         form={form}
         layout="vertical"
-        initialValues={defaultValues}
+        initialValues={fallbackValues}
         onFinish={handleFinish}
+        requiredMark="optional"
       >
         <Form.Item
           label="Domain Type"
@@ -84,6 +129,7 @@ const WebsiteDomainCreateForm = ({
         >
           <Select
             placeholder="Select domain type"
+            onChange={handleDomainTypeChange}
             options={[
               {
                 label: "Subdomain",
@@ -104,26 +150,28 @@ const WebsiteDomainCreateForm = ({
             rules={[
               {
                 required: true,
+                whitespace: true,
                 message: "Please enter subdomain",
               },
             ]}
           >
-            <Input placeholder="acme" />
+            <Input placeholder="second.192.168.0.122.nip.io" />
           </Form.Item>
-        ) : null}
-
-        <Form.Item
-          label="Domain"
-          name="domain"
-          rules={[
-            {
-              required: true,
-              message: "Please enter domain",
-            },
-          ]}
-        >
-          <Input placeholder="shop.example.com" />
-        </Form.Item>
+        ) : (
+          <Form.Item
+            label="Custom Domain"
+            name="domain"
+            rules={[
+              {
+                required: true,
+                whitespace: true,
+                message: "Please enter domain",
+              },
+            ]}
+          >
+            <Input placeholder="shop.example.com" />
+          </Form.Item>
+        )}
 
         <Form.Item
           label="Primary Domain"
@@ -134,7 +182,16 @@ const WebsiteDomainCreateForm = ({
         </Form.Item>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Form.Item label="Verification Status" name="verificationStatus">
+          <Form.Item
+            label="Verification Status"
+            name="verificationStatus"
+            rules={[
+              {
+                required: true,
+                message: "Please select verification status",
+              },
+            ]}
+          >
             <Select
               placeholder="Select verification status"
               options={[
@@ -154,7 +211,16 @@ const WebsiteDomainCreateForm = ({
             />
           </Form.Item>
 
-          <Form.Item label="SSL Status" name="sslStatus">
+          <Form.Item
+            label="SSL Status"
+            name="sslStatus"
+            rules={[
+              {
+                required: true,
+                message: "Please select SSL status",
+              },
+            ]}
+          >
             <Select
               placeholder="Select SSL status"
               options={[
@@ -176,8 +242,20 @@ const WebsiteDomainCreateForm = ({
         </div>
 
         <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isSubmitting}
+          >
             Add Domain
+          </Button>
+
+          <Button
+            type="default"
+            disabled={isSubmitting}
+            onClick={() => setOpenDomainModal(false)}
+          >
+            Cancel
           </Button>
         </Space>
       </Form>

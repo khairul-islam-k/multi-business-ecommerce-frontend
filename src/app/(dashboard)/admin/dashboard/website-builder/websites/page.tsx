@@ -67,7 +67,7 @@ const getFirstWebsite = (
 const getActiveSubDomain = (domains: ResponseWebsiteDomain[]) => {
   const activeSubDomain = domains.find((item) => item.isPrimary === true);
 
-  return activeSubDomain?.subdomain ?? null;
+  return activeSubDomain ?? null;
 };
 
 const WebsiteList = () => {
@@ -86,13 +86,17 @@ const WebsiteList = () => {
 
   const { data: websites, isLoading, isFetching } = useWebsiteQuery(businessId);
 
+  console.log('website', websites);
+
   const website = getFirstWebsite(websites?.items);
 
   // TODO: handle it properly
   const activeSubDomain = getActiveSubDomain(website?.domains ?? []);
 
+  console.log('act', activeSubDomain);
+
   const storeUrl = activeSubDomain
-    ? `http://${activeSubDomain}:3000/store`
+    ? `http://${activeSubDomain?.subdomain}:3000/store`
     : "";
 
   const handleCopyStoreUrl = async () => {
@@ -647,16 +651,14 @@ const WebsiteList = () => {
                               alt={`Best offer ${index + 1}`}
                               width={item.size === "large" ? 600 : 300}
                               height={item.size === "large" ? 260 : 120}
-                              className={`w-full rounded-xl object-cover ${
-                                item.size === "large" ? "h-64" : "h-28"
-                              }`}
+                              className={`w-full rounded-xl object-cover ${item.size === "large" ? "h-64" : "h-28"
+                                }`}
                               unoptimized
                             />
                           ) : (
                             <div
-                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 ${
-                                item.size === "large" ? "h-64" : "h-28"
-                              }`}
+                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 ${item.size === "large" ? "h-64" : "h-28"
+                                }`}
                             >
                               No Image
                             </div>
@@ -720,6 +722,7 @@ const WebsiteList = () => {
         width={720}
       >
         <WebsiteDomainCreateForm
+          activeSubDomain={activeSubDomain}
           websiteId={websiteId}
           setOpenDomainModal={setOpenDomainModal}
         />

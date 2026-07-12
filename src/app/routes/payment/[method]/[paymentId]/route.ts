@@ -8,6 +8,22 @@ type PaymentRouteParams = {
   paymentId: string;
 };
 
+const getRequestBaseUrl = (request: NextRequest): string => {
+  const host =
+    request.headers.get("x-forwarded-host") ??
+    request.headers.get("host");
+
+  const protocol =
+    request.headers.get("x-forwarded-proto") ??
+    "http";
+
+  if (!host) {
+    throw new Error("Request host is missing");
+  }
+
+  return `${protocol}://${host}`;
+};
+
 async function parseRequestBody(request: NextRequest) {
   const contentType = request.headers.get("content-type") || "";
 
@@ -66,8 +82,6 @@ export async function GET(
 
     const verifyData = res?.data ?? res;
 
-    console.log("SHURJOPAY verify response:", verifyData);
-
     const isPaid = verifyData?.paymentStatus === "PAID";
 
     const isShurjoPaySuccess =
@@ -77,8 +91,11 @@ export async function GET(
         verifyData?.gatewayPayload?.status === "VALID" ||
         verifyData?.paymentStatus === "PAID");
 
+        const baseUrl = getRequestBaseUrl(request);
+
     if (isPaid && isShurjoPaySuccess) {
-      const successUrl = new URL("/payment/success", request.url);
+      const successUrl = new URL("/payment/success", baseUrl);
+
 
       console.log('success', successUrl);
       successUrl.searchParams.set("orderId", paymentId);
@@ -87,18 +104,18 @@ export async function GET(
         "paidAmount",
         String(
           verifyData?.gatewayPayload?.amount ??
-            verifyData?.gatewayPayload?.payable_amount ??
-            verifyData?.amount ??
-            "",
+          verifyData?.gatewayPayload?.payable_amount ??
+          verifyData?.amount ??
+          "",
         ),
       );
       successUrl.searchParams.set(
         "transactionReference",
         String(
           verifyData?.transactionReference ??
-            verifyData?.gatewayPayload?.bank_trx_id ??
-            verifyData?.gatewayPayload?.sp_order_id ??
-            "",
+          verifyData?.gatewayPayload?.bank_trx_id ??
+          verifyData?.gatewayPayload?.sp_order_id ??
+          "",
         ),
       );
       successUrl.searchParams.set("method", method);
@@ -108,7 +125,7 @@ export async function GET(
       });
     }
 
-    const failedUrl = new URL("/payment/failed", request.url);
+    const failedUrl = new URL("/payment/failed", baseUrl);
 
     failedUrl.searchParams.set("orderId", paymentId);
     failedUrl.searchParams.set("method", method);
@@ -135,6 +152,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<PaymentRouteParams> },
 ) {
+  console.log('requ', request);
   try {
     const { method, paymentId } = (await params) as {
       method: PaymentGatewayProvider;
@@ -143,9 +161,9 @@ export async function POST(
 
     const body = await parseRequestBody(request);
 
-    console.log("payment callback method:", method);
-    console.log("payment callback paymentId:", paymentId);
-    console.log("payment callback body:", body);
+    // console.log("payment callback method:", method);
+    // console.log("payment callback paymentId:", paymentId);
+    // console.log("payment callback body:", body);
 
     let verifyPayload: Record<string, unknown> = {};
 
@@ -175,7 +193,7 @@ export async function POST(
      */
     const res = verifyResponse?.data ?? verifyResponse;
 
-    console.log("verify response:", res);
+    // console.log("verify response:", res);
 
     const isPaid = res?.paymentStatus === "PAID";
 
@@ -188,11 +206,15 @@ export async function POST(
         res?.gatewayPayload?.status === "VALID" ||
         res?.paymentStatus === "PAID");
 
+        const baseUrl = getRequestBaseUrl(request);
+
     if (
       isPaid &&
       (isSSLCommerzSuccess || isAamarPaySuccess)
     ) {
-      const successUrl = new URL("/payment/success", request.url);
+      const successUrl = new URL("/payment/success", baseUrl);
+
+      console.log('success', successUrl, request.url);
 
       successUrl.searchParams.set("orderId", paymentId);
       successUrl.searchParams.set("OrderId", res?.orderId ?? "");
@@ -211,7 +233,7 @@ export async function POST(
       });
     }
 
-    const failedUrl = new URL("/payment/failed", request.url);
+    const failedUrl = new URL("/payment/failed", baseUrl);
 
     failedUrl.searchParams.set("orderId", paymentId);
     failedUrl.searchParams.set("method", method);

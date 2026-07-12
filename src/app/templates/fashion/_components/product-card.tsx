@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Eye, GitCompareArrows, Heart, ShoppingCart, Star } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { StorefrontProduct } from "@/types/template/template-product";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import VariantModal from "./variant-modal";
@@ -11,6 +11,7 @@ import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
+import { useCart } from "@/app/store/_components/contex/CartContex";
 
 type Props = {
   product: StorefrontProduct;
@@ -22,14 +23,24 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
   const thumbnail =
     product.images.find((image) => image.isThumbnail)?.imageUrl ||
     product.images[0]?.imageUrl;
+  const router = useRouter();
+
+  // user
+  const { getAuthUser } = useCart();
+  const user = getAuthUser();
 
   const message = useMessage();
-  const { createAddCart } = useAddCartMutation();
+  const { createAddCart, } = useAddCartMutation();
   const { addWishList } = useTemplateProductWishListMutation();
 
   const [variantModalOpen, setVariantModalOpen] = useState<boolean>(false);
 
   const handleAddToCart = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
+
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
     } else {
@@ -52,6 +63,11 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
   };
 
   const handleAddToWishList = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
+
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
     } else {
@@ -79,17 +95,15 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
   return (
     <div
-      className={`group overflow-hidden border border-gray-200 bg-[var(--store-bg-1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
-        isList ? "lg:flex lg:items-stretch" : ""
-      }`}
+      className={`group overflow-hidden border border-gray-200 bg-[var(--store-bg-1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isList ? "lg:flex lg:items-stretch" : ""
+        }`}
     >
       {/* Image Area */}
       <div
-        className={`relative overflow-hidden bg-[#f8f5f1] ${
-          isList
-            ? "h-[300px] lg:h-auto lg:min-h-[280px] lg:w-[320px] lg:shrink-0"
-            : "h-[300px]"
-        }`}
+        className={`relative overflow-hidden bg-[#f8f5f1] ${isList
+          ? "h-[300px] lg:h-auto lg:min-h-[280px] lg:w-[320px] lg:shrink-0"
+          : "h-[300px]"
+          }`}
       >
         {thumbnail && (
           <Image
@@ -161,16 +175,14 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
       {/* Product Content */}
       <div
-        className={`p-5 ${
-          isList
-            ? "text-center lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:p-8 lg:text-left"
-            : "text-center"
-        }`}
+        className={`p-5 ${isList
+          ? "text-center lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:p-8 lg:text-left"
+          : "text-center"
+          }`}
       >
         <h3
-          className={`line-clamp-1 font-semibold transition group-hover:text-[#f16d59] ${
-            isList ? "text-base lg:text-2xl" : "text-base"
-          }`}
+          className={`line-clamp-1 font-semibold transition group-hover:text-[#f16d59] ${isList ? "text-base lg:text-2xl" : "text-base"
+            }`}
         >
           {product.name}
         </h3>
@@ -183,18 +195,16 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
         )}
 
         <div
-          className={`mt-2 flex items-center gap-1 ${
-            isList ? "justify-center lg:justify-start" : "justify-center"
-          }`}
+          className={`mt-2 flex items-center gap-1 ${isList ? "justify-center lg:justify-start" : "justify-center"
+            }`}
         >
           {Array.from({ length: 5 }).map((_, index) => (
             <Star
               key={index}
-              className={`h-4 w-4 ${
-                index < product.reviewSummary.averageRating
-                  ? "fill-[#f16d59] text-[#f16d59]"
-                  : "text-gray-300"
-              }`}
+              className={`h-4 w-4 ${index < product.reviewSummary.averageRating
+                ? "fill-[#f16d59] text-[#f16d59]"
+                : "text-gray-300"
+                }`}
             />
           ))}
 
@@ -206,9 +216,8 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
         <p className="mt-3 text-lg font-bold">৳{product.price}</p>
 
         <p
-          className={`mt-2 text-xs font-medium ${
-            product.stockSummary.inStock ? "text-green-600" : "text-red-500"
-          }`}
+          className={`mt-2 text-xs font-medium ${product.stockSummary.inStock ? "text-green-600" : "text-red-500"
+            }`}
         >
           {product.stockSummary.inStock ? "In Stock" : "Out of Stock"}
         </p>
