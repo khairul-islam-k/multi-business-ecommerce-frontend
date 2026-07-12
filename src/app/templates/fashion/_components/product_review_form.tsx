@@ -86,17 +86,17 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
   };
 
   return (
-    <div className="lg:px-8 mx-auto max-w-[1220px] mt-8 border border-gray-200 bg-white p-5 shadow-sm lg:p-8">
-      <h2 className="text-2xl font-bold text-gray-950">Write a Review</h2>
+    <div className="lg:px-8 mx-auto max-w-[1220px] mt-8 border border-gray-200 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8">
+      <h2 className="text-2xl font-bold">Write a Review</h2>
 
-      <p className="mt-1 text-sm text-gray-500">
+      <p className="mt-1 text-sm">
         Share your experience about this product.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-5">
         {/* Rating */}
         <div>
-          <label className="mb-2 block text-sm font-semibold text-gray-900">
+          <label className="mb-2 block text-sm font-semibold">
             Rating
           </label>
 
@@ -125,7 +125,7 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
               );
             })}
 
-            <span className="ml-2 text-sm font-medium text-gray-600">
+            <span className="ml-2 text-sm font-medium">
               {formData.rating}/5
             </span>
           </div>
@@ -135,7 +135,7 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
         <div>
           <label
             htmlFor="title"
-            className="mb-2 block text-sm font-semibold text-gray-900"
+            className="mb-2 block text-sm font-semibold"
           >
             Review Title
           </label>
@@ -147,7 +147,7 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
             value={formData.title}
             onChange={handleChange}
             placeholder="Example: Great keyboard"
-            className="h-12 w-full rounded-xl border border-gray-300 px-4 text-sm text-gray-700 outline-none transition focus:border-[#f16d59]"
+            className="h-12 w-full rounded-xl border border-gray-300 px-4 text-sm outline-none transition focus:border-[#f16d59] bg-[var(--store-bg-1)]"
             required
           />
         </div>
@@ -156,7 +156,7 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
         <div>
           <label
             htmlFor="comment"
-            className="mb-2 block text-sm font-semibold text-gray-900"
+            className="mb-2 block text-sm font-semibold"
           >
             Comment
           </label>
@@ -168,7 +168,7 @@ const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
             onChange={handleChange}
             placeholder="Example: The build quality feels excellent."
             rows={5}
-            className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f16d59]"
+            className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-[#f16d59] bg-[var(--store-bg-1)]"
             required
           />
         </div>

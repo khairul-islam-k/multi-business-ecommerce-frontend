@@ -119,7 +119,7 @@ export default function PaymentGatewayModal({
                                     key={gateway.id}
                                     type="button"
                                     onClick={() => handleSelectGateway(gateway)}
-                                    className="group rounded-xl border border-[var(--store-border,#e5e7eb)] bg-white p-3 text-center shadow-sm transition hover:-translate-y-1 hover:border-[var(--store-primary,#f16d59)] hover:shadow-md"
+                                    className="group rounded-xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] p-3 text-center shadow-sm transition hover:-translate-y-1 hover:border-[var(--store-primary,#f16d59)] hover:shadow-md"
                                 >
                                     <div className="mx-auto mb-3 grid size-10 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)] transition group-hover:bg-[var(--store-primary,#f16d59)] group-hover:text-white">
                                         <CreditCard className="size-5" />

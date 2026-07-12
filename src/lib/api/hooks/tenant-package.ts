@@ -51,6 +51,7 @@ export function useTenantPackageMutations() {
       mutationFn: tenantPackagesApi.checkoutPlan,
       onSuccess: invalidate,
     }),
+    
     confirmMockPayment: useMutation({
       mutationFn: tenantPackagesApi.confirmMockPayment,
       onSuccess: invalidate,

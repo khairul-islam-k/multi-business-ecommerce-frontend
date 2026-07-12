@@ -165,22 +165,22 @@ const FashionActiveCart = () => {
     }
 
     return (
-        <section className="bg-[#f8f5f1] px-4 py-10 sm:px-6 lg:px-8">
+        <section className="bg-[var(--store-bg-3)] px-4 py-10 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-7xl">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-950">Shopping Cart</h1>
+                    <h1 className="text-3xl font-bold">Shopping Cart</h1>
                     <p className="mt-2 text-sm text-gray-500">
                         Review your selected products before checkout.
                     </p>
                 </div>
 
                 {items.length === 0 ? (
-                    <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
+                    <div className="rounded-2xl bg-[var(--store-bg-1)] p-10 text-center shadow-sm">
                         <h2 className="text-xl font-bold text-gray-950">
                             Your cart is empty
                         </h2>
 
-                        <p className="mt-2 text-sm text-gray-500">
+                        <p className="mt-2 text-sm">
                             Please add some products to your cart.
                         </p>
 
@@ -193,7 +193,7 @@ const FashionActiveCart = () => {
                     </div>
                 ) : (
                     <div className="grid gap-8">
-                        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+                        <div className="overflow-hidden rounded-2xl bg-[var(--store-bg-1)] shadow-sm">
                             <div className="hidden grid-cols-[1fr_130px_160px_120px_60px] border-b border-gray-100 px-6 py-4 text-sm font-semibold text-gray-500 lg:grid">
                                 <div>Product</div>
                                 <div>Price</div>
@@ -237,13 +237,13 @@ const FashionActiveCart = () => {
                                                 <div className="min-w-0">
                                                     <Link
                                                         href={`/store/products/details/${item.product.slug}`}
-                                                        className="line-clamp-1 text-base font-bold text-gray-950 transition hover:text-[#f16d59]"
+                                                        className="line-clamp-1 text-base font-bold transition hover:text-[#f16d59]"
                                                     >
                                                         {item.product.name}
                                                     </Link>
 
                                                     {item.variant ? (
-                                                        <p className="mt-1 text-sm text-gray-500">
+                                                        <p className="mt-1 text-sm">
                                                             Variant:{" "}
                                                             <span className="font-medium text-gray-700">
                                                                 {item.variant.title}
@@ -263,7 +263,7 @@ const FashionActiveCart = () => {
                                                 <p className="text-sm text-gray-500 lg:hidden">
                                                     Price
                                                 </p>
-                                                <p className="font-semibold text-gray-950">
+                                                <p className="font-semibold">
                                                     ৳{price.toLocaleString()}
                                                 </p>
                                             </div>
@@ -277,19 +277,19 @@ const FashionActiveCart = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDecrease(item)}
-                                                        className="grid h-10 w-10 place-items-center text-gray-600 transition hover:bg-[#f16d59] hover:text-white"
+                                                        className="grid h-10 w-10 place-items-center transition hover:bg-[#f16d59] hover:text-white"
                                                     >
                                                         <Minus className="h-4 w-4" />
                                                     </button>
 
-                                                    <span className="grid h-10 min-w-12 place-items-center border-x border-gray-200 px-3 text-sm font-semibold text-gray-950">
+                                                    <span className="grid h-10 min-w-12 place-items-center border-x border-gray-200 px-3 text-sm font-semibold">
                                                         {quantity}
                                                     </span>
 
                                                     <button
                                                         type="button"
                                                         onClick={() => handleIncrease(item)}
-                                                        className="grid h-10 w-10 place-items-center text-gray-600 transition hover:bg-[#f16d59] hover:text-white"
+                                                        className="grid h-10 w-10 place-items-center transition hover:bg-[#f16d59] hover:text-white"
                                                     >
                                                         <Plus className="h-4 w-4" />
                                                     </button>
@@ -297,10 +297,10 @@ const FashionActiveCart = () => {
                                             </div>
 
                                             <div>
-                                                <p className="text-sm text-gray-500 lg:hidden">
+                                                <p className="text-sm lg:hidden">
                                                     Total
                                                 </p>
-                                                <p className="font-bold text-gray-950">
+                                                <p className="font-bold">
                                                     ৳{itemTotal.toLocaleString()}
                                                 </p>
                                             </div>
@@ -320,22 +320,22 @@ const FashionActiveCart = () => {
                             </div>
                         </div>
 
-                        <div className="h-fit rounded-2xl bg-white p-6 shadow-sm">
-                            <h2 className="text-xl font-bold text-gray-950">
+                        <div className="h-fit rounded-2xl bg-[var(--store-bg-1)] p-6 shadow-sm">
+                            <h2 className="text-xl font-bold">
                                 Order Summary
                             </h2>
 
                             <div className="mt-6 space-y-4">
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-500">Total Items</span>
-                                    <span className="font-semibold text-gray-950">
+                                    <span>Total Items</span>
+                                    <span className="font-semibold">
                                         {summary.totalQuantity}
                                     </span>
                                 </div>
 
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="text-gray-500">Subtotal</span>
-                                    <span className="font-semibold text-gray-950">
+                                    <span>Subtotal</span>
+                                    <span className="font-semibold">
                                         ৳{summary.subtotal.toLocaleString()}
                                     </span>
                                 </div>

@@ -13,6 +13,7 @@ import type {
   PackagePlan,
   PackageQuery,
   PackageUsageSummaryItem,
+  PaymentRedirectUrls,
   TenantSubscription,
 } from "@/lib/api/types";
 
@@ -45,11 +46,16 @@ export const tenantPackagesApi = {
       )
       .then((res) => unwrapApiResponse(res.data));
   },
-  checkoutPlan(planId: ApiId) {
+  checkoutPlan({
+    planId, 
+    payload
+  }: {
+    planId: ApiId;
+    payload: PaymentRedirectUrls
+  }) {
     return api
       .post<ApiResponse<PackageMockPayment>>(
-        `${basePath}/plans/${planId}/checkout`,
-      )
+        `${basePath}/plans/${planId}/checkout`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
   confirmMockPayment(paymentId: ApiId) {

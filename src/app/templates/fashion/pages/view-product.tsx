@@ -218,22 +218,22 @@ const ViewFashionProduct = () => {
   if (isLoading || isFetching) return <span>Loading...</span>
 
   return (
-    <section className="bg-[#f6f6f6] py-10">
+    <section className="bg-[var(--store-bg-3)] py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-6 text-sm text-gray-500">
-          <Link href="/" className="hover:text-[#f16d59]">
+        <div className="mb-6 text-sm">
+          <Link href="/store" className="hover:text-[#f16d59]">
             Home
           </Link>
           <span className="mx-2">/</span>
-          <Link href="/products" className="hover:text-[#f16d59]">
+          <Link href="/store/products" className="hover:text-[#f16d59]">
             Products
           </Link>
           <span className="mx-2">/</span>
-          <span className="text-gray-900">{product?.name}</span>
+          <span>{product?.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-8">
+        <div className="grid grid-cols-1 gap-8 bg-[var(--store-bg-1)] p-5 shadow-sm lg:grid-cols-2 lg:p-8">
           {/* Left Image Side */}
           <div>
             <div className="relative h-[420px] overflow-hidden bg-[#f8f5f1] sm:h-[520px]">
@@ -261,7 +261,7 @@ const ViewFashionProduct = () => {
                 <button
                   type="button"
                   onClick={handleThumbnailPrev}
-                  className="absolute left-0 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white text-gray-900 shadow-md transition hover:bg-[#f16d59] hover:text-white"
+                  className="absolute left-0 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-[var(--store-bg-1)] shadow-md transition hover:bg-[#f16d59] hover:text-white"
                 >
                   <ChevronLeft className="size-5" />
                 </button>
@@ -309,7 +309,7 @@ const ViewFashionProduct = () => {
                 <button
                   type="button"
                   onClick={handleThumbnailNext}
-                  className="absolute right-0 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white text-gray-900 shadow-md transition hover:bg-[#f16d59] hover:text-white"
+                  className="absolute right-0 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-[var(--store-bg-1)] shadow-md transition hover:bg-[#f16d59] hover:text-white"
                 >
                   <ChevronRight className="size-5" />
                 </button>
@@ -320,10 +320,10 @@ const ViewFashionProduct = () => {
           {/* Right Text Side */}
           <div className="flex flex-col justify-center">
             <p className="mb-3 inline-flex w-fit items-center rounded-full bg-[#f16d59]/10 px-4 py-1.5 text-xs font-bold text-[#f16d59]">
-              {product?.tags[0].name}
+              {product?.tags[0]?.name}
             </p>
 
-            <h1 className="text-3xl font-bold text-gray-950 sm:text-4xl">
+            <h1 className="text-3xl font-bold sm:text-4xl">
               {product?.name}
             </h1>
 
@@ -340,7 +340,7 @@ const ViewFashionProduct = () => {
                 ))}
               </div>
 
-              <span className="text-sm text-gray-500">
+              <span className="text-sm">
                 ({product?.reviewSummary?.reviewCount} Review)
               </span>
             </div>
@@ -349,7 +349,7 @@ const ViewFashionProduct = () => {
               ৳{product?.price}
             </p>
 
-            <p className="mt-5 text-base leading-7 text-gray-600">
+            <p className="mt-5 text-base leading-7">
               {product?.description}
             </p>
 
@@ -424,7 +424,7 @@ const ViewFashionProduct = () => {
                   }
                 }}
                 type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
+                className="inline-flex h-12 items-center justify-center gap-2 border border-gray-300 px-8 text-sm font-bold transition hover:border-[#f16d59] hover:text-[#f16d59]"
               >
                 <Heart className="h-5 w-5" />
                 Wishlist
@@ -438,15 +438,15 @@ const ViewFashionProduct = () => {
               
 
                 <p>
-                  <span className="font-bold text-gray-950">Total Stock:</span>{" "}
-                  <span className="text-gray-600">
+                  <span className="font-bold">Total Stock:</span>{" "}
+                  <span>
                     {product?.stockSummary.totalQuantity}
                   </span>
                 </p>
 
                 <p>
-                  <span className="font-bold text-gray-950">Reserved:</span>{" "}
-                  <span className="text-gray-600">
+                  <span className="font-bold">Reserved:</span>{" "}
+                  <span>
                     {product?.stockSummary.quantityReserved}
                   </span>
                 </p>
@@ -463,7 +463,7 @@ const ViewFashionProduct = () => {
       />
 
       {/* Reviews Section */}
-      <div className="mt-8 bg-white p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
+      <div className="mt-8 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
         <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-950">

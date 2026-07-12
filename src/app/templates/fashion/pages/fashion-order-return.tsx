@@ -234,7 +234,7 @@ const FashionOrderReturn = () => {
     try {
       setIsSubmitting(true);
 
-      const res = await orderReturn.mutateAsync({
+      await orderReturn.mutateAsync({
         orderId,
         payload,
       });
@@ -248,8 +248,8 @@ const FashionOrderReturn = () => {
 
   if (isLoading || isFetching) {
     return (
-      <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto flex min-h-80 max-w-5xl items-center justify-center rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm">
+      <section className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-80 max-w-5xl items-center justify-center rounded-3xl shadow-sm">
           <div className="flex items-center gap-3 text-[var(--store-muted,#6b7280)]">
             <Loader2 className="size-6 animate-spin text-[var(--store-primary,#f16d59)]" />
 
@@ -282,7 +282,7 @@ const FashionOrderReturn = () => {
   }
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-8 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-3)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -307,15 +307,15 @@ const FashionOrderReturn = () => {
             </p>
           </div>
 
-          <div className="flex w-fit items-center gap-2 rounded-full bg-[var(--store-card,#ffffff)] px-4 py-2 text-sm font-semibold text-[var(--store-text,#111827)] shadow-sm">
+          <div className="flex w-fit items-center gap-2 rounded-full bg-[var(--store-card)] px-4 py-2 text-sm font-semibold text-[var(--store-text,#111827)] shadow-sm">
             <RotateCcw className="size-4 text-[var(--store-primary,#f16d59)]" />
             Selected: {selectedItems.length}
           </div>
         </div>
 
         {/* Main Reason */}
-        <div className="mb-6 overflow-hidden rounded-3xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-card,#ffffff)] shadow-sm">
-          <div className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-primary,#f16d59)]/5 px-5 py-4">
+        <div className="mb-6 overflow-hidden rounded-3xl border border-[var(--store-border)] bg-[var(--store-bg-1)] shadow-sm">
+          <div className="border-b border-[var(--store-border)] bg-[var(--store-primary,#f16d59)]/5 px-5 py-4">
             <h2 className="text-base font-bold text-[var(--store-text,#111827)]">
               Return Reason
             </h2>
@@ -331,7 +331,7 @@ const FashionOrderReturn = () => {
               onChange={(event) => setMainReason(event.target.value)}
               rows={3}
               placeholder="Example: Product arrived damaged"
-              className="w-full resize-none rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)]/60 px-4 py-3 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:bg-white focus:shadow-sm"
+              className="w-full resize-none rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 py-3 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:shadow-sm"
             />
           </div>
         </div>
@@ -349,10 +349,10 @@ const FashionOrderReturn = () => {
             return (
               <div
                 key={item.id}
-                className={`overflow-hidden rounded-3xl border bg-[var(--store-card,#ffffff)] shadow-sm transition-all duration-300 ${
+                className={`overflow-hidden rounded-3xl border bg-[var(--store-bg-1)] shadow-sm transition-all duration-300 ${
                   enabled
                     ? "border-[var(--store-primary,#f16d59)] ring-4 ring-[var(--store-primary,#f16d59)]/10"
-                    : "border-[var(--store-border,#e5e7eb)] hover:border-[var(--store-primary,#f16d59)]/40"
+                    : "border-[var(--store-border)] hover:border-[var(--store-primary,#f16d59)]/40"
                 }`}
               >
                 <div className="p-5">
@@ -375,12 +375,12 @@ const FashionOrderReturn = () => {
                       </div>
 
                       <div className="min-w-0">
-                        <h2 className="line-clamp-1 text-base font-bold text-[var(--store-text,#111827)]">
+                        <h2 className="line-clamp-1 text-base font-bold">
                           {productName}
                         </h2>
 
                         {variantName && (
-                          <p className="mt-1 text-xs font-semibold text-[var(--store-primary,#f16d59)]">
+                          <p className="mt-1 text-xs font-semibold text-[var(--store-primary)]">
                             {variantName}
                           </p>
                         )}
@@ -408,7 +408,7 @@ const FashionOrderReturn = () => {
                       className={`group/toggle inline-flex h-12 w-full items-center justify-between gap-3 rounded-2xl border px-4 text-sm font-bold transition-all duration-300 sm:w-[210px] ${
                         enabled
                           ? "border-[var(--store-primary,#f16d59)] bg-[var(--store-primary,#f16d59)] text-white shadow-lg shadow-[var(--store-primary,#f16d59)]/20"
-                          : "border-[var(--store-border,#e5e7eb)] bg-white text-[var(--store-text,#111827)] hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                          : "border-[var(--store-border)] bg-[var(--store-bg-1)] text-[var(--store-text,#111827)] hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
                       }`}
                     >
                       <span className="inline-flex items-center gap-2">
@@ -446,7 +446,7 @@ const FashionOrderReturn = () => {
                   </div>
 
                   {enabled && (
-                    <div className="mt-5 rounded-3xl border border-[var(--store-primary,#f16d59)]/20 bg-[var(--store-primary,#f16d59)]/5 p-4">
+                    <div className="mt-5 rounded-3xl border border-[var(--store-border)]/20 bg-[var(--store-primary,#f16d59)]/5 p-4">
                       <div className="mb-4 flex items-center justify-between gap-3">
                         <div>
                           <h3 className="text-sm font-bold text-[var(--store-text,#111827)]">
@@ -486,7 +486,7 @@ const FashionOrderReturn = () => {
                             onChange={(event) =>
                               handleQuantityChange(item, event.target.value)
                             }
-                            className="h-12 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-sm font-semibold text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:shadow-sm"
+                            className="h-12 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] px-4 text-sm font-semibold text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:shadow-sm"
                           />
 
                           <p className="mt-1 text-xs text-[var(--store-muted,#6b7280)]">
@@ -508,7 +508,7 @@ const FashionOrderReturn = () => {
                               })
                             }
                             placeholder="Example: Damaged item"
-                            className="w-full resize-none rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-4 py-3 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:shadow-sm"
+                            className="w-full resize-none rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] px-4 py-3 text-sm font-medium text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] focus:border-[var(--store-primary,#f16d59)] focus:shadow-sm"
                           />
                         </div>
                       </div>
@@ -543,7 +543,7 @@ const FashionOrderReturn = () => {
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
               <Link
                 href="/store/dashboard/order-history"
-                className="inline-flex h-12 items-center justify-center rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-6 text-sm font-bold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                className="inline-flex h-12 items-center justify-center rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] px-6 text-sm font-bold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
               >
                 Cancel
               </Link>

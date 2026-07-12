@@ -43,7 +43,7 @@ const FashionReviewPage = () => {
 
     if (isLoading) {
         return (
-            <section className="min-h-screen bg-gray-50 px-4 py-6 sm:px-6 lg:px-8">
+            <section className="min-h-screen bg-[var(--store-bg-3)] px-4 py-6 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-6xl">
                     <div className="mb-6">
                         <div className="h-7 w-40 animate-pulse rounded bg-gray-200" />
@@ -93,25 +93,25 @@ const FashionReviewPage = () => {
     }
 
     return (
-        <section className="min-h-screen bg-gray-50 px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+        <section className="min-h-screen bg-[var(--store-bg-3)] px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
             <div className="mx-auto max-w-6xl">
-                <div className="mb-5 rounded-2xl bg-white p-4 shadow-sm sm:mb-8 sm:p-6">
-                    <h1 className="text-xl font-bold text-gray-900 sm:text-2xl lg:text-3xl">
+                <div className="mb-5 rounded-2xl bg-[var(--store-bg-1)] p-4 shadow-sm sm:mb-8 sm:p-6">
+                    <h1 className="text-xl font-bold sm:text-2xl lg:text-3xl">
                         My Reviews
                     </h1>
 
-                    <p className="mt-1 text-sm leading-6 text-gray-500 sm:text-base">
+                    <p className="mt-1 text-sm leading-6 sm:text-base">
                         View all product reviews you have submitted.
                     </p>
                 </div>
 
                 {reviews.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-gray-300 bg-white px-4 py-10 text-center shadow-sm sm:px-8 sm:py-14">
-                        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-gray-100 text-2xl sm:size-16">
+                    <div className="rounded-2xl border border-dashed border-gray-300 bg-[var(--store-bg-1)] px-4 py-10 text-center shadow-sm sm:px-8 sm:py-14">
+                        <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-[var(--store-bg-3)] text-2xl sm:size-16">
                             ★
                         </div>
 
-                        <h2 className="text-base font-semibold text-gray-900 sm:text-lg">
+                        <h2 className="text-base font-semibold sm:text-lg">
                             No reviews found
                         </h2>
 

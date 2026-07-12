@@ -574,6 +574,12 @@ export type PackageUsageCounter = {
   updatedAt?: string;
 };
 
+export type PaymentRedirectUrls = {
+  successRedirectUrl: string;
+  failRedirectUrl: string;
+  cancelRedirectUrl: string;
+};
+
 export type PackageMockPayment = {
   id: ApiId;
   tenantId: ApiId;

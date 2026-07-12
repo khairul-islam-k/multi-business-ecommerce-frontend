@@ -13,7 +13,7 @@ const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) =
     const bannerSlide = resolveData?.config?.headerConfig?.slide;
     const partners = resolveData?.config?.generalConfig?.partners ?? [];
 
-    console.log('offer', resolveData?.config?.generalConfig?.bestOfferImages)
+    const monthlyOffer = resolveData?.config?.generalConfig?.bestOfferImages ?? [];
 
     return (
         <div>
@@ -21,13 +21,13 @@ const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) =
             
             <CategoriesSection />
 
-            <MonthOffer />
+            <MonthOffer monthlyOffer={monthlyOffer} />
 
             <ExploreOurProduct />
 
             <PolicyLabel />
 
-            <DealOfDay />
+            {/* <DealOfDay /> */}
 
             <PartnerSection partners={partners} />
 

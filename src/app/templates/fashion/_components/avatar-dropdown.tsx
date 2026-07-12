@@ -5,15 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  image?: string;
-  accessToken: string;
-  refreshToken: string;
-};
 
 export default function AvatarDropdown() {
   const [open, setOpen] = useState(false);
@@ -43,10 +34,6 @@ export default function AvatarDropdown() {
     return null;
   }
 
-  const handleRefresh = async () => {
-    const token = await newAccessToken();
-  };
-
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -66,8 +53,8 @@ export default function AvatarDropdown() {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
-          <div className="border-b border-gray-100 px-4 py-4">
+        <div className="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-2xl border border-gray-200 bg-[var(--store-bg-1)] shadow-xl">
+          <div className="border-b border-[var(--store-border)] px-4 py-4">
             <div className="flex items-center gap-3">
               <div className="relative size-12 overflow-hidden rounded-full bg-gray-100">
                 <Image
@@ -80,10 +67,10 @@ export default function AvatarDropdown() {
               </div>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-gray-900">
+                <p className="truncate text-sm font-semibold">
                   {user.name}
                 </p>
-                <p className="truncate text-xs text-gray-500">{user.email}</p>
+                <p className="truncate text-xs">{user.email}</p>
               </div>
             </div>
           </div>
@@ -91,27 +78,27 @@ export default function AvatarDropdown() {
           <div className="py-2">
             <Link
               href="/store/profile"
-              className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+              className="block px-4 py-2.5 text-sm transition hover:text-black hover:bg-gray-100"
             >
               My Profile
             </Link>
 
             <Link
               href="/store/dashboard"
-              className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+              className="block px-4 py-2.5 text-sm transition hover:text-black hover:bg-gray-100"
             >
               Dashboard
             </Link>
 
             <a
               href="/settings"
-              className="block px-4 py-2.5 text-sm text-gray-700 transition hover:bg-gray-100"
+              className="block px-4 py-2.5 text-sm hover:text-black transition hover:bg-gray-100"
             >
               Settings
             </a>
           </div>
 
-          <div className="border-t border-gray-100 p-2">
+          <div className="border-t hover:text-black border-gray-100 p-2">
             <button
               type="button"
               onClick={handleLogout}

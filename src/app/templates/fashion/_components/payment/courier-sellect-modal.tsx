@@ -236,15 +236,15 @@ const CourierSellectModal = ({
                 aria-label="Close modal"
             />
 
-            <div className="relative z-10 flex h-[calc(100dvh-32px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-2xl">
-                <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border,#e5e7eb)] px-6 py-5">
+            <div className="relative z-10 flex h-[calc(100dvh-32px)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-[var(--store-bg-1)] shadow-2xl">
+                <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-6 py-5">
                     <div className="flex items-center gap-3">
-                        <div className="grid size-11 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)]">
+                        <div className="grid size-11 place-items-center rounded-full bg-[var(--store-bg-1)] text-[var(--store-primary)]">
                             <Truck className="size-5" />
                         </div>
 
                         <div>
-                            <h2 className="text-xl font-bold text-[var(--store-text,#111827)]">
+                            <h2 className="text-xl font-bold text-[var(--store-text)]">
                                 Courier Delivery
                             </h2>
 
@@ -257,7 +257,7 @@ const CourierSellectModal = ({
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="grid size-9 place-items-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-red-500 hover:text-white"
+                        className="grid size-9 place-items-center rounded-full bg-[var(--store-bg-3)] transition hover:bg-red-500 hover:text-white"
                     >
                         <X className="size-5" />
                     </button>
@@ -282,7 +282,7 @@ const CourierSellectModal = ({
                                     onBlur={configRegister.onBlur}
                                     onChange={handleCourierChange}
                                     disabled={isCourierLoading}
-                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                                    className="h-12 w-full rounded-xl border border-[var(--store-border)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
                                 >
                                     <option value="">
                                         {isCourierLoading ? "Loading couriers..." : "Select courier"}
@@ -317,7 +317,7 @@ const CourierSellectModal = ({
                                     onBlur={areaRegister.onBlur}
                                     onChange={handleAreaChange}
                                     disabled={!selectedConfigId || isAreaLoading}
-                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
                                 >
                                     <option value="">
                                         {!selectedConfigId
@@ -425,24 +425,24 @@ const CourierSellectModal = ({
 
                     {charge && (
                         <div className="px-6 pb-6">
-                            <div className="rounded-3xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-card,#ffffff)] p-5 shadow-sm">
-                                <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--store-border,#e5e7eb)] pb-4">
+                            <div className="rounded-3xl border border-[var(--store-border)] bg-[var(--store-card)] p-5 shadow-sm">
+                                <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--store-border)] pb-4">
                                     <div>
-                                        <h3 className="text-lg font-bold text-[var(--store-text,#111827)]">
+                                        <h3 className="text-lg font-bold">
                                             Courier Charge Summary
                                         </h3>
-                                        <p className="text-sm text-[var(--store-muted,#6b7280)]">
+                                        <p className="text-s">
                                             Delivery charge calculated successfully.
                                         </p>
                                     </div>
 
-                                    <div className="rounded-full bg-[var(--store-primary,#f16d59)]/10 px-4 py-2 text-sm font-bold text-[var(--store-primary,#f16d59)]">
+                                    <div className="rounded-full bg-[var(--store-primary,#f16d59)]/10 px-4 py-2 text-sm font-bold text-[var(--store-primary)]">
                                         ৳{charge.courierFee}
                                     </div>
                                 </div>
 
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                    <div className="rounded-2xl bg-gray-50 p-4">
+                                    <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                                         <p className="text-xs font-medium text-[var(--store-muted,#6b7280)]">
                                             Shipping Charge
                                         </p>
@@ -451,7 +451,7 @@ const CourierSellectModal = ({
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl bg-gray-50 p-4">
+                                    <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                                         <p className="text-xs font-medium text-[var(--store-muted,#6b7280)]">
                                             Delivery Charge
                                         </p>
@@ -460,7 +460,7 @@ const CourierSellectModal = ({
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl bg-gray-50 p-4">
+                                    <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                                         <p className="text-xs font-medium text-[var(--store-muted,#6b7280)]">
                                             COD Charge
                                         </p>
@@ -469,7 +469,7 @@ const CourierSellectModal = ({
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl bg-gray-50 p-4">
+                                    <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                                         <p className="text-xs font-medium text-[var(--store-muted,#6b7280)]">
                                             Weight
                                         </p>
