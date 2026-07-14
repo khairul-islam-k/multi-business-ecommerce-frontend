@@ -1,3 +1,4 @@
+import ElectronicUpdateCustomerAddress from "@/app/templates/electronic/pages/electronic-update-customer-address";
 import FashionUpdateCustomerAddress from "@/app/templates/fashion/pages/fashion-update-customer-address";
 import { publicApi } from "@/lib/axios";
 import { headers } from "next/headers";
@@ -22,6 +23,10 @@ const UpdateCustomerAddress = async ({ params }: UpdateCustomerAddressProps) => 
 
   if (res?.data?.data?.template === "FASHION") {
     return <FashionUpdateCustomerAddress addressId={id} />;
+  }
+
+  if (res?.data?.data?.template === "ELECTRONIC") {
+    return <ElectronicUpdateCustomerAddress addressId={id} />;
   }
 
   return null;

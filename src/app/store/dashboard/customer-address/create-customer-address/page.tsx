@@ -1,3 +1,4 @@
+import ElectronicCreateCustomerAddress from '@/app/templates/electronic/pages/electronic-create-customer-address';
 import FashionCreateCustomerAddress from '@/app/templates/fashion/pages/fashion-create-customer-address';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -14,6 +15,10 @@ const CreateCustomerAddress = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionCreateCustomerAddress />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicCreateCustomerAddress />;
     }
 };
 

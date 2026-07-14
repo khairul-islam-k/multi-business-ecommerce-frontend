@@ -1,3 +1,4 @@
+import ElectronicInvoice from '@/app/templates/electronic/pages/electronic-invoice';
 import FashionInvoice from '@/app/templates/fashion/pages/fashion-invoice';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -15,6 +16,10 @@ const InvoicePage = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionInvoice />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicInvoice />;
     }
 };
 

@@ -17,7 +17,6 @@ import { CourierDeliveryPayload } from "@/types/courier/courier";
 import Cookies from "js-cookie";
 
 
-
 const getItemPrice = (item: CartItem) => {
     if (item.variant) {
         return Number(item.variant.priceOverride);

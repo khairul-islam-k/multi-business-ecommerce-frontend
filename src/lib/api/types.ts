@@ -595,6 +595,7 @@ export type PackageMockPayment = {
   createdAt?: string;
   updatedAt?: string;
   plan?: PackagePlan;
+  redirectUrl: string | null;
 };
 
 export type TenantSubscription = {

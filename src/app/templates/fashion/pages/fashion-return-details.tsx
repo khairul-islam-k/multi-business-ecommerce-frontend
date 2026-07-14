@@ -275,7 +275,7 @@ const FashionReturnDetails = () => {
 
               <Link
                 href={`/store/dashboard/order-history/detail/${details.orderId}`}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-xs font-bold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-xs font-bold text-black transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
               >
                 <Eye className="size-4" />
                 View Order

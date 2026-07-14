@@ -94,9 +94,21 @@ export default function PricingCards() {
       .filter((plan) => plan.billingCycle === billingCycle);
   }, [data, billingCycle]);
 
+  const host = typeof window !== "undefined" ? window.location.host : "";
+
   const handleBuyPackage = async (id: string) => {
+
+    const payload = {
+      successRedirectUrl: `${host}/routes/payment`,
+      failRedirectUrl: `${host}/routes/failed`,
+      cancelRedirectUrl: `${host}/routes/cancel`
+    }
+
     try {
-      const payment = await mutations.checkoutPlan.mutateAsync(id);
+      const payment = await mutations.checkoutPlan.mutateAsync({
+        planId: id,
+        payload
+      });
 
       const confirm = await Swal.fire({
         title: "Confirm mock payment?",
@@ -111,7 +123,6 @@ export default function PricingCards() {
 
       if (confirm.isConfirmed) {
         try {
-          await mutations.confirmMockPayment.mutateAsync(payment.id);
 
           router.push("/admin/dashboard");
           toast.success("Plan changed successfully.");
@@ -230,7 +241,7 @@ export default function PricingCards() {
                   className={cn(
                     "relative flex min-h-[540px] flex-col rounded-2xl border border-slate-200 bg-accent p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl",
                     isPopular &&
-                      "border-transparent bg-gradient-to-b from-indigo-600 to-violet-600 text-white shadow-2xl",
+                    "border-transparent bg-gradient-to-b from-indigo-600 to-violet-600 text-white shadow-2xl",
                   )}
                 >
                   {isPopular && (
@@ -296,7 +307,7 @@ export default function PricingCards() {
                     className={cn(
                       "mt-7 h-11 w-full rounded-xl bg-indigo-600 font-semibold text-white hover:bg-indigo-700",
                       isPopular &&
-                        "bg-white text-slate-950 hover:bg-indigo-50 hover:text-slate-950",
+                      "bg-white text-slate-950 hover:bg-indigo-50 hover:text-slate-950",
                     )}
                   >
                     {getButtonText(plan)}

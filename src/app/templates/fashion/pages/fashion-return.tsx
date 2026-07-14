@@ -8,10 +8,6 @@ import {
 } from "@/lib/api/hooks/template-return";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { CustomerOrderReturnItemResponse } from "@/types/template/return-history";
-// import type {
-//   CustomerOrderReturnItemResponse,
-//   OrderReturnStatus,
-// } from "@/types/template/template-return";
 import {
   CalendarDays,
   CheckCircle2,
@@ -431,7 +427,7 @@ const FashionReturn = () => {
                             <div className="flex items-center justify-end gap-2">
                               <Link
                                 href={`/store/dashboard/return/details/${returnData.id}`}
-                                className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-sm font-bold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                                className="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white text-black px-4 text-sm font-bold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
                               >
                                 <Eye className="size-4" />
                                 View

@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
-import { ApiId, CategoriesQuery } from "../types";
-import { BrandPayload } from "@/types/product/brands";
-import { productBrandApi } from "../product-brand";
+import { CategoriesQuery } from "../types";
 import { CreateProductReviewPayload } from "@/types/template/product-review";
 import { templateProductReview } from "../templater-product-review";
 import { templateAuthApi } from "../template-auth";
@@ -35,7 +33,7 @@ export function useTemplateProductReviewMutation(slug?: string) {
 
             slug
                 ? queryClient.invalidateQueries({
-                    queryKey: apiQueryKeys.publicWebsite.detail(slug),
+                    queryKey: apiQueryKeys.publicWebsite.reviews(slug),
                 })
                 : Promise.resolve(),
         ]);

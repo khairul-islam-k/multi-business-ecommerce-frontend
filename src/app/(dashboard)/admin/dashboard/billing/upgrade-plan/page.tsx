@@ -17,7 +17,7 @@ import { getApiErrorMessage } from "@/lib/axios";
 import { money } from "../_utils/package-display";
 import { useState } from "react";
 import { useSwal } from "@/hooks/use-swal";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function UpgradePlanPage() {
   const swal = useSwal();
@@ -31,19 +31,17 @@ export default function UpgradePlanPage() {
 
   const host = typeof window !== "undefined" ? window.location.host : "";
 
-  console.log('host', host);
-
   const handleCheckout = (plan: PackagePlan) => {
 
     const payload = {
-      successRedirectUrl: `${host}/routes/payment`,
-      failRedirectUrl: `${host}/routes/failed`,
-      cancelRedirectUrl: `${host}/routes/cancel`
+      successRedirectUrl: `http://${host}/payment/success`,
+      failRedirectUrl: `http://${host}/payment/failed`,
+      cancelRedirectUrl: `http://${host}/payment/cancel`
     }
 
     modal.confirm({
       title: "Create checkout?",
-      content: `A pending payment for ${money(
+      content: `Your Total package charge is ${money(
         plan.price,
         plan.currencyCode,
       )} will be created for ${plan.name}.`,
@@ -55,28 +53,35 @@ export default function UpgradePlanPage() {
             planId: plan.id,
             payload
           });
-          // modal.confirm({
-          //   title: "Confirm mock payment?",
-          //   content: `Confirm payment ${money(
-          //     payment?.amount,
-          //     payment?.currencyCode,
-          //   )} now?`,
-          //   okText: "Confirm payment",
-          //   cancelText: "Later",
-          //   async onOk() {
-          //     try {
-          //       await mutations.confirmMockPayment.mutateAsync(payment?.id);
-          //       message.success("Plan changed successfully.");
-          //     } catch (error) {
-          //       message.error(getApiErrorMessage(error));
-          //     }
-          //   },
-          //   onCancel() {
-          //     message.success(
-          //       "Checkout created. Confirm it before it expires.",
-          //     );
-          //   },
-          // });
+
+          console.log('pay', payment)
+
+          modal.confirm({
+            title: "Proceed to payment?",
+            content: `You are about to pay ${money(
+              payment?.amount,
+              payment?.currencyCode,
+            )} now?`,
+            okText: "Confirm payment",
+            cancelText: "Later",
+            async onOk() {
+              try {
+                if (!payment?.redirectUrl) {
+                  await mutations.confirmMockPayment.mutateAsync(payment?.id);
+                  router.push('/payment/success')
+                } else {
+                  router.push(payment?.redirectUrl)
+                }
+              } catch (error) {
+                message.error(getApiErrorMessage(error));
+              }
+            },
+            onCancel() {
+              message.success(
+                "Checkout created. Confirm it before it expires.",
+              );
+            },
+          });
         } catch (error) {
           message.error(getApiErrorMessage(error));
         }

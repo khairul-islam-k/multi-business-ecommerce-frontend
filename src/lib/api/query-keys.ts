@@ -366,6 +366,8 @@ export const apiQueryKeys = {
     all: (businessId: ApiId) => ["publicWebsite", businessId] as const,
     list: (query?: CategoriesQuery) =>
       ["publicWebsite", "list", query] as const,
+    reviews: (productSlug: ApiId, query?: CategoriesQuery) =>
+      ["publicWebsite",productSlug, "reviews", query] as const,
     listTag: (query?: CategoriesQuery) =>
       ["publicWebsite", "listTag", query] as const,
     listProducts: (query?: CategoriesQuery) =>

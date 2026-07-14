@@ -8,12 +8,14 @@ import { useSwal } from '@/hooks/use-swal';
 import { getApiErrorMessage } from '@/lib/axios';
 import { adminBreadcrumb } from '@/config/breadcrumb.config';
 import PageHeader from '@/components/shared/page-header';
+import { useRouter } from 'next/navigation';
 
 const CreateWebSite = () => {
   const business = useAuthStore(s => s.selectedBusiness);
   const businessId = business?.id ? business?.id : '';
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const swal = useSwal()
+  const router = useRouter();
 
   const { createWebsite } = useWebsiteMutation(businessId);
 
@@ -21,7 +23,7 @@ const CreateWebSite = () => {
     setIsSubmitting(true);
     try {
       await createWebsite.mutateAsync(values);
-
+      router.push('/admin/dashboard/website-builder/websites');
       swal.success("Website template created successfully.");
     } catch (error) {
       swal.error(getApiErrorMessage(error));

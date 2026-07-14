@@ -75,7 +75,7 @@ export default function CustomerAddressForm({
 
                 <select
                     {...register("addressType")}
-                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent px-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
+                    className="h-12 w-full rounded-xl border border-[var(--store-border)] bg-transparent px-4 text-sm text-[var(--store-text)] outline-none transition focus:bg-[var(--store-bg-1)] focus:border-[var(--store-primary,#f16d59)]"
                 >
                     <option value="HOME">Home</option>
                     <option value="OFFICE">Office</option>

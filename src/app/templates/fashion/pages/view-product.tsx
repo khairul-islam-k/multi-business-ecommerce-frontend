@@ -18,7 +18,7 @@ import {
 import product_1 from "@/assets/fashion/products/product-1.jpg";
 import ProductReviewForm from "../_components/product_review_form";
 import { useParams } from "next/navigation";
-import { useTemplateProduct } from "@/lib/api/hooks/public-website";
+import { useProductWebReview, useTemplateProduct } from "@/lib/api/hooks/public-website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
@@ -27,75 +27,7 @@ import { StorefrontProduct } from "@/types/template/template-product";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import VariantModal from "../_components/variant-modal";
 import { motion } from "framer-motion";
-
-const fashionDetail = {
-  id: "product-1",
-  categoryId: "906334a0-7d01-4f57-8df8-0fa89a4fcac8",
-  name: "Classic Denim Jacket",
-  slug: "classic-denim-jacket",
-  description: "Stylish denim jacket for everyday fashion.",
-  price: "1350",
-  status: "ACTIVE",
-  tag: {
-    id: 1,
-    name: "NEW ARRIVAL",
-  },
-  images: [
-    {
-      id: "product-1-image-1",
-      imageUrl: product_1,
-      altText: "Classic Denim Jacket",
-      isThumbnail: true,
-    },
-  ],
-  variants: [
-    {
-      id: "product-1-variant-1",
-      title: "Black M",
-      sku: "SKU-PRODUCT-1-BLACK-M",
-      price: "1350",
-      status: "ACTIVE",
-      images: [
-        {
-          id: "product-1-variant-image-1",
-          imageUrl: product_1,
-          altText: "Classic Denim Jacket Black M",
-          isThumbnail: true,
-        },
-      ],
-    },
-  ],
-  stockSummary: {
-    totalQuantity: "110",
-    quantityReserved: "0",
-    availableQuantity: "110",
-    inStock: true,
-  },
-  reviewSummary: {
-    reviewCount: 1,
-    averageRating: 5,
-  },
-  reviews: [
-    {
-      id: "251df15f-f88d-4ba1-828f-102284075109",
-      businessId: "295c869a-f81e-4966-ad9b-bfe8ae742585",
-      productId: "bbecc817-09bb-4576-a33b-c6c7e8ac0f78",
-      variantId: null,
-      rating: 4,
-      title: "nice",
-      comment: "adsfas a",
-      reviewerName: "naim",
-      reviewerEmail: "naim@gmail.com",
-      reviewerPhone: null,
-      status: "APPROVED",
-      createdBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
-      updatedBy: "c7ad3dd9-68aa-45dd-b17c-135e6433109e",
-      createdAt: "2026-06-21T10:08:54.017Z",
-      updatedAt: "2026-06-21T04:08:59.484Z",
-      deletedAt: null,
-    },
-  ],
-};
+import Pagination from "@/app/store/_components/pagination";
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -128,16 +60,24 @@ const ViewFashionProduct = () => {
   // fetch product
   const { data: product, isLoading, isFetching } = useTemplateProduct(productSlug);
 
+  // review 
+  const [currentPage, setCurrentPage] = useState(1);
+  const limit = 5;
+
+  const {data: reviewData} = useProductWebReview(productSlug, {
+    limit,
+    page: currentPage,
+  });
+
+  const total = reviewData?.meta.total ?? 1;
+  const totalPages = Math.ceil(total / limit);
+
   // select initial image
   useEffect(() => {
     if (product?.images) {
       setSelectedImage(product?.images[0]?.imageUrl);
     }
   }, [product]);
-
-  const selectedVariant = fashionDetail.variants.find(
-    (variant) => variant.id === selectedVariantId,
-  );
 
 
   const handleAddToCart = async (value: StorefrontProduct) => {
@@ -213,7 +153,7 @@ const ViewFashionProduct = () => {
   const productImages = product?.images ?? [];
   const variants = product?.variants ?? [];
   const averageRating = product?.reviewSummary.averageRating ?? 0;
-  const reviews = product?.reviews ?? [];
+  const reviews = reviewData?.items ?? [];
 
   if (isLoading || isFetching) return <span>Loading...</span>
 
@@ -548,6 +488,12 @@ const ViewFashionProduct = () => {
                 </div>
               </div>
             ))}
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
           </div>
         ) : (
           <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">

@@ -1,3 +1,4 @@
+import ElectronicProductDetails from '@/app/templates/electronic/pages/electronic-product-details';
 import ViewFashionProduct from '@/app/templates/fashion/pages/view-product';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -15,6 +16,10 @@ const ProductView = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <ViewFashionProduct />
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicProductDetails />
     }
 
 };

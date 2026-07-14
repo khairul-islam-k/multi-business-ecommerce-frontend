@@ -1,4 +1,4 @@
-import ElectronicProductsPage from '@/app/templates/electronic/pages/Products';
+import ElectronicProduct from '@/app/templates/electronic/pages/electronic-product';
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -25,7 +25,7 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
 
     if (res?.data?.data?.template === "ELECTRONIC") {
         return (
-            <ElectronicProductsPage />
+            <ElectronicProduct categoryId={categoryId} />
         );
     }
 

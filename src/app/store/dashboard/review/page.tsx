@@ -1,3 +1,4 @@
+import ElectronicReviewPage from '@/app/templates/electronic/pages/electronic-review-page';
 import FashionReviewPage from '@/app/templates/fashion/pages/fashion-review-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -15,6 +16,10 @@ const MyReviews = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionReviewPage />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicReviewPage />;
     }
 };
 

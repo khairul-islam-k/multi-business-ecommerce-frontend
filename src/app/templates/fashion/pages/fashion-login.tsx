@@ -105,7 +105,7 @@ export default function FashionLoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-100">
+    <main className="min-h-screen bg-[var(--store-bg-3)]">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
         {/* Left Image Side */}
         <div className="relative hidden overflow-hidden lg:block">
@@ -134,10 +134,10 @@ export default function FashionLoginPage() {
 
         {/* Right Form Side */}
         <div className="flex items-center justify-center px-6 py-12 sm:px-10 lg:px-16">
-          <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-sm">
+          <div className="w-full max-w-md rounded-2xl bg-[var(--store-bg-1)] p-8 shadow-sm">
             <div className="mb-8 text-center">
-              <h2 className="text-3xl font-bold text-gray-950">Login</h2>
-              <p className="mt-2 text-sm text-gray-500">
+              <h2 className="text-3xl font-bold">Login</h2>
+              <p className="mt-2 text-sm">
                 Enter your email and password to continue
               </p>
             </div>
@@ -151,7 +151,7 @@ export default function FashionLoginPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {/* Email */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium">
                   Email Address
                 </label>
 
@@ -162,7 +162,7 @@ export default function FashionLoginPage() {
                     type="email"
                     placeholder="customer@example.com"
                     {...register("email")}
-                    className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 outline-none transition focus:border-[#f16d59] focus:ring-2 focus:ring-[#f16d59]/20"
+                    className="w-full rounded-xl border border-gray-200 bg-[var(--store-bg-1)] py-3 pl-12 pr-4 text-sm outline-none transition focus:border-[#f16d59] focus:bg-[var(--store-bg-1)] focus:ring-[#f16d59]/20"
                   />
                 </div>
 
@@ -175,7 +175,7 @@ export default function FashionLoginPage() {
 
               {/* Password */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium">
                   Password
                 </label>
 
@@ -186,7 +186,7 @@ export default function FashionLoginPage() {
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
                     {...register("password")}
-                    className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition focus:border-[#f16d59] focus:ring-2 focus:ring-[#f16d59]/20"
+                    className="w-full rounded-xl border border-gray-200 bg-[var(--store-bg-1)] py-3 pl-12 pr-12 text-sm text-gray-900 outline-none transition focus:border-[#f16d59] focus:ring-2 focus:ring-[#f16d59]/20"
                   />
 
                   <button
@@ -245,11 +245,11 @@ export default function FashionLoginPage() {
               </Link>
             </p>
 
-            <p className="mt-5 text-center text-sm text-muted-foreground">
+            <p className="mt-5 text-center text-sm">
               Email not verified?{" "}
               <span
                 onClick={() => setOtpOpen(true)}
-                className="font-semibold text-foreground underline-offset-4 hover:underline cursor-pointer"
+                className="font-semibold underline-offset-4 hover:underline cursor-pointer"
               >
                 Email Verify
               </span>

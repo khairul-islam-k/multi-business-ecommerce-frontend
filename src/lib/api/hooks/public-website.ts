@@ -1,9 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
-import { BrandPayload } from "@/types/product/brands";
 import { publicWebsiteApi } from "../public-website";
 import { ProductQuery } from "@/types/template/template-product";
+
+export function useProductWebReview(productSlug: ApiId, query?: CategoriesQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.publicWebsite.reviews(productSlug, query),
+    queryFn: () => publicWebsiteApi.reviews(productSlug, query),
+    enabled: Boolean(productSlug),
+  });
+}
 
 export function useProductCategoryQuery( query?: CategoriesQuery) {
   return useQuery({
@@ -41,38 +48,3 @@ export function useTemplateProduct(slug: ApiId) {
     enabled: Boolean(slug),
   });
 }
-
-// export function useBrandMutation(businessId: ApiId) {
-//   const queryClient = useQueryClient();
-
-//   const invalidate = () =>
-//     queryClient.invalidateQueries({
-//       queryKey: apiQueryKeys.ProductBrands.all(businessId),
-//     });
-
-//   return {
-//     createBrand: useMutation({
-//       mutationFn: (payload: BrandPayload) =>
-//         productBrandApi.create(businessId, payload),
-//       onSuccess: invalidate,
-//     }),
-
-//     updateBrand: useMutation({
-//       mutationFn: ({
-//         brandId,
-//         payload,
-//       }: {
-//         brandId: ApiId;
-//         payload: BrandPayload;
-//       }) => productBrandApi.update(businessId, brandId, payload),
-//       onSuccess: invalidate,
-//     }),
-
-//     removeBrand: useMutation({
-//       mutationFn: (brandId: ApiId) =>
-//         productBrandApi.remove(businessId, brandId),
-//       onSuccess: invalidate,
-//     }),
-
-//   };
-// }

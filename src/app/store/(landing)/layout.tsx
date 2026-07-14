@@ -1,10 +1,10 @@
 import { ElectronicFooter } from "@/app/templates/electronic/_components/footer";
-import { ElectronicNavBar } from "@/app/templates/electronic/_components/navbar";
 import FashionFooter from "@/app/templates/fashion/_components/fashion-footer";
 import FashionNavbar from "@/app/templates/fashion/_components/navbar";
 import React from "react";
 import { headers } from "next/headers";
 import { publicApi } from "@/lib/axios";
+import ElectronicNavbar from "@/app/templates/electronic/_components/navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -25,7 +25,7 @@ const WebsiteLayout = async ({
 
   return (
     <div>
-        {isElectronic ? <ElectronicNavBar /> : null}
+        {isElectronic ? <ElectronicNavbar /> : null}
         {isFashion ? <FashionNavbar /> : null}
 
           {children}

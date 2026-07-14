@@ -40,7 +40,7 @@ const LogoComponent = ({ sidebarCollapsed }: logoProps) => {
                             </div>
 
                             {!sidebarCollapsed && (
-                                <span className="text-lg font-bold text-gray-900">
+                                <span className="text-lg font-bold">
                                     {fullName}
                                 </span>
                             )}

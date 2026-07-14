@@ -161,9 +161,10 @@ export async function POST(
 
     const body = await parseRequestBody(request);
 
+
     // console.log("payment callback method:", method);
     // console.log("payment callback paymentId:", paymentId);
-    // console.log("payment callback body:", body);
+    console.log("payment callback body:", body);
 
     let verifyPayload: Record<string, unknown> = {};
 
@@ -193,7 +194,7 @@ export async function POST(
      */
     const res = verifyResponse?.data ?? verifyResponse;
 
-    // console.log("verify response:", res);
+    console.log("verify response:", res);
 
     const isPaid = res?.paymentStatus === "PAID";
 

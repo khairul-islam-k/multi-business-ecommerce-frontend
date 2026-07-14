@@ -1,22 +1,16 @@
-import api, { getApiErrorMessage, publicApi } from "@/lib/axios";
+import { publicApi } from "@/lib/axios";
 import { normalizePaginatedResponse, unwrapApiResponse, unwrapArrayResponse } from "@/lib/api/response";
 import type {
   ApiArrayResponse,
+  ApiId,
   ApiPaginatedResponse,
   ApiResponse,
-  AuthPayload,
-  CategoriesQuery,
-  LoginPayload,
-  LogoutPayload,
-  RefreshPayload,
-  RegisterPayload,
   RegisterResponse,
-  SelectBusinessPayload,
 } from "@/lib/api/types";
 import webApi from "../public-api-hook/web-api";
 import { ProductTagResponse, StorefrontCategoryTreeItem } from "@/types/template/public-website";
 import { buildQueryString } from "./params";
-import { ProductQuery, StorefrontProduct } from "@/types/template/template-product";
+import { ProductQuery, ProductReview, StorefrontProduct } from "@/types/template/template-product";
 
 const basePath = () => `/storefront`;
 
@@ -43,6 +37,14 @@ export const publicWebsiteApi = {
     return webApi
       .get<ApiPaginatedResponse<StorefrontProduct>>(
         `${basePath()}/products${buildQueryString(query)}`,
+      )
+      .then((res) => normalizePaginatedResponse(res.data));
+  },
+
+  reviews(productSlug: ApiId,query?: ProductQuery) {
+    return webApi
+      .get<ApiPaginatedResponse<ProductReview>>(
+        `${basePath()}/products/${productSlug}/reviews${buildQueryString(query)}`,
       )
       .then((res) => normalizePaginatedResponse(res.data));
   },

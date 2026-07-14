@@ -194,7 +194,7 @@ const FashionInvoice = () => {
                                 value={search}
                                 onChange={(event) => setSearch(event.target.value)}
                                 placeholder="Search invoice, customer, phone..."
-                                className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white pl-11 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
+                                className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] pl-11 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
                             />
                         </div>
 
@@ -206,7 +206,7 @@ const FashionInvoice = () => {
                                 onChange={(event) =>
                                     setStatus(event.target.value as InvoiceStatus)
                                 }
-                                className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white pl-11 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
+                                className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] pl-11 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
                             >
                                 {statusOptions.map((item) => (
                                     <option key={item} value={item}>
@@ -221,7 +221,7 @@ const FashionInvoice = () => {
                             onChange={(event) =>
                                 setSortBy(event.target.value as InvoiceSortBy)
                             }
-                            className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
+                            className="h-11 w-full rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] px-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary,#f16d59)]"
                         >
                             {sortByOptions.map((item) => (
                                 <option key={item.value} value={item.value}>
@@ -237,7 +237,7 @@ const FashionInvoice = () => {
                                     current === "asc" ? "desc" : "asc",
                                 )
                             }
-                            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-white px-4 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] px-4 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
                         >
                             {sortOrder === "asc" ? (
                                 <ArrowDownAZ className="size-4" />
@@ -267,7 +267,7 @@ const FashionInvoice = () => {
                         invoiceItems.map((invoice) => (
                             <div
                                 key={invoice.id}
-                                className="rounded-3xl border border-[var(--store-border,#e5e7eb)] bg-white p-4 shadow-sm"
+                                className="rounded-3xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] p-4 shadow-sm"
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div>
@@ -291,7 +291,7 @@ const FashionInvoice = () => {
                                     </span>
                                 </div>
 
-                                <div className="mt-4 rounded-2xl bg-gray-50 p-4">
+                                <div className="mt-4 rounded-2xl bg-[var(--store-bg-1)] p-4">
                                     <p className="text-xs font-medium text-[var(--store-muted,#6b7280)]">
                                         Total Amount
                                     </p>
@@ -330,7 +330,7 @@ const FashionInvoice = () => {
                 {/* Desktop Table View */}
                 <div className="hidden overflow-x-auto md:block">
                     <table className="w-full min-w-[760px] text-left">
-                        <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
+                        <thead className="bg-[var(--store-bg-1)] text-xs uppercase tracking-wide">
                             <tr>
                                 <th className="px-5 py-4 font-bold">Invoice</th>
                                 <th className="px-5 py-4 font-bold">Status</th>
@@ -352,7 +352,7 @@ const FashionInvoice = () => {
                                 ))
                             ) : invoiceItems.length > 0 ? (
                                 invoiceItems.map((invoice) => (
-                                    <tr key={invoice.id} className="transition hover:bg-gray-50">
+                                    <tr key={invoice.id} className="transition">
                                         <td className="px-5 py-4">
                                             <p className="font-semibold text-[var(--store-text,#111827)]">
                                                 {invoice.invoiceNo}
@@ -372,7 +372,7 @@ const FashionInvoice = () => {
                                             </span>
                                         </td>
 
-                                        <td className="px-5 py-4 text-right text-sm font-bold text-gray-900">
+                                        <td className="px-5 py-4 text-right text-sm font-bold">
                                             {formatMoney(invoice.totalAmount)}
                                         </td>
 
@@ -380,7 +380,7 @@ const FashionInvoice = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => handleViewInvoice(invoice)}
-                                                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] px-4 text-sm font-semibold text-gray-600 transition hover:border-[var(--store-primary,#f16d59)] hover:bg-[var(--store-primary,#f16d59)]/10 hover:text-[var(--store-primary,#f16d59)]"
+                                                className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[var(--store-border,#e5e7eb)] px-4 text-sm font-semibold transition hover:border-[var(--store-primary,#f16d59)] hover:bg-[var(--store-primary,#f16d59)]/10 hover:text-[var(--store-primary,#f16d59)]"
                                             >
                                                 View
                                                 <Eye className="size-4" />

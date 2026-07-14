@@ -89,14 +89,14 @@ export default function OtpVerifyModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+      <div className="w-full max-w-md rounded-2xl bg-[var(--store-bg-1)] p-6 shadow-xl">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-xl font-bold">
               Verify your email
             </h2>
 
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm">
               {isOtpSent
                 ? `We sent a 6 digit OTP to ${verifyEmail}`
                 : "Enter your email address to receive OTP."}
@@ -124,7 +124,7 @@ export default function OtpVerifyModal({
                 const value = event.target.value.replace(/\D/g, "");
                 setOtp(value);
               }}
-              className="h-12 w-full rounded-xl border border-slate-300 px-4 text-center text-lg font-semibold tracking-[8px] outline-none focus:border-slate-900"
+              className="h-12 w-full bg-[var(--store-bg-1)] rounded-xl border border-slate-300 px-4 text-center text-lg font-semibold tracking-[8px] outline-none focus:border-slate-900"
             />
 
             <button
@@ -165,7 +165,7 @@ export default function OtpVerifyModal({
               value={verifyEmail}
               onChange={(event) => setVerifyEmail(event.target.value)}
               // disabled={sendOtp.isPending}
-              className="h-12 w-full rounded-xl border border-slate-300 px-4 text-sm outline-none focus:border-slate-900 disabled:cursor-not-allowed disabled:bg-slate-100"
+              className="h-12 w-full rounded-xl bg-[var(--store-bg-1)] border border-slate-300 px-4 text-sm outline-none focus:border-slate-900 disabled:cursor-not-allowed disabled:bg-slate-100"
             />
 
             <button

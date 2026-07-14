@@ -1,3 +1,4 @@
+import ElectronicOrderReturn from '@/app/templates/electronic/pages/electronic-order-return';
 import FashionOrderReturn from '@/app/templates/fashion/pages/fashion-order-return';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -15,6 +16,10 @@ const ReturnPage = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionOrderReturn />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicOrderReturn />;
     }
 };
 

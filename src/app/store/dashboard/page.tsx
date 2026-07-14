@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 
 import FashionDashboard from "@/app/templates/fashion/pages/fashion-dashboard";
 import { publicApi } from "@/lib/axios";
+import ElectricDashboard from "@/app/templates/electronic/pages/electric-dashboard";
 
 export default async function DashboardPage() {
   const header = await headers();
@@ -14,5 +15,9 @@ export default async function DashboardPage() {
 
   if (res?.data?.data?.template === "FASHION") {
     return <FashionDashboard />;
+  }
+
+  if (res?.data?.data?.template === "ELECTRONIC") {
+    return <ElectricDashboard />;
   }
 }

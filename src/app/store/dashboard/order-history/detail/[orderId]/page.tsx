@@ -1,3 +1,4 @@
+import ElectronicOrderDetail from '@/app/templates/electronic/pages/electronic-order-details';
 import FashionOrderDetail from '@/app/templates/fashion/pages/fashion-order-detail';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -15,6 +16,10 @@ const orderDetailPage = async () => {
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionOrderDetail />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <ElectronicOrderDetail />;
     }
 };
 
