@@ -64,6 +64,8 @@ export default function CreateWarehousePage() {
     try {
       setSubmitting(true);
 
+      console.log('transfer', payload);
+
       const res = await createWarehouse.mutateAsync(payload);
 
       message.success("Warehouse created successfully");

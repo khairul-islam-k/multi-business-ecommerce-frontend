@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, Select, Space, Switch } from "antd";
+import { Button, Card, Col, Form, Input, Row, Select, Space, Switch } from "antd";
 import { useEffect } from "react";
 
 import { ProductTagPayload } from "@/types/product/product";
@@ -64,63 +64,88 @@ const TagForm = ({
           status: "ACTIVE",
         }}
       >
-        <Form.Item
-          label="Tag Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Tag name is required",
-            },
-            {
-              min: 2,
-              message: "Tag name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="New Arrival" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Tag Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Tag name is required",
+                },
+                {
+                  min: 2,
+                  message: "Tag name must be at least 2 characters",
+                },
+              ]}
+            >
+              <Input placeholder="New Arrival" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="Featured" name="isFeatured" valuePropName="checked">
-          <Switch checkedChildren="Featured" unCheckedChildren="Regular" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Status is required",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Featured"
+              name="isFeatured"
+              valuePropName="checked"
+            >
+              <Switch
+                checkedChildren="Featured"
+                unCheckedChildren="Regular"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Tag" : "Update Tag"}
-          </Button>
-
-          {onCancel ? (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Space>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSubmitting}
+            >
+              {mode === "create" ? "Create Tag" : "Update Tag"}
             </Button>
-          ) : null}
-        </Space>
+
+            {onCancel ? (
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            ) : null}
+          </Space>
+        </Form.Item>
       </Form>
     </Card>
   );

@@ -38,7 +38,7 @@ export default function CreateSupplierPage() {
     try {
       setSubmitting(true);
 
-      const res = await createSupplier.mutateAsync(payload);
+      await createSupplier.mutateAsync(payload);
 
       message.success("Supplier created successfully");
       router.push("/admin/dashboard/suppliers/supplier");

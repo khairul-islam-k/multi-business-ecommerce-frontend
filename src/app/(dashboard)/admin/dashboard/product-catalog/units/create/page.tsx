@@ -25,7 +25,7 @@ const CreateUnitPage = () => {
     };
 
     try {
-      const res = await createUnit.mutateAsync(payload);
+      await createUnit.mutateAsync(payload);
       message.success("Unit Created successfully");
       router.push("/admin/dashboard/product-catalog/units");
     } catch (error) {

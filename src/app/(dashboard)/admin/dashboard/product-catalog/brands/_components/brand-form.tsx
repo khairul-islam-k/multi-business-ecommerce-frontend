@@ -74,76 +74,106 @@ const BrandForm = ({
           status: "ACTIVE",
         }}
       >
-        <Form.Item
-          label="Brand Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Brand name is required",
-            },
-            {
-              min: 2,
-              message: "Brand name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Nike" />
-        </Form.Item>
-
-        <Form.Item label="Description" name="description">
-          <Input.TextArea
-            rows={4}
-            placeholder="Sportswear brand"
-            showCount
-            maxLength={500}
-          />
-        </Form.Item>
-
-        <Form.Item label="Logo URL" name="logoUrl">
-          <Input
-            onClick={() => setImageModalOpen(true)}
-            readOnly
-            placeholder="https://cdn.example.com/brands/nike.png"
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
+        <div className="grid grid-cols-1 gap-x-6 md:grid-cols-2">
+          <Form.Item
+            label="Brand Name"
+            name="name"
+            rules={[
               {
-                label: "Active",
-                value: "ACTIVE",
+                required: true,
+                message: "Brand name is required",
               },
               {
-                label: "Inactive",
-                value: "INACTIVE",
+                min: 2,
+                message: "Brand name must be at least 2 characters",
               },
             ]}
-          />
-        </Form.Item>
+          >
+            <Input placeholder="Nike" />
+          </Form.Item>
 
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Brand" : "Update Brand"}
-          </Button>
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[
+              {
+                required: true,
+                message: "Status is required",
+              },
+            ]}
+          >
+            <Select
+              placeholder="Select status"
+              options={[
+                {
+                  label: "Active",
+                  value: "ACTIVE",
+                },
+                {
+                  label: "Inactive",
+                  value: "INACTIVE",
+                },
+              ]}
+            />
+          </Form.Item>
 
-          {onCancel ? (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+          <Form.Item
+            label="Logo URL"
+            name="logoUrl"
+            rules={[
+              {
+                required: true,
+                message: "Brand logo is required",
+              },
+            ]}
+          >
+            <Input
+              onClick={() => setImageModalOpen(true)}
+              readOnly
+              placeholder="Select brand logo"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            name="description"
+            rules={[
+              {
+                max: 500,
+                message: "Description cannot exceed 500 characters",
+              },
+            ]}
+          >
+            <Input.TextArea
+              rows={4}
+              placeholder="Sportswear brand"
+              showCount
+              maxLength={500}
+            />
+          </Form.Item>
+        </div>
+
+        <Form.Item className="mb-0">
+          <Space wrap>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSubmitting}
+            >
+              {mode === "create" ? "Create Brand" : "Update Brand"}
             </Button>
-          ) : null}
-        </Space>
+
+            {onCancel ? (
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            ) : null}
+          </Space>
+        </Form.Item>
       </Form>
 
       <ImageSelectModal
@@ -152,6 +182,7 @@ const BrandForm = ({
         onClose={() => setImageModalOpen(false)}
         onSelect={(url) => {
           form.setFieldValue("logoUrl", url);
+          setImageModalOpen(false);
         }}
       />
     </Card>

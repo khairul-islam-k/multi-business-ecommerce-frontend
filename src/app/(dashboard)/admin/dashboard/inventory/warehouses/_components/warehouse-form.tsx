@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, Select, Space } from "antd";
+import { Button, Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { useEffect, useMemo, useState } from "react";
 
 import {
@@ -164,15 +164,15 @@ const WarehouseForm = ({
     _value: string | undefined,
     option:
       | {
-          redxAreaId: string;
-          redxAreaName: string;
-          redxPostCode: string;
-        }
+        redxAreaId: string;
+        redxAreaName: string;
+        redxPostCode: string;
+      }
       | {
-          redxAreaId: string;
-          redxAreaName: string;
-          redxPostCode: string;
-        }[]
+        redxAreaId: string;
+        redxAreaName: string;
+        redxPostCode: string;
+      }[]
       | undefined,
   ) => {
     if (!option || Array.isArray(option)) {
@@ -198,34 +198,34 @@ const WarehouseForm = ({
 
       ...(values.phone?.trim()
         ? {
-            phone: values.phone.trim(),
-          }
+          phone: values.phone.trim(),
+        }
         : {}),
 
       ...(values.address?.trim()
         ? {
-            address: values.address.trim(),
-          }
+          address: values.address.trim(),
+        }
         : {}),
 
       ...(values.redxAreaId
         ? {
-            redxAreaId: String(values.redxAreaId),
-            redxAreaName: values.redxAreaName,
-            redxPostCode: values.redxPostCode,
-          }
+          redxAreaId: String(values.redxAreaId),
+          redxAreaName: values.redxAreaName,
+          redxPostCode: values.redxPostCode,
+        }
         : {}),
 
       ...(values.redxPickupStoreId
         ? {
-            redxPickupStoreId: String(values.redxPickupStoreId),
-          }
+          redxPickupStoreId: String(values.redxPickupStoreId),
+        }
         : {}),
 
       ...(values.status
         ? {
-            status: values.status,
-          }
+          status: values.status,
+        }
         : {}),
     };
 
@@ -238,119 +238,170 @@ const WarehouseForm = ({
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        requiredMark={true}
+        requiredMark
         initialValues={{
           name: "",
           phone: undefined,
           address: undefined,
-
           redxAreaId: undefined,
           redxAreaName: undefined,
           redxPostCode: undefined,
           redxPickupStoreId: undefined,
-
           status: undefined,
         }}
       >
-        <Form.Item
-          label="Warehouse Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Warehouse name is required",
-            },
-            {
-              min: 2,
-              message: "Warehouse name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Main warehouse" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Warehouse Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Warehouse name is required",
+                },
+                {
+                  min: 2,
+                  message: "Warehouse name must be at least 2 characters",
+                },
+              ]}
+            >
+              <Input placeholder="Main warehouse" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Phone"
-          name="phone"
-          validateTrigger="onChange"
-          rules={[
-            {
-              validator: (_, value) => {
-                if (!value) return Promise.resolve();
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Phone"
+              name="phone"
+              validateTrigger="onChange"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    if (!value) {
+                      return Promise.resolve();
+                    }
 
-                const phone = String(value).trim();
-                const bdPhoneRegex = /^(\+?8801|01)[3-9]\d{8}$/;
+                    const phone = String(value).trim();
+                    const bdPhoneRegex = /^(\+?8801|01)[3-9]\d{8}$/;
 
-                if (!bdPhoneRegex.test(phone)) {
-                  return Promise.reject(
-                    new Error("Enter a valid Bangladesh phone number"),
-                  );
+                    if (!bdPhoneRegex.test(phone)) {
+                      return Promise.reject(
+                        new Error("Enter a valid Bangladesh phone number"),
+                      );
+                    }
+
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <Input placeholder="+8801700000000" />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={12}>
+            <Form.Item label="Courier">
+              <Select
+                showSearch
+                allowClear
+                placeholder="Select courier"
+                loading={courierLoading || courierFetching}
+                value={selectedConfigId || undefined}
+                options={courierOptions}
+                optionFilterProp="label"
+                onChange={handleCourierChange}
+                filterOption={(input, option) =>
+                  String(option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
+              />
+            </Form.Item>
+          </Col>
 
-                return Promise.resolve();
-              },
-            },
-          ]}
-        >
-          <Input placeholder="+8801700000000" />
-        </Form.Item>
-
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[
-            {
-              validator: (_, value) => {
-                if (!value) return Promise.resolve();
-
-                if (String(value).trim().length < 5) {
-                  return Promise.reject(
-                    new Error("Address must be at least 5 characters"),
-                  );
+          <Col xs={24} md={12}>
+            <Form.Item label="REDX Area" name="redxAreaId">
+              <Select
+                showSearch
+                allowClear
+                placeholder="Search and select REDX area"
+                loading={areasLoading}
+                options={areaOptions}
+                optionFilterProp="label"
+                onChange={handleAreaChange}
+                filterOption={(input, option) =>
+                  String(option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
                 }
+              />
+            </Form.Item>
+          </Col>
 
-                return Promise.resolve();
-              },
-            },
-          ]}
-        >
-          <TextArea rows={3} placeholder="House 10, Road 2, Dhaka" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item label="REDX Pickup Store" name="redxPickupStoreId">
+              <Select
+                showSearch
+                allowClear
+                placeholder="Search and select pickup store"
+                loading={pickupStoreLoading}
+                options={pickupStoreOptions}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  String(option?.label ?? "")
+                    .toLowerCase()
+                    .includes(input.toLowerCase())
+                }
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="Courier">
-          <Select
-            showSearch
-            allowClear
-            placeholder="Select courier"
-            loading={courierLoading || courierFetching}
-            value={selectedConfigId || undefined}
-            options={courierOptions}
-            optionFilterProp="label"
-            onChange={handleCourierChange}
-            filterOption={(input, option) =>
-              String(option?.label ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item label="Status" name="status">
+              <Select
+                allowClear
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="REDX Area" name="redxAreaId">
-          <Select
-            showSearch
-            allowClear
-            placeholder="Search and select REDX area"
-            loading={areasLoading}
-            options={areaOptions}
-            optionFilterProp="label"
-            onChange={handleAreaChange}
-            filterOption={(input, option) =>
-              String(option?.label ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Address"
+              name="address"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    if (!value) {
+                      return Promise.resolve();
+                    }
+
+                    if (String(value).trim().length < 5) {
+                      return Promise.reject(
+                        new Error("Address must be at least 5 characters"),
+                      );
+                    }
+
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <TextArea rows={3} placeholder="House 10, Road 2, Dhaka" />
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Form.Item name="redxAreaName" hidden>
           <Input />
@@ -360,50 +411,23 @@ const WarehouseForm = ({
           <Input />
         </Form.Item>
 
-        <Form.Item label="REDX Pickup Store" name="redxPickupStoreId">
-          <Select
-            showSearch
-            allowClear
-            placeholder="Search and select pickup store"
-            loading={pickupStoreLoading}
-            options={pickupStoreOptions}
-            optionFilterProp="label"
-            filterOption={(input, option) =>
-              String(option?.label ?? "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
-            }
-          />
-        </Form.Item>
-
-        <Form.Item label="Status" name="status">
-          <Select
-            allowClear
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
-
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Warehouse" : "Update Warehouse"}
-          </Button>
-
-          {onCancel && (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Space wrap>
+            <Button type="primary" htmlType="submit" loading={isSubmitting}>
+              {mode === "create" ? "Create Warehouse" : "Update Warehouse"}
             </Button>
-          )}
-        </Space>
+
+            {onCancel && (
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            )}
+          </Space>
+        </Form.Item>
       </Form>
     </Card>
   );

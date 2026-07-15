@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, Select, Space } from "antd";
+import { Button, Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { useEffect } from "react";
 
 export type UnitStatus = "ACTIVE" | "INACTIVE";
@@ -61,59 +61,75 @@ const UnitForm = ({
           status: "ACTIVE",
         }}
       >
-        <Form.Item
-          label="Unit Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Unit name is required",
-            },
-            {
-              min: 2,
-              message: "Unit name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Piece" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Unit Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Unit name is required",
+                },
+                {
+                  min: 2,
+                  message: "Unit name must be at least 2 characters",
+                },
+              ]}
+            >
+              <Input placeholder="Piece" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Status is required",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Unit" : "Update Unit"}
-          </Button>
-
-          {onCancel && (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Space>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSubmitting}
+            >
+              {mode === "create" ? "Create Unit" : "Update Unit"}
             </Button>
-          )}
-        </Space>
+
+            {onCancel && (
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            )}
+          </Space>
+        </Form.Item>
       </Form>
     </Card>
   );

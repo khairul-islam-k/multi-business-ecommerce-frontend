@@ -7,7 +7,7 @@ import {
 
 
 import { useMemo, useState } from "react";
-import { App, Button, Form, Input, InputNumber, Modal, Select, Space, Tag } from "antd";
+import { App, Button, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Tag } from "antd";
 
 import PageHeader from "@/components/shared/page-header";
 import { DataTable, type Column } from "@/components/shared/data-table";
@@ -200,45 +200,114 @@ export default function ProductReviewsPage() {
         destroyOnHidden
       >
         <Form form={form} layout="vertical" onFinish={submitReview}>
-          <Form.Item name="productId" label="Product" rules={[{ required: true }]}>
-            <Select
-              showSearch
-              placeholder="Select product"
-              optionFilterProp="label"
-              options={(products.data?.items ?? []).map((product) => ({
-                label: product.name,
-                value: product.id,
-              }))}
-            />
+          <Row gutter={16}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="productId"
+                label="Product"
+                rules={[
+                  {
+                    required: true,
+                    message: "Product is required",
+                  },
+                ]}
+              >
+                <Select
+                  showSearch
+                  placeholder="Select product"
+                  optionFilterProp="label"
+                  options={(products.data?.items ?? []).map((product) => ({
+                    label: product.name,
+                    value: product.id,
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="rating"
+                label="Rating"
+                rules={[
+                  {
+                    required: true,
+                    message: "Rating is required",
+                  },
+                ]}
+              >
+                <InputNumber
+                  min={1}
+                  max={5}
+                  placeholder="Enter rating"
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item name="title" label="Title">
+                <Input placeholder="Review title" maxLength={150} />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="reviewerName"
+                label="Reviewer name"
+                rules={[
+                  {
+                    required: true,
+                    message: "Reviewer name is required",
+                  },
+                ]}
+              >
+                <Input placeholder="Reviewer name" maxLength={150} />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="reviewerEmail"
+                label="Reviewer email"
+                rules={[
+                  {
+                    type: "email",
+                    message: "Enter a valid email address",
+                  },
+                ]}
+              >
+                <Input
+                  type="email"
+                  placeholder="Reviewer email"
+                  maxLength={150}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24}>
+              <Form.Item name="comment" label="Comment">
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Write review comment"
+                  maxLength={1000}
+                  showCount
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item style={{ marginBottom: 0 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={mutations.createReview.isPending}
+            >
+              Save review
+            </Button>
           </Form.Item>
-          <Form.Item name="rating" label="Rating" rules={[{ required: true }]}>
-            <InputNumber min={1} max={5} style={{ width: "100%" }} />
-          </Form.Item>
-          <Form.Item name="title" label="Title">
-            <Input maxLength={150} />
-          </Form.Item>
-          <Form.Item name="comment" label="Comment">
-            <Input.TextArea rows={3} />
-          </Form.Item>
-          <Form.Item
-            name="reviewerName"
-            label="Reviewer name"
-            rules={[{ required: true }]}
-          >
-            <Input maxLength={150} />
-          </Form.Item>
-          <Form.Item name="reviewerEmail" label="Reviewer email">
-            <Input type="email" maxLength={150} />
-          </Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={mutations.createReview.isPending}
-          >
-            Save review
-          </Button>
         </Form>
       </Modal>
+      
     </div>
   );
 }

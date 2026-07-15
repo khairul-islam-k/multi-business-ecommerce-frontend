@@ -22,20 +22,14 @@ export function useMyProfile() {
   });
 }
 
-export function useTemplateProductReviewMutation(slug?: string) {
+export function useTemplateProductReviewMutation() {
     const queryClient = useQueryClient();
 
     const invalidate = async () => {
         await Promise.all([
             queryClient.invalidateQueries({
                 queryKey: apiQueryKeys.productReview.all(),
-            }),
-
-            slug
-                ? queryClient.invalidateQueries({
-                    queryKey: apiQueryKeys.publicWebsite.reviews(slug),
-                })
-                : Promise.resolve(),
+            })
         ]);
     };
 
@@ -45,23 +39,6 @@ export function useTemplateProductReviewMutation(slug?: string) {
                 templateProductReview.create(payload),
             onSuccess: invalidate,
         }),
-
-        // updateBrand: useMutation({
-        //   mutationFn: ({
-        //     brandId,
-        //     payload,
-        //   }: {
-        //     brandId: ApiId;
-        //     payload: BrandPayload;
-        //   }) => productBrandApi.update(businessId, brandId, payload),
-        //   onSuccess: invalidate,
-        // }),
-
-        // removeBrand: useMutation({
-        //   mutationFn: (brandId: ApiId) =>
-        //     productBrandApi.remove(businessId, brandId),
-        //   onSuccess: invalidate,
-        // }),
 
     };
 }

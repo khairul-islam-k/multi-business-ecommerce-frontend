@@ -6,7 +6,7 @@ import { ProductQuery } from "@/types/template/template-product";
 
 export function useProductWebReview(productSlug: ApiId, query?: CategoriesQuery) {
   return useQuery({
-    queryKey: apiQueryKeys.publicWebsite.reviews(productSlug, query),
+    queryKey: apiQueryKeys.productReview.reviews(productSlug, query),
     queryFn: () => publicWebsiteApi.reviews(productSlug, query),
     enabled: Boolean(productSlug),
   });

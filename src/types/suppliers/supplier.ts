@@ -2,13 +2,13 @@ export type SupplierStatus = "ACTIVE" | "INACTIVE";
 
 export type SupplierPayload = {
   name: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  country: string;
-  status: SupplierStatus;
+  companyName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  status?: SupplierStatus;
   note?: string | null;
 };
 

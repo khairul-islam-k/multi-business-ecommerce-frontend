@@ -1,6 +1,6 @@
 "use client";
 
-import { App, Button, Card, Form, Input, Select, Space } from "antd";
+import { App, Button, Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { CirclePlus, Trash2 } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
 
@@ -77,43 +77,49 @@ const CreateAttributesPage = ({
           ],
         }}
       >
-        <Form.Item
-          label="Attribute Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Attribute name is required",
-            },
-          ]}
-        >
-          <Input placeholder="Color" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Attribute Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Attribute name is required",
+                },
+              ]}
+            >
+              <Input placeholder="Color" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Status is required",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
+        </Row>
 
         <Form.List name="values">
           {(fields, { add, remove }) => (
@@ -132,7 +138,7 @@ const CreateAttributesPage = ({
               </div>
 
               {fields.map((field, index) => (
-                <Space key={field.key} align="baseline" className="mb-3 flex">
+                <Space key={field.key} align="baseline" className="mb-3 mr-5">
                   <Form.Item
                     name={[field.name, "value"]}
                     rules={[

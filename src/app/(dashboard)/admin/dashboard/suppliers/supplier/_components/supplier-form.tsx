@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, Select, Space } from "antd";
+import { Button, Card, Col, Form, Input, Row, Select, Space } from "antd";
 import { useEffect } from "react";
 
 import { SupplierPayload, SupplierStatus } from "@/types/suppliers/supplier";
@@ -9,13 +9,13 @@ const { TextArea } = Input;
 
 export type SupplierFormValues = {
   name: string;
-  companyName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  country: string;
-  status: SupplierStatus;
+  companyName?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  city?: string;
+  country?: string;
+  status?: SupplierStatus;
   note?: string | null;
 };
 
@@ -74,7 +74,7 @@ const SupplierForm = ({
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        requiredMark={true}
+        requiredMark
         initialValues={{
           name: "",
           companyName: "",
@@ -87,149 +87,129 @@ const SupplierForm = ({
           note: "",
         }}
       >
-        <Form.Item
-          label="Supplier Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Supplier name is required",
-            },
-            {
-              min: 2,
-              message: "Supplier name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Acme Supply" />
-        </Form.Item>
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Supplier Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Supplier name is required",
+                },
+                {
+                  min: 2,
+                  message: "Supplier name must be at least 2 characters",
+                },
+              ]}
+            >
+              <Input placeholder="Acme Supply" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Company Name"
-          name="companyName"
-          rules={[
-            {
-              required: true,
-              message: "Company name is required",
-            },
-            {
-              min: 2,
-              message: "Company name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Acme Supply Ltd." />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Company Name"
+              name="companyName"
+            >
+              <Input placeholder="Acme Supply Ltd." />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              required: true,
-              message: "Email is required",
-            },
-            {
-              type: "email",
-              message: "Enter a valid email address",
-            },
-          ]}
-        >
-          <Input placeholder="buyer@acme.test" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Email"
+              name="email"
+            >
+              <Input placeholder="buyer@acme.test" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Phone"
-          name="phone"
-          rules={[
-            {
-              required: true,
-              message: "Phone number is required",
-            },
-          ]}
-        >
-          <Input placeholder="+8801700000000" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Phone"
+              name="phone"
+            >
+              <Input placeholder="+8801700000000" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Address"
-          name="address"
-          rules={[
-            {
-              required: true,
-              message: "Address is required",
-            },
-          ]}
-        >
-          <TextArea rows={3} placeholder="House 10, Road 2, Dhaka" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="City"
+              name="city"
+            >
+              <Input placeholder="Dhaka" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="City"
-          name="city"
-          rules={[
-            {
-              required: true,
-              message: "City is required",
-            },
-          ]}
-        >
-          <Input placeholder="Dhaka" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Country"
+              name="country"
+            >
+              <Input placeholder="Bangladesh" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Country"
-          name="country"
-          rules={[
-            {
-              required: true,
-              message: "Country is required",
-            },
-          ]}
-        >
-          <Input placeholder="Bangladesh" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+            >
+              <Select
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
+          <Col xs={24}>
+            <Form.Item
+              label="Address"
+              name="address"
+            >
+              <TextArea rows={3} placeholder="House 10, Road 2, Dhaka" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item label="Note" name="note">
-          <TextArea rows={4} placeholder="Preferred local supplier" />
-        </Form.Item>
+          <Col xs={24}>
+            <Form.Item label="Note" name="note">
+              <TextArea rows={4} placeholder="Preferred local supplier" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Supplier" : "Update Supplier"}
-          </Button>
-
-          {onCancel && (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
+        <Form.Item style={{ marginBottom: 0 }}>
+          <Space wrap>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isSubmitting}
+            >
+              {mode === "create" ? "Create Supplier" : "Update Supplier"}
             </Button>
-          )}
-        </Space>
+
+            {onCancel && (
+              <Button
+                htmlType="button"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+            )}
+          </Space>
+        </Form.Item>
       </Form>
     </Card>
   );

@@ -5,7 +5,6 @@ import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import React from "react";
 
 import BusinessDropdown from "./business-owner";
-import GlobalSearch from "./global-search";
 import ProfileDropdown from "./profile-dropdown";
 
 type TopbarProps = {
@@ -62,7 +61,7 @@ const TopBar: React.FC<TopbarProps> = ({
               }}
             />
 
-            <GlobalSearch />
+            {/* <GlobalSearch /> */}
           </Flex>
 
           <Space size={screens.xs ? 4 : 8} align="center">

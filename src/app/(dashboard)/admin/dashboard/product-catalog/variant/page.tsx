@@ -1,10 +1,10 @@
 "use client";
 
-import { App, Button, Card, Empty, Popconfirm, Select, Tag } from "antd";
+import { App, Button, Card, Popconfirm, Select, Tag } from "antd";
 import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Column, DataTable } from "@/components/shared/data-table";
 import Loader from "@/components/shared/loader";
@@ -52,16 +52,6 @@ const VariantManagement = () => {
         value: product.id,
       })) ?? []
     );
-  }, [products]);
-
-  useEffect(() => {
-    if (!products?.items?.length) return;
-
-    setSelectedProductId((prev) => {
-      if (prev) return prev;
-
-      return products.items[0].id;
-    });
   }, [products]);
 
   const selectedProduct = useMemo(() => {
@@ -196,10 +186,6 @@ const VariantManagement = () => {
     return <Loader />;
   }
 
-  // if (!products?.items?.length) {
-  //   return <Empty description="No products found" />;
-  // }
-
   return (
     <div className="space-y-6">
       <PageHeader
@@ -230,11 +216,15 @@ const VariantManagement = () => {
             <Button
               type="primary"
               icon={<CirclePlus />}
-              disabled={!selectedProductId}
+              // disabled={!selectedProductId}
               onClick={() => {
-                router.push(
-                  `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`,
-                );
+                if (!selectedProduct) {
+                  message.error('please select a Product');
+                } else {
+                  router.push(
+                    `/admin/dashboard/product-catalog/variant/create/${selectedProductId}`,
+                  );
+                }
               }}
             >
               New Variant

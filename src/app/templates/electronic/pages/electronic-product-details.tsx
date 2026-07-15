@@ -394,7 +394,6 @@ const ElectronicProductDetails = () => {
       {/* Review form */}
       <ProductReviewForm
         productId={product?.id ?? ""}
-        slug={product?.slug ?? ""}
       />
 
       {/* Reviews Section */}

@@ -60,8 +60,8 @@ const ProductCategoryForm = ({
     const categoryItems = categories?.items ?? [];
     const currentCategory = initialData?.id
       ? flattenCategories(categoryItems).find(
-          (category) => category.id === initialData.id,
-        )
+        (category) => category.id === initialData.id,
+      )
       : undefined;
     const excludedIds = new Set<string>();
 
@@ -138,95 +138,103 @@ const ProductCategoryForm = ({
         }}
         onFinish={handleFinish}
       >
-        <Form.Item
-          label="Category Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Category name is required",
-            },
-            {
-              min: 2,
-              message: "Category name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="Example: Shoes" />
-        </Form.Item>
-
-        <Form.Item
-          label="Description"
-          name="description"
-          rules={[
-            {
-              max: 500,
-              message: "Description cannot be more than 500 characters",
-            },
-          ]}
-        >
-          <TextArea
-            rows={4}
-            placeholder="Example: Footwear and accessories"
-            maxLength={500}
-            showCount
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Image URL"
-          name="imageUrl"
-          rules={[
-            {
-              required: true,
-              message: "Photo is required",
-            },
-          ]}
-        >
-          <Input
-            onClick={() => setImageModalOpen(true)}
-            readOnly
-            placeholder="https://cdn.example.com/categories/shoes.jpg"
-          />
-        </Form.Item>
-
-        <Form.Item label="Parent Category" name="parentId">
-          <Select
-            placeholder="Select parent category"
-            loading={isLoading}
-            allowClear
-            showSearch
-            options={categoryOptions}
-            optionFilterProp="label"
-          />
-        </Form.Item>
-
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            options={[
+        <div className="grid grid-cols-1 gap-x-6 md:grid-cols-2">
+          {/* Category Name */}
+          <Form.Item
+            label="Category Name"
+            name="name"
+            rules={[
               {
-                label: "Active",
-                value: "ACTIVE",
+                required: true,
+                message: "Category name is required",
               },
               {
-                label: "Inactive",
-                value: "INACTIVE",
+                min: 2,
+                message: "Category name must be at least 2 characters",
               },
             ]}
-          />
-        </Form.Item>
+          >
+            <Input placeholder="Example: Shoes" />
+          </Form.Item>
+
+          {/* Parent Category */}
+          <Form.Item label="Parent Category" name="parentId">
+            <Select
+              placeholder="Select parent category"
+              loading={isLoading}
+              allowClear
+              showSearch
+              options={categoryOptions}
+              optionFilterProp="label"
+            />
+          </Form.Item>
+
+          {/* Image URL */}
+          <Form.Item
+            label="Image URL"
+            name="imageUrl"
+            rules={[
+              {
+                required: true,
+                message: "Photo is required",
+              },
+            ]}
+          >
+            <Input
+              onClick={() => setImageModalOpen(true)}
+              readOnly
+              placeholder="Select category image"
+            />
+          </Form.Item>
+
+          {/* Status */}
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[
+              {
+                required: true,
+                message: "Status is required",
+              },
+            ]}
+          >
+            <Select
+              options={[
+                {
+                  label: "Active",
+                  value: "ACTIVE",
+                },
+                {
+                  label: "Inactive",
+                  value: "INACTIVE",
+                },
+              ]}
+            />
+          </Form.Item>
+
+          {/* Description */}
+          <Form.Item
+            className="md:col-span-2"
+            label="Description"
+            name="description"
+            rules={[
+              {
+                max: 500,
+                message: "Description cannot be more than 500 characters",
+              },
+            ]}
+          >
+            <TextArea
+              rows={4}
+              placeholder="Example: Footwear and accessories"
+              maxLength={500}
+              showCount
+            />
+          </Form.Item>
+        </div>
 
         <Form.Item style={{ marginBottom: 0 }}>
-          <Space>
+          <Space wrap>
             <Button type="primary" htmlType="submit" loading={loading}>
               {isEditMode ? "Update Category" : "Create Category"}
             </Button>
@@ -244,6 +252,7 @@ const ProductCategoryForm = ({
         onClose={() => setImageModalOpen(false)}
         onSelect={(url) => {
           form.setFieldValue("imageUrl", url);
+          setImageModalOpen(false);
         }}
       />
     </Card>

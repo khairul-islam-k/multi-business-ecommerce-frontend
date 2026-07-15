@@ -372,13 +372,13 @@ const ElectronicReturnDetails = () => {
                     Return Reason
                   </h2>
 
-                  <p className="mt-1 text-xs text-[var(--store-muted,#6b7280)]">
+                  <p className="mt-1 text-xs">
                     Customer provided reason for this return request.
                   </p>
                 </div>
               </div>
 
-              <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-4">
+              <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                 <p className="break-words text-sm font-medium leading-6 text-[var(--store-text,#111827)]">
                   {details.reason || "No reason provided."}
                 </p>
@@ -402,7 +402,7 @@ const ElectronicReturnDetails = () => {
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[760px] border-collapse">
                     <thead>
-                      <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)] text-left">
+                      <tr className="border-b border-[var(--store-border)] bg-[var(--store-bg-1)] text-left">
                         <th className="px-5 py-4 text-xs font-bold uppercase tracking-wide text-[var(--store-muted,#6b7280)]">
                           Item
                         </th>
@@ -484,7 +484,8 @@ const ElectronicReturnDetails = () => {
                 {details.items.map((item, index) => (
                   <div
                     key={item.id}
-                    className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-4"
+                    className="rounded-2xl bg-[var(--store-bg-1)] p-4
+                    border border-[var(--store-border)] "
                   >
                     <div className="mb-3 flex items-center gap-3">
                       <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)]">
@@ -641,12 +642,12 @@ const ElectronicReturnDetails = () => {
                   <MapPin className="size-5" />
                 </div>
 
-                <h2 className="text-base font-bold text-[var(--store-text,#111827)]">
+                <h2 className="text-base font-bold text-[var(--store-text)]">
                   Shipping Address
                 </h2>
               </div>
 
-              <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-4">
+              <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                 <p className="break-words text-sm font-medium leading-6 text-[var(--store-text,#111827)]">
                   {details.order.shippingAddressSnapshot?.address || "N/A"}
                 </p>

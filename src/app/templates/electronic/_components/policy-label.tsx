@@ -4,7 +4,7 @@ import { policyData } from "../../fashion/_components/productData";
 
 const PolicyLabel = () => {
   return (
-    <section className="bg-[#1f0300] py-10 text-white">
+    <section className="bg-[#111827] py-10 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {policyData.map((item) => (

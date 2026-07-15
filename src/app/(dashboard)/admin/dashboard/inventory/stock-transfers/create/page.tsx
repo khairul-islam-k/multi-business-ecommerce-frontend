@@ -206,7 +206,8 @@ export default function CreateStockTransferPage() {
     };
 
     try {
-      const res = await createStockTransfer.mutateAsync(payload);
+      console.log('payload', payload);
+      // const res = await createStockTransfer.mutateAsync(payload);
       swal.success("Stock transfer created successfully.");
       form.resetFields();
 

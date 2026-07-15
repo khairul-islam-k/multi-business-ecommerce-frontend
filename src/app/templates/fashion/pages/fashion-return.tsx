@@ -165,7 +165,7 @@ const FashionReturn = () => {
   }
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-8 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-1)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -289,11 +289,11 @@ const FashionReturn = () => {
             </div>
 
             {/* Desktop Table */}
-            <div className="hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm md:block">
+            <div className="hidden rounded-3xl bg-[var(--store-card)] shadow-sm md:block">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1100px] border-collapse">
                   <thead>
-                    <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)] text-left">
+                    <tr className="border-b border-[var(--store-border)] bg-[var(--store-bg-1)] text-left">
                       <th className="px-5 py-4 text-xs font-bold uppercase tracking-wide text-[var(--store-muted,#6b7280)]">
                         Return
                       </th>

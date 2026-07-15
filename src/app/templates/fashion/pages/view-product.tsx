@@ -7,15 +7,11 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  GitCompareArrows,
   Heart,
-  Minus,
-  Plus,
   ShoppingCart,
   Star,
 } from "lucide-react";
 
-import product_1 from "@/assets/fashion/products/product-1.jpg";
 import ProductReviewForm from "../_components/product_review_form";
 import { useParams } from "next/navigation";
 import { useProductWebReview, useTemplateProduct } from "@/lib/api/hooks/public-website";
@@ -399,7 +395,6 @@ const ViewFashionProduct = () => {
       {/* Review form */}
       <ProductReviewForm
         productId={product?.id ?? ""}
-        slug={product?.slug ?? ""}
       />
 
       {/* Reviews Section */}

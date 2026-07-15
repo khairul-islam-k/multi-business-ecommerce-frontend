@@ -17,17 +17,16 @@ const productReviewDefaultData: CreateProductReviewPayload = {
 
 type DetailsProps = {
   productId: string;
-  slug: string;
 };
 
-const ProductReviewForm = ({ productId, slug }: DetailsProps) => {
+const ProductReviewForm = ({ productId}: DetailsProps) => {
   const [formData, setFormData] = useState<CreateProductReviewPayload>(
     productReviewDefaultData,
   );
 
   const message = useMessage();
 
-  const { createReview } = useTemplateProductReviewMutation(slug);
+  const { createReview } = useTemplateProductReviewMutation();
 
   const [hoverRating, setHoverRating] = useState<number | null>(null);
 

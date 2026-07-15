@@ -25,8 +25,8 @@ import { CustomerOrderItem, CustomerOrderResponse } from "@/types/template/order
 type OrderDetailApiResponse =
   | CustomerOrderResponse
   | {
-      data?: CustomerOrderResponse;
-    };
+    data?: CustomerOrderResponse;
+  };
 
 type OrderItemImage = {
   id?: string;
@@ -221,7 +221,7 @@ const ElectronicOrderDetail = () => {
   }
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-8 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-1)] px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -504,7 +504,7 @@ const ElectronicOrderDetail = () => {
             </div>
 
             {/* Shipping */}
-            <div className="rounded-3xl bg-[var(--store-card,#ffffff)] p-5 shadow-sm">
+            <div className="rounded-3xl bg-[var(--store-bg-1)] p-5 shadow-sm">
               <div className="mb-4 flex items-center gap-3">
                 <div className="grid size-10 place-items-center rounded-full bg-blue-100 text-blue-600">
                   <MapPin className="size-5" />
@@ -515,7 +515,7 @@ const ElectronicOrderDetail = () => {
                 </h2>
               </div>
 
-              <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-4">
+              <div className="rounded-2xl bg-[var(--store-bg-1)] p-4">
                 <p className="text-sm font-medium leading-6 text-[var(--store-text,#111827)]">
                   {order.shippingAddressSnapshot?.address || "N/A"}
                 </p>
@@ -659,7 +659,7 @@ const ElectronicOrderDetail = () => {
                   Order Note
                 </h2>
 
-                <p className="mt-3 rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-4 text-sm leading-6 text-[var(--store-muted,#6b7280)]">
+                <p className="mt-3 rounded-2xl bg-[var(--store-bg-1)] p-4 text-sm leading-6 text-[var(--store-muted,#6b7280)]">
                   {order.note}
                 </p>
               </div>

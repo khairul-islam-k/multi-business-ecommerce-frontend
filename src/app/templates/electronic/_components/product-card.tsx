@@ -227,7 +227,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
           <div className="mt-5 hidden items-center gap-3 lg:flex">
             <button
               type="button"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-6 text-sm font-semibold text-white transition hover:bg-gray-950"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-6 text-sm font-semibold text-white transition hover:bg-gray-950 whitespace-nowrap"
             >
               <ShoppingCart className="h-4 w-4" />
               Add to Cart
@@ -235,7 +235,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
             <Link
               href={`/store/${store}/products/details/${product.id}`}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-gray-300 px-6 text-sm font-semibold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59]"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-gray-300 px-6 text-sm font-semibold text-gray-800 transition hover:border-[#f16d59] hover:text-[#f16d59] whitespace-nowrap"
             >
               <Eye className="h-4 w-4" />
               View Details

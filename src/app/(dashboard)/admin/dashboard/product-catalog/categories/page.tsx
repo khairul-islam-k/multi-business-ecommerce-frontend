@@ -106,15 +106,6 @@ const Categories = () => {
           >
             {row.name}
           </Text>
-          {row.description ? (
-            <Text
-              type="secondary"
-              className="block max-w-[260px] text-xs"
-              ellipsis={{ tooltip: row.description }}
-            >
-              {row.description}
-            </Text>
-          ) : null}
         </div>
       ),
     },
