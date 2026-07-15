@@ -88,7 +88,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={`
-          fixed left-0 top-0 z-50 h-screen bg-[var(--store-bg-3)] shadow-xl transition-all duration-300
+          fixed left-0 top-0 z-50 h-screen bg-[var(--store-bg-1)] shadow-xl transition-all duration-300
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           ${sidebarCollapsed ? "lg:w-20" : "lg:w-72"}
           w-72 lg:translate-x-0
@@ -148,7 +148,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         `}
         >
           {/* Topbar */}
-          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--store-border)] bg-[var(--store-bg-3)] px-4 shadow-sm lg:px-6">
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 shadow-sm lg:px-6">
             <div className="flex items-center gap-3">
               {/* Mobile sidebar button */}
               <button

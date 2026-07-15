@@ -8,6 +8,7 @@ import React, {
   type ReactNode,
 } from "react";
 import styles from "../store-theme.module.css";
+import { ThemeConfig } from "@/types/website/website";
 
 type StoreThemeMode = "light" | "dark";
 
@@ -33,9 +34,18 @@ type ThemeStyle = React.CSSProperties & {
   "--store-card"?: string;
   "--store-text"?: string;
   "--store-muted"?: string;
+  "--store-border"?: string;
+
   "--store-primary"?: string;
   "--store-secondary"?: string;
-  "--store-border"?: string;
+  "--store-accent"?: string;
+  "--store-success"?: string;
+  "--store-danger"?: string;
+  "--store-warning"?: string;
+  "--store-info"?: string;
+  "--store-neutral"?: string;
+  "--store-dark"?: string;
+  "--store-light"?: string;
 };
 
 const StoreThemeContext = createContext<StoreThemeContextType | null>(null);
@@ -44,7 +54,7 @@ const STORE_THEME_MODE_KEY = "store_theme_mode";
 
 type StoreThemeProviderProps = {
   children: ReactNode;
-  backendTheme?: BackendTheme | null;
+  backendTheme?: ThemeConfig | null;
 };
 
 export function StoreThemeProvider({
@@ -80,16 +90,26 @@ export function StoreThemeProvider({
    * Dark mode colors come from StoreTheme.module.css.
    */
   const lightStyle: ThemeStyle = {
-    "--store-bg-1": backendTheme?.backgroundColor || "#ffffff",
-    "--store-bg-2": backendTheme?.backgroundColor || "#fef8ee",
-    "--store-bg-3": backendTheme?.backgroundColor || "#f6f6f6",
-    "--store-card": backendTheme?.cardColor || "#ffffff",
-    "--store-text": backendTheme?.textColor || "#111827",
-    "--store-muted": "#6b7280",
-    "--store-primary": backendTheme?.primaryColor || "#f16d59",
-    "--store-secondary": backendTheme?.secondaryColor || "#f8f5f1",
-    "--store-border": backendTheme?.borderColor || "#e5e7eb",
-  };
+  "--store-bg-1": "#ffffff",
+  "--store-bg-2": backendTheme?.primaryColor || "#fef8ee",
+  "--store-bg-3": backendTheme?.secondaryColor || "#f6f6f6",
+  "--store-card": "#ffffff",
+
+  "--store-text": "#111827",
+  "--store-muted": "#6b7280",
+  "--store-border": "#e5e7eb",
+
+  "--store-primary": "#f16d59",
+  "--store-secondary": "#111827",
+  "--store-accent": "#7c3aed",
+  "--store-success": "#059669",
+  "--store-danger": "#dc2626",
+  "--store-warning": "#d97706",
+  "--store-info": "#2563eb",
+  "--store-neutral": "#64748b",
+  "--store-dark": "#020617",
+  "--store-light": "#f3f4f6",
+};
 
   return (
     <StoreThemeContext.Provider value={{ mode, toggleTheme, setMode }}>

@@ -1,22 +1,26 @@
 import ElectronicLogin from '@/app/templates/electronic/pages/electronic-login';
 import FashionLoginPage from '@/app/templates/fashion/pages/fashion-login';
+import { publicApi } from '@/lib/axios';
+import { headers } from 'next/headers';
 import React from 'react';
 
-const Login = () => {
+const Login = async () => {
 
-    const site = {
-        name: "Onecomm Store",
-        templateName: "Fashion",
-        logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-    };
+    const header = await headers()
 
-    if (site.templateName === 'electronic') {
+  const res = await publicApi.get('/storefront/resolve', {
+    headers: {
+      host: header.get('host') || ""
+    }
+  })
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
         return (
             <ElectronicLogin />
         );
     }
 
-    if (site.templateName === 'Fashion') {
+    if (res?.data?.data?.template === "FASHION") {
         return (
             <FashionLoginPage />
         );

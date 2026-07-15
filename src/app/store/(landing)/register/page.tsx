@@ -1,26 +1,30 @@
 import ElectronicRegister from '@/app/templates/electronic/pages/electronic-register';
 import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register';
+import { publicApi } from '@/lib/axios';
+import { headers } from 'next/headers';
 import React from 'react';
 
-const Register = () => {
+const Register = async () => {
 
-    const site = {
-        name: "Onecomm Store",
-        templateName: "Fashion",
-        logo: "https://placehold.co/200x80/png?text=Onecomm+Store",
-    };
-
-    if (site.templateName === 'electronic') {
-        return (
-            <ElectronicRegister />
-        );
-    }
-
-    if (site.templateName === 'Fashion') {
-        return (
-            <FashionRegisterPage />
-        );
-    }
+    const header = await headers()
+    
+      const res = await publicApi.get('/storefront/resolve', {
+        headers: {
+          host: header.get('host') || ""
+        }
+      })
+    
+        if (res?.data?.data?.template === "ELECTRONIC") {
+            return (
+                <ElectronicRegister />
+            );
+        }
+    
+        if (res?.data?.data?.template === "FASHION") {
+            return (
+                <FashionRegisterPage />
+            );
+        }
 };
 
 export default Register;
