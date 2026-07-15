@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   Row,
+  Segmented,
   Select,
   Space,
   Tabs,
@@ -23,8 +24,11 @@ import {
   WebsiteTemplatePayload,
 } from "@/types/website/website";
 import { useSwal } from "@/hooks/use-swal";
+import { Minus, Plus } from "lucide-react";
 
 const { TextArea } = Input;
+
+type ColorInputMode = "picker" | "text";
 
 type TemplateFormValues = WebsiteTemplatePayload;
 
@@ -88,6 +92,11 @@ const toFormValues = (
             },
           ],
 
+        extraPage: data?.config?.generalConfig?.extraPage ?? {},
+        faqs: data?.config?.generalConfig?.faqs ?? [],
+
+        dashboardColors: data?.config?.generalConfig?.dashboardColors ?? {},
+
         partners: data?.config?.generalConfig?.partners?.length
           ? data.config.generalConfig.partners
           : [],
@@ -114,6 +123,54 @@ const toFormValues = (
       canonicalUrl: data?.seo?.canonicalUrl ?? "",
     },
   };
+};
+
+type ThemeColorFieldProps = {
+  label: string;
+  name: string[];
+  placeholder?: string;
+};
+
+// config color
+const ThemeColorField = ({
+  label,
+  name,
+  placeholder = "#020617",
+}: ThemeColorFieldProps) => {
+  const [mode, setMode] = useState<ColorInputMode>("picker");
+
+  return (
+    <Form.Item label={label} required>
+      <div className="mb-2 flex justify-end">
+        <Segmented
+          size="small"
+          value={mode}
+          options={[
+            {
+              label: "Color",
+              value: "picker",
+            },
+            {
+              label: "Text",
+              value: "text",
+            },
+          ]}
+          onChange={(value) => setMode(value as ColorInputMode)}
+        />
+      </div>
+
+      <Form.Item
+        name={name}
+        noStyle
+      >
+        <Input
+          type={mode === "picker" ? "color" : "text"}
+          placeholder={mode === "text" ? placeholder : undefined}
+          className={mode === "picker" ? "h-10 cursor-pointer" : ""}
+        />
+      </Form.Item>
+    </Form.Item>
+  );
 };
 
 export default function WebsiteTemplateForm({
@@ -208,6 +265,19 @@ export default function WebsiteTemplateForm({
         generalConfig: {
           bestOfferImages: values.config?.generalConfig?.bestOfferImages,
           partners: values.config?.generalConfig?.partners,
+          extraPage: {
+            about: values.config?.generalConfig?.extraPage?.about,
+            termsAndConditions: values.config?.generalConfig?.extraPage?.termsAndConditions
+          },
+          faqs: values.config?.generalConfig?.faqs?.map((faq) => ({
+            question: faq.question?.trim(),
+            answer: faq.answer?.trim(),
+          })) ?? [],
+          dashboardColors: {
+            sidebarBackgroundColor: values.config?.generalConfig?.dashboardColors?.sidebarBackgroundColor,
+            sidebarTextColor: values.config?.generalConfig?.dashboardColors?.sidebarTextColor,
+            cardColor: values.config?.generalConfig?.dashboardColors?.cardColor
+          }
         },
       },
 
@@ -236,6 +306,18 @@ export default function WebsiteTemplateForm({
 
     await onSubmit(payload);
   };
+
+
+  //  color toggle state
+
+  const [primaryMode, setPrimaryMode] =
+    useState<ColorInputMode>("picker");
+
+  const [secondaryMode, setSecondaryMode] =
+    useState<ColorInputMode>("picker");
+
+  const [accentMode, setAccentMode] =
+    useState<ColorInputMode>("picker");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFinishFailed = (errorInfo: any) => {
@@ -562,6 +644,64 @@ export default function WebsiteTemplateForm({
                       },
 
                       {
+                        key: "dashboardColors",
+                        label: "Dashboard Colors",
+                        forceRender: true,
+                        children: (
+                          <Row gutter={[16, 16]}>
+                            <Col xs={24}>
+                              <div className="mb-3">
+                                <strong>Dashboard Colors</strong>
+
+                                <p className="mb-0 text-sm text-gray-500">
+                                  Customize sidebar background, sidebar text, and card colors.
+                                </p>
+                              </div>
+                            </Col>
+
+                            <Col xs={24} md={8}>
+                              <ThemeColorField
+                                label="Sidebar Background Color"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "sidebarBackgroundColor",
+                                ]}
+                                placeholder="#020617 or var(--sidebar-bg)"
+                              />
+                            </Col>
+
+                            <Col xs={24} md={8}>
+                              <ThemeColorField
+                                label="Sidebar Text Color"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "sidebarTextColor",
+                                ]}
+                                placeholder="#ffffff or var(--sidebar-text)"
+                              />
+                            </Col>
+
+                            <Col xs={24} md={8}>
+                              <ThemeColorField
+                                label="Card Color"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "cardColor",
+                                ]}
+                                placeholder="#0f172a or var(--card-color)"
+                              />
+                            </Col>
+                          </Row>
+                        ),
+                      },
+
+                      {
                         key: "bestOfferImages",
                         label: "Best Offer Images",
                         forceRender: true,
@@ -665,6 +805,155 @@ export default function WebsiteTemplateForm({
                       },
 
                       {
+                        key: "extraPage",
+                        label: "Extra Page",
+                        forceRender: true,
+                        children: (
+                          <Row gutter={[16, 16]}>
+                            <Col xs={24}>
+                              <div className="mb-3">
+                                <strong>Extra Page Content</strong>
+                                <p className="mb-0 text-sm text-gray-500">
+                                  Add the content for your About Us and Terms & Conditions pages.
+                                </p>
+                              </div>
+                            </Col>
+
+                            <Col xs={24}>
+                              <Form.Item
+                                label="About Us"
+                                name={["config", "generalConfig", "extraPage", "about"]}
+                              >
+                                <Input.TextArea
+                                  rows={8}
+                                  placeholder="Write about your business..."
+                                  showCount
+                                  maxLength={5000}
+                                />
+                              </Form.Item>
+                            </Col>
+
+                            <Col xs={24}>
+                              <Form.Item
+                                label="Terms & Conditions"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "extraPage",
+                                  "termsAndConditions",
+                                ]}
+                              >
+                                <Input.TextArea
+                                  rows={10}
+                                  placeholder="Write your terms and conditions..."
+                                  showCount
+                                  maxLength={10000}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        ),
+                      },
+
+                      {
+                        key: "faq",
+                        label: "FAQ",
+                        forceRender: true,
+                        children: (
+                          <Row gutter={[16, 16]}>
+                            <Col xs={24}>
+                              <div className="mb-3">
+                                <strong>Frequently Asked Questions</strong>
+
+                                <p className="mb-0 text-sm text-gray-500">
+                                  Add questions and answers for the FAQ page.
+                                </p>
+                              </div>
+                            </Col>
+
+                            <Col xs={24}>
+                              <Form.List name={["config", "generalConfig", "faqs"]}>
+                                {(fields, { add, remove }) => (
+                                  <div className="space-y-4">
+                                    {fields.map(({ key, name, ...restField }, index) => (
+                                      <Row
+                                        key={key}
+                                        gutter={[16, 8]}
+                                        align="top"
+                                        className="rounded-lg border border-gray-200 p-4"
+                                      >
+                                        <Col xs={24} lg={10}>
+                                          <Form.Item
+                                            {...restField}
+                                            label={`Question ${index + 1}`}
+                                            name={[name, "question"]}
+                                            rules={[
+                                              {
+                                                required: true,
+                                                message: "Please enter the question",
+                                              },
+                                            ]}
+                                          >
+                                            <Input.TextArea
+                                              rows={3}
+                                              placeholder="Enter FAQ question"
+                                            />
+                                          </Form.Item>
+                                        </Col>
+
+                                        <Col xs={24} lg={12}>
+                                          <Form.Item
+                                            {...restField}
+                                            label="Answer"
+                                            name={[name, "answer"]}
+                                            rules={[
+                                              {
+                                                required: true,
+                                                message: "Please enter the answer",
+                                              },
+                                            ]}
+                                          >
+                                            <Input.TextArea
+                                              rows={3}
+                                              placeholder="Enter FAQ answer"
+                                            />
+                                          </Form.Item>
+                                        </Col>
+
+                                        <Col xs={24} lg={2}>
+                                          <Form.Item label=" ">
+                                            <Button
+                                              danger
+                                              icon={<Minus />}
+                                              onClick={() => remove(name)}
+                                            />
+                                          </Form.Item>
+                                        </Col>
+                                      </Row>
+                                    ))}
+
+                                    <Button
+                                      type="dashed"
+                                      block
+                                      icon={<Plus />}
+                                      onClick={() =>
+                                        add({
+                                          question: "",
+                                          answer: "",
+                                        })
+                                      }
+                                    >
+                                      Add FAQ
+                                    </Button>
+                                  </div>
+                                )}
+                              </Form.List>
+                            </Col>
+                          </Row>
+                        ),
+                      },
+
+                      {
                         key: "partners",
                         label: "Partner Logos",
                         forceRender: true,
@@ -742,34 +1031,133 @@ export default function WebsiteTemplateForm({
               key: "theme",
               label: "Theme",
               children: (
-                <Row gutter={16}>
+                <Row gutter={[16, 16]}>
                   <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Primary Color"
-                      name={["theme", "primaryColor"]}
-                      rules={[{ required: true }]}
-                    >
-                      <Input type="color" />
+                    <Form.Item label="Primary Color" required>
+                      <div className="mb-2 flex justify-end">
+                        <Segmented
+                          size="small"
+                          value={primaryMode}
+                          options={[
+                            { label: "Color", value: "picker" },
+                            { label: "Text", value: "text" },
+                          ]}
+                          onChange={(value) =>
+                            setPrimaryMode(value as ColorInputMode)
+                          }
+                        />
+                      </div>
+
+                      <Form.Item
+                        name={["theme", "primaryColor"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please select or enter primary color",
+                          },
+                        ]}
+                        noStyle
+                      >
+                        <Input
+                          type={primaryMode === "picker" ? "color" : "text"}
+                          placeholder={
+                            primaryMode === "text"
+                              ? "#2563eb, rgb(37, 99, 235) or var(--primary)"
+                              : undefined
+                          }
+                          className={
+                            primaryMode === "picker"
+                              ? "h-10 cursor-pointer"
+                              : ""
+                          }
+                        />
+                      </Form.Item>
                     </Form.Item>
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Secondary Color"
-                      name={["theme", "secondaryColor"]}
-                      rules={[{ required: true }]}
-                    >
-                      <Input type="color" />
+                    <Form.Item label="Secondary Color" required>
+                      <div className="mb-2 flex justify-end">
+                        <Segmented
+                          size="small"
+                          value={secondaryMode}
+                          options={[
+                            { label: "Color", value: "picker" },
+                            { label: "Text", value: "text" },
+                          ]}
+                          onChange={(value) =>
+                            setSecondaryMode(value as ColorInputMode)
+                          }
+                        />
+                      </div>
+
+                      <Form.Item
+                        name={["theme", "secondaryColor"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please select or enter secondary color",
+                          },
+                        ]}
+                        noStyle
+                      >
+                        <Input
+                          type={secondaryMode === "picker" ? "color" : "text"}
+                          placeholder={
+                            secondaryMode === "text"
+                              ? "#f8f5f1, rgb(...) or var(--secondary)"
+                              : undefined
+                          }
+                          className={
+                            secondaryMode === "picker"
+                              ? "h-10 cursor-pointer"
+                              : ""
+                          }
+                        />
+                      </Form.Item>
                     </Form.Item>
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item
-                      label="Accent Color"
-                      name={["theme", "accentColor"]}
-                      rules={[{ required: true }]}
-                    >
-                      <Input type="color" />
+                    <Form.Item label="Accent Color" required>
+                      <div className="mb-2 flex justify-end">
+                        <Segmented
+                          size="small"
+                          value={accentMode}
+                          options={[
+                            { label: "Color", value: "picker" },
+                            { label: "Text", value: "text" },
+                          ]}
+                          onChange={(value) =>
+                            setAccentMode(value as ColorInputMode)
+                          }
+                        />
+                      </div>
+
+                      <Form.Item
+                        name={["theme", "accentColor"]}
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please select or enter accent color",
+                          },
+                        ]}
+                        noStyle
+                      >
+                        <Input
+                          type={accentMode === "picker" ? "color" : "text"}
+                          placeholder={
+                            accentMode === "text"
+                              ? "#7c3aed, rgb(...) or var(--accent)"
+                              : undefined
+                          }
+                          className={
+                            accentMode === "picker"
+                              ? "h-10 cursor-pointer"
+                              : ""
+                          }
+                        />
+                      </Form.Item>
                     </Form.Item>
                   </Col>
 
@@ -777,7 +1165,12 @@ export default function WebsiteTemplateForm({
                     <Form.Item
                       label="Font Family"
                       name={["theme", "fontFamily"]}
-                      rules={[{ required: true }]}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter font family",
+                        },
+                      ]}
                     >
                       <Input placeholder="Inter" />
                     </Form.Item>
@@ -804,7 +1197,10 @@ export default function WebsiteTemplateForm({
                   </Col>
 
                   <Col xs={24}>
-                    <Form.Item label="Custom CSS" name={["theme", "customCss"]}>
+                    <Form.Item
+                      label="Custom CSS"
+                      name={["theme", "customCss"]}
+                    >
                       <TextArea
                         rows={8}
                         placeholder=".hero { min-height: 70vh; }"

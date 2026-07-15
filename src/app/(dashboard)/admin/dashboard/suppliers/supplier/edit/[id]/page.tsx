@@ -30,12 +30,12 @@ const UpdateSupplierPage = () => {
     setSubmitting(true);
     const payload: SupplierPayload = {
       name: values.name.trim(),
-      companyName: values.companyName.trim(),
-      email: values.email.trim(),
-      phone: values.phone.trim(),
-      address: values.address.trim(),
-      city: values.city.trim(),
-      country: values.country.trim(),
+      companyName: values.companyName?.trim(),
+      email: values.email?.trim(),
+      phone: values.phone?.trim(),
+      address: values.address?.trim(),
+      city: values.city?.trim(),
+      country: values.country?.trim(),
       status: values.status,
       note: values.note?.trim() || null,
     };

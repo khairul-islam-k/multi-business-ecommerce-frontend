@@ -42,9 +42,28 @@ export type BestOfferImage = {
   size?: "large" | "small";
 };
 
+export type ExtraPage = {
+  about?: string;
+  termsAndConditions?: string;
+};
+
+export type FAQItem = {
+  question: string;
+  answer: string;
+};
+
+export type DashboardColors = {
+  sidebarBackgroundColor?: string;
+  sidebarTextColor?: string;
+  cardColor?: string;
+};
+
 export type GeneralConfig = {
   bestOfferImages?: BestOfferImage[];
   partners?: string[];
+  extraPage?: ExtraPage;
+  faqs?: FAQItem[];
+  dashboardColors?: DashboardColors;
 };
 
 export type ThemeConfig = {
