@@ -203,7 +203,7 @@ const SupplierProducts = () => {
                 icon={<CirclePlus />}
                 onClick={() =>
                   router.push(
-                    `/admin/dashboard/suppliers/supplier/${supplierId}/products/create`,
+                    `/admin/dashboard/suppliers/supplier/add-supplier-product/${supplierId}`,
                   )
                 }
               >

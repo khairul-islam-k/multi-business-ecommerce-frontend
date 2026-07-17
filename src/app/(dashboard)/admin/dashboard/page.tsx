@@ -26,6 +26,7 @@ import { useTenantOverviewQuery } from "@/lib/api/hooks/tenant-overview";
 import { useAuthStore } from "@/stores/auth.store";
 
 import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -72,13 +73,15 @@ export default function AdminDashboardPage() {
 
   const width = useWidth();
 
+  // data filter 
   const [chartView, setChartView] = useState<"date" | "month">("month");
   const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>('');
+  const todayEnd = dayjs().endOf("day").toISOString();
 
   const { data: overviews } = useTenantOverviewQuery(businessId, {
     from: fromDate || undefined,
-    to: toDate || undefined,
+    to: toDate || todayEnd,
   });
 
   const statsCart = overviews?.cards ?? [];
@@ -108,13 +111,19 @@ export default function AdminDashboardPage() {
       orders: Number(item.orders ?? 0),
     })) ?? [];
 
+    // onChange Data for filter data
   const handleFromDateChange = (date: Dayjs | null) => {
     if (!date) {
       setFromDate("");
       return;
     }
 
-    setFromDate(date.startOf("day").toISOString());
+    const formattedDate =
+      chartView === "month"
+        ? date.startOf("month").toISOString()
+        : date.startOf("day").toISOString();
+
+    setFromDate(formattedDate);
   };
 
   const handleToDateChange = (date: Dayjs | null) => {
@@ -123,8 +132,14 @@ export default function AdminDashboardPage() {
       return;
     }
 
-    setToDate(date.endOf("day").toISOString());
+    const formattedDate =
+      chartView === "month"
+        ? date.endOf("month").toISOString()
+        : date.endOf("day").toISOString();
+
+    setToDate(formattedDate);
   };
+
 
   return (
     <div className="space-y-6">
@@ -142,18 +157,24 @@ export default function AdminDashboardPage() {
           />
 
           <Space wrap>
-            <DatePicker
-              placeholder="From date"
-              format="YYYY-MM-DD"
-              onChange={handleFromDateChange}
-            />
+          <DatePicker
+            key={`from-${chartView}`}
+            picker={chartView === "month" ? "month" : "date"}
+            placeholder={
+              chartView === "month" ? "From month" : "From date"
+            }
+            format={chartView === "month" ? "YYYY-MM" : "YYYY-MM-DD"}
+            onChange={handleFromDateChange}
+          />
 
-            <DatePicker
-              placeholder="To date"
-              format="YYYY-MM-DD"
-              onChange={handleToDateChange}
-            />
-          </Space>
+          <DatePicker
+            key={`to-${chartView}`}
+            picker={chartView === "month" ? "month" : "date"}
+            placeholder={chartView === "month" ? "To month" : "To date"}
+            format={chartView === "month" ? "YYYY-MM" : "YYYY-MM-DD"}
+            onChange={handleToDateChange}
+          />
+        </Space>
         </div>
       </Card>
 

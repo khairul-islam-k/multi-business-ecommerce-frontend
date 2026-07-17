@@ -9,13 +9,15 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
   Space,
   Switch,
   Tag,
+  Tooltip,
 } from "antd";
-import { CirclePlus, Trash2 } from "lucide-react";
+import { CirclePlus, Plus, Trash2, Wrench } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
@@ -40,6 +42,11 @@ import MultiImageSelectModal from "../../../_components/multi-image-select-modal
 import { imageUrlSet } from "./image-url";
 
 import type { FormInstance } from "antd";
+import CategoryCreateModal from "./categorie-create-modal";
+import BrandCreateModal from "./brand-create-modal";
+import UnitCreateModal from "./unit-create-modal";
+import CreateTaxModal from "./create-tax-modal";
+import CreateAttributesPage from "../../attributes/_components/attributes-page";
 type SelectOption = {
   label: string;
   value: string;
@@ -107,9 +114,9 @@ type VariantOptionRowProps = {
 const getVariantKey = (
   attributes:
     | {
-        attributeId: string;
-        attributeValueId: string;
-      }[]
+      attributeId: string;
+      attributeValueId: string;
+    }[]
     | undefined,
 ) => {
   const valueIds = attributes
@@ -159,11 +166,11 @@ const getInitialVariantOptions = (
   return options.length
     ? options
     : [
-        {
-          attributeId: undefined,
-          attributeValueIds: [],
-        },
-      ];
+      {
+        attributeId: undefined,
+        attributeValueIds: [],
+      },
+    ];
 };
 
 const getInitialVariants = (
@@ -294,6 +301,8 @@ const VariantOptionRow = ({
     .map((option) => option.attributeId)
     .filter(Boolean);
 
+  const [attributeModalOpen, setAttributeModalOpen] = useState<boolean>(false);
+
   return (
     <div className="rounded-lg border bg-gray-50 p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -310,34 +319,48 @@ const VariantOptionRow = ({
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <Form.Item
-          label="Attribute"
-          name={[fieldName, "attributeId"]}
-          rules={[
-            {
-              required: true,
-              message: "Attribute is required",
-            },
-          ]}
-        >
-          <Select
-            showSearch
-            placeholder="Select attribute"
-            optionFilterProp="label"
-            options={attributes.map((attribute) => ({
-              label: attribute.name,
-              value: attribute.id,
-              disabled:
-                attribute.id !== selectedAttributeId &&
-                selectedAttributeIds.includes(attribute.id),
-            }))}
-            onChange={() => {
-              form.setFieldValue(
-                ["variantOptions", fieldName, "attributeValueIds"],
-                [],
-              );
-            }}
-          />
+        <Form.Item label="Attribute" required>
+          <Space.Compact className="w-full">
+            <Form.Item
+              name={[fieldName, "attributeId"]}
+              rules={[
+                {
+                  required: true,
+                  message: "Attribute is required",
+                },
+              ]}
+              noStyle
+            >
+              <Select
+                showSearch
+                className="w-full"
+                placeholder="Select attribute"
+                optionFilterProp="label"
+                options={attributes.map((attribute) => ({
+                  label: attribute.name,
+                  value: attribute.id,
+                  disabled:
+                    attribute.id !== selectedAttributeId &&
+                    selectedAttributeIds.includes(attribute.id),
+                }))}
+                onChange={() => {
+                  form.setFieldValue(
+                    ["variantOptions", fieldName, "attributeValueIds"],
+                    [],
+                  );
+                }}
+              />
+            </Form.Item>
+
+            <Tooltip title="Create attribute" placement="top">
+              <Button
+                type="default"
+                icon={<Wrench size={16} />}
+                aria-label="Create attribute"
+                onClick={() => setAttributeModalOpen(true)}
+              />
+            </Tooltip>
+          </Space.Compact>
         </Form.Item>
 
         <Form.Item
@@ -365,6 +388,22 @@ const VariantOptionRow = ({
           />
         </Form.Item>
       </div>
+
+      {/* Attribute modal */}
+      <Modal
+        title="Create Attribute"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={attributeModalOpen}
+        footer={null}
+        onCancel={() => setAttributeModalOpen(false)}
+        width={760}
+        destroyOnHidden
+      >
+        
+          <CreateAttributesPage setIsModalOpen={setAttributeModalOpen} />
+
+      </Modal>
+
     </div>
   );
 };
@@ -509,7 +548,7 @@ const VariantBuilder = ({ form, businessId }: VariantBuilderProps) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 mb-6">
       <Form.List name="variantOptions">
         {(fields, { add, remove }) => (
           <div className="space-y-4">
@@ -809,10 +848,10 @@ const ProductForm = ({
 
     const nextThumbnailImage = thumbnail?.imageUrl
       ? {
-          imageUrl: thumbnail.imageUrl,
-          altText: thumbnail.altText ?? "",
-          isThumbnail: true,
-        }
+        imageUrl: thumbnail.imageUrl,
+        altText: thumbnail.altText ?? "",
+        isThumbnail: true,
+      }
       : null;
 
     const nextMultipleImage = mediaImages.map((image) => ({
@@ -871,12 +910,12 @@ const ProductForm = ({
     const finalImages: ProductImage[] = [
       ...(thumbnailImage?.imageUrl
         ? [
-            {
-              imageUrl: thumbnailImage.imageUrl,
-              altText: thumbnailImage.altText || values.name.trim(),
-              isThumbnail: true,
-            },
-          ]
+          {
+            imageUrl: thumbnailImage.imageUrl,
+            altText: thumbnailImage.altText || values.name.trim(),
+            isThumbnail: true,
+          },
+        ]
         : []),
 
       ...multipleImage
@@ -920,18 +959,18 @@ const ProductForm = ({
 
     const variants: BulkUpdateVariantItemPayload[] = values.enableVariants
       ? formVariants.map((variant: ProductFormVariant) => ({
-          variantId: variant.variantId,
-          images: normalizeVariantImages(variant.images),
-          title: variant.title.trim(),
-          priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
-          weight: Number(variant.weight ?? values.weight ?? 0),
-          status: variant.status ?? "ACTIVE",
-          attributes:
-            variant.attributes?.map((attribute) => ({
-              attributeId: attribute.attributeId,
-              attributeValueId: attribute.attributeValueId,
-            })) ?? [],
-        }))
+        variantId: variant.variantId,
+        images: normalizeVariantImages(variant.images),
+        title: variant.title.trim(),
+        priceOverride: Number(variant.priceOverride ?? values.price ?? 0),
+        weight: Number(variant.weight ?? values.weight ?? 0),
+        status: variant.status ?? "ACTIVE",
+        attributes:
+          variant.attributes?.map((attribute) => ({
+            attributeId: attribute.attributeId,
+            attributeValueId: attribute.attributeValueId,
+          })) ?? [],
+      }))
       : [];
 
     const initialVariants = getInitialVariants(
@@ -953,6 +992,10 @@ const ProductForm = ({
 
     onSubmit(payload, variants, deletedVariantIds);
   };
+
+  // addition modal
+  const [additionModalOpen, setAdditionModalOpen] = useState<boolean>(false);
+  const [additionalTitle, setAdditionalTitle] = useState<string>('');
 
   return (
     <>
@@ -1020,7 +1063,7 @@ const ProductForm = ({
             </Form.Item>
 
             <Form.Item
-              label="Product weight in kilograms"
+              label="Product weight for courier(KG)"
               tooltip="Use kilograms. Example: 0.5 means 500 grams."
               name="weight"
               rules={[
@@ -1155,76 +1198,145 @@ const ProductForm = ({
           <Divider titlePlacement="left">Product Information</Divider>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Form.Item
-              label="Category"
-              name="categoryId"
-              rules={[
-                {
-                  required: true,
-                  message: "Category is required",
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                placeholder="Select category"
-                options={categoryOptions}
-                optionFilterProp="label"
-              />
+
+            <Form.Item label="Category" required>
+              <Space.Compact className="w-full">
+                <Form.Item
+                  name="categoryId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Category is required",
+                    },
+                  ]}
+                  noStyle
+                >
+                  <Select
+                    showSearch
+                    className="w-full"
+                    placeholder="Select category"
+                    options={categoryOptions}
+                    optionFilterProp="label"
+                  />
+                </Form.Item>
+
+                <Tooltip title="Create category" placement="top">
+                  <Button
+                    type="default"
+                    icon={<Wrench size={16} />}
+                    aria-label="Manage category"
+                    onClick={() => {
+                      setAdditionModalOpen(true);
+                      setAdditionalTitle('Create category')
+                    }}
+                  />
+                </Tooltip>
+              </Space.Compact>
             </Form.Item>
 
-            <Form.Item
-              label="Brand"
-              name="brandId"
-              rules={[
-                {
-                  required: true,
-                  message: "Brand is required",
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                placeholder="Select brand"
-                options={brandOptions}
-                optionFilterProp="label"
-              />
+            <Form.Item label="Brand" required>
+              <Space.Compact className="w-full">
+                <Form.Item
+                  name="brandId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Brand is required",
+                    },
+                  ]}
+                  noStyle
+                >
+                  <Select
+                    showSearch
+                    className="w-full"
+                    placeholder="Select brand"
+                    options={brandOptions}
+                    optionFilterProp="label"
+                  />
+                </Form.Item>
+
+                <Tooltip title="Create brand" placement="top">
+                  <Button
+                    type="default"
+                    icon={<Wrench size={16} />}
+                    aria-label="Manage brand"
+                    onClick={() => {
+                      setAdditionModalOpen(true);
+                      setAdditionalTitle('Create Brand')
+                    }}
+                  />
+                </Tooltip>
+              </Space.Compact>
             </Form.Item>
 
-            <Form.Item
-              label="Unit"
-              name="unitId"
-              rules={[
-                {
-                  required: true,
-                  message: "Unit is required",
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                placeholder="Select unit"
-                options={unitOptions}
-                optionFilterProp="label"
-              />
+            <Form.Item label="Unit" required>
+              <Space.Compact className="w-full">
+                <Form.Item
+                  name="unitId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Unit is required",
+                    },
+                  ]}
+                  noStyle
+                >
+                  <Select
+                    showSearch
+                    className="w-full"
+                    placeholder="Select unit"
+                    options={unitOptions}
+                    optionFilterProp="label"
+                  />
+                </Form.Item>
+
+                <Tooltip title="Create unit" placement="top">
+                  <Button
+                    type="default"
+                    icon={<Wrench size={16} />}
+                    aria-label="Create unit"
+                    onClick={() => {
+                      setAdditionModalOpen(true);
+                      setAdditionalTitle('Create Unit');
+                    }}
+                  />
+                </Tooltip>
+              </Space.Compact>
             </Form.Item>
 
-            <Form.Item
-              label="Tax"
-              name="taxId"
-              rules={[
-                {
-                  required: true,
-                  message: "Tax is required",
-                },
-              ]}
-            >
-              <Select
-                showSearch
-                placeholder="Select product tax"
-                options={taxOptions}
-                optionFilterProp="label"
-              />
+            <Form.Item label="Tax" required>
+              <Space.Compact className="w-full">
+                <Form.Item
+                  name="taxId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Tax is required",
+                    },
+                  ]}
+                  noStyle
+                >
+                  <Select
+                    showSearch
+                    className="w-full"
+                    placeholder="Select product tax"
+                    options={taxOptions}
+                    optionFilterProp="label"
+                  />
+                </Form.Item>
+
+                <Tooltip title="Create tax" placement="top">
+                  <Button
+                    type="default"
+                    icon={<Wrench size={16} />}
+                    aria-label="Create tax"
+                    onClick={() => {
+                      setAdditionModalOpen(true);
+                      setAdditionalTitle('Create tax');
+                    }}
+                  />
+                </Tooltip>
+              </Space.Compact>
             </Form.Item>
 
             <Form.Item
@@ -1259,18 +1371,19 @@ const ProductForm = ({
                 ]}
               />
             </Form.Item>
+
+            <Form.Item label="Tags" name="tagIds">
+              <Select
+                mode="multiple"
+                allowClear
+                showSearch
+                placeholder="Select product tags"
+                options={tagOptions}
+                optionFilterProp="label"
+              />
+            </Form.Item>
           </div>
 
-          <Form.Item label="Tags" name="tagIds">
-            <Select
-              mode="multiple"
-              allowClear
-              showSearch
-              placeholder="Select product tags"
-              options={tagOptions}
-              optionFilterProp="label"
-            />
-          </Form.Item>
 
           <Divider titlePlacement="left">Variants</Divider>
 
@@ -1330,6 +1443,41 @@ const ProductForm = ({
         onSelect={setMultipleImage}
         selectedUrl={multipleImage}
       />
+
+      {/* Additional modal */}
+      <Modal
+        open={additionModalOpen}
+        title={additionalTitle}
+        footer={null}
+        onCancel={() => setAdditionModalOpen(false)}
+        destroyOnHidden
+      >
+        {/* Modal content */}
+        {
+          additionalTitle === 'Create category' &&
+          <CategoryCreateModal
+            setAdditionModalOpen={setAdditionModalOpen}
+          />
+        }
+        {
+          additionalTitle === 'Create Brand' &&
+          <BrandCreateModal
+            setAdditionModalOpen={setAdditionModalOpen}
+          />
+        }
+        {
+          additionalTitle === 'Create Unit' &&
+          <UnitCreateModal
+            setAdditionModalOpen={setAdditionModalOpen}
+          />
+        }
+        {
+          additionalTitle === 'Create tax' &&
+          <CreateTaxModal
+            setAdditionModalOpen={setAdditionModalOpen}
+          />
+        }
+      </Modal>
     </>
   );
 };

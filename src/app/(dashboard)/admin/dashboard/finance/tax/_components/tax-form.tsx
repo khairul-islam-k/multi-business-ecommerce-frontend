@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
+import { Button, Card, Col, Form, Input, InputNumber, Row, Select, Space } from "antd";
 import { useEffect } from "react";
 
 import { TaxPayload, TaxResponse, TaxStatus } from "@/types/finance/tax";
@@ -59,7 +59,7 @@ const TaxForm = ({
         form={form}
         layout="vertical"
         onFinish={handleFinish}
-        requiredMark={true}
+        requiredMark
         initialValues={{
           name: "",
           rate: 0,
@@ -67,124 +67,133 @@ const TaxForm = ({
           status: "ACTIVE",
         }}
       >
-        <Form.Item
-          label="Tax Name"
-          name="name"
-          rules={[
-            {
-              required: true,
-              message: "Tax name is required",
-            },
-            {
-              min: 2,
-              message: "Tax name must be at least 2 characters",
-            },
-          ]}
-        >
-          <Input placeholder="VAT 5%" />
-        </Form.Item>
+        <Row gutter={[16, 0]}>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Tax Name"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                  message: "Tax name is required",
+                },
+                {
+                  min: 2,
+                  message: "Tax name must be at least 2 characters",
+                },
+              ]}
+            >
+              <Input placeholder="VAT 5%" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Tax rate percentage"
-          tooltip="Enter the percentage rate. Example: 5 means 5%."
-          name="rate"
-          className="w-full"
-          rules={[
-            {
-              validator: (_, value) => {
-                const rate = Number(value);
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Tax Rate Percentage"
+              tooltip="Enter the percentage rate. Example: 5 means 5%."
+              name="rate"
+              rules={[
+                {
+                  validator: (_, value) => {
+                    const rate = Number(value);
 
-                if (value === undefined || value === null || value === "") {
-                  return Promise.reject(new Error("Tax rate is required"));
-                }
+                    if (
+                      value === undefined ||
+                      value === null ||
+                      value === ""
+                    ) {
+                      return Promise.reject(
+                        new Error("Tax rate is required"),
+                      );
+                    }
 
-                if (Number.isNaN(rate)) {
-                  return Promise.reject(
-                    new Error("Tax rate percentage must be a number"),
-                  );
-                }
+                    if (Number.isNaN(rate)) {
+                      return Promise.reject(
+                        new Error("Tax rate percentage must be a number"),
+                      );
+                    }
 
-                if (rate < 0) {
-                  return Promise.reject(
-                    new Error("Tax rate cannot be negative"),
-                  );
-                }
+                    if (rate < 0) {
+                      return Promise.reject(
+                        new Error("Tax rate cannot be negative"),
+                      );
+                    }
 
-                if (rate > 100) {
-                  return Promise.reject(
-                    new Error("Tax rate percentage cannot be more than 100"),
-                  );
-                }
+                    if (rate > 100) {
+                      return Promise.reject(
+                        new Error(
+                          "Tax rate percentage cannot be more than 100",
+                        ),
+                      );
+                    }
 
-                return Promise.resolve();
-              },
-            },
-          ]}
-        >
-          <InputNumber
-            min={0}
-            max={100}
-            precision={2}
-            style={{
-              width: "100%",
-            }}
-            placeholder="Example: 5"
-          />
-        </Form.Item>
+                    return Promise.resolve();
+                  },
+                },
+              ]}
+            >
+              <InputNumber
+                min={0}
+                max={100}
+                precision={2}
+                className="w-full"
+                placeholder="Example: 5"
+                addonAfter="%"
+              />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Description"
-          name="description"
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Description is required",
-          //   },
-          //   {
-          //     min: 3,
-          //     message: "Description must be at least 3 characters",
-          //   },
-          // ]}
-        >
-          <TextArea rows={3} placeholder="Default VAT" />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item label="Description" name="description">
+              <TextArea rows={3} placeholder="Default VAT" />
+            </Form.Item>
+          </Col>
 
-        <Form.Item
-          label="Status"
-          name="status"
-          rules={[
-            {
-              required: true,
-              message: "Status is required",
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select status"
-            options={[
-              {
-                label: "Active",
-                value: "ACTIVE",
-              },
-              {
-                label: "Inactive",
-                value: "INACTIVE",
-              },
-            ]}
-          />
-        </Form.Item>
+          <Col xs={24} md={12}>
+            <Form.Item
+              label="Status"
+              name="status"
+              rules={[
+                {
+                  required: true,
+                  message: "Status is required",
+                },
+              ]}
+            >
+              <Select
+                placeholder="Select status"
+                options={[
+                  {
+                    label: "Active",
+                    value: "ACTIVE",
+                  },
+                  {
+                    label: "Inactive",
+                    value: "INACTIVE",
+                  },
+                ]}
+              />
+            </Form.Item>
+          </Col>
 
-        <Space>
-          <Button type="primary" htmlType="submit" loading={isSubmitting}>
-            {mode === "create" ? "Create Tax" : "Update Tax"}
-          </Button>
+          <Col xs={24}>
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={isSubmitting}
+              >
+                {mode === "create" ? "Create Tax" : "Update Tax"}
+              </Button>
 
-          {onCancel && (
-            <Button onClick={onCancel} disabled={isSubmitting}>
-              Cancel
-            </Button>
-          )}
-        </Space>
+              {onCancel && (
+                <Button onClick={onCancel} disabled={isSubmitting}>
+                  Cancel
+                </Button>
+              )}
+            </Space>
+          </Col>
+        </Row>
       </Form>
     </Card>
   );

@@ -37,7 +37,7 @@ const AddSupplierProduct = () => {
     setLoading(true);
 
     try {
-      const res = await createProduct.mutateAsync({
+      await createProduct.mutateAsync({
         supplierId,
         payload: values,
       });

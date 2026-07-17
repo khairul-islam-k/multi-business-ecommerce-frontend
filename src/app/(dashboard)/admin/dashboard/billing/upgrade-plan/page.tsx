@@ -34,9 +34,9 @@ export default function UpgradePlanPage() {
   const handleCheckout = (plan: PackagePlan) => {
 
     const payload = {
-      successRedirectUrl: `http://${host}/payment/success`,
-      failRedirectUrl: `http://${host}/payment/failed`,
-      cancelRedirectUrl: `http://${host}/payment/cancel`
+      successRedirectUrl: `http://${host}/package-payment/success`,
+      failRedirectUrl: `http://${host}/package-payment/failed`,
+      cancelRedirectUrl: `http://${host}/package-payment/cancel`
     }
 
     modal.confirm({
@@ -68,7 +68,7 @@ export default function UpgradePlanPage() {
               try {
                 if (!payment?.redirectUrl) {
                   await mutations.confirmMockPayment.mutateAsync(payment?.id);
-                  router.push('/payment/success')
+                  router.push('/package-payment/success');
                 } else {
                   router.push(payment?.redirectUrl)
                 }

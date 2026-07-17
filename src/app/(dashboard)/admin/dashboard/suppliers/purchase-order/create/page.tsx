@@ -8,10 +8,12 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Select,
   Space,
+  Tooltip,
 } from "antd";
-import { CirclePlus, Trash2 } from "lucide-react";
+import { CirclePlus, Trash2, Wrench } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -25,6 +27,7 @@ import { useAuthStore } from "@/stores/auth.store";
 import { PurchaseOrderPayload } from "@/types/suppliers/purchase-order";
 
 import type { Dayjs } from "dayjs";
+import CreateSupplierModal from "../_components/create-supplier-modal";
 
 const { TextArea } = Input;
 
@@ -169,6 +172,8 @@ const PurchaseOrderForm = () => {
   const { message } = App.useApp();
   const router = useRouter();
 
+  const [supplierOpen, setSupplierOpen] = useState<boolean>(false);
+
   const { createPurchaseOrder } = usePurchaseOrderMutation(businessId);
 
   const { data: suppliers, isLoading: supplierLoading } = useSuppliersQuery(
@@ -250,22 +255,43 @@ const PurchaseOrderForm = () => {
         }}
       >
         <div className="grid grid-cols-1 gap-x-4 md:grid-cols-2">
-          <Form.Item
-            label="Supplier"
-            name="supplierId"
-            rules={[{ required: true, message: "Supplier is required" }]}
-          >
-            <Select
-              showSearch
-              placeholder="Select supplier"
-              loading={supplierLoading}
-              optionFilterProp="label"
-              options={(suppliers?.items ?? []).map((supplier) => ({
-                label: supplier.name,
-                value: supplier.id,
-              }))}
-            />
+
+          <Form.Item label="Supplier" required>
+            <Space.Compact className="w-full">
+              <Form.Item
+                name="supplierId"
+                rules={[
+                  {
+                    required: true,
+                    message: "Supplier is required",
+                  },
+                ]}
+                noStyle
+              >
+                <Select
+                  showSearch
+                  className="w-full"
+                  placeholder="Select supplier"
+                  loading={supplierLoading}
+                  optionFilterProp="label"
+                  options={(suppliers?.items ?? []).map((supplier) => ({
+                    label: supplier.name,
+                    value: supplier.id,
+                  }))}
+                />
+              </Form.Item>
+
+              <Tooltip title="Create supplier" placement="top">
+                <Button
+                  type="default"
+                  icon={<Wrench size={16} />}
+                  aria-label="Create supplier"
+                onClick={() => setSupplierOpen(true)}
+                />
+              </Tooltip>
+            </Space.Compact>
           </Form.Item>
+
 
           <Form.Item
             label="Warehouse"
@@ -357,6 +383,18 @@ const PurchaseOrderForm = () => {
           </Button>
         </Space>
       </Form>
+
+      <Modal
+        open={supplierOpen}
+        title="Create Supplier"
+        footer={null}
+        destroyOnHidden
+        onCancel={() => setSupplierOpen(false)}
+        width={700}
+      >
+        <CreateSupplierModal setSupplierOpen={setSupplierOpen} />
+      </Modal>
+
     </Card>
   );
 };

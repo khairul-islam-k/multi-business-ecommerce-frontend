@@ -43,6 +43,7 @@ const Warehouses = () => {
     sortOrder: "desc",
   });
 
+
   const { removeWarehouse } = useWarehouseMutation(businessId);
 
   const total = warehouses?.meta?.total ?? 0;
