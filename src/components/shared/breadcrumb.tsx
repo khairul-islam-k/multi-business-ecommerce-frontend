@@ -37,6 +37,26 @@ function formatLabel(
     .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
+
+function getRightUrl(url: string, index: number) {
+  if (index === 0) return '';
+
+  const withoutPage = [
+    "/admin/dashboard/suppliers/supplier/product",
+    "/admin/dashboard/product-catalog/variant/create",
+    "/admin/dashboard/product-catalog/variant/update",
+    "/admin/dashboard/product-catalog/variant/update/dfaeb5f0-8800-4d24-837f-7e747c626a54/variants",
+    "/admin/dashboard/product-catalog/variant/details",
+    "/admin/dashboard/product-catalog/variant/details/dfaeb5f0-8800-4d24-837f-7e747c626a54/variant"
+  ];
+
+  const isWithoutPage = withoutPage.includes(url);
+   
+  if (isWithoutPage) return '';
+  
+  return url;
+}
+
 const breadcrumbItemClass =
   "inline-flex h-6 max-w-36 items-center truncate leading-6";
 
@@ -48,14 +68,10 @@ export default function Breadcrumbs({
 }: BreadcrumbProps) {
   const pathname = usePathname();
 
-  console.log("pathname", pathname, sliceIndex, maxItems);
-
   const segments = pathname
     .split("/")
     .filter(Boolean)
     .slice(sliceIndex);
-
-  console.log("segments", segments);
 
   let currentPath = "";
 
@@ -89,8 +105,10 @@ export default function Breadcrumbs({
     const key = currentPath.slice(1);
     const fullPath = `${basePath}${currentPath}`;
 
+    if (isUUID(seg)) return;
+
     // Your existing redirect logic remains unchanged
-    const redirectUrl = index === 0 ? "" : fullPath;
+    const redirectUrl = getRightUrl(fullPath, index);
 
     const label = formatLabel(seg, labels, key);
     const isCurrentPage = pathname === fullPath;

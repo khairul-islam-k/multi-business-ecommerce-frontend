@@ -12,8 +12,10 @@ const TermCondition = async () => {
     }
   })
 
+  const terms = res.data.data.config.generalConfig.extraPage.termsAndConditions;
+
   if (res?.data?.data?.template === "FASHION") {
-    return <FashionTermCondition />;
+    return <FashionTermCondition terms={terms} />;
   }
 };
 

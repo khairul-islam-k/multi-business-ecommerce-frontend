@@ -3,7 +3,6 @@
 import SupplierProductsTable from "./_components/supplier-product-table";
 import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
-import Link from "next/link";
 
 const SupplierProducts = () => {
   return (

@@ -3,19 +3,24 @@
 import React, { useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+
 import ProductCard from "./product-card";
 import { useTemplateProductQuery } from "@/lib/api/hooks/public-website";
 
+const INTERACTIVE_SELECTOR =
+  'button, a, input, select, textarea, label, [role="button"], [data-no-drag]';
+
 const BestSellingProducts = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const {data: products} = useTemplateProductQuery({
-      // tagId: activeTab
-    });
 
+  const { data: products } = useTemplateProductQuery({
+    // tagId: activeTab,
+  });
+
+  const isPointerDownRef = useRef(false);
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const scrollLeftRef = useRef(0);
-
 
   const handleScrollLeft = () => {
     scrollRef.current?.scrollBy({
@@ -31,38 +36,77 @@ const BestSellingProducts = () => {
     });
   };
 
-  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
     if (!scrollRef.current) return;
 
-    isDraggingRef.current = true;
+    const target = event.target as HTMLElement;
+
+    // Do not start dragging when clicking a button, link, input, etc.
+    if (target.closest(INTERACTIVE_SELECTOR)) {
+      return;
+    }
+
+    isPointerDownRef.current = true;
+    isDraggingRef.current = false;
+
     startXRef.current = event.clientX;
     scrollLeftRef.current = scrollRef.current.scrollLeft;
-
-    scrollRef.current.setPointerCapture(event.pointerId);
   };
 
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || !scrollRef.current) return;
+  const handlePointerMove = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (!isPointerDownRef.current || !scrollRef.current) return;
 
     const moveX = event.clientX - startXRef.current;
-    scrollRef.current.scrollLeft = scrollLeftRef.current - moveX;
+
+    // Avoid treating a normal click as a drag.
+    if (Math.abs(moveX) < 5) {
+      return;
+    }
+
+    isDraggingRef.current = true;
+
+    if (!scrollRef.current.hasPointerCapture(event.pointerId)) {
+      scrollRef.current.setPointerCapture(event.pointerId);
+    }
+
+    scrollRef.current.scrollLeft =
+      scrollLeftRef.current - moveX;
   };
 
-  const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!scrollRef.current) return;
+  const stopDragging = (
+    event?: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (
+      event &&
+      scrollRef.current?.hasPointerCapture(event.pointerId)
+    ) {
+      scrollRef.current.releasePointerCapture(event.pointerId);
+    }
 
-    isDraggingRef.current = false;
-    scrollRef.current.releasePointerCapture(event.pointerId);
+    isPointerDownRef.current = false;
+
+    window.setTimeout(() => {
+      isDraggingRef.current = false;
+    }, 0);
   };
 
-  const handlePointerLeave = () => {
-    isDraggingRef.current = false;
+  const handleClickCapture = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    // Prevent a card/link click only when the user actually dragged.
+    if (isDraggingRef.current) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
   };
 
   return (
     <section className="bg-[var(--store-bg-3)] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-10 flex items-end justify-between gap-5">
           <div>
             <p className="mb-2 text-sm font-semibold uppercase tracking-[0.25em] text-[#f16d59]">
@@ -74,7 +118,6 @@ const BestSellingProducts = () => {
             </h2>
           </div>
 
-          {/* Buttons */}
           <div className="hidden items-center gap-3 sm:flex">
             <button
               type="button"
@@ -96,17 +139,17 @@ const BestSellingProducts = () => {
           </div>
         </div>
 
-        {/* Carousel */}
         <div
           ref={scrollRef}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerLeave}
-          className="flex cursor-grab select-none gap-6 overflow-x-auto scroll-smooth pb-4 active:cursor-grabbing [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          onPointerUp={stopDragging}
+          onPointerCancel={stopDragging}
+          onPointerLeave={stopDragging}
+          onClickCapture={handleClickCapture}
+          className="flex cursor-grab select-none gap-6 overflow-x-auto scroll-smooth pb-4 active:cursor-grabbing [touch-action:pan-y] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {
-          products?.items.map((product, index) => (
+          {products?.items?.map((product, index) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, x: 40 }}
@@ -124,7 +167,6 @@ const BestSellingProducts = () => {
           ))}
         </div>
 
-        {/* Mobile Buttons */}
         <div className="mt-8 flex items-center justify-center gap-3 sm:hidden">
           <button
             type="button"

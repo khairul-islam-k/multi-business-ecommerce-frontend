@@ -131,13 +131,13 @@ webApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 500) {
-      if (typeof window !== "undefined") {
-        window.location.href = "/internal-error";
-      }
+    // if (error.response?.status === 500) {
+    //   if (typeof window !== "undefined") {
+    //     window.location.href = "/internal-error";
+    //   }
 
-      return Promise.reject(error);
-    }
+    //   return Promise.reject(error);
+    // }
 
     if (!originalRequest || error.response?.status !== 401) {
       return Promise.reject(error);

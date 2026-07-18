@@ -28,8 +28,6 @@ export default function PageHeader({
   const width = useWidth();
   const { token } = theme.useToken();
 
-  console.log('bread', breadcrumb);
-
   return (
     <div
       className="w-full min-w-0 border-b pb-4"

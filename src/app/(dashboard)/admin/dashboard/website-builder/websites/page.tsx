@@ -70,9 +70,31 @@ const getActiveSubDomain = (domains: ResponseWebsiteDomain[]) => {
   return activeSubDomain ?? null;
 };
 
+// fallback copy
+const copyTextFallback = (text: string): boolean => {
+  const textarea = document.createElement("textarea");
+
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  textarea.style.left = "-9999px";
+
+  document.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+
+  const copied = document.execCommand("copy");
+
+  document.body.removeChild(textarea);
+
+  return copied;
+};
+
 const WebsiteList = () => {
   const router = useRouter();
-
   const business = useAuthStore((state) => state.selectedBusiness);
   const businessId = business?.id ?? "";
   const swal = useSwal();
@@ -84,19 +106,17 @@ const WebsiteList = () => {
   const [openDomainModal, setOpenDomainModal] = useState<boolean>(false);
   const [websiteId, setWebsiteId] = useState<string>("");
 
-  const { data: websites, isLoading, isFetching } = useWebsiteQuery(businessId);
+  const protocol = typeof window !== "undefined" ? window.location.protocol : "";
 
-  console.log('website', websites);
+  const { data: websites, isLoading, isFetching } = useWebsiteQuery(businessId);
 
   const website = getFirstWebsite(websites?.items);
 
   // TODO: handle it properly
   const activeSubDomain = getActiveSubDomain(website?.domains ?? []);
 
-  console.log('act', activeSubDomain);
-
   const storeUrl = activeSubDomain
-    ? `http://${activeSubDomain?.subdomain}:3000/store`
+    ? `${protocol}//${activeSubDomain?.subdomain}:3000/store`
     : "";
 
   const handleCopyStoreUrl = async () => {
@@ -105,8 +125,25 @@ const WebsiteList = () => {
       return;
     }
 
-    await navigator.clipboard.writeText(storeUrl);
-    swal.success("Store URL copied");
+    try {
+      if (window.isSecureContext && navigator.clipboard) {
+      await navigator.clipboard.writeText(storeUrl);
+    } else {
+      const copied = copyTextFallback(storeUrl);
+
+      if (!copied) {
+        throw new Error("Fallback copy failed");
+      }
+    }
+
+      swal.success("Store URL copied");
+    } catch (error) {
+      console.error("Failed to copy store URL:", error);
+
+      swal.error(
+        "Copy is blocked because the website is not running over HTTPS.",
+      );
+    }
   };
 
   const { removeWebsite, updatePublish, updateUnPublish } =

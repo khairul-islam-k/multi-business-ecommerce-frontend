@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import ProductReviewForm from "../_components/product_review_form";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useProductWebReview, useTemplateProduct } from "@/lib/api/hooks/public-website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
@@ -24,6 +24,7 @@ import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import VariantModal from "../_components/variant-modal";
 import { motion } from "framer-motion";
 import Pagination from "@/app/store/_components/pagination";
+import { useCart } from "@/app/store/_components/contex/CartContex";
 
 const RatingStars = ({ rating }: { rating: number }) => {
   return (
@@ -43,6 +44,10 @@ const ViewFashionProduct = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
+  const router = useRouter();
+
+  const { getAuthUser } = useCart();
+  const user = getAuthUser();
 
   const message = useMessage();
 
@@ -60,7 +65,7 @@ const ViewFashionProduct = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const limit = 5;
 
-  const {data: reviewData} = useProductWebReview(productSlug, {
+  const { data: reviewData } = useProductWebReview(productSlug, {
     limit,
     page: currentPage,
   });
@@ -77,6 +82,10 @@ const ViewFashionProduct = () => {
 
 
   const handleAddToCart = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
 
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
@@ -103,6 +112,10 @@ const ViewFashionProduct = () => {
   }
 
   const handleAddToWishList = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
 
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
@@ -218,8 +231,8 @@ const ViewFashionProduct = () => {
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.95 }}
                       className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 bg-[#f8f5f1] transition ${isActive
-                          ? "border-[#f16d59]"
-                          : "border-gray-200 hover:border-[#f16d59]/60"
+                        ? "border-[#f16d59]"
+                        : "border-gray-200 hover:border-[#f16d59]/60"
                         }`}
                     >
                       <Image
@@ -371,7 +384,7 @@ const ViewFashionProduct = () => {
             {/* Product Info */}
             <div className="mt-8 border-t border-gray-200 pt-6">
               <div className="space-y-3 text-sm">
-              
+
 
                 <p>
                   <span className="font-bold">Total Stock:</span>{" "}

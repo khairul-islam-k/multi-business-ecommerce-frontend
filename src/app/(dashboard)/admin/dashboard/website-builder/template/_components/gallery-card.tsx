@@ -30,14 +30,7 @@ const templates: TemplateItem[] = [
     category: "Fashion",
     description: "Clean fashion template for clothing and lifestyle brands.",
     image: fashionImg,
-  },
-  {
-    id: 3,
-    name: "Grocery Store",
-    category: "Grocery",
-    description: "Simple grocery template for food and daily needs.",
-    image: groceryImg,
-  },
+  }
 ];
 
 export default function GalleryCard() {
@@ -58,32 +51,31 @@ export default function GalleryCard() {
             className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
           >
             {/* Preview */}
-            <Link href="/store/myshop">
-              <div className="relative h-[250px] overflow-hidden bg-gray-100">
-                <motion.div
-                  className="w-full"
-                  initial={{ y: 0 }}
-                  whileHover={{ y: "-65%" }}
-                  transition={{
-                    duration: 5,
-                    ease: "linear",
-                  }}
-                >
-                  <Image
-                    src={template.image}
-                    alt={template.name}
-                    className="h-auto w-full"
-                    priority={template.id === 1}
-                  />
-                </motion.div>
 
-                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
-                  <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 opacity-0 shadow transition group-hover:opacity-100">
-                    Preview Template
-                  </span>
-                </div>
+            <div className="relative h-[250px] overflow-hidden bg-gray-100">
+              <motion.div
+                className="w-full"
+                initial={{ y: 0 }}
+                whileHover={{ y: "-65%" }}
+                transition={{
+                  duration: 5,
+                  ease: "linear",
+                }}
+              >
+                <Image
+                  src={template.image}
+                  alt={template.name}
+                  className="h-auto w-full"
+                  priority={template.id === 1}
+                />
+              </motion.div>
+
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/20">
+                <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-900 opacity-0 shadow transition group-hover:opacity-100">
+                  Preview Template
+                </span>
               </div>
-            </Link>
+            </div>
 
             {/* Content */}
             <div className="p-5">
@@ -103,20 +95,16 @@ export default function GalleryCard() {
               </p>
 
               <div className="mt-5 flex gap-3">
-                <button
-                  type="button"
-                  className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:opacity-90"
-                >
-                  Use Template
-                </button>
-
-                <button
-                  type="button"
-                  className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
-                >
-                  Details
-                </button>
+                <Link href="/admin/dashboard/website-builder/websites/create-website">
+                  <button
+                    type="button"
+                    className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white hover:opacity-90"
+                  >
+                    Use Template
+                  </button>
+                </Link>
               </div>
+
             </div>
           </div>
         ))}

@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, GitCompareArrows, Heart, ShoppingCart, Star } from "lucide-react";
+import { Eye, Heart, ShoppingCart, Star } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { StorefrontProduct } from "@/types/template/template-product";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
@@ -77,7 +77,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
       }
 
       try {
-        const res = await addWishList.mutateAsync({
+        await addWishList.mutateAsync({
           productId: product.id,
         });
 
@@ -145,14 +145,6 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
         {/* Bottom Icons */}
         <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 translate-y-8 items-center gap-3 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <button
-            type="button"
-            className="grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
-            aria-label="Compare"
-          >
-            <GitCompareArrows className="h-5 w-5" />
-          </button>
-
           <button
             type="button"
             disabled={!product.stockSummary.inStock}
