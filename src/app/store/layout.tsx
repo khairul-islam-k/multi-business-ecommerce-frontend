@@ -20,20 +20,15 @@ const WebsiteLayout = async ({
     },
   });
 
-  console.log(res.data.data.theme);
-
-  // const backendTheme = {
-  //    backgroundColor: 'red',
-  //    textColor: 'white',
-  //    primaryColor: 'yellow'
-  // }
 
   return (
     <div>
       <CartProvider>
 
         <ToastProviders >
-          <StoreThemeProvider backendTheme={res.data.data.theme}>
+          <StoreThemeProvider
+            sideBar={res.data.data.config.generalConfig.dashboardColors}
+            backendTheme={res.data.data.theme}>
             {children}
           </StoreThemeProvider>
         </ToastProviders>

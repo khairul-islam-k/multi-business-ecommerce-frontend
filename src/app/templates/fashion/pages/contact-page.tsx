@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import {
   Clock,
@@ -10,6 +11,9 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
+import { useTemplateProductReviewMutation } from "@/lib/api/hooks/template-product-review";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 
 const contactInfo = [
   {
@@ -39,6 +43,36 @@ const contactInfo = [
 ];
 
 const FashionContactPage = () => {
+  const message = useMessage();
+
+  const {contact} = useTemplateProductReviewMutation();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    const values = {
+      name: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      subject: formData.get("subject") as string,
+      message: formData.get("message") as string,
+    };
+
+    try {
+    await contact.mutateAsync(values);
+
+    message.success("Contact message submitted successfully");
+    form.reset();
+  } catch (error) {
+
+    message.error(getWebErrorMessage(error));
+  }
+    
+  };
+
   return (
     <main className="">
       {/* Hero */}
@@ -191,7 +225,9 @@ const FashionContactPage = () => {
                 possible.
               </p>
 
-              <form className="mt-8 space-y-5">
+              <form
+                onSubmit={handleSubmit}
+                className="mt-8 space-y-5">
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm font-semibold">
@@ -199,6 +235,7 @@ const FashionContactPage = () => {
                     </label>
                     <input
                       type="text"
+                      name="name"
                       placeholder="Enter your name"
                       className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                     />
@@ -209,7 +246,8 @@ const FashionContactPage = () => {
                       Phone Number
                     </label>
                     <input
-                      type="text"
+                      type="number"
+                      name="phone"
                       placeholder="Enter phone number"
                       className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                     />
@@ -218,10 +256,12 @@ const FashionContactPage = () => {
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold">
-                    Email Address
+                    Email Address *
                   </label>
                   <input
                     type="email"
+                    name="email"
+                    required
                     placeholder="Enter email address"
                     className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                   />
@@ -233,6 +273,7 @@ const FashionContactPage = () => {
                   </label>
                   <input
                     type="text"
+                    name="subject"
                     placeholder="Enter subject"
                     className="h-12 w-full bg-[var(--store-bg-1)] rounded-full border border-gray-200 px-5 text-sm outline-none transition focus:border-[#f16d59]"
                   />
@@ -244,6 +285,7 @@ const FashionContactPage = () => {
                   </label>
                   <textarea
                     rows={5}
+                    name="message"
                     placeholder="Write your message..."
                     className="w-full bg-[var(--store-bg-1)] resize-none rounded-3xl border border-gray-200 px-5 py-4 text-sm outline-none transition focus:border-[#f16d59]"
                   />

@@ -20,9 +20,12 @@ import {
 } from "@/lib/api/hooks/public-website";
 import Loader from "@/components/shared/loader";
 import { SortOrder } from "@/lib/api";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type ProductProps = {
   categoryId?: string;
+  theme?: ThemeConfig;
+  dashboardColor?: DashboardColors;
 };
 
 type Category = {
@@ -59,9 +62,8 @@ const CategorySidebarItem = ({
       <button
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
-        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${
-          isActive ? "text-[#f16d59]" : " hover:text-[#f16d59]"
-        }`}
+        className={`flex w-full items-center justify-between py-2 text-left text-sm font-medium transition ${isActive ? "text-[#f16d59]" : " hover:text-[#f16d59]"
+          }`}
       >
         <span>{item.category.name}</span>
 
@@ -98,7 +100,11 @@ const CategorySidebarItem = ({
   );
 };
 
-const FashionProduct = ({ categoryId }: ProductProps) => {
+const FashionProduct = ({
+  categoryId,
+  theme,
+  dashboardColor
+}: ProductProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -142,9 +148,8 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
           <button
             type="button"
             onClick={handleClearCategory}
-            className={`mt-5 block w-full text-left text-sm font-medium transition ${
-              !categoryId ? "text-[#f16d59]" : "hover:text-[#f16d59]"
-            }`}
+            className={`mt-5 block w-full text-left text-sm font-medium transition ${!categoryId ? "text-[#f16d59]" : "hover:text-[#f16d59]"
+              }`}
           >
             All Products
           </button>
@@ -209,11 +214,10 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "list"
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "list"
                     ? "border-[#f16d59] bg-[#f16d59] text-white"
                     : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
-                }`}
+                  }`}
               >
                 <List className="h-6 w-6" />
               </button>
@@ -221,11 +225,10 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`grid h-12 w-12 place-items-center rounded-md border transition ${
-                  viewMode === "grid"
+                className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "grid"
                     ? "border-[#f16d59] bg-[#f16d59] text-white"
                     : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
-                }`}
+                  }`}
               >
                 <Grid2X2 className="h-6 w-6" />
               </button>
@@ -248,6 +251,8 @@ const FashionProduct = ({ categoryId }: ProductProps) => {
                   viewMode={viewMode}
                   key={product.id}
                   product={product}
+                  theme={theme}
+                  dashboardColor={dashboardColor}
                 />
               ))}
             </div>

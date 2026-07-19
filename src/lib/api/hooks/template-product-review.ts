@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { CategoriesQuery } from "../types";
-import { CreateProductReviewPayload } from "@/types/template/product-review";
+import { contactPayload, CreateProductReviewPayload } from "@/types/template/product-review";
 import { templateProductReview } from "../templater-product-review";
 import { templateAuthApi } from "../template-auth";
 
@@ -37,6 +37,12 @@ export function useTemplateProductReviewMutation() {
         createReview: useMutation({
             mutationFn: (payload: CreateProductReviewPayload) =>
                 templateProductReview.create(payload),
+            onSuccess: invalidate,
+        }),
+
+        contact: useMutation({
+            mutationFn: (payload: contactPayload) =>
+                templateProductReview.contact(payload),
             onSuccess: invalidate,
         }),
 

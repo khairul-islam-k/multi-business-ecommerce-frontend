@@ -821,7 +821,7 @@ export default function WebsiteTemplateForm({
 
                             <Col xs={24}>
                               <Form.Item
-                                label="About Us"
+                                label="Privacy Policy"
                                 name={["config", "generalConfig", "extraPage", "about"]}
                               >
                                 <Input.TextArea

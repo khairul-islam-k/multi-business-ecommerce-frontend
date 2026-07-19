@@ -9,7 +9,7 @@ const FashionPrivacy = ({ privacy }: PrivacyProps) => {
   return (
     <main className="min-h-screen bg-[var(--store-bg-1)]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[var(--store-bg-2)] py-10 sm:py-10 lg:py-15">
+      <section className="relative overflow-hidden bg-[var(--store-bg-1)] py-10 sm:py-10 lg:py-15">
         <div className="absolute -left-20 top-10 h-56 w-56 rounded-full bg-[#f16d59]/10 blur-3xl" />
 
         <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-[#f16d59]/10 blur-3xl" />
@@ -40,7 +40,7 @@ const FashionPrivacy = ({ privacy }: PrivacyProps) => {
       </section>
 
       {/* Privacy Text */}
-      <section className="bg-[var(--store-bg-2)]">
+      <section className="bg-[var(--store-bg-1)]">
         <article className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pb-9">
           {privacy?.trim() ? (
             <div className="whitespace-pre-line break-words text-sm leading-7 sm:text-base sm:leading-8">

@@ -28,7 +28,7 @@ const FashionCreateCustomerAddress = () => {
   };
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-10 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-3)] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl">
         <div className="mb-6">
           <Link

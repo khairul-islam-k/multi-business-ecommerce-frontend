@@ -12,8 +12,14 @@ const FrequentlyAskPart = async () => {
         }
     })
 
+    console.log('faq',res.data.data.config.generalConfig.faqs);
+
+    const faqs = res.data.data.config.generalConfig.faqs;
+
     if (res?.data?.data?.template === "FASHION") {
-        return <FashionFAQ />;
+        return <FashionFAQ
+        faqs={faqs}
+        />;
     }
 };
 

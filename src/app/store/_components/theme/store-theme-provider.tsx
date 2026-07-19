@@ -8,18 +8,9 @@ import React, {
   type ReactNode,
 } from "react";
 import styles from "../store-theme.module.css";
-import { ThemeConfig } from "@/types/website/website";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type StoreThemeMode = "light" | "dark";
-
-type BackendTheme = {
-  primaryColor?: string | null;
-  secondaryColor?: string | null;
-  backgroundColor?: string | null;
-  textColor?: string | null;
-  borderColor?: string | null;
-  cardColor?: string | null;
-};
 
 type StoreThemeContextType = {
   mode: StoreThemeMode;
@@ -35,6 +26,9 @@ type ThemeStyle = React.CSSProperties & {
   "--store-text"?: string;
   "--store-muted"?: string;
   "--store-border"?: string;
+
+  "--store-sidebar-bg"?: string;
+  "--store-sidebar-text"?: string;
 
   "--store-primary"?: string;
   "--store-secondary"?: string;
@@ -55,11 +49,13 @@ const STORE_THEME_MODE_KEY = "store_theme_mode";
 type StoreThemeProviderProps = {
   children: ReactNode;
   backendTheme?: ThemeConfig | null;
+  sideBar: DashboardColors
 };
 
 export function StoreThemeProvider({
   children,
   backendTheme,
+  sideBar
 }: StoreThemeProviderProps) {
   const [mode, setModeState] = useState<StoreThemeMode>("light");
 
@@ -90,10 +86,13 @@ export function StoreThemeProvider({
    * Dark mode colors come from StoreTheme.module.css.
    */
   const lightStyle: ThemeStyle = {
-  "--store-bg-1": "#ffffff",
+  "--store-bg-1": backendTheme?.accentColor || "#ffffff",
   "--store-bg-2": backendTheme?.primaryColor || "#fef8ee",
   "--store-bg-3": backendTheme?.secondaryColor || "#f6f6f6",
-  "--store-card": "#ffffff",
+  "--store-card": sideBar?.cardColor || "#ffffff",
+
+  "--store-sidebar-bg": sideBar?.sidebarBackgroundColor || "#ffffff",
+  "--store-sidebar-text": sideBar?.sidebarTextColor || "#111827",
 
   "--store-text": "#111827",
   "--store-muted": "#6b7280",

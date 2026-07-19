@@ -386,15 +386,15 @@ const FashionOrderReturn = () => {
                         )}
 
                         <div className="mt-3 flex flex-wrap gap-2">
-                          <span className="rounded-full bg-[var(--store-secondary,#f8f5f1)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
+                          <span className="rounded-full bg-[var(--store-bg-3)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
                             Ordered Qty: {maxQuantity}
                           </span>
 
-                          <span className="rounded-full bg-[var(--store-secondary,#f8f5f1)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
+                          <span className="rounded-full bg-[var(--store-bg-3)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
                             Unit: {formatCurrency(item.unitPrice)}
                           </span>
 
-                          <span className="rounded-full bg-[var(--store-secondary,#f8f5f1)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
+                          <span className="rounded-full bg-[var(--store-bg-3)] px-3 py-1 text-xs font-semibold text-[var(--store-muted,#6b7280)]">
                             Total: {formatCurrency(item.lineTotal)}
                           </span>
                         </div>

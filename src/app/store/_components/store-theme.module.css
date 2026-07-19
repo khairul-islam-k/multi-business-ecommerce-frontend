@@ -11,10 +11,12 @@
 /* Light mode */
 .light {
   --store-bg-1: #ffffff;
+  --store-sidebar-bg: #ffffff;
   --store-bg-2: #fef8ee;
   --store-bg-3: #f6f6f6;
   --store-card: #ffffff;
   --store-text: #111827;
+  --store-sidebar-text: #111827;
   --store-muted: #6b7280;
   --store-border: #e5e7eb;
 
@@ -34,6 +36,7 @@
 /* Dark mode */
 .dark {
   --store-bg-1: #020617;
+  --store-sidebar-bg: #020617;
   /* Deep navy */
   --store-bg-2: #0f172a;
   /* Slate dark */
@@ -41,6 +44,7 @@
   /* Soft dark blue */
   --store-card: #0f172a;
   --store-text: #f8fafc;
+  --store-sidebar-text: #f8fafc;
   --store-muted: #94a3b8;
   --store-border: #1e293b;
 

@@ -35,3 +35,12 @@ export type ProductReviewResponse = {
   updatedAt: string;
   deletedAt: string | null;
 };
+
+
+export type contactPayload = {
+  name: string;
+  phone: string;
+  email: string
+  subject?: string;
+  message?: string;
+}

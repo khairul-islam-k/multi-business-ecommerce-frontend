@@ -12,14 +12,23 @@ import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
 import { useCart } from "@/app/store/_components/contex/CartContex";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type Props = {
   product: StorefrontProduct;
   viewMode?: "grid" | "list";
   activeId?: string;
+    theme?: ThemeConfig;
+  dashboardColor?: DashboardColors;
 };
 
-const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
+const ProductCard = ({
+  product,
+  viewMode = "grid",
+  activeId,
+  theme,
+  dashboardColor,
+}: Props) => {
   const thumbnail =
     product.images.find((image) => image.isThumbnail)?.imageUrl ||
     product.images[0]?.imageUrl;
@@ -95,7 +104,7 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
 
   return (
     <div
-      className={`group overflow-hidden border border-gray-200 bg-[var(--store-bg-1)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isList ? "lg:flex lg:items-stretch" : ""
+      className={`group overflow-hidden border border-gray-200 bg-[var(--store-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${isList ? "lg:flex lg:items-stretch" : ""
         }`}
     >
       {/* Image Area */}
@@ -241,6 +250,8 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
         product={product}
         open={variantModalOpen}
         onClose={() => setVariantModalOpen(false)}
+        dashboardColor={dashboardColor}
+        theme={theme}
       />
     </div>
   );

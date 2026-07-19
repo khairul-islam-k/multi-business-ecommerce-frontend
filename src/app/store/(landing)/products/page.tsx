@@ -23,6 +23,10 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
         }
     })
 
+    console.log('product', res.data.data.config.generalConfig.dashboardColors);
+    const theme = res.data.data.theme
+    const dashboardColor = res.data.data.config.generalConfig.dashboardColors;
+
     if (res?.data?.data?.template === "ELECTRONIC") {
         return (
             <ElectronicProduct categoryId={categoryId} />
@@ -31,7 +35,10 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
 
     if (res?.data?.data?.template === "FASHION") {
         return (
-            <FashionProduct categoryId={categoryId} />
+            <FashionProduct 
+            theme={theme}
+            dashboardColor={dashboardColor}
+            categoryId={categoryId} />
         );
     }
 };

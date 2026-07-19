@@ -88,7 +88,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={`
-          fixed left-0 top-0 z-50 h-screen bg-[var(--store-bg-1)] shadow-xl transition-all duration-300
+          fixed left-0 top-0 z-50 h-screen bg-[var(--store-sidebar-bg)] text-[var(--store-sidebar-text)] shadow-xl transition-all duration-300
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
           ${sidebarCollapsed ? "lg:w-20" : "lg:w-72"}
           w-72 lg:translate-x-0
@@ -181,13 +181,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Topbar Right */}
             <div className="flex items-center gap-3">
               <StoreThemeToggle />
-
-              <button
-                type="button"
-                className="hidden rounded-xl border px-4 py-2 text-sm font-medium transition hover:bg-gray-50 sm:block"
-              >
-                View Store
-              </button>
 
               <AvatarDropdown />
             </div>

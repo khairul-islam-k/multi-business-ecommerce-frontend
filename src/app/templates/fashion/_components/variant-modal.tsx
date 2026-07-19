@@ -13,6 +13,8 @@ import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/p
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
+import { useStoreTheme } from "@/app/store/_components/theme/store-theme-provider";
 
 type ProductVariant = NonNullable<StorefrontProduct["variants"]>[number];
 
@@ -20,16 +22,27 @@ type Props = {
     product: StorefrontProduct;
     open: boolean;
     onClose: () => void;
+    theme?: ThemeConfig;
+    dashboardColor?: DashboardColors;
 };
 
 const VariantModal = ({
     product,
     open,
     onClose,
+    theme,
+    dashboardColor
 }: Props) => {
     const message = useMessage();
     const { createAddCart } = useAddCartMutation();
     const { addWishList } = useTemplateProductWishListMutation();
+
+    const { mode } = useStoreTheme();
+
+    const baseColor = mode === 'light' ? (theme?.accentColor || '#ffffff') : '#020617';
+    const cardColor = mode === 'light' ? (dashboardColor?.cardColor || '#ffffff'): '#0f172a';
+
+    console.log('base', baseColor);
 
     useEffect(() => {
         if (!open) return;
@@ -114,7 +127,7 @@ const VariantModal = ({
             />
 
             {/* Modal Box */}
-            <div className="relative z-10 max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div className={`relative z-10 max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-2xl`}>
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4 sm:px-6">
                     <div>

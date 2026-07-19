@@ -8,12 +8,11 @@ type FashionTermConditionProps = {
 const FashionTermCondition = ({
   terms,
 }: FashionTermConditionProps) => {
-  const termsText = terms?.trim();
 
   return (
     <main className="min-h-screen bg-[var(--store-bg-1)]">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-[var(--store-bg-2)] py-14 sm:py-16 lg:py-20">
+      <section className="relative overflow-hidden bg-[var(--store-bg-1)] py-14 sm:py-16 lg:py-20">
         <div className="absolute -left-20 top-10 h-56 w-56 rounded-full bg-[#f16d59]/10 blur-3xl" />
 
         <div className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-[#f16d59]/10 blur-3xl" />
@@ -43,25 +42,17 @@ const FashionTermCondition = ({
         </div>
       </section>
 
-      {/* Terms Text */}
-      <section className="py-10 sm:py-12 lg:py-16">
-        <article className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
-          {termsText ? (
-            <div className="whitespace-pre-line break-words text-sm leading-7 text-gray-600 sm:text-base sm:leading-8">
-              {termsText}
+      {/* Privacy Text */}
+      <section className="bg-[var(--store-bg-1)]">
+        <article className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 pb-9">
+          {terms?.trim() ? (
+            <div className="whitespace-pre-line break-words text-sm leading-7 sm:text-base sm:leading-8">
+              {terms}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-[var(--store-bg-2)] px-5 py-12 text-center">
-              <FileText className="mx-auto h-10 w-10 text-gray-400" />
-
-              <h2 className="mt-4 text-lg font-semibold">
-                Terms and conditions are not available
-              </h2>
-
-              <p className="mt-2 text-sm text-gray-500">
-                The terms and conditions content has not been added yet.
-              </p>
-            </div>
+            <p className="text-center text-sm text-gray-500">
+              Privacy policy is not available.
+            </p>
           )}
         </article>
       </section>

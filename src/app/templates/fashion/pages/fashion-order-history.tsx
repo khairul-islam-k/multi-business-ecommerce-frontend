@@ -24,7 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 import React, { useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
-import PaymentGatewayModal from "../_components/payment/payment-gateway-modal";
+import PaymentGatewayModal from "../../fashion/_components/payment/payment-gateway-modal";
 
 type PaginationMeta = {
   page: number;
@@ -359,7 +359,7 @@ function OrderActionDropdown({
             <button
               type="button"
               onClick={handleGoToDetail}
-              className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold text-[var(--store-text,#111827)] transition hover:bg-[var(--store-secondary,#f8f5f1)]"
+              className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-semibold transition"
             >
               <Eye className="size-4" />
               Detail
@@ -728,7 +728,7 @@ export default function FashionOrderHistory() {
                 return (
                   <div
                     key={order.id}
-                    className="rounded-3xl bg-[var(--store-card,#ffffff)] p-5 shadow-sm"
+                    className="rounded-3xl bg-[var(--store-card,#ffffff)] p-5 shadow-sm border-[var(--store-border)] border"
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
@@ -756,7 +756,7 @@ export default function FashionOrderHistory() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-3">
+                      <div className="rounded-2xl bg-[var(--store-bg-1,#f8f5f1)] p-3">
                         <p className="text-xs text-[var(--store-muted,#6b7280)]">
                           Items
                         </p>
@@ -767,7 +767,7 @@ export default function FashionOrderHistory() {
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-3">
+                      <div className="rounded-2xl bg-[var(--store-bg-1)] p-3">
                         <p className="text-xs text-[var(--store-muted,#6b7280)]">
                           Amount
                         </p>
@@ -777,7 +777,7 @@ export default function FashionOrderHistory() {
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-3">
+                      <div className="rounded-2xl bg-[var(--store-bg-1,#f8f5f1)] p-3">
                         <p className="text-xs text-[var(--store-muted,#6b7280)]">
                           Payment
                         </p>
@@ -788,7 +788,7 @@ export default function FashionOrderHistory() {
                         </p>
                       </div>
 
-                      <div className="rounded-2xl bg-[var(--store-secondary,#f8f5f1)] p-3">
+                      <div className="rounded-2xl bg-[var(--store-bg-1)] p-3">
                         <p className="text-xs text-[var(--store-muted,#6b7280)]">
                           Paid
                         </p>
@@ -825,7 +825,7 @@ export default function FashionOrderHistory() {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1100px] border-collapse">
                   <thead>
-                    <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)] text-left">
+                    <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] text-left">
                       <th className="px-5 py-4 text-xs font-bold uppercase tracking-wide text-[var(--store-muted,#6b7280)]">
                         Order
                       </th>

@@ -12,7 +12,7 @@ const PrivacyPolicy = async () => {
         }
     })
 
-    const privacy = res.data.data.config.generalConfig.extraPage.termsAndConditions;
+    const privacy = res.data.data.config.generalConfig.extraPage.about;
 
     if (res?.data?.data?.template === "FASHION") {
         return <FashionPrivacy privacy={privacy} />;

@@ -12,7 +12,7 @@ export default function StoreThemeToggle() {
     <button
       type="button"
       onClick={toggleTheme}
-      className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--store-border)] bg-[var(--store-card)] px-4 text-sm font-semibold text-[var(--store-text)] transition hover:bg-[var(--store-secondary)]"
+      className="inline-flex h-10 items-center gap-2 rounded-full border border-[var(--store-border)] bg-[var(--store-card)] px-4 text-sm font-semibold text-[var(--store-text)] transition hover:bg-[var(--store-secondary)] hover:text-white"
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
 
