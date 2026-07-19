@@ -17,13 +17,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { CalendarDays, X } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 
 import { DayPicker } from "react-day-picker";
 import OverviewCard from "../_components/onverview/overview-card";
-import { format } from "date-fns";
+import { endOfDay, endOfMonth, format, startOfDay, startOfMonth } from "date-fns";
 import { useCustomerOverviewQuery } from "@/lib/api/hooks/customer-overview";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 const DONUT_COLORS = [
   "#1677ff",
@@ -80,34 +81,6 @@ const formatCompactCurrency = (value: number) => {
 };
 
 /**
- * Convert selected Date object to API start date format.
- * Example output: 2026-06-01T00:00:00.000Z
- */
-const toStartOfDayISOString = (date: Date) => {
-  return new Date(
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0),
-  ).toISOString();
-};
-
-/**
- * Convert selected Date object to API end date format.
- * Example output: 2026-06-30T23:59:59.999Z
- */
-const toEndOfDayISOString = (date: Date) => {
-  return new Date(
-    Date.UTC(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      23,
-      59,
-      59,
-      999,
-    ),
-  ).toISOString();
-};
-
-/**
  * Reusable chart card wrapper.
  */
 const ChartCard = ({
@@ -133,32 +106,36 @@ const FashionDashboard = () => {
    */
   const [chartView, setChartView] = useState<"date" | "month">("month");
 
-  /**
-   * API date filter state.
-   * These values will go to API query params.
-   */
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
-  /**
-   * Calendar popup open/close state.
-   */
+  const [fromDateValue, setFromDateValue] = useState<Date>();
+  const [toDateValue, setToDateValue] = useState<Date>();
+
   const [fromPickerOpen, setFromPickerOpen] = useState(false);
   const [toPickerOpen, setToPickerOpen] = useState(false);
 
-  /**
-   * Selected date values for UI display.
-   */
-  const [fromDateValue, setFromDateValue] = useState<Date>();
-  const [toDateValue, setToDateValue] = useState<Date>();
+  const handleViewChange = (view: "date" | "month") => {
+    setChartView(view);
+
+    // Clear previous selected values
+    setFromDate("");
+    setToDate("");
+    setFromDateValue(undefined);
+    setToDateValue(undefined);
+    setFromPickerOpen(false);
+    setToPickerOpen(false);
+  };
 
   /**
    * Fetch overview data.
    * When fromDate or toDate changes, query will refetch if your hook queryKey includes params.
    */
+  const todayEnd = dayjs().endOf("day").toISOString();
+
   const { data: customers } = useCustomerOverviewQuery({
     from: fromDate || undefined,
-    to: toDate || undefined,
+    to: toDate || todayEnd,
   });
 
   const cards = customers?.cards ?? [];
@@ -206,157 +183,173 @@ const FashionDashboard = () => {
 
   return (
     <div className="space-y-6">
+      
       {/* Filter and chart view controls */}
       <div className="rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-5 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          {/* Date / Month toggle */}
+          {/* Toggle */}
           <div className="inline-flex w-fit rounded-xl bg-[var(--store-bg-3)] p-1">
             <button
               type="button"
-              onClick={() => setChartView("date")}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                chartView === "date"
+              onClick={() => handleViewChange("date")}
+              className={`rounded-lg px-4 py-2 text-sm font-medium ${chartView === "date"
                   ? "bg-[var(--store-bg-1)] shadow-sm"
-                  : "text-slate-500 hover:text-slate-900"
-              }`}
+                  : "text-slate-500"
+                }`}
             >
               Date
             </button>
 
             <button
               type="button"
-              onClick={() => setChartView("month")}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
-                chartView === "month"
+              onClick={() => handleViewChange("month")}
+              className={`rounded-lg px-4 py-2 text-sm font-medium ${chartView === "month"
                   ? "bg-[var(--store-bg-1)] shadow-sm"
-                  : "text-slate-500 hover:text-slate-900"
-              }`}
+                  : "text-slate-500"
+                }`}
             >
               Month
             </button>
           </div>
 
-          {/* Beautiful custom calendar filter */}
-          <div className="flex flex-col gap-3 sm:flex-row">
-            {/* From Date */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setFromPickerOpen((prev) => !prev);
-                  setToPickerOpen(false);
+          {/* Month picker */}
+          {chartView === "month" ? (
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                type="month"
+                value={
+                  fromDateValue ? format(fromDateValue, "yyyy-MM") : ""
+                }
+                onChange={(event) => {
+                  const value = event.target.value;
+
+                  if (!value) {
+                    setFromDateValue(undefined);
+                    setFromDate("");
+                    return;
+                  }
+
+                  const selectedDate = new Date(`${value}-01T00:00:00`);
+                  const firstDay = startOfMonth(selectedDate);
+
+                  setFromDateValue(firstDay);
+                  setFromDate(firstDay.toISOString());
                 }}
-                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              >
-                <span
-                  className={fromDateValue ? "text-slate-800" : "text-slate-400"}
-                >
-                  {fromDateValue
-                    ? format(fromDateValue, "dd MMM yyyy")
-                    : "From date"}
-                </span>
+                className="h-11 min-w-[180px] rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm outline-none"
+              />
 
-                <CalendarDays size={18} className="text-slate-400" />
-              </button>
+              <input
+                type="month"
+                value={toDateValue ? format(toDateValue, "yyyy-MM") : ""}
+                min={
+                  fromDateValue
+                    ? format(fromDateValue, "yyyy-MM")
+                    : undefined
+                }
+                onChange={(event) => {
+                  const value = event.target.value;
 
-              {fromPickerOpen && (
-                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-[var(--store-bg-1)] p-3 shadow-xl">
-                  <DayPicker
-                    mode="single"
-                    selected={fromDateValue}
-                    onSelect={(date) => {
-                      if (!date) return;
+                  if (!value) {
+                    setToDateValue(undefined);
+                    setToDate("");
+                    return;
+                  }
 
-                      setFromDateValue(date);
-                      setFromDate(toStartOfDayISOString(date));
-                      setFromPickerOpen(false);
+                  const selectedDate = new Date(`${value}-01T00:00:00`);
+                  const lastDay = endOfMonth(selectedDate);
 
-                      /**
-                       * Optional:
-                       * If from date is greater than to date,
-                       * clear to date.
-                       */
-                      if (toDateValue && date > toDateValue) {
-                        setToDateValue(undefined);
-                        setToDate("");
-                      }
-                    }}
-                    captionLayout="dropdown"
-                    className="text-sm"
-                  />
-
-                  {fromDateValue && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFromDateValue(undefined);
-                        setFromDate("");
-                        setFromPickerOpen(false);
-                      }}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-200"
-                    >
-                      <X size={16} />
-                      Clear date
-                    </button>
-                  )}
-                </div>
-              )}
+                  setToDateValue(lastDay);
+                  setToDate(lastDay.toISOString());
+                }}
+                className="h-11 min-w-[180px] rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm outline-none"
+              />
             </div>
-
-            {/* To Date */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => {
-                  setToPickerOpen((prev) => !prev);
-                  setFromPickerOpen(false);
-                }}
-                className="flex h-11 min-w-[180px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-[var(--store-bg-1)] px-4 text-sm text-slate-700 shadow-sm transition hover:border-blue-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              >
-                <span
-                  className={toDateValue ? "text-slate-800" : "text-slate-400"}
+          ) : (
+            /* Date picker */
+            <div className="flex flex-col gap-3 sm:flex-row">
+              {/* From date */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFromPickerOpen((previous) => !previous);
+                    setToPickerOpen(false);
+                  }}
+                  className="flex h-11 min-w-[180px] items-center justify-between rounded-xl border border-slate-200 px-4 text-sm"
                 >
-                  {toDateValue ? format(toDateValue, "dd MMM yyyy") : "To date"}
-                </span>
+                  <span>
+                    {fromDateValue
+                      ? format(fromDateValue, "dd MMM yyyy")
+                      : "From date"}
+                  </span>
 
-                <CalendarDays size={18} className="text-slate-400" />
-              </button>
+                  <CalendarDays size={18} />
+                </button>
 
-              {toPickerOpen && (
-                <div className="absolute right-0 z-50 mt-3 rounded-2xl border border-slate-200 bg-[var(--store-bg-1)] p-3 shadow-xl">
-                  <DayPicker
-                    mode="single"
-                    selected={toDateValue}
-                    onSelect={(date) => {
-                      if (!date) return;
+                {fromPickerOpen && (
+                  <div className="absolute right-0 z-50 mt-2 rounded-xl border bg-[var(--store-bg-1)] p-3 shadow-xl">
+                    <DayPicker
+                      mode="single"
+                      selected={fromDateValue}
+                      onSelect={(date) => {
+                        if (!date) return;
 
-                      setToDateValue(date);
-                      setToDate(toEndOfDayISOString(date));
-                      setToPickerOpen(false);
-                    }}
-                    captionLayout="dropdown"
-                    disabled={fromDateValue ? { before: fromDateValue } : undefined}
-                    className="text-sm"
-                  />
+                        setFromDateValue(date);
+                        setFromDate(startOfDay(date).toISOString());
+                        setFromPickerOpen(false);
 
-                  {toDateValue && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setToDateValue(undefined);
-                        setToDate("");
+                        if (toDateValue && date > toDateValue) {
+                          setToDateValue(undefined);
+                          setToDate("");
+                        }
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* To date */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setToPickerOpen((previous) => !previous);
+                    setFromPickerOpen(false);
+                  }}
+                  className="flex h-11 min-w-[180px] items-center justify-between rounded-xl border border-slate-200 px-4 text-sm"
+                >
+                  <span>
+                    {toDateValue
+                      ? format(toDateValue, "dd MMM yyyy")
+                      : "To date"}
+                  </span>
+
+                  <CalendarDays size={18} />
+                </button>
+
+                {toPickerOpen && (
+                  <div className="absolute right-0 z-50 mt-2 rounded-xl border bg-[var(--store-bg-1)] p-3 shadow-xl">
+                    <DayPicker
+                      mode="single"
+                      selected={toDateValue}
+                      disabled={
+                        fromDateValue
+                          ? { before: fromDateValue }
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        if (!date) return;
+
+                        setToDateValue(date);
+                        setToDate(endOfDay(date).toISOString());
                         setToPickerOpen(false);
                       }}
-                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-200"
-                    >
-                      <X size={16} />
-                      Clear date
-                    </button>
-                  )}
-                </div>
-              )}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

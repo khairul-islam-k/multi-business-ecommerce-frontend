@@ -26,15 +26,22 @@ const iconBgMap: Record<CustomerDashboardCard["key"], string> = {
 };
 
 const formatCardValue = (stat: CustomerDashboardCard) => {
+  const commonOptions: Intl.NumberFormatOptions = {
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  };
+
+
   if (stat.format === "currency") {
     return new Intl.NumberFormat("en-BD", {
+      ...commonOptions,
       style: "currency",
-      currency: stat.currencyCode ?? "BDT",
-      maximumFractionDigits: 0,
+      currency: stat.currencyCode ?? "BDT"
     }).format(stat.value);
   }
 
-  return new Intl.NumberFormat("en-BD").format(stat.value);
+  return new Intl.NumberFormat("en-BD", commonOptions).format(stat.value);
 };
 
 export default function OverviewCard({
