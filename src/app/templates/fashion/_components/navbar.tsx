@@ -21,6 +21,7 @@ import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
 import LogoComponent from "./logo/logo-component";
+import { FAQItem } from "@/types/website/website";
 
 type Category = {
   id: string;
@@ -36,21 +37,6 @@ type CategoryTreeItem = {
   category: Category;
   children: CategoryTreeItem[];
 };
-
-const pageLinks = [
-  {
-    label: "Contact Us",
-    href: "/store/contact",
-  },
-  {
-    label: "Privacy & Policy",
-    href: "/store/privacy",
-  },
-  {
-    label: "Term & Condition",
-    href: "/store/term-condition",
-  },
-];
 
 const IconButton = ({
   href,
@@ -178,9 +164,42 @@ const MobileCategoryItem = ({
   );
 };
 
-const FashionNavbar = () => {
+type NavbarProps = {
+  faqs?: FAQItem[]
+  privacy?: string;
+  terms?: string;
+}
+
+const FashionNavbar = ({
+  faqs,
+  privacy,
+  terms
+}: NavbarProps) => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const pageLinks: Array<{
+    label: string;
+    href: string;
+  }> = [
+      ...(privacy
+        ? [
+          {
+            label: "Privacy Policy",
+            href: "/store/privacy",
+          },
+        ]
+        : []),
+
+      ...(terms
+        ? [
+          {
+            label: "Terms & Conditions",
+            href: "/store/term-condition",
+          },
+        ]
+        : []),
+    ];
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -322,17 +341,20 @@ const FashionNavbar = () => {
           </div>
 
           {/* FAQ */}
-          <Link
-            href="/store/faq"
-            aria-current={isActive("/store/faq") ? "page" : undefined}
-            className={desktopLinkClass("/store/faq")}
-          >
-            FAQ
+          {
+            faqs &&
+            <Link
+              href="/store/faq"
+              aria-current={isActive("/store/faq") ? "page" : undefined}
+              className={desktopLinkClass("/store/faq")}
+            >
+              FAQ
 
-            {isActive("/store/faq") && (
-              <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-            )}
-          </Link>
+              {isActive("/store/faq") && (
+                <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
+              )}
+            </Link>
+          }
 
           {/* Contact */}
           <Link
@@ -350,13 +372,6 @@ const FashionNavbar = () => {
 
         {/* Right icons */}
         <div className="flex items-center justify-end gap-2">
-          <IconButton
-            href="/search"
-            label="Search"
-            className="hidden lg:grid"
-          >
-            <Search className="h-5 w-5" />
-          </IconButton>
 
           <IconButton
             href="/store/dashboard/wishlist"
@@ -500,20 +515,23 @@ const FashionNavbar = () => {
             </details>
 
             {/* FAQ */}
-            <Link
-              href="/store/faq"
-              aria-current={isActive("/store/faq") ? "page" : undefined}
-              onClick={() => setMobileMenuOpen(false)}
-              className={mobileLinkClass("/store/faq")}
-            >
-              <span className="flex items-center justify-between">
-                FAQ
+            {
+              faqs &&
+              <Link
+                href="/store/faq"
+                aria-current={isActive("/store/faq") ? "page" : undefined}
+                onClick={() => setMobileMenuOpen(false)}
+                className={mobileLinkClass("/store/faq")}
+              >
+                <span className="flex items-center justify-between">
+                  FAQ
 
-                {isActive("/store/faq") && (
-                  <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                )}
-              </span>
-            </Link>
+                  {isActive("/store/faq") && (
+                    <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
+                  )}
+                </span>
+              </Link>
+            }
 
             {/* Contact */}
             <Link

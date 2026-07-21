@@ -22,6 +22,10 @@ const ProductView = async () => {
         return <ElectronicProductDetails />
     }
 
+    if (res?.data?.data?.template === "GROCERY") {
+        return <ViewFashionProduct />
+    }
+
 };
 
 export default ProductView;

@@ -5,6 +5,7 @@ import React from "react";
 import { headers } from "next/headers";
 import { publicApi } from "@/lib/axios";
 import ElectronicNavbar from "@/app/templates/electronic/_components/navbar";
+import GroceryNavbar from "@/app/templates/grocery/_components/grocery-navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -20,18 +21,46 @@ const WebsiteLayout = async ({
   })
 
 
+  const faqs = res.data.data.config?.generalConfig?.faqs;
+  const terms = res.data.data.config?.generalConfig?.extraPage?.termsAndConditions;
+  const privacy = res.data.data.config?.generalConfig?.extraPage?.about;
+  const phone = res.data.data.config?.footerConfig?.phone;
+
+  console.log('phone', res.data.data.config?.footerConfig?.phone);
+
+
   const isFashion = res?.data?.data?.template === "FASHION";
   const isElectronic = res?.data?.data?.template === "ELECTRONIC";
+  const isGrocery = res?.data?.data?.template === "GROCERY";
 
   return (
     <div>
-        {isElectronic ? <ElectronicNavbar /> : null}
-        {isFashion ? <FashionNavbar /> : null}
 
-          {children}
+      {isElectronic ? <ElectronicNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+      /> : null}
 
-        {isElectronic ? <ElectronicFooter /> : null}
-        {isFashion ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
+      {isFashion ? <FashionNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
+      /> : null}
+
+      {isGrocery ? <GroceryNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+      /> : null}
+
+      {children}
+
+      {isElectronic ? <ElectronicFooter /> : null}
+      {isFashion ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isGrocery ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
     </div>
   );
 };

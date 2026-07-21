@@ -48,3 +48,19 @@ export type ProductTagResponse = {
   updatedAt: string;
   deletedAt: string | null;
 };
+
+
+export type BrandResponse = {
+  id: string;
+  businessId: string;
+  name: string;
+  description: string | null;
+  logoUrl: string | null;
+  status: "ACTIVE" | "INACTIVE";
+  createdBy: string | null;
+  updatedBy: string | null;
+  deletedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};

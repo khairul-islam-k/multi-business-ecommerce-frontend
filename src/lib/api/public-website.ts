@@ -8,7 +8,7 @@ import type {
   RegisterResponse,
 } from "@/lib/api/types";
 import webApi from "../public-api-hook/web-api";
-import { ProductTagResponse, StorefrontCategoryTreeItem } from "@/types/template/public-website";
+import { BrandResponse, ProductTagResponse, StorefrontCategoryTreeItem } from "@/types/template/public-website";
 import { buildQueryString } from "./params";
 import { ProductQuery, ProductReview, StorefrontProduct } from "@/types/template/template-product";
 
@@ -30,6 +30,12 @@ export const publicWebsiteApi = {
   tags() {
     return webApi
       .get<ApiArrayResponse<ProductTagResponse>>(`${basePath()}/tags`)
+      .then((res) => unwrapArrayResponse(res.data));
+  },
+
+  Brands() {
+    return webApi
+      .get<ApiArrayResponse<BrandResponse>>(`${basePath()}/brands`)
       .then((res) => unwrapArrayResponse(res.data));
   },
 

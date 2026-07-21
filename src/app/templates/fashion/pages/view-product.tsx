@@ -12,7 +12,6 @@ import {
   Star,
 } from "lucide-react";
 
-import ProductReviewForm from "../_components/product_review_form";
 import { useParams, useRouter } from "next/navigation";
 import { useProductWebReview, useTemplateProduct } from "@/lib/api/hooks/public-website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
@@ -404,11 +403,6 @@ const ViewFashionProduct = () => {
           </div>
         </div>
       </div>
-
-      {/* Review form */}
-      <ProductReviewForm
-        productId={product?.id ?? ""}
-      />
 
       {/* Reviews Section */}
       <div className="mt-8 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">

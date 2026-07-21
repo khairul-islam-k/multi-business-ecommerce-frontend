@@ -6,8 +6,12 @@ export type WebsiteStatus =
   | "ARCHIVED";
 
 export type WebsiteTemplate =
-  | "ELECTRONIC"
-  | "FASHION";
+  |"FASHION"
+  |"ELECTRONIC"
+  |"GROCERY"
+  |"FURNITURE"
+  |"JEWELRY"
+  |"BOOKS";
 
 export type WebsiteTemplateOption = {
   key: WebsiteTemplate;
@@ -34,6 +38,13 @@ export type FooterConfig = {
   copyrightText?: string;
   description?: string;
   address?: string;
+
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+    youtube?: string;
+  };
 };
 
 export type BestOfferImage = {

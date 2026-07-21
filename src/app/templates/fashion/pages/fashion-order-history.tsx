@@ -316,7 +316,6 @@ function OrderActionDropdown({
     setOpenPayment(true);
     setOrderId(order.id);
     closeMenu?.();
-
   };
 
 
@@ -728,7 +727,7 @@ export default function FashionOrderHistory() {
                 return (
                   <div
                     key={order.id}
-                    className="rounded-3xl bg-[var(--store-card,#ffffff)] p-5 shadow-sm border-[var(--store-border)] border"
+                    className="rounded-3xl bg-[var(--store-bg-1)] p-5 shadow-sm border"
                   >
                     <div className="mb-4 flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
@@ -821,7 +820,7 @@ export default function FashionOrderHistory() {
               })}
             </div>
 
-            <div className="hidden lg:p-6 rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm md:block">
+            <div className="hidden lg:p-6 rounded-3xl border-[var(--store-border)] border bg-[var(--store-card)] shadow-sm md:block">
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[1100px] border-collapse">
                   <thead>

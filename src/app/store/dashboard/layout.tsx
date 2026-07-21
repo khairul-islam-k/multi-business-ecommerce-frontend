@@ -1,17 +1,17 @@
 "use client";
 
 import {
-    FileText,
-    Heart,
-    Home,
-    LogOut,
-    MapPinHouse,
-    Menu,
-    RotateCcw,
-    ShoppingBag,
-    ShoppingCart,
-    Star,
-    X,
+  FileText,
+  Heart,
+  Home,
+  LogOut,
+  MapPinHouse,
+  Menu,
+  RotateCcw,
+  ShoppingBag,
+  ShoppingCart,
+  Star,
+  X,
 } from "lucide-react";
 
 import AuthGuard from "./auth-guard/auth-guard";
@@ -20,57 +20,59 @@ import Link from "next/link";
 import LogoComponent from "@/app/templates/fashion/_components/logo/logo-component";
 import { useState } from "react";
 import StoreThemeToggle from "../_components/store-theme-switcher";
+import { usePathname } from "next/navigation";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
 };
 
 const sidebarItems = [
-    {
-        label: "Dashboard",
-        href: "/store/dashboard",
-        icon: Home,
-    },
-    {
-        label: "Orders",
-        href: "/store/dashboard/order-history",
-        icon: ShoppingBag,
-    },
-    {
-        label: "Active Cart",
-        href: "/store/dashboard/active-cart",
-        icon: ShoppingCart,
-    },
-    {
-        label: "Reviews",
-        href: "/store/dashboard/review",
-        icon: Star,
-    },
-    {
-        label: "Addresses",
-        href: "/store/dashboard/customer-address",
-        icon: MapPinHouse,
-    },
-    {
-        label: "Return Orders",
-        href: "/store/dashboard/return",
-        icon: RotateCcw,
-    },
-    {
-        label: "Wishlist",
-        href: "/store/dashboard/wishlist",
-        icon: Heart,
-    },
-    {
-        label: "Invoice",
-        href: "/store/dashboard/invoice",
-        icon: FileText,
-    },
+  {
+    label: "Dashboard",
+    href: "/store/dashboard",
+    icon: Home,
+  },
+  {
+    label: "Orders",
+    href: "/store/dashboard/order-history",
+    icon: ShoppingBag,
+  },
+  {
+    label: "Active Cart",
+    href: "/store/dashboard/active-cart",
+    icon: ShoppingCart,
+  },
+  {
+    label: "Reviews",
+    href: "/store/dashboard/review",
+    icon: Star,
+  },
+  {
+    label: "Addresses",
+    href: "/store/dashboard/customer-address",
+    icon: MapPinHouse,
+  },
+  {
+    label: "Return Orders",
+    href: "/store/dashboard/return",
+    icon: RotateCcw,
+  },
+  {
+    label: "Wishlist",
+    href: "/store/dashboard/wishlist",
+    icon: Heart,
+  },
+  {
+    label: "Invoice",
+    href: "/store/dashboard/invoice",
+    icon: FileText,
+  },
 ];
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
+  const pathname = usePathname();
 
   return (
     <AuthGuard>
@@ -112,12 +114,22 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {sidebarItems.map((item) => {
               const Icon = item.icon;
 
+              const isActive =
+                item.href === "/store/dashboard"
+                  ? pathname === item.href
+                  : pathname === item.href ||
+                  pathname.startsWith(`${item.href}/`);
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition hover:bg-gray-100 hover:text-gray-900"
+                  className={`relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${isActive
+                      ? "bg-white text-black shadow-sm"
+                      : "text-[var(--store-sidebar-text)] hover:bg-[var(--store-primary)]/10 hover:text-[var(--store-primary)]"
+                    }`}
                 >
                   <Icon size={20} />
 

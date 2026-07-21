@@ -7,6 +7,7 @@ import {
   ChevronDown,
   Grid2X2,
   List,
+  Search,
 } from "lucide-react";
 
 import ProductCard from "../_components/product-card";
@@ -14,20 +15,32 @@ import {
   useTemplateProductQuery,
 } from "@/lib/api/hooks/public-website";
 import { SortOrder } from "@/lib/api";
+import { useDebounce } from "use-debounce";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type ProductProps = {
   categoryId?: string;
+  theme?: ThemeConfig;
+  dashboardColor?: DashboardColors;
 };
 
-const ElectronicProduct = ({ categoryId }: ProductProps) => {
+const ElectronicProduct = ({
+  categoryId,
+  theme,
+  dashboardColor
+}: ProductProps) => {
 
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+
+  const [searchText, setSearchText] = useState<string>('');
+  const [search] = useDebounce(searchText, 500);
 
   const { data: products } = useTemplateProductQuery({
     categoryId,
     sortBy,
     sortOrder,
+    search
   });
 
   // all categories
@@ -37,6 +50,29 @@ const ElectronicProduct = ({ categoryId }: ProductProps) => {
 
   return (
     <section className="bg-[var(--store-bg-3)] py-8">
+
+      {/* search field */}
+      <div className="mx-auto flex w-full max-w-2xl flex-col items-center px-4 py-8 text-center">
+        <h3 className="text-2xl font-bold text-[var(--store-text-primary)] sm:text-3xl">
+          Products
+        </h3>
+
+        <p className="mt-2 text-sm text-[var(--store-text-secondary)]">
+          Find your favorite products
+        </p>
+
+        <div className="relative mt-5 w-full max-w-md">
+          <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-text-secondary)]" />
+
+          <input
+            type="search"
+            onChange={(e) => setSearchText(e.currentTarget.value)}
+            placeholder="Search products..."
+            className="h-12 w-full rounded-full border border-[var(--store-border)] bg-[var(--store-bg-1)] py-2 pl-12 pr-5 text-sm text-[var(--store-text-primary)] outline-none transition placeholder:text-[var(--store-text-secondary)] focus:border-[var(--store-primary)] focus:ring-2 focus:ring-[var(--store-primary)]/20"
+          />
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Top Filter Bar */}
         <div className="mb-8 flex flex-col gap-4 bg-[var(--store-bg-1)] p-5 shadow-sm md:flex-row md:items-center md:justify-between">
@@ -85,8 +121,8 @@ const ElectronicProduct = ({ categoryId }: ProductProps) => {
               type="button"
               onClick={() => setViewMode("list")}
               className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "list"
-                  ? "border-[#f16d59] bg-[#f16d59] text-white"
-                  : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
+                ? "border-[#f16d59] bg-[#f16d59] text-white"
+                : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
                 }`}
               aria-label="List view"
             >
@@ -97,8 +133,8 @@ const ElectronicProduct = ({ categoryId }: ProductProps) => {
               type="button"
               onClick={() => setViewMode("grid")}
               className={`grid h-12 w-12 place-items-center rounded-md border transition ${viewMode === "grid"
-                  ? "border-[#f16d59] bg-[#f16d59] text-white"
-                  : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
+                ? "border-[#f16d59] bg-[#f16d59] text-white"
+                : "border-gray-300 bg-[var(--store-bg-1)] text-gray-500 hover:text-[#f16d59]"
                 }`}
               aria-label="Grid view"
             >
@@ -121,6 +157,8 @@ const ElectronicProduct = ({ categoryId }: ProductProps) => {
                 key={product.id}
                 viewMode={viewMode}
                 product={product}
+                theme={theme}
+                dashboardColor={dashboardColor}
               />
             ))}
           </div>

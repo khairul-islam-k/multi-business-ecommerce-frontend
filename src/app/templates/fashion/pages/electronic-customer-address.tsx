@@ -77,7 +77,7 @@ const ElectronicCustomerAddress = () => {
   }
 
   return (
-    <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-10 sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[var(--store-bg-3)] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -221,7 +221,7 @@ const ElectronicCustomerAddress = () => {
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[900px] border-collapse">
                   <thead>
-                    <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-secondary,#f8f5f1)] text-left">
+                    <tr className="border-b border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-3)] text-left">
                       <th className="px-6 py-4 text-sm font-semibold text-[var(--store-text,#111827)]">
                         Name
                       </th>

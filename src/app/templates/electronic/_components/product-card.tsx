@@ -12,14 +12,23 @@ import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
 import { useCart } from "@/app/store/_components/contex/CartContex";
 import VariantModal from "./variant-modal";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type Props = {
   product: StorefrontProduct;
   viewMode?: "grid" | "list";
   activeId?: string;
+    theme?: ThemeConfig;
+  dashboardColor?: DashboardColors;
 };
 
-const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
+const ProductCard = ({
+  product,
+  viewMode = "grid",
+  activeId,
+  theme,
+  dashboardColor,
+}: Props) => {
   const thumbnail =
     product.images.find((image) => image.isThumbnail)?.imageUrl ||
     product.images[0]?.imageUrl;
@@ -249,6 +258,8 @@ const ProductCard = ({ product, viewMode = "grid", activeId }: Props) => {
         product={product}
         open={variantModalOpen}
         onClose={() => setVariantModalOpen(false)}
+        theme={theme}
+        dashboardColor={dashboardColor}
       />
     </div>
   );

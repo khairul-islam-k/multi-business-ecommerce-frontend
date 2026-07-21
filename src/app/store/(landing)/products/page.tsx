@@ -1,5 +1,6 @@
 import ElectronicProduct from '@/app/templates/electronic/pages/electronic-product';
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
+import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -29,16 +30,28 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
 
     if (res?.data?.data?.template === "ELECTRONIC") {
         return (
-            <ElectronicProduct categoryId={categoryId} />
+            <ElectronicProduct
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
         );
     }
 
     if (res?.data?.data?.template === "FASHION") {
         return (
-            <FashionProduct 
-            theme={theme}
-            dashboardColor={dashboardColor}
-            categoryId={categoryId} />
+            <FashionProduct
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "GROCERY") {
+        return (
+            <GroceryProduct
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
         );
     }
 };

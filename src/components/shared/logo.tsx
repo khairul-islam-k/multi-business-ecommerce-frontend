@@ -12,6 +12,7 @@ interface LogoProps {
   collapsed?: boolean;
   className?: string;
   white?: boolean;
+  textColor?: string;
 }
 
 const resolveAssetUrl = (url?: string | null) => {
@@ -22,7 +23,7 @@ const resolveAssetUrl = (url?: string | null) => {
   return baseUrl ? `${baseUrl}${url}` : url;
 };
 
-export default function Logo({ collapsed = false, className = "" }: LogoProps) {
+export default function Logo({ collapsed = false, className = "", textColor }: LogoProps) {
   const { token } = theme.useToken();
   const businessId = useActiveBusinessId();
   const { data: business } = useBusiness(businessId);
@@ -59,11 +60,13 @@ export default function Logo({ collapsed = false, className = "" }: LogoProps) {
       </div>
       {!collapsed && (
         <span
-          className="truncate font-display text-2xl font-bold tracking-tight"
-          style={{ color: token.colorText }}
-        >
-          {brandName}
-        </span>
+      className={`truncate font-display text-2xl font-bold tracking-tight ${className}`}
+      style={{
+        color: textColor ?? token.colorText,
+      }}
+    >
+      {brandName}
+    </span>
       )}
     </Link>
   );

@@ -13,12 +13,13 @@ import {
   ReceiptText,
   RotateCcw,
   ShoppingBag,
+  Star,
   Truck,
   User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 import { CustomerOrderItem, CustomerOrderResponse } from "@/types/template/order-history";
 
@@ -162,6 +163,7 @@ const getOrderItemName = (item: OrderDetailItem) => {
 
 const FashionOrderDetail = () => {
   const { orderId } = useParams<{ orderId: string }>();
+  const router = useRouter();
 
   const {
     data: details,
@@ -340,7 +342,9 @@ const FashionOrderDetail = () => {
           {/* Left Side */}
           <div className="space-y-6">
             {/* Products */}
-            <div className="overflow-hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm">
+            <div className="overflow-hidden
+            border
+            rounded-3xl bg-[var(--store-card)] shadow-sm">
               <div className="border-b border-[var(--store-border,#e5e7eb)] px-5 py-4">
                 <h2 className="text-base font-bold text-[var(--store-text,#111827)]">
                   Ordered Products
@@ -403,15 +407,25 @@ const FashionOrderDetail = () => {
                         </div>
                       </div>
 
-                      <div className="text-left sm:text-right">
-                        <p className="text-sm font-bold text-[var(--store-text,#111827)]">
-                          {formatCurrency(item.lineTotal)}
-                        </p>
+                      <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
+                        <div className="text-left sm:text-right">
+                          <p className="text-sm font-bold text-[var(--store-text,#111827)]">
+                            {formatCurrency(item.lineTotal)}
+                          </p>
 
-                        <p className="mt-1 text-xs text-[var(--store-muted,#6b7280)]">
-                          {Number(item.quantity || 0)} ×{" "}
-                          {formatCurrency(item.unitPrice)}
-                        </p>
+                          <p className="mt-1 text-xs text-[var(--store-muted,#6b7280)]">
+                            {Number(item.quantity || 0)} × {formatCurrency(item.unitPrice)}
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => router.push(`/store/dashboard/order-history/create-review/${item?.product?.id}`)}
+                          className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[var(--store-primary,#f16d59)] px-4 text-xs font-semibold text-[var(--store-primary,#f16d59)] transition hover:bg-[var(--store-primary,#f16d59)] hover:text-white"
+                        >
+                          <Star className="size-4" />
+                          Write a Review
+                        </button>
                       </div>
                     </div>
                   );

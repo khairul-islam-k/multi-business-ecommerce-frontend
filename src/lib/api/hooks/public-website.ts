@@ -26,6 +26,13 @@ export function useProductTagsQuery( query?: CategoriesQuery) {
   });
 }
 
+export function useProductBrands( query?: CategoriesQuery) {
+  return useQuery({
+    queryKey: apiQueryKeys.publicWebsite.listBrands(query),
+    queryFn: () => publicWebsiteApi.Brands(),
+  });
+}
+
 export function useTemplateProductQuery(query?: ProductQuery) {
   return useQuery({
     queryKey: apiQueryKeys.publicWebsite.listProducts(query),

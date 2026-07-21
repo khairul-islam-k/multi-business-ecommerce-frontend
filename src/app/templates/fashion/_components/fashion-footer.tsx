@@ -12,6 +12,8 @@ import {
 
 import { FooterConfig } from "@/types/website/website";
 import Link from "next/link";
+import LogoComponent from "./logo/logo-component";
+import Logo from "@/components/shared/logo";
 
 const footerLinks = [
     {
@@ -42,7 +44,7 @@ const footerLinks = [
     },
 ];
 
-const FashionFooter = ({footer}: {footer: FooterConfig}) => {
+const FashionFooter = ({ footer }: { footer: FooterConfig }) => {
 
     return (
         <footer className="bg-gray-950 text-white">
@@ -52,11 +54,8 @@ const FashionFooter = ({footer}: {footer: FooterConfig}) => {
                     {/* Brand */}
                     <div className="lg:col-span-2">
                         <Link href="/" className="inline-flex items-center gap-2">
-                            <span className="grid h-11 w-11 place-items-center rounded-full bg-[#f16d59] text-white">
-                                <ShoppingBag className="h-6 w-6" />
-                            </span>
 
-                            <span className="text-2xl font-bold">Fashion Store</span>
+                            <LogoComponent />
                         </Link>
 
                         <p className="mt-5 max-w-md text-sm leading-7 text-gray-400">
@@ -97,33 +96,43 @@ const FashionFooter = ({footer}: {footer: FooterConfig}) => {
 
                         {/* Social Icons */}
                         <div className="mt-6 flex items-center gap-3">
-                            <Link
-                                href="#"
-                                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
-                            >
-                                <Facebook className="h-5 w-5" />
-                            </Link>
+                            {
+                                footer.socialLinks?.facebook ? <Link
+                                    href={footer.socialLinks?.facebook}
+                                    className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
+                                >
+                                    <Facebook className="h-5 w-5" />
+                                </Link> : '_'
+                            }
 
-                            <Link
-                                href="#"
-                                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
-                            >
-                                <Instagram className="h-5 w-5" />
-                            </Link>
+                            {
+                                footer.socialLinks?.instagram ? <Link
+                                    href={footer.socialLinks.instagram}
+                                    className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
+                                >
+                                    <Instagram className="h-5 w-5" />
+                                </Link> : "_"
+                            }
 
-                            <Link
-                                href="#"
-                                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
-                            >
-                                <Twitter className="h-5 w-5" />
-                            </Link>
+                            {
+                                footer.socialLinks?.twitter ? <Link
+                                    href={footer.socialLinks.twitter}
+                                    className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
+                                >
+                                    <Twitter className="h-5 w-5" />
+                                </Link> : "_"
+                            }
 
-                            <Link
-                                href="#"
-                                className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
-                            >
-                                <Youtube className="h-5 w-5" />
-                            </Link>
+                            {
+                                footer.socialLinks?.youtube ? <Link
+                                    href={footer.socialLinks.youtube}
+                                    className="grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 hover:bg-[#f16d59]"
+                                >
+                                    <Youtube className="h-5 w-5" />
+                                </Link> : "_"
+                            }
+
+
                         </div>
                     </div>
 
@@ -183,6 +192,9 @@ const FashionFooter = ({footer}: {footer: FooterConfig}) => {
             {/* Bottom Footer */}
             <div className="border-t border-white/10">
                 <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-center text-sm text-gray-400 sm:flex-row sm:px-6 lg:px-8">
+
+                    <Logo textColor="#ffffff" />
+
                     <p>
                         {
                             footer ? footer?.copyrightText : '_'
@@ -191,9 +203,11 @@ const FashionFooter = ({footer}: {footer: FooterConfig}) => {
 
                     <p>
                         Developed by{" "}
-                        <span className="font-semibold text-[#f16d59]">
-                            Fleek Bangladesh
-                        </span>
+                        <Link href='https://fleek.com.bd'>
+                            <span className="font-semibold text-[#f16d59]">
+                                Fleek Bangladesh
+                            </span>
+                        </Link>
                     </p>
                 </div>
             </div>

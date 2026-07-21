@@ -102,7 +102,7 @@ const FashionWishList = () => {
           <div
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
+                ? "grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4"
                 : "grid grid-cols-1 gap-6"
             }
           >
@@ -125,13 +125,7 @@ const FashionWishList = () => {
               Try another category or clear the category filter.
             </p>
 
-            {/* <button
-                            type="button"
-                            onClick={handleClearCategory}
-                            className="mt-5 rounded-full bg-[#f16d59] px-6 py-3 text-sm font-semibold text-white transition hover:bg-gray-950"
-                        >
-                            View All Products
-                        </button> */}
+        
           </div>
         )}
       </div>

@@ -21,6 +21,10 @@ const orderDetailPage = async () => {
     if (res?.data?.data?.template === "ELECTRONIC") {
         return <ElectronicOrderDetail />;
     }
+
+    if (res?.data?.data?.template === "GROCERY") {
+        return <FashionOrderDetail />;
+    }
 };
 
 export default orderDetailPage;

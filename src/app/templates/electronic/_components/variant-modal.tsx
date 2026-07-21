@@ -13,6 +13,8 @@ import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/p
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
+import { useStoreTheme } from "@/app/store/_components/theme/store-theme-provider";
 
 type ProductVariant = NonNullable<StorefrontProduct["variants"]>[number];
 
@@ -20,16 +22,50 @@ type Props = {
     product: StorefrontProduct;
     open: boolean;
     onClose: () => void;
+    theme?: ThemeConfig;
+    dashboardColor?: DashboardColors;
 };
 
 const VariantModal = ({
     product,
     open,
     onClose,
+    theme,
+    dashboardColor
 }: Props) => {
     const message = useMessage();
     const { createAddCart } = useAddCartMutation();
     const { addWishList } = useTemplateProductWishListMutation();
+
+    const { mode } = useStoreTheme();
+
+
+    // theme system
+    const isDark = mode === "dark";
+
+    const modalBackground = isDark ? "#020617" : "#ffffff";
+
+    const cardBackground = isDark
+        ? "#0f172a"
+        : dashboardColor?.cardColor || "#ffffff";
+
+    const textColor = isDark ? "#f8fafc" : "#111827";
+    const mutedTextColor = isDark ? "#94a3b8" : "#6b7280";
+    const borderColor = isDark ? "#334155" : "#e5e7eb";
+    const imageBackground = isDark ? "#1e293b" : "#f8f5f1";
+
+    const accentColor = theme?.accentColor || "#f16d59";
+
+    const modalThemeStyle = {
+        "--modal-bg": modalBackground,
+        "--modal-card": cardBackground,
+        "--modal-text": textColor,
+        "--modal-muted": mutedTextColor,
+        "--modal-border": borderColor,
+        "--modal-image-bg": imageBackground,
+        "--modal-accent": accentColor,
+    } as React.CSSProperties;
+
 
     useEffect(() => {
         if (!open) return;
@@ -114,11 +150,13 @@ const VariantModal = ({
             />
 
             {/* Modal Box */}
-            <div className="relative z-10 max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+            <div
+                style={modalThemeStyle}
+                className={`relative z-10 max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl shadow-2xl bg-[var(--modal-bg)] text-[var(--modal-text)]`}>
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4 sm:px-6">
                     <div>
-                        <h2 className="text-lg font-bold text-gray-950 sm:text-2xl">
+                        <h2 className="text-lg font-bold sm:text-2xl">
                             Select Variant
                         </h2>
 
@@ -160,7 +198,7 @@ const VariantModal = ({
                                 return (
                                     <div
                                         key={variant.id}
-                                        className="group/variant overflow-hidden border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                        className="group/variant overflow-hidden border border-[var(--modal-border)] bg-[var(--modal-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                                     >
                                         {/* Image Area */}
                                         <div className="relative h-[260px] overflow-hidden bg-[#f8f5f1] sm:h-[300px]">
@@ -217,7 +255,7 @@ const VariantModal = ({
 
                                         {/* Variant Content */}
                                         <div className="p-5 text-center">
-                                            <h3 className="line-clamp-1 text-base font-semibold text-gray-950 transition group-hover/variant:text-[#f16d59]">
+                                            <h3 className="line-clamp-1 text-base font-semibold transition group-hover/variant:text-[#f16d59]">
                                                 {variant.title}
                                             </h3>
 
@@ -241,7 +279,7 @@ const VariantModal = ({
                                                 </span>
                                             </div>
 
-                                            <p className="mt-3 text-lg font-bold text-gray-950">
+                                            <p className="mt-3 text-lg font-bold">
                                                 ৳{price}
                                             </p>
 

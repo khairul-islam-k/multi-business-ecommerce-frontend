@@ -6,6 +6,7 @@ import { CreateProductReviewPayload } from "@/types/template/product-review";
 import { useTemplateProductReviewMutation } from "@/lib/api/hooks/template-product-review";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { useRouter } from "next/navigation";
 
 const productReviewDefaultData: CreateProductReviewPayload = {
   productId: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
@@ -23,6 +24,8 @@ const ProductReviewForm = ({ productId}: DetailsProps) => {
   const [formData, setFormData] = useState<CreateProductReviewPayload>(
     productReviewDefaultData,
   );
+
+  const router = useRouter();
 
   const message = useMessage();
 
@@ -69,9 +72,10 @@ const ProductReviewForm = ({ productId}: DetailsProps) => {
         comment: formData.comment,
       };
 
-      const res = await createReview.mutateAsync(payload);
+      await createReview.mutateAsync(payload);
 
       message.success("Review submitted successfully.");
+      router.push('/store/dashboard/review');
 
       setFormData({
         rating: 0,

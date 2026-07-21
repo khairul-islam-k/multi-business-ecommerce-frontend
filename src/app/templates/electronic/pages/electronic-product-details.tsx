@@ -391,11 +391,6 @@ const ElectronicProductDetails = () => {
         </div>
       </div>
 
-      {/* Review form */}
-      <ProductReviewForm
-        productId={product?.id ?? ""}
-      />
-
       {/* Reviews Section */}
       <div className="mt-8 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
         <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:justify-between">

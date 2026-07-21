@@ -69,6 +69,17 @@ const toFormValues = (
         copyrightText: data?.config?.footerConfig?.copyrightText ?? "",
         description: data?.config?.footerConfig?.description ?? "",
         address: data?.config?.footerConfig?.address ?? "",
+
+        socialLinks: {
+          facebook:
+            data?.config?.footerConfig?.socialLinks?.facebook ?? "",
+          instagram:
+            data?.config?.footerConfig?.socialLinks?.instagram ?? "",
+          twitter:
+            data?.config?.footerConfig?.socialLinks?.twitter ?? "",
+          youtube:
+            data?.config?.footerConfig?.socialLinks?.youtube ?? "",
+        },
       },
 
       generalConfig: {
@@ -182,6 +193,8 @@ export default function WebsiteTemplateForm({
   const [form] = Form.useForm<TemplateFormValues>();
   const businessId = useActiveBusinessId();
   const websiteTemplatesQuery = useWebsiteTemplates(businessId ?? "");
+
+  console.log('template', websiteTemplatesQuery.data);
   const templateOptions =
     websiteTemplatesQuery.data?.map((template) => ({
       label: template.name,
@@ -260,6 +273,17 @@ export default function WebsiteTemplateForm({
           copyrightText: values.config?.footerConfig?.copyrightText,
           description: values.config?.footerConfig?.description,
           address: values.config?.footerConfig?.address,
+
+          socialLinks: {
+            facebook:
+              values.config?.footerConfig?.socialLinks?.facebook,
+            instagram:
+              values.config?.footerConfig?.socialLinks?.instagram,
+            twitter:
+              values.config?.footerConfig?.socialLinks?.twitter,
+            youtube:
+              values.config?.footerConfig?.socialLinks?.youtube,
+          },
         },
 
         generalConfig: {
@@ -589,6 +613,12 @@ export default function WebsiteTemplateForm({
                               <Form.Item
                                 label="Footer Email"
                                 name={["config", "footerConfig", "email"]}
+                                rules={[
+                                  {
+                                    type: "email",
+                                    message: "Please enter a valid email address",
+                                  },
+                                ]}
                               >
                                 <Input placeholder="support@example.com" />
                               </Form.Item>
@@ -606,11 +636,7 @@ export default function WebsiteTemplateForm({
                             <Col xs={24} md={12}>
                               <Form.Item
                                 label="Copyright Text"
-                                name={[
-                                  "config",
-                                  "footerConfig",
-                                  "copyrightText",
-                                ]}
+                                name={["config", "footerConfig", "copyrightText"]}
                               >
                                 <Input placeholder="© 2026 Acme Store. All rights reserved." />
                               </Form.Item>
@@ -633,10 +659,91 @@ export default function WebsiteTemplateForm({
                                 label="Address"
                                 name={["config", "footerConfig", "address"]}
                               >
-                                <TextArea
-                                  rows={2}
-                                  placeholder="Dhaka, Bangladesh"
-                                />
+                                <TextArea rows={2} placeholder="Dhaka, Bangladesh" />
+                              </Form.Item>
+                            </Col>
+
+                            <Col xs={24}>
+                              <h3 className="mb-4 text-base font-semibold">Social Media Links</h3>
+                            </Col>
+
+                            <Col xs={24} md={12}>
+                              <Form.Item
+                                label="Facebook"
+                                name={[
+                                  "config",
+                                  "footerConfig",
+                                  "socialLinks",
+                                  "facebook",
+                                ]}
+                                rules={[
+                                  {
+                                    type: "url",
+                                    message: "Please enter a valid Facebook URL",
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="https://facebook.com/your-page" />
+                              </Form.Item>
+                            </Col>
+
+                            <Col xs={24} md={12}>
+                              <Form.Item
+                                label="Instagram"
+                                name={[
+                                  "config",
+                                  "footerConfig",
+                                  "socialLinks",
+                                  "instagram",
+                                ]}
+                                rules={[
+                                  {
+                                    type: "url",
+                                    message: "Please enter a valid Instagram URL",
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="https://instagram.com/your-profile" />
+                              </Form.Item>
+                            </Col>
+
+                            <Col xs={24} md={12}>
+                              <Form.Item
+                                label="Twitter / X"
+                                name={[
+                                  "config",
+                                  "footerConfig",
+                                  "socialLinks",
+                                  "twitter",
+                                ]}
+                                rules={[
+                                  {
+                                    type: "url",
+                                    message: "Please enter a valid Twitter or X URL",
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="https://x.com/your-profile" />
+                              </Form.Item>
+                            </Col>
+
+                            <Col xs={24} md={12}>
+                              <Form.Item
+                                label="YouTube"
+                                name={[
+                                  "config",
+                                  "footerConfig",
+                                  "socialLinks",
+                                  "youtube",
+                                ]}
+                                rules={[
+                                  {
+                                    type: "url",
+                                    message: "Please enter a valid YouTube URL",
+                                  },
+                                ]}
+                              >
+                                <Input placeholder="https://youtube.com/@your-channel" />
                               </Form.Item>
                             </Col>
                           </Row>

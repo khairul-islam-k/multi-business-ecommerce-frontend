@@ -368,6 +368,8 @@ export const apiQueryKeys = {
       ["publicWebsite", "list", query] as const,
     listTag: (query?: CategoriesQuery) =>
       ["publicWebsite", "listTag", query] as const,
+    listBrands: (query?: CategoriesQuery) =>
+      ["publicWebsite", "listBrands", query] as const,
     listProducts: (query?: CategoriesQuery) =>
       ["publicWebsite", "listProducts", query] as const,
 
