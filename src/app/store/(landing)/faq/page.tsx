@@ -21,6 +21,12 @@ const FrequentlyAskPart = async () => {
         faqs={faqs}
         />;
     }
+
+    if (res?.data?.data?.template === "FURNITURE") {
+        return <FashionFAQ
+        faqs={faqs}
+        />;
+    }
 };
 
 export default FrequentlyAskPart;

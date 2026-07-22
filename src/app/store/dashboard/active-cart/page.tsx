@@ -26,6 +26,10 @@ const ActiveCart = async () => {
     if (res?.data?.data?.template === "GROCERY") {
         return <FashionActiveCart />;
     }
+
+    if (res?.data?.data?.template === "FURNITURE") {
+        return <FashionActiveCart />;
+    }
 };
 
 export default ActiveCart;

@@ -5,46 +5,105 @@ import {
     MapPin,
     Phone,
     Send,
-    ShoppingBag,
     Twitter,
     Youtube,
 } from "lucide-react";
 
-import { FooterConfig } from "@/types/website/website";
+import { FooterConfig, GeneralConfig } from "@/types/website/website";
 import Link from "next/link";
 import LogoComponent from "./logo/logo-component";
 import Logo from "@/components/shared/logo";
 
-const footerLinks = [
-    {
-        title: "Quick Links",
-        links: [
-            { label: "Home", href: "/" },
-            { label: "About Us", href: "/about" },
-            { label: "Contact Us", href: "/contact" },
-        ],
-    },
-    {
-        title: "Customer Service",
-        links: [
-            { label: "My Account", href: "/account" },
-            { label: "Wishlist", href: "/wishlist" },
-            { label: "Cart", href: "/cart" },
-            { label: "Order Tracking", href: "/orders" },
-        ],
-    },
-    {
-        title: "Information",
-        links: [
-            { label: "Privacy Policy", href: "/privacy-policy" },
-            { label: "Terms & Conditions", href: "/terms-condition" },
-            { label: "Return Policy", href: "/return-policy" },
-            { label: "FAQ", href: "/faq" },
-        ],
-    },
-];
+type FooterProps = {
+    footer: FooterConfig;
+    generalConfig: GeneralConfig;
+}
 
-const FashionFooter = ({ footer }: { footer: FooterConfig }) => {
+const FashionFooter = ({
+    footer,
+    generalConfig
+}: FooterProps) => {
+
+     const hasAboutPage = Boolean(
+    generalConfig?.extraPage?.about?.trim(),
+  );
+
+  const hasTermsPage = Boolean(
+    generalConfig?.extraPage?.termsAndConditions?.trim(),
+  );
+
+  const hasFaqPage =
+    Array.isArray(generalConfig?.faqs) &&
+    generalConfig.faqs.length > 0;
+
+  const footerLinks = [
+    {
+      title: "Quick Links",
+      links: [
+        {
+          label: "Home",
+          href: "/store",
+        },
+
+        ...(hasAboutPage
+          ? [
+              {
+                label: "About Us",
+                href: "/store/about",
+              },
+            ]
+          : []),
+
+        {
+          label: "Contact Us",
+          href: "/store/contact",
+        },
+      ],
+    },
+
+    {
+      title: "Customer Service",
+      links: [
+        {
+          label: "Wishlist",
+          href: "/store/dashboard/wishlist",
+        },
+        {
+          label: "Cart",
+          href: "/store/dashboard/active-cart",
+        },
+        {
+          label: "Order Tracking",
+          href: "/store/dashboard/order-history",
+        },
+      ],
+    },
+
+    {
+      title: "Information",
+      links: [
+        ...(hasTermsPage
+          ? [
+              {
+                label: "Terms & Conditions",
+                href: "/store/term-condition",
+              },
+            ]
+          : []),
+
+        ...(hasFaqPage
+          ? [
+              {
+                label: "FAQ",
+                href: "/store/faq",
+              },
+            ]
+          : []),
+      ],
+    },
+  ].filter((section) => section.links.length > 0);
+
+    console.log(generalConfig);
 
     return (
         <footer className="bg-gray-950 text-white">

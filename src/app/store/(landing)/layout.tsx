@@ -7,6 +7,7 @@ import { publicApi } from "@/lib/axios";
 import ElectronicNavbar from "@/app/templates/electronic/_components/navbar";
 import GroceryNavbar from "@/app/templates/grocery/_components/grocery-navbar";
 import FurnitureNavbar from "@/app/templates/furniture/_components/furniture-navbar";
+import FurnitureFooter from "@/app/templates/furniture/_components/furniture-footer";
 
 const WebsiteLayout = async ({
   children,
@@ -27,7 +28,8 @@ const WebsiteLayout = async ({
   const privacy = res.data.data.config?.generalConfig?.extraPage?.about;
   const phone = res.data.data.config?.footerConfig?.phone;
 
-  console.log('phone', res.data.data.config?.footerConfig?.phone);
+
+  const generalConfig = res.data.data.config?.generalConfig;
 
 
   const isFashion = res?.data?.data?.template === "FASHION";
@@ -67,9 +69,18 @@ const WebsiteLayout = async ({
       {children}
 
       {isElectronic ? <ElectronicFooter /> : null}
-      {isFashion ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
+      {isFashion ? <FashionFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
 
-      {isGrocery ? <FashionFooter footer={res?.data?.data?.config?.footerConfig} /> : null}
+      {isGrocery ? <FashionFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+
+      {isFurniture ? <FurnitureFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import ElectronicRegister from '@/app/templates/electronic/pages/electronic-register';
 import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register';
+import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
 import GroceryRegisterPage from '@/app/templates/grocery/pages/grocery-register-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -30,6 +31,12 @@ const Register = async () => {
         if (res?.data?.data?.template === "GROCERY") {
             return (
                 <GroceryRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "FURNITURE") {
+            return (
+                <FurnitureRegisterPage />
             );
         }
 };

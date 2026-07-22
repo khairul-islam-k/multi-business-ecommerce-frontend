@@ -1,5 +1,6 @@
 import ElectronicProduct from '@/app/templates/electronic/pages/electronic-product';
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
+import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
 import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -8,13 +9,14 @@ import React from 'react';
 type ProductsPageProps = {
     searchParams: Promise<{
         categoryId?: string;
+        search?: string;
     }>;
 };
 
 const Products = async ({ searchParams }: ProductsPageProps) => {
 
     const params = await searchParams;
-    const categoryId = params.categoryId;
+    const { categoryId, search } = params;
 
     const header = await headers()
 
@@ -57,7 +59,8 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
 
     if (res?.data?.data?.template === "FURNITURE") {
         return (
-            <GroceryProduct
+            <FurnitureProductPage
+                search={search}
                 theme={theme}
                 dashboardColor={dashboardColor}
                 categoryId={categoryId} />

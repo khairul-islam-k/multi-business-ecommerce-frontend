@@ -25,6 +25,10 @@ const ReturnPage = async () => {
     if (res?.data?.data?.template === "GROCERY") {
         return <FashionOrderReturn />;
     }
+
+    if (res?.data?.data?.template === "FURNITURE") {
+        return <FashionOrderReturn />;
+    }
 };
 
 export default ReturnPage;

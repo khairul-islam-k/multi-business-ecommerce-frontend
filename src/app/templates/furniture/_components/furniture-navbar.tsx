@@ -33,6 +33,7 @@ import AvatarDropdown from "../../fashion/_components/avatar-dropdown";
 import LogoComponent from "../../fashion/_components/logo/logo-component";
 import SearchField from "../../grocery/_components/search-field";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
+import { Input } from "antd";
 // import SearchField from "./search-field";
 
 type Category = {
@@ -67,21 +68,6 @@ const topNavigationItems: StaticNavigationItem[] = [
     label: "Showroom",
     href: "/store/products",
   }
-];
-
-const endingNavigationItems: StaticNavigationItem[] = [
-  {
-    label: "Brands",
-    href: "/store/brands",
-  },
-  {
-    label: "Shop",
-    href: "/store/products",
-  },
-  {
-    label: "Promotions",
-    href: "/store/products?inOffer=true",
-  },
 ];
 
 const flattenCategoryTree = (
@@ -294,17 +280,13 @@ const FurnitureNavbar = ({
       .filter(
         (item) =>
           typeof item.category.imageUrl ===
-            "string" &&
+          "string" &&
           item.category.imageUrl.trim().length > 0,
       )
       .slice(0, 2);
   }, [activeDesktopCategory]);
 
   const isHomeActive = pathname === "/store";
-
-  const isProductsActive =
-    pathname === "/store/products" ||
-    pathname.startsWith("/store/products/");
 
   const isWishlistActive =
     pathname.startsWith(
@@ -344,7 +326,7 @@ const FurnitureNavbar = ({
       if (
         !desktopSearchRef.current?.contains(target)
       ) {
-        setDesktopSearchOpen(false);
+        // setDesktopSearchOpen(false);
       }
     };
 
@@ -426,6 +408,19 @@ const FurnitureNavbar = ({
     setActiveDesktopCategoryId(null);
   };
 
+  const handleSearch = (value: string) => {
+    const searchValue = value.trim();
+
+    if (!searchValue) {
+      router.push("/store/products");
+      return;
+    }
+
+    router.push(
+      `/store/products?search=${encodeURIComponent(searchValue)}`,
+    );
+  };
+
   return (
     <>
       <header className="sticky top-0 z-[60] bg-[var(--store-bg-1)]">
@@ -459,21 +454,14 @@ const FurnitureNavbar = ({
             {/* Top-right actions */}
             <div className="flex items-center justify-end gap-5">
 
-                <StoreThemeToggle />
+              <StoreThemeToggle />
 
-              <div
-                ref={desktopSearchRef}
-                className="relative"
-              >
-
+              <div ref={desktopSearchRef} className="relative">
                 <button
                   type="button"
                   onClick={() => {
                     setActiveDesktopCategoryId(null);
-
-                    setDesktopSearchOpen(
-                      (previous) => !previous,
-                    );
+                    setDesktopSearchOpen((previous) => !previous);
                   }}
                   aria-expanded={desktopSearchOpen}
                   aria-label="Search products"
@@ -484,8 +472,14 @@ const FurnitureNavbar = ({
                 </button>
 
                 {desktopSearchOpen && (
-                  <div className="absolute right-0 top-full z-[90] mt-4 w-[380px] border border-[var(--store-border)] bg-[var(--store-bg-1)] p-3 shadow-xl">
-                    <SearchField />
+                  <div className="fixed left-1/2 top-[90px] z-[90] w-[calc(100%-32px)] max-w-[500px] -translate-x-1/2 border border-[var(--store-border)] bg-[var(--store-bg-1)] p-3 shadow-xl">
+
+                    <Input
+                      placeholder="Search products..."
+                      onChange={(event) => {
+                        handleSearch(event.target.value);
+                      }}
+                    />
                   </div>
                 )}
               </div>
@@ -496,11 +490,10 @@ const FurnitureNavbar = ({
                 <Link
                   href="/store/login"
                   aria-label="Login"
-                  className={`transition hover:text-[var(--store-primary)] ${
-                    isAccountActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                  }`}
+                  className={`transition hover:text-[var(--store-primary)] ${isAccountActive
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
+                    }`}
                 >
                   <UserRound className="size-5" />
                 </Link>
@@ -509,11 +502,10 @@ const FurnitureNavbar = ({
               <Link
                 href="/store/dashboard/wishlist"
                 aria-label="Wishlist"
-                className={`relative transition hover:text-[var(--store-primary)] ${
-                  isWishlistActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                }`}
+                className={`relative transition hover:text-[var(--store-primary)] ${isWishlistActive
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
+                  }`}
               >
                 <Heart className="size-5" />
 
@@ -529,11 +521,10 @@ const FurnitureNavbar = ({
               <Link
                 href="/store/dashboard/active-cart"
                 aria-label="Shopping cart"
-                className={`relative transition hover:text-[var(--store-primary)] ${
-                  isCartActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                }`}
+                className={`relative transition hover:text-[var(--store-primary)] ${isCartActive
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
+                  }`}
               >
                 <ShoppingBag className="size-5" />
 
@@ -543,7 +534,7 @@ const FurnitureNavbar = ({
                   </span>
                 )}
               </Link>
-              
+
             </div>
           </div>
         </div>
@@ -563,11 +554,10 @@ const FurnitureNavbar = ({
                   handleStaticNavigationEnter
                 }
                 onFocus={handleStaticNavigationEnter}
-                className={`text-sm transition hover:text-[var(--store-primary)] ${
-                  isHomeActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                }`}
+                className={`text-sm transition hover:text-[var(--store-primary)] ${isHomeActive
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
+                  }`}
               >
                 Home
               </Link>
@@ -599,49 +589,24 @@ const FurnitureNavbar = ({
                           null,
                         )
                       }
-                      className={`relative flex h-full items-center text-sm transition ${
-                        isOpen
-                          ? "text-[var(--store-primary)]"
-                          : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
-                      }`}
+                      className={`relative flex h-full items-center text-sm transition ${isOpen
+                        ? "text-[var(--store-primary)]"
+                        : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
+                        }`}
                     >
                       {item.category.name}
 
                       <span
-                        className={`absolute inset-x-0 bottom-0 h-px origin-center bg-[var(--store-primary)] transition-transform duration-200 ${
-                          isOpen
-                            ? "scale-x-100"
-                            : "scale-x-0"
-                        }`}
+                        className={`absolute inset-x-0 bottom-0 h-px origin-center bg-[var(--store-primary)] transition-transform duration-200 ${isOpen
+                          ? "scale-x-100"
+                          : "scale-x-0"
+                          }`}
                       />
                     </Link>
                   );
                 },
               )}
 
-              {/* {endingNavigationItems.map(
-                (navigationItem) => (
-                  <Link
-                    key={navigationItem.label}
-                    href={navigationItem.href}
-                    onMouseEnter={
-                      handleStaticNavigationEnter
-                    }
-                    onFocus={
-                      handleStaticNavigationEnter
-                    }
-                    className={`text-sm transition hover:text-[var(--store-primary)] ${
-                      navigationItem.label ===
-                        "Shop" &&
-                      isProductsActive
-                        ? "text-[var(--store-primary)]"
-                        : "text-[var(--store-text-primary)]"
-                    }`}
-                  >
-                    {navigationItem.label}
-                  </Link>
-                ),
-              )} */}
             </div>
           </nav>
 
@@ -732,11 +697,11 @@ const FurnitureNavbar = ({
 
                             {column.children.length ===
                               0 && (
-                              <p className="text-sm text-gray-400">
-                                Browse available
-                                products
-                              </p>
-                            )}
+                                <p className="text-sm text-gray-400">
+                                  Browse available
+                                  products
+                                </p>
+                              )}
                           </div>
                         </div>
                       </div>
@@ -747,7 +712,7 @@ const FurnitureNavbar = ({
                 {/* Promotional images */}
                 <div className="grid grid-cols-2 gap-3">
                   {promotionalCategories.length >
-                  0 ? (
+                    0 ? (
                     promotionalCategories.map(
                       (promotionalItem, index) => (
                         <button
@@ -834,12 +799,10 @@ const FurnitureNavbar = ({
 
         {/* Mobile menu bar */}
         <div className="border-b border-[var(--store-border)] lg:hidden">
-          <div className="grid h-16 grid-cols-[44px_1fr_44px] items-center px-4">
+          <div className="grid h-16 grid-cols-[44px_1fr_auto] items-center px-4">
             <button
               type="button"
-              onClick={() =>
-                setMobileMenuOpen(true)
-              }
+              onClick={() => setMobileMenuOpen(true)}
               aria-label="Open category menu"
               aria-expanded={mobileMenuOpen}
               className="grid size-11 place-items-center text-[var(--store-text-primary)]"
@@ -851,21 +814,54 @@ const FurnitureNavbar = ({
               <LogoComponent />
             </div>
 
-            <Link
-              href="/store/dashboard/active-cart"
-              aria-label="Shopping cart"
-              className="relative grid size-11 place-items-center text-[var(--store-text-primary)]"
-            >
-              <ShoppingBag className="size-5" />
+            <div className="flex items-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveDesktopCategoryId(null);
+                  setDesktopSearchOpen((previous) => !previous);
+                }}
+                aria-label="Search products"
+                aria-expanded={desktopSearchOpen}
+                className="grid size-11 place-items-center text-[var(--store-text-primary)] transition hover:text-[var(--store-primary)]"
+              >
+                <Search className="size-5" />
+              </button>
 
-              {cartCount > 0 && (
-                <span className="absolute right-0 top-1 grid size-4 place-items-center rounded-full bg-[var(--store-primary)] text-[9px] font-bold text-white">
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
-            </Link>
+              <Link
+                href="/store/dashboard/active-cart"
+                aria-label="Shopping cart"
+                className="relative grid size-11 place-items-center text-[var(--store-text-primary)] transition hover:text-[var(--store-primary)]"
+              >
+                <ShoppingBag className="size-5" />
+
+                {cartCount > 0 && (
+                  <span className="absolute right-0 top-1 grid size-4 place-items-center rounded-full bg-[var(--store-primary)] text-[9px] font-bold text-white">
+                    {cartCount > 9 ? "9+" : cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
           </div>
+
+          {desktopSearchOpen && (
+            <div className="border-t border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 py-3">
+              <Input
+                placeholder="Search products..."
+                prefix={
+                  <Search className="size-4 text-[var(--store-text-secondary)]" />
+                }
+                allowClear
+                // onChange={(event) => {
+                //   handleSearch(event.currentTarget.value);
+                // }}
+                className="h-11 w-full"
+              />
+            </div>
+          )}
         </div>
+
+
       </header>
 
       {/* Desktop mega-menu background overlay */}
@@ -887,11 +883,10 @@ const FurnitureNavbar = ({
         onClick={() =>
           setMobileMenuOpen(false)
         }
-        className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${
-          mobileMenuOpen
-            ? "visible opacity-100"
-            : "pointer-events-none invisible opacity-0"
-        }`}
+        className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${mobileMenuOpen
+          ? "visible opacity-100"
+          : "pointer-events-none invisible opacity-0"
+          }`}
       />
 
       {/* Mobile category drawer */}
@@ -900,11 +895,10 @@ const FurnitureNavbar = ({
         aria-modal="true"
         aria-label="Store navigation"
         aria-hidden={!mobileMenuOpen}
-        className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
-          mobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
-        }`}
+        className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${mobileMenuOpen
+          ? "translate-x-0"
+          : "-translate-x-full"
+          }`}
       >
         {/* Drawer header */}
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
@@ -936,11 +930,10 @@ const FurnitureNavbar = ({
                 onClick={() =>
                   setMobileMenuOpen(false)
                 }
-                className={`block text-sm font-medium ${
-                  isHomeActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                }`}
+                className={`block text-sm font-medium ${isHomeActive
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
+                  }`}
               >
                 Home
               </Link>
@@ -960,20 +953,6 @@ const FurnitureNavbar = ({
                 ),
               )}
 
-              {/* {endingNavigationItems.map(
-                (navigationItem) => (
-                  <Link
-                    key={navigationItem.label}
-                    href={navigationItem.href}
-                    onClick={() =>
-                      setMobileMenuOpen(false)
-                    }
-                    className="block text-sm font-medium text-[var(--store-text-primary)]"
-                  >
-                    {navigationItem.label}
-                  </Link>
-                ),
-              )} */}
             </nav>
           </div>
 
@@ -1023,11 +1002,10 @@ const FurnitureNavbar = ({
               onClick={() =>
                 setMobileMenuOpen(false)
               }
-              className={`relative flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${
-                isWishlistActive
-                  ? "text-[var(--store-primary)]"
-                  : "text-[var(--store-text-primary)]"
-              }`}
+              className={`relative flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${isWishlistActive
+                ? "text-[var(--store-primary)]"
+                : "text-[var(--store-text-primary)]"
+                }`}
             >
               <Heart className="size-5" />
 
@@ -1047,11 +1025,10 @@ const FurnitureNavbar = ({
               onClick={() =>
                 setMobileMenuOpen(false)
               }
-              className={`relative flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${
-                isCartActive
-                  ? "text-[var(--store-primary)]"
-                  : "text-[var(--store-text-primary)]"
-              }`}
+              className={`relative flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${isCartActive
+                ? "text-[var(--store-primary)]"
+                : "text-[var(--store-text-primary)]"
+                }`}
             >
               <ShoppingBag className="size-5" />
 
@@ -1075,11 +1052,10 @@ const FurnitureNavbar = ({
               onClick={() =>
                 setMobileMenuOpen(false)
               }
-              className={`flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${
-                isAccountActive
-                  ? "text-[var(--store-primary)]"
-                  : "text-[var(--store-text-primary)]"
-              }`}
+              className={`flex flex-col items-center justify-center gap-2 border border-[var(--store-border)] px-2 py-3 text-xs ${isAccountActive
+                ? "text-[var(--store-primary)]"
+                : "text-[var(--store-text-primary)]"
+                }`}
             >
               <UserRound className="size-5" />
 
