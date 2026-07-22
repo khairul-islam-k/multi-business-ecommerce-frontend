@@ -6,12 +6,12 @@ export type WebsiteStatus =
   | "ARCHIVED";
 
 export type WebsiteTemplate =
-  |"FASHION"
-  |"ELECTRONIC"
-  |"GROCERY"
-  |"FURNITURE"
-  |"JEWELRY"
-  |"BOOKS";
+  | "FASHION"
+  | "ELECTRONIC"
+  | "GROCERY"
+  | "FURNITURE"
+  | "JEWELRY"
+  | "BOOKS";
 
 export type WebsiteTemplateOption = {
   key: WebsiteTemplate;
@@ -48,9 +48,10 @@ export type FooterConfig = {
 };
 
 export type BestOfferImage = {
-  id?: number;
-  imageUrl?: string;
-  size?: "large" | "small";
+  banner?: string;
+  slug?: string;
+  title?: string;
+  subTitle?: string;
 };
 
 export type ExtraPage = {

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId } from "../types";
-import { ProductPayload, ProductQuery, ResponseProduct } from "@/types/product/product";
+import { ProductPayload, ProductQuery, ResponseProduct, UpdateProductOfferPayload } from "@/types/product/product";
 import { productApi } from "../product";
 
 export function useProductsQuery(
@@ -53,7 +53,7 @@ export function useProductMutation(businessId: ApiId) {
         payload,
       }: {
         productId: ApiId;
-        payload: ProductPayload;
+        payload: ProductPayload | UpdateProductOfferPayload;
       }) => productApi.update(businessId, productId, payload),
       onSuccess: (product: ResponseProduct, variables) => {
         queryClient.setQueryData(

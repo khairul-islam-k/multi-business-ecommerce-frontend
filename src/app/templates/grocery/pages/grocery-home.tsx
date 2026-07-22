@@ -4,13 +4,11 @@ import HeroSection from '../_components/hero-section';
 import CategoriesSection from '../_components/categories-section';
 import MonthOffer from '../_components/month-offer';
 import ExploreOurProduct from '../_components/explore-our-product';
-import PolicyLabel from '../../fashion/_components/policy-label';
 import PartnerSection from '../_components/partner-section';
-import BestSellingProducts from '../_components/best-selling-products';
+// import BestSellingProducts from '../_components/best-selling-products';
 
 const GroceryHome = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
     const bannerSlide = resolveData?.config?.headerConfig?.slide;
-    const partners = resolveData?.config?.generalConfig?.partners ?? [];
 
     const monthlyOffer = resolveData?.config?.generalConfig?.bestOfferImages ?? [];
 
@@ -20,13 +18,9 @@ const GroceryHome = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
             
             <CategoriesSection />
 
-            {/* <MonthOffer monthlyOffer={monthlyOffer} /> */}
+            <MonthOffer monthlyOffer={monthlyOffer} />
 
             <ExploreOurProduct />
-
-            {/* <PolicyLabel /> */}
-
-            {/* <DealOfDay /> */}
 
             <PartnerSection />
         </div>

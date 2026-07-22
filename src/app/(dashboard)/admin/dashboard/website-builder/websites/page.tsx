@@ -679,23 +679,21 @@ const WebsiteList = () => {
                       {bestOfferImages.map((item, index) => (
                         <Col
                           xs={24}
-                          md={item.size === "large" ? 12 : 6}
-                          key={item.id ?? index}
+                          md={6}
+                          key={index}
                         >
-                          {item.imageUrl ? (
+                          {item.banner ? (
                             <Image
-                              src={imageUrlSet(item.imageUrl)}
+                              src={imageUrlSet(item.banner)}
                               alt={`Best offer ${index + 1}`}
-                              width={item.size === "large" ? 600 : 300}
-                              height={item.size === "large" ? 260 : 120}
-                              className={`w-full rounded-xl object-cover ${item.size === "large" ? "h-64" : "h-28"
-                                }`}
+                              width={300}
+                              height={120}
+                              className={`w-full rounded-xl object-cover h-20`}
                               unoptimized
                             />
                           ) : (
                             <div
-                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400 ${item.size === "large" ? "h-64" : "h-28"
-                                }`}
+                              className={`flex w-full items-center justify-center rounded-xl bg-gray-100 text-gray-400  h-28`}
                             >
                               No Image
                             </div>

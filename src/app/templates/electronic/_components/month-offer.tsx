@@ -40,17 +40,17 @@ const MonthOffer = ({
   monthlyOffer = [],
 }: MonthOfferProps) => {
   const centerImage = getImageUrl(
-    monthlyOffer[0]?.imageUrl,
+    monthlyOffer[0]?.banner,
     monthOffer_1,
   );
 
   const leftImage = getImageUrl(
-    monthlyOffer[1]?.imageUrl,
+    monthlyOffer[1]?.banner,
     monthOffer_2,
   );
 
   const rightImage = getImageUrl(
-    monthlyOffer[2]?.imageUrl,
+    monthlyOffer[2]?.banner,
     monthOffer_3,
   );
 

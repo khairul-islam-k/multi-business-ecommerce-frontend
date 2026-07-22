@@ -48,52 +48,6 @@ type NavbarProps = {
   phone?: string;
 };
 
-// const CategoryMenuItem = ({
-//   item,
-//   onCategoryClick,
-// }: {
-//   item: CategoryTreeItem;
-//   onCategoryClick: (categoryId: string) => void;
-// }) => {
-//   const [childrenOpen, setChildrenOpen] = useState(false);
-
-//   const hasChildren = item.children?.length > 0;
-
-//   return (
-//     <div
-//       className="relative"
-//       onMouseEnter={() => setChildrenOpen(true)}
-//       onMouseLeave={() => setChildrenOpen(false)}
-//     >
-//       <button
-//         type="button"
-//         onClick={() => onCategoryClick(item.category.id)}
-//         className="flex w-full items-center justify-between gap-3 rounded-lg px-4 py-3 text-left text-sm font-medium text-[var(--store-text-primary)] transition hover:bg-gray-100 hover:text-[var(--store-primary)]"
-//       >
-//         <span className="truncate">{item.category.name}</span>
-
-//         {hasChildren && (
-//           <ChevronDown className="h-4 w-4 shrink-0 -rotate-90" />
-//         )}
-//       </button>
-
-//       {hasChildren && childrenOpen && (
-//         <div className="absolute left-full top-0 z-[80] w-64 pl-2">
-//           <div className="rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-2 shadow-xl">
-//             {item.children.map((child) => (
-//               <CategoryMenuItem
-//                 key={child.category.id}
-//                 item={child}
-//                 onCategoryClick={onCategoryClick}
-//               />
-//             ))}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
 const MobileCategoryItem = ({
   item,
   onCategoryClick,

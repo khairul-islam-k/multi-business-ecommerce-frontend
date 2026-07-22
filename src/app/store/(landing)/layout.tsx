@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { publicApi } from "@/lib/axios";
 import ElectronicNavbar from "@/app/templates/electronic/_components/navbar";
 import GroceryNavbar from "@/app/templates/grocery/_components/grocery-navbar";
+import FurnitureNavbar from "@/app/templates/furniture/_components/furniture-navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -32,6 +33,7 @@ const WebsiteLayout = async ({
   const isFashion = res?.data?.data?.template === "FASHION";
   const isElectronic = res?.data?.data?.template === "ELECTRONIC";
   const isGrocery = res?.data?.data?.template === "GROCERY";
+  const isFurniture = res?.data?.data?.template === "FURNITURE";
 
   return (
     <div>
@@ -46,13 +48,20 @@ const WebsiteLayout = async ({
         faqs={faqs}
         terms={terms}
         privacy={privacy}
-        phone={phone}
       /> : null}
 
       {isGrocery ? <GroceryNavbar
         faqs={faqs}
         terms={terms}
         privacy={privacy}
+        phone={phone}
+      /> : null}
+
+      {isFurniture ? <FurnitureNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
       /> : null}
 
       {children}

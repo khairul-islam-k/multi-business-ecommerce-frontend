@@ -1,6 +1,6 @@
 "use client";
 
-import { CirclePlus, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { BadgePercent, CirclePlus, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 import {
   Button,
@@ -157,9 +157,9 @@ const ProductsList = () => {
       },
     },
     {
-      key: "createdAt",
-      label: "Created At",
-      render: (row) => new Date(row.createdAt).toLocaleDateString(),
+      key: "Offer",
+      label: "Offer",
+      render: (row) => row.inOffer ? "ACTIVE" : "INACTIVE",
     },
     {
       key: "actions",
@@ -168,27 +168,32 @@ const ProductsList = () => {
         const items: MenuProps["items"] = [
           {
             key: "view",
-            icon: <Eye />,
+            icon: <Eye className="h-4 w-4" />,
             label: "View",
           },
           {
             key: "edit",
-            icon: <Pencil />,
+            icon: <Pencil className="h-4 w-4" />,
             label: "Edit",
+          },
+          {
+            key: "offer",
+            icon: <BadgePercent className="h-4 w-4" />,
+            label: "update Offer",
           },
           {
             key: "delete",
             danger: true,
-            icon: <Trash2 />,
+            icon: <Trash2 className="h-4 w-4" />,
             label: (
               <Popconfirm
                 title="Delete product?"
-                description="Are you sure?"
+                description="Are you sure you want to delete this product?"
                 okText="Yes"
                 cancelText="No"
                 onConfirm={() => handleDelete(row.id)}
               >
-                <span>Delete</span>
+                <span onClick={(event) => event.stopPropagation()}>Delete</span>
               </Popconfirm>
             ),
           },
@@ -200,7 +205,9 @@ const ProductsList = () => {
             placement="bottomRight"
             menu={{
               items,
-              onClick: ({ key }) => {
+              onClick: ({ key, domEvent }) => {
+                domEvent.stopPropagation();
+
                 if (key === "view") {
                   router.push(
                     `/admin/dashboard/product-catalog/products/detail/${row.id}`,
@@ -212,10 +219,20 @@ const ProductsList = () => {
                     `/admin/dashboard/product-catalog/products/edit/${row.id}`,
                   );
                 }
+
+                if (key === "offer") {
+                  router.push(
+                    `/admin/dashboard/product-catalog/products/offer/${row.id}`,
+                  );
+                }
               },
             }}
           >
-            <Button size="small" icon={<MoreHorizontal />} />
+            <Button
+              size="small"
+              icon={<MoreHorizontal className="h-4 w-4" />}
+              onClick={(event) => event.stopPropagation()}
+            />
           </Dropdown>
         );
       },

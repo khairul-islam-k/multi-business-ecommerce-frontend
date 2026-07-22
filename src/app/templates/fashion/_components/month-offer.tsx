@@ -38,17 +38,17 @@ const getImageUrl = (
 
 const MonthOffer = ({ monthlyOffer = [] }: MonthOfferProps) => {
   const firstImage = getImageUrl(
-    monthlyOffer[0]?.imageUrl,
+    monthlyOffer[0]?.banner,
     monthOffer_1,
   );
 
   const secondImage = getImageUrl(
-    monthlyOffer[1]?.imageUrl,
+    monthlyOffer[1]?.banner,
     monthOffer_2,
   );
 
   const thirdImage = getImageUrl(
-    monthlyOffer[2]?.imageUrl,
+    monthlyOffer[2]?.banner,
     monthOffer_3,
   );
 

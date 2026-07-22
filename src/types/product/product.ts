@@ -106,6 +106,14 @@ export type ProductImagePayload = {
   isThumbnail?: boolean;
 };
 
+
+export type UpdateProductOfferPayload = {
+    inOffer: boolean;
+    offerPrice: string;
+    startingFrom: string | null;
+    endsIn: string | null;
+};
+
 export type ProductPayload = {
   images: ProductImagePayload[];
   name: string;
@@ -165,6 +173,12 @@ export type ResponseProduct = {
   id: string;
   businessId: string;
 
+  inOffer: boolean,
+  offerPrice: string,
+  startingFrom: string,
+  endsIn: string,
+
+
   categoryId: string;
   brandId: string;
   unitId: string;
@@ -206,6 +220,7 @@ export type ProductQuery = ListQuery & {
   brandId?: string;
   tagId?: string;
   warehouseId?: string;
+  inOffer?: boolean;
   sortBy?: "name" | "price" | "createdAt" | "updatedAt";
 };
 

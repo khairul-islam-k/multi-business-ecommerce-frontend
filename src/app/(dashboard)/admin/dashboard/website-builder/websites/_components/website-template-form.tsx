@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -12,6 +13,7 @@ import {
   Segmented,
   Select,
   Space,
+  Spin,
   Tabs,
 } from "antd";
 
@@ -24,7 +26,9 @@ import {
   WebsiteTemplatePayload,
 } from "@/types/website/website";
 import { useSwal } from "@/hooks/use-swal";
-import { Minus, Plus } from "lucide-react";
+import { ImageIcon, Minus, Plus } from "lucide-react";
+import { useProductsQuery } from "@/lib/api";
+import { imageUrlSet } from "../../../product-catalog/products/_components/image-url";
 
 const { TextArea } = Input;
 
@@ -39,8 +43,16 @@ type WebsiteTemplateFormProps = {
   onSubmit: (payload: WebsiteTemplatePayload) => Promise<void> | void;
 };
 
+type OfferType = {
+  slug: string | undefined;
+  banner: string;
+  title?: string;
+  subTitle?: string;
+}
+
 const toFormValues = (
   data?: Partial<WebsiteTemplatePayload>,
+  offerValue?: OfferType[]
 ): TemplateFormValues => {
   return {
     template: data?.template ?? "FASHION",
@@ -83,25 +95,7 @@ const toFormValues = (
       },
 
       generalConfig: {
-        bestOfferImages: data?.config?.generalConfig?.bestOfferImages?.length
-          ? data.config.generalConfig.bestOfferImages
-          : [
-            {
-              id: 1,
-              imageUrl: "",
-              size: "large",
-            },
-            {
-              id: 2,
-              imageUrl: "",
-              size: "small",
-            },
-            {
-              id: 3,
-              imageUrl: "",
-              size: "small",
-            },
-          ],
+        bestOfferImages: offerValue ? offerValue : [],
 
         extraPage: data?.config?.generalConfig?.extraPage ?? {},
         faqs: data?.config?.generalConfig?.faqs ?? [],
@@ -194,7 +188,43 @@ export default function WebsiteTemplateForm({
   const businessId = useActiveBusinessId();
   const websiteTemplatesQuery = useWebsiteTemplates(businessId ?? "");
 
-  console.log('template', websiteTemplatesQuery.data);
+  const {
+    data: products,
+    isLoading,
+    isFetching,
+  } = useProductsQuery(businessId, {
+    inOffer: true
+  });
+
+
+  const offerProducts = useMemo(() => {
+    return products?.items ?? [];
+  }, [products?.items]);
+
+  console.log('bestOffer', offerProducts);
+
+  const activeOffer = useMemo<OfferType[]>(() => {
+    const existingOfferImages =
+      initialData?.config?.generalConfig?.bestOfferImages ?? [];
+
+    return offerProducts.map((product) => {
+      const matchedOffer = existingOfferImages.find(
+        (item) => item.slug === product.slug,
+      );
+
+      return {
+        slug: product.slug,
+        banner: matchedOffer?.banner ?? "",
+        title: matchedOffer?.title,
+        subTitle: matchedOffer?.subTitle
+      };
+    });
+  }, [
+    offerProducts,
+    initialData?.config?.generalConfig?.bestOfferImages,
+  ]);
+
+
   const templateOptions =
     websiteTemplatesQuery.data?.map((template) => ({
       label: template.name,
@@ -227,13 +257,13 @@ export default function WebsiteTemplateForm({
     activeSlideIndex !== null ? slides?.[activeSlideIndex]?.imageUrl : "";
 
   const bestOfferImages = Form.useWatch(
-    ["config", "generalConfig", "bestOfferImages"],
+    ["config", "generalConfig", "bestOfferImages", "banner"],
     form,
   ) as BestOfferImage[] | undefined;
 
   const selectedBestOfferImage =
     activeBestOfferIndex !== null
-      ? bestOfferImages?.[activeBestOfferIndex]?.imageUrl
+      ? bestOfferImages?.[activeBestOfferIndex]?.banner
       : "";
 
   const partners = Form.useWatch(
@@ -253,8 +283,8 @@ export default function WebsiteTemplateForm({
     | undefined;
 
   useEffect(() => {
-    form.setFieldsValue(toFormValues(initialData));
-  }, [form, initialData]);
+    form.setFieldsValue(toFormValues(initialData, activeOffer));
+  }, [form, initialData, activeOffer]);
 
   const handleFinish = async (values: TemplateFormValues) => {
     const rawPayload: WebsiteTemplatePayload = {
@@ -328,7 +358,9 @@ export default function WebsiteTemplateForm({
 
     const payload = rawPayload;
 
-    await onSubmit(payload);
+    console.log('payload', payload);
+
+    // await onSubmit(payload);
   };
 
 
@@ -813,101 +845,320 @@ export default function WebsiteTemplateForm({
                         label: "Best Offer Images",
                         forceRender: true,
                         children: (
-                          <Row gutter={16}>
-                            <Col xs={24}>
-                              <div className="mb-3">
-                                <strong>Best Offer Images</strong>
-                                <p className="mb-0 text-sm text-gray-500">
-                                  Select exactly 3 images. First image will be
-                                  shown as big image.
-                                </p>
-                              </div>
-                            </Col>
+                          <Form.Item
+                            noStyle
+                            shouldUpdate={(previousValues, currentValues) =>
+                              previousValues.template !==
+                              currentValues.template
+                            }
+                          >
+                            {({ getFieldValue }) => {
+                              const selectedTemplate = getFieldValue(
+                                "template",
+                              ) as string | undefined;
 
-                            <Col xs={24} lg={12}>
-                              <Form.Item
-                                label="Best Offer Big Image"
-                                name={[
-                                  "config",
-                                  "generalConfig",
-                                  "bestOfferImages",
-                                  0,
-                                  "imageUrl",
-                                ]}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: "Please select big offer image",
-                                  },
-                                ]}
-                              >
-                                <Input
-                                  readOnly
-                                  placeholder="Select big offer image"
-                                  onClick={() => {
-                                    setActiveBestOfferIndex(0);
-                                    setBestOfferImageModalOpen(true);
-                                  }}
-                                />
-                              </Form.Item>
-                            </Col>
+                              const isFurnitureTemplate =
+                                selectedTemplate === "FURNITURE";
 
-                            <Col xs={24} lg={6}>
-                              <Form.Item
-                                label="Best Offer Small Image 1"
-                                name={[
-                                  "config",
-                                  "generalConfig",
-                                  "bestOfferImages",
-                                  1,
-                                  "imageUrl",
-                                ]}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: "Please select offer image",
-                                  },
-                                ]}
-                              >
-                                <Input
-                                  readOnly
-                                  placeholder="Select image"
-                                  onClick={() => {
-                                    setActiveBestOfferIndex(1);
-                                    setBestOfferImageModalOpen(true);
-                                  }}
-                                />
-                              </Form.Item>
-                            </Col>
+                              return (
+                                <div>
+                                  <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                      <h3 className="mb-1 text-base font-semibold">
+                                        Best Offer Images
+                                      </h3>
 
-                            <Col xs={24} lg={6}>
-                              <Form.Item
-                                label="Best Offer Small Image 2"
-                                name={[
-                                  "config",
-                                  "generalConfig",
-                                  "bestOfferImages",
-                                  2,
-                                  "imageUrl",
-                                ]}
-                                rules={[
-                                  {
-                                    required: true,
-                                    message: "Please select offer image",
-                                  },
-                                ]}
-                              >
-                                <Input
-                                  readOnly
-                                  placeholder="Select image"
-                                  onClick={() => {
-                                    setActiveBestOfferIndex(2);
-                                    setBestOfferImageModalOpen(true);
-                                  }}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </Row>
+                                      <p className="mb-0 text-sm text-gray-500">
+                                        Select one banner image for every
+                                        offer product.
+                                      </p>
+                                    </div>
+
+                                    <div className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium">
+                                      Total products:{" "}
+                                      {offerProducts.length}
+                                    </div>
+                                  </div>
+
+                                  {isLoading || isFetching ? (
+                                    <div className="flex min-h-40 items-center justify-center">
+                                      <Spin />
+                                    </div>
+                                  ) : offerProducts.length === 0 ? (
+                                    <Alert
+                                      type="info"
+                                      showIcon
+                                      message="No offer products found"
+                                      description="Enable an offer for at least one product."
+                                    />
+                                  ) : (
+                                    <div className="space-y-4">
+                                      {offerProducts.map(
+                                        (product, index) => (
+                                          <div
+                                            key={
+                                              product.id ??
+                                              `${product.slug}-${index}`
+                                            }
+                                            className="rounded-lg border border-gray-200 p-4"
+                                          >
+                                            {/* Offer item heading */}
+                                            <div className="mb-4 flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
+                                              <div className="min-w-0">
+                                                <div className="truncate font-semibold">
+                                                  {product.name ??
+                                                    `Offer Product ${index + 1
+                                                    }`}
+                                                </div>
+
+                                                <div className="text-sm text-gray-500">
+                                                  Offer item {index + 1}
+                                                </div>
+                                              </div>
+
+                                              <div className="shrink-0 rounded-md bg-gray-100 px-3 py-1 text-xs font-medium">
+                                                {index + 1} /{" "}
+                                                {offerProducts.length}
+                                              </div>
+                                            </div>
+
+                                            <Row gutter={[16, 8]}>
+                                              {/* Product slug */}
+                                              <Col xs={24} md={8}>
+                                                <Form.Item
+                                                  label="Product Slug"
+                                                  name={[
+                                                    "config",
+                                                    "generalConfig",
+                                                    "bestOfferImages",
+                                                    index,
+                                                    "slug",
+                                                  ]}
+                                                  rules={[
+                                                    {
+                                                      required: true,
+                                                      message:
+                                                        "Product slug is required.",
+                                                    },
+                                                  ]}
+                                                >
+                                                  <Input
+                                                    readOnly
+                                                    placeholder="Product slug"
+                                                  />
+                                                </Form.Item>
+                                              </Col>
+
+                                              {/* Banner image */}
+                                              <Col xs={24} md={16}>
+                                                <Form.Item
+                                                  label="Banner Image"
+                                                  name={[
+                                                    "config",
+                                                    "generalConfig",
+                                                    "bestOfferImages",
+                                                    index,
+                                                    "banner",
+                                                  ]}
+                                                  rules={[
+                                                    {
+                                                      required: true,
+                                                      message:
+                                                        "Please select a banner image.",
+                                                    },
+                                                  ]}
+                                                >
+                                                  <Input
+                                                    readOnly
+                                                    placeholder="Select banner image"
+                                                    addonAfter={
+                                                      <Button
+                                                        type="text"
+                                                        size="small"
+                                                        icon={
+                                                          <ImageIcon className="h-4 w-4" />
+                                                        }
+                                                        onClick={(event) => {
+                                                          event.stopPropagation();
+
+                                                          setActiveBestOfferIndex(
+                                                            index,
+                                                          );
+
+                                                          setBestOfferImageModalOpen(
+                                                            true,
+                                                          );
+                                                        }}
+                                                      >
+                                                        Select
+                                                      </Button>
+                                                    }
+                                                    onClick={() => {
+                                                      setActiveBestOfferIndex(
+                                                        index,
+                                                      );
+
+                                                      setBestOfferImageModalOpen(
+                                                        true,
+                                                      );
+                                                    }}
+                                                  />
+                                                </Form.Item>
+                                              </Col>
+
+                                              {/* Furniture-only title */}
+                                              {isFurnitureTemplate && (
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    label="Offer Title"
+                                                    name={[
+                                                      "config",
+                                                      "generalConfig",
+                                                      "bestOfferImages",
+                                                      index,
+                                                      "title",
+                                                    ]}
+                                                    preserve={false}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        whitespace: true,
+                                                        message:
+                                                          "Please enter the offer title.",
+                                                      },
+                                                      {
+                                                        max: 150,
+                                                        message:
+                                                          "Title cannot exceed 150 characters.",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      maxLength={150}
+                                                      showCount
+                                                      placeholder="Enter offer title"
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+                                              )}
+
+                                              {/* Furniture-only subtitle */}
+                                              {isFurnitureTemplate && (
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    label="Offer Subtitle"
+                                                    name={[
+                                                      "config",
+                                                      "generalConfig",
+                                                      "bestOfferImages",
+                                                      index,
+                                                      "subTitle",
+                                                    ]}
+                                                    preserve={false}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        whitespace: true,
+                                                        message:
+                                                          "Please enter the offer subtitle.",
+                                                      },
+                                                      {
+                                                        max: 250,
+                                                        message:
+                                                          "Subtitle cannot exceed 250 characters.",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      maxLength={250}
+                                                      showCount
+                                                      placeholder="Enter offer subtitle"
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+                                              )}
+
+                                              {/* Banner preview */}
+                                              <Col xs={24}>
+                                                <Form.Item
+                                                  noStyle
+                                                  shouldUpdate={(
+                                                    previousValues,
+                                                    currentValues,
+                                                  ) => {
+                                                    const previousBanner =
+                                                      previousValues?.config
+                                                        ?.generalConfig
+                                                        ?.bestOfferImages?.[
+                                                        index
+                                                      ]?.banner;
+
+                                                    const currentBanner =
+                                                      currentValues?.config
+                                                        ?.generalConfig
+                                                        ?.bestOfferImages?.[
+                                                        index
+                                                      ]?.banner;
+
+                                                    return (
+                                                      previousBanner !==
+                                                      currentBanner
+                                                    );
+                                                  }}
+                                                >
+                                                  {({ getFieldValue }) => {
+                                                    const banner =
+                                                      getFieldValue([
+                                                        "config",
+                                                        "generalConfig",
+                                                        "bestOfferImages",
+                                                        index,
+                                                        "banner",
+                                                      ]) as
+                                                      | string
+                                                      | undefined;
+
+                                                    if (!banner) {
+                                                      return (
+                                                        <div className="flex min-h-40 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50">
+                                                          <div className="text-center text-gray-500">
+                                                            <ImageIcon className="mx-auto mb-2 h-7 w-7" />
+
+                                                            <p className="mb-0">
+                                                              No banner
+                                                              selected
+                                                            </p>
+                                                          </div>
+                                                        </div>
+                                                      );
+                                                    }
+
+                                                    return (
+                                                      <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img
+                                                          src={imageUrlSet(
+                                                            banner,
+                                                          )}
+                                                          alt={`Offer banner ${index + 1
+                                                            }`}
+                                                          className="h-48 w-full object-cover sm:h-64"
+                                                        />
+                                                      </div>
+                                                    );
+                                                  }}
+                                                </Form.Item>
+                                              </Col>
+                                            </Row>
+                                          </div>
+                                        ),
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }}
+                          </Form.Item>
                         ),
                       },
 
@@ -1437,7 +1688,7 @@ export default function WebsiteTemplateForm({
               "generalConfig",
               "bestOfferImages",
               activeBestOfferIndex,
-              "imageUrl",
+              "banner",
             ],
             url,
           );

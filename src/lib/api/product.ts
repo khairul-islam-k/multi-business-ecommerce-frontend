@@ -1,4 +1,4 @@
-import { ProductPayload, ProductQuery, ResponseProduct } from "@/types/product/product";
+import { ProductPayload, ProductQuery, ResponseProduct, UpdateProductOfferPayload } from "@/types/product/product";
 import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse } from "./types";
 import api from "../axios";
@@ -28,7 +28,7 @@ export const productApi = {
   update(
     businessId: ApiId,
     productId: ApiId,
-    payload: ProductPayload,
+    payload: ProductPayload | UpdateProductOfferPayload,
   ) {
     return api
       .patch<ApiResponse<ResponseProduct>>(

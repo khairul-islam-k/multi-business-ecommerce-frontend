@@ -54,6 +54,15 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
                 categoryId={categoryId} />
         );
     }
+
+    if (res?.data?.data?.template === "FURNITURE") {
+        return (
+            <GroceryProduct
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
 };
 
 export default Products;

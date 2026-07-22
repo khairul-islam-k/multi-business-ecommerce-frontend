@@ -129,6 +129,11 @@ export type StorefrontProduct = AuditFields & {
   id: string;
   businessId: string;
 
+  inOffer: boolean;
+  offerPrice: string;
+  startingFrom: string;
+  endsIn: string;
+
   categoryId: string;
   brandId: string;
   unitId: string;

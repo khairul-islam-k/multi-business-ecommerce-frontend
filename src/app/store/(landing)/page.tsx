@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { publicApi } from '@/lib/axios';
 import ElectronicHomePage from '@/app/templates/electronic/pages/home-page';
 import GroceryHome from '@/app/templates/grocery/pages/grocery-home';
+import FurnitureHome from '@/app/templates/furniture/pages/furniture-home';
 
 const Homepage = async () => {
 
@@ -15,8 +16,6 @@ const Homepage = async () => {
     }
   })
 
-  console.log('home', res.data.data);
-
   if (res?.data?.data?.template === "ELECTRONIC") {
     return <ElectronicHomePage resolveData={res?.data?.data} />;
   }
@@ -27,6 +26,10 @@ const Homepage = async () => {
 
   if (res?.data?.data?.template === "GROCERY") {
     return <GroceryHome resolveData={res?.data?.data} />;
+  }
+
+  if (res?.data?.data?.template === "FURNITURE") {
+    return <FurnitureHome resolveData={res?.data?.data} />;
   }
 
 };
