@@ -1,0 +1,325 @@
+"use client";
+
+import { Heart, ShoppingCart, Star, X } from "lucide-react";
+import React, { useEffect } from "react";
+
+import { AddToCartPayload } from "@/types/template/add-cart";
+import Image from "next/image";
+import { ProductWishListPayload } from "@/types/template/wishList";
+import { StorefrontProduct } from "@/types/template/template-product";
+import { createPortal } from "react-dom";
+import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
+import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
+import { useMessage } from "@/app/store/_components/message/message-hook";
+import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
+import { DashboardColors, ThemeConfig } from "@/types/website/website";
+import { useStoreTheme } from "@/app/store/_components/theme/store-theme-provider";
+
+type ProductVariant = NonNullable<StorefrontProduct["variants"]>[number];
+
+type Props = {
+    product: StorefrontProduct;
+    open: boolean;
+    onClose: () => void;
+    theme?: ThemeConfig;
+    dashboardColor?: DashboardColors;
+};
+
+const VariantModal = ({
+    product,
+    open,
+    onClose,
+    theme,
+    dashboardColor
+}: Props) => {
+    const message = useMessage();
+    const { createAddCart } = useAddCartMutation();
+    const { addWishList } = useTemplateProductWishListMutation();
+
+    const { mode } = useStoreTheme();
+
+
+    // theme system
+    const isDark = mode === "dark";
+
+    const modalBackground = isDark ? "#020617" : "#ffffff";
+
+    const cardBackground = isDark
+        ? "#0f172a"
+        : dashboardColor?.cardColor || "#ffffff";
+
+    const textColor = isDark ? "#f8fafc" : "#111827";
+    const mutedTextColor = isDark ? "#94a3b8" : "#6b7280";
+    const borderColor = isDark ? "#334155" : "#e5e7eb";
+    const imageBackground = isDark ? "#1e293b" : "#f8f5f1";
+
+    const accentColor = theme?.accentColor || "#f16d59";
+
+    const modalThemeStyle = {
+        "--modal-bg": modalBackground,
+        "--modal-card": cardBackground,
+        "--modal-text": textColor,
+        "--modal-muted": mutedTextColor,
+        "--modal-border": borderColor,
+        "--modal-image-bg": imageBackground,
+        "--modal-accent": accentColor,
+    } as React.CSSProperties;
+
+
+    useEffect(() => {
+        if (!open) return;
+
+        document.body.style.overflow = "hidden";
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                onClose();
+            }
+        };
+
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.body.style.overflow = "";
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [open, onClose]);
+
+    if (!open) return null;
+
+    const productThumbnail =
+        product.images?.find((image) => image.isThumbnail)?.imageUrl ||
+        product.images?.[0]?.imageUrl;
+
+    const variants = product.variants ?? [];
+
+    const getVariantImage = (variant: ProductVariant) => {
+        const variantImage =
+            variant.images?.find((image) => image.isThumbnail)?.imageUrl ||
+            variant.images?.[0]?.imageUrl;
+
+        return variantImage || productThumbnail;
+    };
+
+    const handleAddItem = async (values: AddToCartPayload) => {
+
+        if (!values.productId) {
+            message.error("Product is required");
+            return;
+        }
+
+        if (!values.quantity || values.quantity < 1) {
+            message.error("Quantity must be at least 1");
+            return;
+        }
+
+        try {
+            await createAddCart.mutateAsync(values);
+            onClose()
+            message.success("Product added to cart successfully");
+        } catch (error) {
+            message.error(getWebErrorMessage(error));
+        }
+    };
+
+    const handleAddToWishList = async (values: ProductWishListPayload) => {
+
+        if (!values.productId) {
+            message.error("Product is required");
+            return;
+        }
+
+        try {
+            await addWishList.mutateAsync(values);
+            onClose()
+            message.success("Product added to WishList successfully");
+        } catch (error) {
+            message.error(getWebErrorMessage(error));
+        }
+    };
+
+    return createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center px-3 py-5 sm:px-4">
+            {/* Overlay */}
+            <button
+                type="button"
+                onClick={onClose}
+                className="absolute inset-0 bg-black/50"
+                aria-label="Close modal"
+            />
+
+            {/* Modal Box */}
+            <div
+                style={modalThemeStyle}
+                className={`relative z-10 max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-2xl shadow-2xl bg-[var(--modal-bg)] text-[var(--modal-text)]`}>
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-gray-100 px-4 py-4 sm:px-6">
+                    <div>
+                        <h2 className="text-lg font-bold sm:text-2xl">
+                            Select Variant
+                        </h2>
+
+                        <p className="mt-1 text-sm text-gray-500">{product.name}</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="grid size-9 place-items-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-[#f16d59] hover:text-white"
+                        aria-label="Close modal"
+                    >
+                        <X className="size-5" />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="max-h-[calc(90vh-80px)] overflow-y-auto p-4 sm:p-6">
+                    {variants.length === 0 ? (
+                        <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                                No variant found
+                            </h3>
+
+                            <p className="mt-1 text-sm text-gray-500">
+                                This product does not have any variant.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                            {variants.map((variant) => {
+                                const imageUrl = getVariantImage(variant);
+
+                                const price =
+                                    variant.effectivePrice ||
+                                    variant.priceOverride ||
+                                    product.price;
+
+                                return (
+                                    <div
+                                        key={variant.id}
+                                        className="group/variant overflow-hidden border border-[var(--modal-border)] bg-[var(--modal-card)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                    >
+                                        {/* Image Area */}
+                                        <div className="relative h-[260px] overflow-hidden bg-[#f8f5f1] sm:h-[300px]">
+                                            {imageUrl ? (
+                                                <Image
+                                                    src={imageUrlSet(imageUrl)}
+                                                    alt={variant.title || product.name}
+                                                    fill
+                                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                                    className="object-cover transition-transform duration-700 group-hover/variant:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="flex h-full items-center justify-center text-sm text-gray-400">
+                                                    No Image
+                                                </div>
+                                            )}
+
+                                            <span className="absolute left-4 top-4 rounded-full bg-[#f16d59] px-3 py-1 text-xs font-semibold text-white">
+                                                Variant
+                                            </span>
+
+                                            <button
+                                                onClick={() => handleAddToWishList({
+                                                    productId: product.id,
+                                                    variantId: variant.id,
+                                                })}
+                                                type="button"
+                                                className="absolute right-4 top-4 grid h-10 w-10 place-items-center rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:bg-[#f16d59] hover:text-white"
+                                                aria-label="Add to wishlist"
+                                            >
+                                                <Heart className="h-5 w-5" />
+                                            </button>
+
+                                            {/* Hover Icons */}
+                                            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 translate-y-8 items-center gap-3 opacity-0 transition-all duration-300 group-hover/variant:translate-y-0 group-hover/variant:opacity-100">
+                                                <button
+                                                    type="button"
+                                                    disabled={!variant?.stockSummary?.inStock}
+                                                    onClick={() => {
+                                                        handleAddItem({
+                                                            productId: product.id,
+                                                            variantId: variant.id,
+                                                            quantity: 1
+                                                        })
+                                                    }}
+                                                    className={`grid h-10 w-10 place-items-center ${variant?.stockSummary?.inStock && 'hover:bg-[#f16d59]'} rounded-full bg-white text-gray-700 shadow-sm transition-all duration-300 hover:text-white`}
+                                                    aria-label="Add variant to cart"
+                                                >
+                                                    <ShoppingCart className="h-5 w-5" />
+                                                </button>
+
+                                            </div>
+                                        </div>
+
+                                        {/* Variant Content */}
+                                        <div className="p-5 text-center">
+                                            <h3 className="line-clamp-1 text-base font-semibold transition group-hover/variant:text-[#f16d59]">
+                                                {variant.title}
+                                            </h3>
+
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                SKU: {variant.sku}
+                                            </p>
+
+                                            <div className="mt-2 flex items-center justify-center gap-1">
+                                                {Array.from({ length: 5 }).map((_, index) => (
+                                                    <Star
+                                                        key={index}
+                                                        className={`h-4 w-4 ${index < product.reviewSummary.averageRating
+                                                            ? "fill-[#f16d59] text-[#f16d59]"
+                                                            : "text-gray-300"
+                                                            }`}
+                                                    />
+                                                ))}
+
+                                                <span className="ml-1 text-xs text-gray-500">
+                                                    ({product.reviewSummary.reviewCount})
+                                                </span>
+                                            </div>
+
+                                            <p className="mt-3 text-lg font-bold">
+                                                ৳{price}
+                                            </p>
+
+                                            <p
+                                                className={`mt-2 text-xs font-medium ${variant.stockSummary.inStock
+                                                    ? "text-green-600"
+                                                    : "text-red-500"
+                                                    }`}
+                                            >
+                                                {variant?.stockSummary?.inStock
+                                                    ? "Available"
+                                                    : "Unavailable"}
+                                            </p>
+
+                                            <button
+                                                type="button"
+                                                disabled={!variant?.stockSummary?.inStock}
+                                                onClick={() => {
+                                                    handleAddItem({
+                                                        productId: product.id,
+                                                        variantId: variant.id,
+                                                        quantity: 1
+                                                    })
+                                                }}
+                                                className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#f16d59] px-6 text-sm font-semibold text-white transition hover:bg-gray-950"
+                                            >
+                                                <ShoppingCart className="h-4 w-4" />
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};
+
+export default VariantModal;

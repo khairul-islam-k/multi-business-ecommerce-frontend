@@ -25,7 +25,7 @@ const CreateCustomerAddress = async () => {
         return <FashionCreateCustomerAddress />;
     }
 
-    if (res?.data?.data?.template === "FURNITURE") {
+    if (res?.data?.data?.template === "PHARMACY") {
         return <FashionCreateCustomerAddress />;
     }
 };

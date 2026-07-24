@@ -8,6 +8,9 @@ import ElectronicNavbar from "@/app/templates/electronic/_components/navbar";
 import GroceryNavbar from "@/app/templates/grocery/_components/grocery-navbar";
 import FurnitureNavbar from "@/app/templates/furniture/_components/furniture-navbar";
 import FurnitureFooter from "@/app/templates/furniture/_components/furniture-footer";
+import PharmacyNavbar from "@/app/templates/pharmacy/_components/pharmacy-navbar";
+import PharmacyFooter from "@/app/templates/pharmacy/_components/pharmacy-footer";
+import VehicleNavbar from "@/app/templates/vehicle/_components/vehicle-navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -36,6 +39,8 @@ const WebsiteLayout = async ({
   const isElectronic = res?.data?.data?.template === "ELECTRONIC";
   const isGrocery = res?.data?.data?.template === "GROCERY";
   const isFurniture = res?.data?.data?.template === "FURNITURE";
+  const isPharmacy = res?.data?.data?.template === "PHARMACY";
+  const isVehicle = res?.data?.data?.template === "VEHICLE";
 
   return (
     <div>
@@ -66,6 +71,20 @@ const WebsiteLayout = async ({
         phone={phone}
       /> : null}
 
+      {isPharmacy ? <PharmacyNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
+      /> : null}
+
+      {isVehicle ? <VehicleNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
+      /> : null}
+
       {children}
 
       {isElectronic ? <ElectronicFooter /> : null}
@@ -79,6 +98,10 @@ const WebsiteLayout = async ({
 
 
       {isFurniture ? <FurnitureFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isPharmacy ? <PharmacyFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
     </div>

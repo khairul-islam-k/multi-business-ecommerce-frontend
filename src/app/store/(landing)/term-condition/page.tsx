@@ -21,6 +21,10 @@ const TermCondition = async () => {
   if (res?.data?.data?.template === "FURNITURE") {
     return <FashionTermCondition terms={terms} />;
   }
+
+  if (res?.data?.data?.template === "PHARMACY") {
+    return <FashionTermCondition terms={terms} />;
+  }
 };
 
 export default TermCondition;

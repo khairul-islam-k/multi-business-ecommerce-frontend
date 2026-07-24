@@ -97,7 +97,7 @@
     --dashboard-border-color: #cbd5e1;
     --dashboard-border-subtle-color: #e2e8f0;
     --dashboard-focus-ring-color: #1d4ed8;
-    --dashboard-font-family: var(--font-open-sans), "Open Sans", sans-serif;
+    /* --dashboard-font-family: var(--font-open-sans), "Open Sans", sans-serif; */
     --dashboard-border-radius: 8;
     --dashboard-density: DEFAULT;
     --dashboard-control-height: 38;
@@ -320,11 +320,11 @@ body {
   border-radius: 1px;
 }
 
-* {
+/* * {
   font-family: var(--brand-font-family, var(--font-open-sans));
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.35) transparent;
-}
+} */
 
 .antd-swal-popup {
   background: var(--swal-bg) !important;

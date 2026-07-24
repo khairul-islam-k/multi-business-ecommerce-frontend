@@ -28,6 +28,10 @@ const CustomerAddress = async () => {
   if (res?.data?.data?.template === "FURNITURE") {
     return <FashionCustomerAddress />;
   }
+
+  if (res?.data?.data?.template === "PHARMACY") {
+    return <FashionCustomerAddress />;
+  }
 };
 
 export default CustomerAddress;

@@ -182,36 +182,29 @@ const FurnitureNavbar = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const desktopSearchRef =
-    useRef<HTMLDivElement>(null);
+  const desktopSearchRef = useRef<HTMLDivElement>(null);
 
-  const [desktopSearchOpen, setDesktopSearchOpen] =
-    useState(false);
+  const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
 
   const [
     activeDesktopCategoryId,
     setActiveDesktopCategoryId,
   ] = useState<string | null>(null);
 
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { user } = useCart();
 
-  const { data: categories } =
-    useProductCategoryQuery();
+  const { data: categories } =  useProductCategoryQuery();
 
   const { data: cart } = useAddActiveCArt();
 
-  const { data: wishList } =
-    useTemplateProductWishListQuery();
+  const { data: wishList } =  useTemplateProductWishListQuery();
 
   const cartCount = cart?.items?.length ?? 0;
-  const favoriteCount =
-    wishList?.meta?.total ?? 0;
+  const favoriteCount =  wishList?.meta?.total ?? 0;
 
-  const phoneNumber =
-    phone?.trim() || "+880 1234-567890";
+  const phoneNumber =  phone?.trim() || "+880 1234-567890";
 
   const phoneHref = phoneNumber.replace(
     /[^\d+]/g,

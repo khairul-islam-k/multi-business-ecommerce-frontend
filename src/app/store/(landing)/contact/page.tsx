@@ -1,9 +1,21 @@
 import ElectronicContactClient from '@/app/templates/electronic/pages/contact-page';
 import FashionContactPage from '@/app/templates/fashion/pages/contact-page';
+import { publicApi } from '@/lib/axios';
+import { headers } from 'next/headers';
 import React from 'react';
 
-const ContactUs = () => {
-    
+const ContactUs = async () => {
+
+    const header = await headers()
+
+    const res = await publicApi.get('/storefront/resolve', {
+        headers: {
+            host: header.get('host') || ""
+        }
+    })
+
+    console.log('res', res.data.data.config.footerConfig);
+
     const site = {
         name: "Onecomm Store",
         templateName: "fashion",
@@ -18,7 +30,7 @@ const ContactUs = () => {
 
     if (site.templateName === 'fashion') {
         return (
-            <FashionContactPage />
+            <FashionContactPage footer={res.data.data.config.footerConfig} />
         );
     }
 };

@@ -100,7 +100,7 @@ export function StoreThemeProvider({
 
   "--store-primary": "#f16d59",
   "--store-secondary": "#111827",
-  "--store-accent": "#7c3aed",
+  "--store-accent": "#0e7673",
   "--store-success": "#01be5f",
   "--store-danger": "#dc2626",
   "--store-warning": "#d97706",

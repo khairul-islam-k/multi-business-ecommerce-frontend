@@ -29,6 +29,7 @@ import { useSwal } from "@/hooks/use-swal";
 import { ImageIcon, Minus, Plus } from "lucide-react";
 import { useProductsQuery } from "@/lib/api";
 import { imageUrlSet } from "../../../product-catalog/products/_components/image-url";
+import { templateFontOptions } from "@/lib/template-fonts";
 
 const { TextArea } = Input;
 
@@ -112,7 +113,7 @@ const toFormValues = (
       primaryColor: data?.theme?.primaryColor ?? "",
       secondaryColor: data?.theme?.secondaryColor ?? "",
       accentColor: data?.theme?.accentColor ?? "",
-      fontFamily: data?.theme?.fontFamily ?? "",
+      fontFamily: data?.theme?.fontFamily ?? templateFontOptions[0].value,
       logoUrl: data?.theme?.logoUrl ?? "",
       faviconUrl: data?.theme?.faviconUrl ?? "",
       customCss: data?.theme?.customCss ?? "",
@@ -188,6 +189,8 @@ export default function WebsiteTemplateForm({
   const businessId = useActiveBusinessId();
   const websiteTemplatesQuery = useWebsiteTemplates(businessId ?? "");
 
+  console.log('website', websiteTemplatesQuery.data);
+
   const {
     data: products,
     isLoading,
@@ -201,7 +204,6 @@ export default function WebsiteTemplateForm({
     return products?.items ?? [];
   }, [products?.items]);
 
-  console.log('bestOffer', offerProducts);
 
   const activeOffer = useMemo<OfferType[]>(() => {
     const existingOfferImages =
@@ -223,6 +225,9 @@ export default function WebsiteTemplateForm({
     offerProducts,
     initialData?.config?.generalConfig?.bestOfferImages,
   ]);
+
+  console.log('offer', activeOffer);
+  
 
 
   const templateOptions =
@@ -283,8 +288,19 @@ export default function WebsiteTemplateForm({
     | undefined;
 
   useEffect(() => {
-    form.setFieldsValue(toFormValues(initialData, activeOffer));
-  }, [form, initialData, activeOffer]);
+  if (isLoading) {
+    return;
+  }
+
+  form.setFieldsValue(
+    toFormValues(initialData, activeOffer),
+  );
+}, [
+  form,
+  initialData,
+  activeOffer,
+  isLoading,
+]);
 
   const handleFinish = async (values: TemplateFormValues) => {
     const rawPayload: WebsiteTemplatePayload = {
@@ -358,9 +374,7 @@ export default function WebsiteTemplateForm({
 
     const payload = rawPayload;
 
-    console.log('payload', payload);
-
-    // await onSubmit(payload);
+    await onSubmit(payload);
   };
 
 
@@ -880,7 +894,7 @@ export default function WebsiteTemplateForm({
                                     </div>
                                   </div>
 
-                                  {isLoading || isFetching ? (
+                                  {isLoading ? (
                                     <div className="flex min-h-40 items-center justify-center">
                                       <Spin />
                                     </div>
@@ -1018,7 +1032,7 @@ export default function WebsiteTemplateForm({
                                                       index,
                                                       "title",
                                                     ]}
-                                                    preserve={false}
+                                        
                                                     rules={[
                                                       {
                                                         required: true,
@@ -1054,7 +1068,7 @@ export default function WebsiteTemplateForm({
                                                       index,
                                                       "subTitle",
                                                     ]}
-                                                    preserve={false}
+                          
                                                     rules={[
                                                       {
                                                         required: true,
@@ -1391,7 +1405,7 @@ export default function WebsiteTemplateForm({
               children: (
                 <Row gutter={[16, 16]}>
                   <Col xs={24} md={8}>
-                    <Form.Item label="Primary Color" required>
+                    <Form.Item label="Primary Color">
                       <div className="mb-2 flex justify-end">
                         <Segmented
                           size="small"
@@ -1408,12 +1422,6 @@ export default function WebsiteTemplateForm({
 
                       <Form.Item
                         name={["theme", "primaryColor"]}
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select or enter primary color",
-                          },
-                        ]}
                         noStyle
                       >
                         <Input
@@ -1434,7 +1442,7 @@ export default function WebsiteTemplateForm({
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item label="Secondary Color" required>
+                    <Form.Item label="Secondary Color">
                       <div className="mb-2 flex justify-end">
                         <Segmented
                           size="small"
@@ -1451,12 +1459,6 @@ export default function WebsiteTemplateForm({
 
                       <Form.Item
                         name={["theme", "secondaryColor"]}
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select or enter secondary color",
-                          },
-                        ]}
                         noStyle
                       >
                         <Input
@@ -1477,7 +1479,7 @@ export default function WebsiteTemplateForm({
                   </Col>
 
                   <Col xs={24} md={8}>
-                    <Form.Item label="Accent Color" required>
+                    <Form.Item label="Accent Color">
                       <div className="mb-2 flex justify-end">
                         <Segmented
                           size="small"
@@ -1494,12 +1496,6 @@ export default function WebsiteTemplateForm({
 
                       <Form.Item
                         name={["theme", "accentColor"]}
-                        rules={[
-                          {
-                            required: true,
-                            message: "Please select or enter accent color",
-                          },
-                        ]}
                         noStyle
                       >
                         <Input
@@ -1530,7 +1526,13 @@ export default function WebsiteTemplateForm({
                         },
                       ]}
                     >
-                      <Input placeholder="Inter" />
+                      <Select
+                        showSearch
+                        placeholder="Select a Google font"
+                        optionFilterProp="label"
+                        options={templateFontOptions}
+                        allowClear
+                      />
                     </Form.Item>
                   </Col>
 

@@ -21,6 +21,10 @@ const PrivacyPolicy = async () => {
     if (res?.data?.data?.template === "FURNITURE") {
         return <FashionPrivacy privacy={privacy} />;
     }
+
+    if (res?.data?.data?.template === "PHARMACY") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
 };
 
 export default PrivacyPolicy;

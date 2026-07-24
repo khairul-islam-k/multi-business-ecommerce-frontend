@@ -1,3 +1,5 @@
+import { TemplateFont } from "@/lib/template-fonts";
+
 
 export type WebsiteStatus =
   | "DRAFT"
@@ -82,7 +84,7 @@ export type ThemeConfig = {
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
-  fontFamily?: string;
+  fontFamily?: TemplateFont;
   logoUrl?: string;
   faviconUrl?: string;
   customCss?: string;
@@ -144,7 +146,7 @@ export type ResponseWebsiteTheme = {
   primaryColor?: string;
   secondaryColor?: string;
   accentColor?: string;
-  fontFamily?: string;
+  fontFamily?: TemplateFont;
   logoUrl?: string;
   faviconUrl?: string;
   customCss?: string;

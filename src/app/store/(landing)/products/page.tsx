@@ -2,6 +2,7 @@ import ElectronicProduct from '@/app/templates/electronic/pages/electronic-produ
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
 import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
+import PharmacyProductPage from '@/app/templates/pharmacy/pages/pharmacy-product-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -60,6 +61,16 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
     if (res?.data?.data?.template === "FURNITURE") {
         return (
             <FurnitureProductPage
+                search={search}
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "PHARMACY") {
+        return (
+            <PharmacyProductPage
                 search={search}
                 theme={theme}
                 dashboardColor={dashboardColor}

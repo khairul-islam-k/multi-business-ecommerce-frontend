@@ -30,6 +30,10 @@ const ProductView = async () => {
         return <ViewFashionProduct />
     }
 
+    if (res?.data?.data?.template === "PHARMACY") {
+        return <ViewFashionProduct />
+    }
+
 };
 
 export default ProductView;

@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
 import "@/styles/global.css";
 
-import { Geist, Open_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 
-import { cn } from "@/lib/utils";
 import AuthProvider from "@/providers/auth-provider";
 import QueryProvider from "@/providers/query-provider";
 import { ShadcnThemeProvider } from "@/providers/shadcn-theme-provider";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const openSans = Open_Sans({
-  variable: "--font-open-sans",
   subsets: ["latin"],
+  weight: ['300', '400', '500', '600', '700', '800']
 });
 
 export const metadata: Metadata = {
@@ -28,9 +26,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn(openSans.variable, "font-sans", geist.variable)}
     >
-      <body>
+      <body className={openSans.className}>
         <ShadcnThemeProvider>
           <AuthProvider>
             <QueryProvider>{children}</QueryProvider>

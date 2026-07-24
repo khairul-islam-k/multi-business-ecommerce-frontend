@@ -28,4 +28,8 @@ export default async function DashboardPage() {
   if (res?.data?.data?.template === "FURNITURE") {
     return <ElectricDashboard />;
   }
+
+  if (res?.data?.data?.template === "PHARMACY") {
+    return <ElectricDashboard />;
+  }
 }

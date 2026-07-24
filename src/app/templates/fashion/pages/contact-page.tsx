@@ -14,38 +14,44 @@ import {
 import { useTemplateProductReviewMutation } from "@/lib/api/hooks/template-product-review";
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
+import { FooterConfig } from "@/types/website/website";
 
-const contactInfo = [
-  {
-    id: 1,
-    title: "Our Location",
-    value: "Dhaka, Bangladesh",
-    icon: MapPin,
-  },
-  {
-    id: 2,
-    title: "Phone Number",
-    value: "+880 1234 567 890",
-    icon: Phone,
-  },
-  {
-    id: 3,
-    title: "Email Address",
-    value: "support@fashionstore.com",
-    icon: Mail,
-  },
-  {
-    id: 4,
-    title: "Opening Hours",
-    value: "10:00 AM - 8:00 PM",
-    icon: Clock,
-  },
-];
+type ContactProps = {
+  footer: FooterConfig;
+}
 
-const FashionContactPage = () => {
+const FashionContactPage = ({ footer }: ContactProps) => {
+
+  const contactInfo = [
+    {
+      id: 1,
+      title: "Our Location",
+      value: footer.address,
+      icon: MapPin,
+    },
+    {
+      id: 2,
+      title: "Phone Number",
+      value: footer.phone,
+      icon: Phone,
+    },
+    {
+      id: 3,
+      title: "Email Address",
+      value: footer.email,
+      icon: Mail,
+    },
+    {
+      id: 4,
+      title: "Opening Hours",
+      value: "10:00 AM - 8:00 PM",
+      icon: Clock,
+    },
+  ];
+
   const message = useMessage();
 
-  const {contact} = useTemplateProductReviewMutation();
+  const { contact } = useTemplateProductReviewMutation();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,15 +68,15 @@ const FashionContactPage = () => {
     };
 
     try {
-    await contact.mutateAsync(values);
+      await contact.mutateAsync(values);
 
-    message.success("Contact message submitted successfully");
-    form.reset();
-  } catch (error) {
+      message.success("Contact message submitted successfully");
+      form.reset();
+    } catch (error) {
 
-    message.error(getWebErrorMessage(error));
-  }
-    
+      message.error(getWebErrorMessage(error));
+    }
+
   };
 
   return (
@@ -150,7 +156,7 @@ const FashionContactPage = () => {
                   <div>
                     <h4 className="font-semibold text-white">Address</h4>
                     <p className="mt-1 text-sm text-gray-400">
-                      House 12, Road 5, Dhaka, Bangladesh
+                      {footer.address}
                     </p>
                   </div>
                 </div>
@@ -163,7 +169,7 @@ const FashionContactPage = () => {
                   <div>
                     <h4 className="font-semibold text-white">Call Us</h4>
                     <p className="mt-1 text-sm text-gray-400">
-                      +880 1234 567 890
+                      {footer.phone}
                     </p>
                   </div>
                 </div>
@@ -176,7 +182,7 @@ const FashionContactPage = () => {
                   <div>
                     <h4 className="font-semibold text-white">Email</h4>
                     <p className="mt-1 text-sm text-gray-400">
-                      support@fashionstore.com
+                      {footer.email}
                     </p>
                   </div>
                 </div>

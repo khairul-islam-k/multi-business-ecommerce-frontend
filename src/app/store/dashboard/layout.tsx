@@ -127,7 +127,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   aria-current={isActive ? "page" : undefined}
                   onClick={() => setSidebarOpen(false)}
                   className={`relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${isActive
-                      ? "bg-white text-black shadow-sm"
+                      ? "bg-gray-200 text-black shadow-sm"
                       : "text-[var(--store-sidebar-text)] hover:bg-[var(--store-primary)]/10 hover:text-[var(--store-primary)]"
                     }`}
                 >

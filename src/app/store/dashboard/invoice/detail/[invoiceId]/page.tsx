@@ -26,7 +26,7 @@ const InvoiceDetailsPage = async () => {
         return <FashionInvoiceDetails />;
     }
 
-    if (res?.data?.data?.template === "FURNITURE") {
+    if (res?.data?.data?.template === "PHARMACY") {
         return <FashionInvoiceDetails />;
     }
 };

@@ -2,6 +2,7 @@ import ElectronicRegister from '@/app/templates/electronic/pages/electronic-regi
 import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register';
 import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
 import GroceryRegisterPage from '@/app/templates/grocery/pages/grocery-register-page';
+import PharmacyRegisterPage from '@/app/templates/pharmacy/pages/furniture-register-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -37,6 +38,12 @@ const Register = async () => {
         if (res?.data?.data?.template === "FURNITURE") {
             return (
                 <FurnitureRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "PHARMACY") {
+            return (
+                <PharmacyRegisterPage />
             );
         }
 };
