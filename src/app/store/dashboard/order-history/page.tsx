@@ -33,6 +33,10 @@ const OrderHistoryPage = async () => {
         if (res?.data?.data?.template === "PHARMACY") {
             return <FashionOrderHistory />;
         }
+
+        if (res?.data?.data?.template === "VEHICLE") {
+            return <FashionOrderHistory />;
+        }
 };
 
 export default OrderHistoryPage;

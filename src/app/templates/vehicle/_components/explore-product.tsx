@@ -6,13 +6,39 @@ import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/p
 import { useProductBrands } from "@/lib/api/hooks/public-website";
 import { Van } from "lucide-react";
 import ProductTagSectionPage from "./Product-Tags-section";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const ExploreProduct = () => {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const router = useRouter();
+
   const {
     data: brandsData,
     isLoading: isBrandsLoading,
     isFetching: isBrandsFetching,
   } = useProductBrands();
+
+  const handleBrands = (brandId: string) => {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    if (brandId) {
+      params.set(
+        "brandId",
+        brandId,
+      );
+    } else {
+      params.delete("brandId");
+    }
+
+    const queryString = params.toString();
+
+    router.push(`${pathname}/products?${queryString}`)
+
+  }
 
   if (isBrandsLoading) {
     return (
@@ -56,13 +82,13 @@ const ExploreProduct = () => {
           <aside className="col-span-1 lg:col-span-2">
 
             <div className="bg-[var(--store-bg-3)] flex items-center gap-3">
-                <div className="bg-black text-white p-2">
-                    <Van />
-                </div>
+              <div className="bg-black text-white p-2">
+                <Van />
+              </div>
 
-                <div>
-                    Search By Make
-                </div>
+              <div>
+                Search By Make
+              </div>
 
             </div>
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:block lg:overflow-hidden lg:border lg:border-[var(--store-border)]">
@@ -74,6 +100,7 @@ const ExploreProduct = () => {
                   <button
                     key={brand.id}
                     type="button"
+                    onClick={() => handleBrands(brand.id)}
                     className="group flex min-w-0 flex-col items-center justify-center gap-2 rounded-lg  bg-[var(--store-bg-1)] px-2 text-center transition hover:border-[var(--store-primary)] hover:shadow-md lg:flex-row lg:justify-start lg:rounded-none lg:border-x-0 lg:border-t-0 lg:px-3 lg:text-left lg:shadow-none lg:last:border-b-0"
                   >
                     {/* Brand image */}
@@ -118,7 +145,7 @@ const ExploreProduct = () => {
           <main className="col-span-1 lg:col-span-10">
             <div className="rounded-lg">
 
-                <ProductTagSectionPage />
+              <ProductTagSectionPage />
 
             </div>
           </main>

@@ -3,6 +3,7 @@ import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
 import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
 import PharmacyProductPage from '@/app/templates/pharmacy/pages/pharmacy-product-page';
+import VehicleProductPage from '@/app/templates/vehicle/pages/vehicle-product-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -11,13 +12,14 @@ type ProductsPageProps = {
     searchParams: Promise<{
         categoryId?: string;
         search?: string;
+        brandId?: string;
     }>;
 };
 
 const Products = async ({ searchParams }: ProductsPageProps) => {
 
     const params = await searchParams;
-    const { categoryId, search } = params;
+    const { categoryId, search, brandId } = params;
 
     const header = await headers()
 
@@ -72,6 +74,17 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
         return (
             <PharmacyProductPage
                 search={search}
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "VEHICLE") {
+        return (
+            <VehicleProductPage
+                search={search}
+                brandId={brandId}
                 theme={theme}
                 dashboardColor={dashboardColor}
                 categoryId={categoryId} />

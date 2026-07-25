@@ -3,6 +3,7 @@ import FashionLoginPage from '@/app/templates/fashion/pages/fashion-login';
 import FurnitureLoginPage from '@/app/templates/furniture/pages/furniture-login-page';
 import GroceryLoginPage from '@/app/templates/grocery/pages/grocery-login-page';
 import PharmacyLoginPage from '@/app/templates/pharmacy/pages/pharmacy-login-page';
+import VehicleLoginPage from '@/app/templates/vehicle/pages/vehicle-login-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -44,6 +45,12 @@ const Login = async () => {
     if (res?.data?.data?.template === "PHARMACY") {
         return (
             <PharmacyLoginPage />
+        );
+    }
+
+    if (res?.data?.data?.template === "VEHICLE") {
+        return (
+            <VehicleLoginPage />
         );
     }
 };

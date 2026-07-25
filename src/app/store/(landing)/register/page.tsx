@@ -3,6 +3,7 @@ import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register'
 import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
 import GroceryRegisterPage from '@/app/templates/grocery/pages/grocery-register-page';
 import PharmacyRegisterPage from '@/app/templates/pharmacy/pages/furniture-register-page';
+import VehicleRegisterPage from '@/app/templates/vehicle/pages/vehicle-register-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
 import React from 'react';
@@ -44,6 +45,12 @@ const Register = async () => {
         if (res?.data?.data?.template === "PHARMACY") {
             return (
                 <PharmacyRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "VEHICLE") {
+            return (
+                <VehicleRegisterPage />
             );
         }
 };

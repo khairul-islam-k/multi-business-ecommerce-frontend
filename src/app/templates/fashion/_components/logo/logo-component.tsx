@@ -34,7 +34,7 @@ const LogoComponent = ({
   return (
     <Link
       href="/store"
-      aria-label={`${fullName} home`}
+      // aria-label={`${fullName} home`}
       className="inline-flex items-center"
     >
       {logoSrc ? (

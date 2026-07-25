@@ -253,28 +253,27 @@ const VehicleNavbar = ({
         <div className="hidden min-h-[120px] grid-cols-[290px_minmax(0,1fr)] lg:grid">
           {/* Desktop logo section */}
           <div className="row-span-2 flex min-h-[120px] items-center justify-center bg-[#131a25] px-6 py-4">
-            <Link
-              href="/store"
-              aria-label="Go to store home"
+            <div
+              // aria-label="Go to store home"
               className="flex w-full items-center justify-center [&_img]:h-auto [&_img]:max-h-[82px] [&_img]:w-auto [&_img]:max-w-full [&_img]:brightness-0 [&_img]:invert"
             >
               <LogoComponent
               textColor="white"
               />
-            </Link>
+            </div>
           </div>
 
           {/* Desktop top utility navbar */}
           <div className="flex h-10 items-center justify-end border-b border-black/5 bg-[#e8e8e8] px-5 xl:px-8">
             <div className="flex h-full items-center">
-              <a
+              <Link
                 href={`tel:${phoneHref}`}
                 className="flex h-full items-center gap-2 border-r border-black/15 px-4 text-sm font-semibold text-[#111827] transition hover:bg-black/5"
               >
                 <Phone className="size-4" />
 
                 <span>{phoneNumber}</span>
-              </a>
+              </Link>
 
               <div className="flex h-full items-center border-r border-black/15 px-4">
                 {user ? (
@@ -454,7 +453,7 @@ const VehicleNavbar = ({
         <div className="lg:hidden">
           {/* Mobile top utility navbar */}
           <div className="flex h-10 items-center justify-between border-b border-black/10 bg-[#e8e8e8] px-3">
-            <a
+            <Link
               href={`tel:${phoneHref}`}
               className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-[#111827]"
             >
@@ -463,7 +462,7 @@ const VehicleNavbar = ({
               <span className="truncate">
                 {phoneNumber}
               </span>
-            </a>
+            </Link>
 
             <div className="flex h-full shrink-0 items-center">
               <div className="flex h-full items-center border-l border-black/10 px-2.5">
@@ -488,18 +487,17 @@ const VehicleNavbar = ({
 
           {/* Mobile black logo and menu navbar */}
           <div className="flex h-16 items-center justify-between bg-[#131a25] px-4">
-            <Link
-              href="/store"
+            <div
               onClick={() =>
                 setMobileMenuOpen(false)
               }
-              aria-label="Go to store home"
+              // aria-label="Go to store home"
               className="flex min-w-0 items-center [&_img]:h-auto [&_img]:max-h-11 [&_img]:w-auto [&_img]:max-w-[190px] [&_img]:brightness-0 [&_img]:invert"
             >
               <LogoComponent 
               textColor="white"
               />
-            </Link>
+            </div>
 
             <button
               type="button"
