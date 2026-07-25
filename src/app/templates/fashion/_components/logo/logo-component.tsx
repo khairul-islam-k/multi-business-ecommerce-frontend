@@ -1,54 +1,83 @@
 "use client";
-import { imageUrlSet } from '@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url';
-import { useResolveWebsite } from '@/lib/api/hooks/template-resolve';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
 
-type logoProps = {
-    sidebarCollapsed?: boolean;
-}
+import Image from "next/image";
+import Link from "next/link";
 
-const LogoComponent = ({ sidebarCollapsed }: logoProps) => {
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
+import { useResolveWebsite } from "@/lib/api/hooks/template-resolve";
 
-    const { data: resolve } = useResolveWebsite();
+type LogoProps = {
+  sidebarCollapsed?: boolean;
+  textColor?: string;
+};
 
-    const fullName = resolve?.name ?? "";
-    const firstLetter = fullName.trim().charAt(0).toUpperCase() ?? '';
+const LogoComponent = ({
+  sidebarCollapsed = false,
+  textColor,
+}: LogoProps) => {
+  const { data: resolve } =
+    useResolveWebsite();
 
-    const logoUrl = resolve?.theme?.logoUrl ?? '';
+  const fullName =
+    resolve?.name?.trim() || "Store";
 
-    return (
-        <div>
-            {
-                logoUrl ? <Link href='/store'>
-                    <div className="flex items-center">
-                        <Image
-                            src={imageUrlSet(logoUrl)}
-                            width={200}
-                            height={50}
-                            alt="logo"
-                            className="object-contain w-[200px] h-[45px]"
-                        />
-                    </div>
-                </Link> :
+  const firstLetter =
+    fullName.charAt(0).toUpperCase() || "S";
 
-                    <div className="flex items-center">
-                        <Link href="/store" className="flex items-center gap-2">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-gray-900 text-white">
-                                {firstLetter}
-                            </div>
+  const logoUrl =
+    resolve?.theme?.logoUrl?.trim() || "";
 
-                            {!sidebarCollapsed && (
-                                <span className="text-lg font-bold">
-                                    {fullName}
-                                </span>
-                            )}
-                        </Link>
-                    </div>
-            }
+  const logoSrc = logoUrl
+    ? imageUrlSet(logoUrl)
+    : "";
+
+  return (
+    <Link
+      href="/store"
+      aria-label={`${fullName} home`}
+      className="inline-flex items-center"
+    >
+      {logoSrc ? (
+        <Image
+          src={logoSrc}
+          width={200}
+          height={50}
+          alt={`${fullName} logo`}
+          priority
+          className="h-[45px] w-[200px] object-contain"
+          style={{
+            filter: "none",
+          }}
+          onError={(event) => {
+            console.error(
+              "Logo failed to load:",
+              logoSrc,
+              event,
+            );
+          }}
+        />
+      ) : (
+        <div className="flex items-center gap-2">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 font-semibold text-white">
+            {firstLetter}
+          </div>
+
+          {!sidebarCollapsed && (
+            <span
+              className="text-lg font-bold"
+              style={{
+                color:
+                  textColor ||
+                  "var(--store-text-primary)",
+              }}
+            >
+              {fullName}
+            </span>
+          )}
         </div>
-    );
+      )}
+    </Link>
+  );
 };
 
 export default LogoComponent;

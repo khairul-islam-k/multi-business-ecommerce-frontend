@@ -6,6 +6,7 @@ import ElectronicHomePage from '@/app/templates/electronic/pages/home-page';
 import GroceryHome from '@/app/templates/grocery/pages/grocery-home';
 import FurnitureHome from '@/app/templates/furniture/pages/furniture-home';
 import PharmacyHome from '@/app/templates/pharmacy/pages/pharmacy-home';
+import VehicleHome from '@/app/templates/vehicle/pages/vehicle-home';
 
 const Homepage = async () => {
 
@@ -38,7 +39,7 @@ const Homepage = async () => {
   }
 
   if (res?.data?.data?.template === "VEHICLE") {
-    return <PharmacyHome resolveData={res?.data?.data} />;
+    return <VehicleHome resolveData={res?.data?.data} />;
   }
 
 };

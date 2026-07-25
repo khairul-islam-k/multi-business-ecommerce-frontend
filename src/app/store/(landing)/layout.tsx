@@ -11,6 +11,7 @@ import FurnitureFooter from "@/app/templates/furniture/_components/furniture-foo
 import PharmacyNavbar from "@/app/templates/pharmacy/_components/pharmacy-navbar";
 import PharmacyFooter from "@/app/templates/pharmacy/_components/pharmacy-footer";
 import VehicleNavbar from "@/app/templates/vehicle/_components/vehicle-navbar";
+import VehicleFooter from "@/app/templates/vehicle/_components/vehicle-footer";
 
 const WebsiteLayout = async ({
   children,
@@ -104,6 +105,11 @@ const WebsiteLayout = async ({
       {isPharmacy ? <PharmacyFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isVehicle ? <VehicleFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
     </div>
   );
 };

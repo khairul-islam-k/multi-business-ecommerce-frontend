@@ -227,7 +227,7 @@ export default function WebsiteTemplateForm({
   ]);
 
   console.log('offer', activeOffer);
-  
+
 
 
   const templateOptions =
@@ -288,19 +288,19 @@ export default function WebsiteTemplateForm({
     | undefined;
 
   useEffect(() => {
-  if (isLoading) {
-    return;
-  }
+    if (isLoading) {
+      return;
+    }
 
-  form.setFieldsValue(
-    toFormValues(initialData, activeOffer),
-  );
-}, [
-  form,
-  initialData,
-  activeOffer,
-  isLoading,
-]);
+    form.setFieldsValue(
+      toFormValues(initialData, activeOffer),
+    );
+  }, [
+    form,
+    initialData,
+    activeOffer,
+    isLoading,
+  ]);
 
   const handleFinish = async (values: TemplateFormValues) => {
     const rawPayload: WebsiteTemplatePayload = {
@@ -871,8 +871,10 @@ export default function WebsiteTemplateForm({
                                 "template",
                               ) as string | undefined;
 
-                              const isFurnitureTemplate =
-                                selectedTemplate === "FURNITURE";
+                              const showOfferTextFields = [
+                                "FURNITURE",
+                                "VEHICLE",
+                              ].includes(selectedTemplate ?? "");
 
                               return (
                                 <div>
@@ -916,13 +918,11 @@ export default function WebsiteTemplateForm({
                                             }
                                             className="rounded-lg border border-gray-200 p-4"
                                           >
-                                            {/* Offer item heading */}
                                             <div className="mb-4 flex items-center justify-between gap-3 border-b border-gray-100 pb-3">
                                               <div className="min-w-0">
                                                 <div className="truncate font-semibold">
                                                   {product.name ??
-                                                    `Offer Product ${index + 1
-                                                    }`}
+                                                    `Offer Product ${index + 1}`}
                                                 </div>
 
                                                 <div className="text-sm text-gray-500">
@@ -1020,8 +1020,8 @@ export default function WebsiteTemplateForm({
                                                 </Form.Item>
                                               </Col>
 
-                                              {/* Furniture-only title */}
-                                              {isFurnitureTemplate && (
+                                              {/* Furniture and vehicle offer title */}
+                                              {showOfferTextFields && (
                                                 <Col xs={24} md={12}>
                                                   <Form.Item
                                                     label="Offer Title"
@@ -1032,7 +1032,6 @@ export default function WebsiteTemplateForm({
                                                       index,
                                                       "title",
                                                     ]}
-                                        
                                                     rules={[
                                                       {
                                                         required: true,
@@ -1056,8 +1055,8 @@ export default function WebsiteTemplateForm({
                                                 </Col>
                                               )}
 
-                                              {/* Furniture-only subtitle */}
-                                              {isFurnitureTemplate && (
+                                              {/* Furniture and vehicle offer subtitle */}
+                                              {showOfferTextFields && (
                                                 <Col xs={24} md={12}>
                                                   <Form.Item
                                                     label="Offer Subtitle"
@@ -1068,7 +1067,6 @@ export default function WebsiteTemplateForm({
                                                       index,
                                                       "subTitle",
                                                     ]}
-                          
                                                     rules={[
                                                       {
                                                         required: true,
@@ -1139,8 +1137,7 @@ export default function WebsiteTemplateForm({
                                                             <ImageIcon className="mx-auto mb-2 h-7 w-7" />
 
                                                             <p className="mb-0">
-                                                              No banner
-                                                              selected
+                                                              No banner selected
                                                             </p>
                                                           </div>
                                                         </div>

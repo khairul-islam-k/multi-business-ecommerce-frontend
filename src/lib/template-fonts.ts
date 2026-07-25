@@ -4,6 +4,7 @@ import {
   Playfair_Display,
   Poppins,
   Roboto,
+  Montserrat,
 } from "next/font/google";
 
 const inter = Inter({
@@ -40,12 +41,20 @@ const notoSansBengali = Noto_Sans_Bengali({
   preload: false,
 });
 
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  preload: false,
+});
+
 export const TemplateFont = {
   INTER: "INTER",
   POPPINS: "POPPINS",
   ROBOTO: "ROBOTO",
   PLAYFAIR_DISPLAY: "PLAYFAIR_DISPLAY",
   NOTO_SANS_BENGALI: "NOTO_SANS_BENGALI",
+  MONTSERRAT: "MONTSERRAT"
 } as const;
 
 export type TemplateFont =
@@ -57,6 +66,7 @@ const templateFontMap: Record<TemplateFont, string> = {
   ROBOTO: roboto.className,
   PLAYFAIR_DISPLAY: playfairDisplay.className,
   NOTO_SANS_BENGALI: notoSansBengali.className,
+  MONTSERRAT: montserrat.className,
 };
 
 /**
@@ -100,5 +110,9 @@ export const templateFontOptions = [
   {
     label: "Noto Sans Bengali",
     value: TemplateFont.NOTO_SANS_BENGALI,
+  },
+  {
+    label: "Montserrat",
+    value: TemplateFont.MONTSERRAT,
   },
 ];

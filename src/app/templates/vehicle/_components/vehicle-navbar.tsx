@@ -1,32 +1,29 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import {
-  type FormEvent,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
+import Link from "next/link";
 import {
-  Armchair,
+  usePathname,
+  useRouter,
+} from "next/navigation";
+import {
   ChevronDown,
-  ChevronRight,
   Menu,
-  Search,
-  ShoppingCart,
+  Phone,
   UserRound,
   X,
 } from "lucide-react";
 
-import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useCart } from "@/app/store/_components/contex/CartContex";
-import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
+import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import type { FAQItem } from "@/types/website/website";
 
+import AvatarDropdown from "../../fashion/_components/avatar-dropdown";
 import LogoComponent from "../../fashion/_components/logo/logo-component";
 
 type Category = {
@@ -51,58 +48,44 @@ type NavbarProps = {
   phone?: string;
 };
 
-type CategoryImageProps = {
+type FlattenedCategory = {
   item: CategoryTreeItem;
-  size?: "small" | "medium";
+  depth: number;
 };
 
-const CategoryImage = ({
-  item,
-  size = "small",
-}: CategoryImageProps) => {
-  const image = item.category.imageUrl?.trim();
+/**
+ * Flattens all child categories so every nested category
+ * can be displayed inside the desktop dropdown.
+ */
+const flattenCategoryChildren = (
+  items: CategoryTreeItem[],
+  depth = 0,
+): FlattenedCategory[] => {
+  return items.flatMap((item) => [
+    {
+      item,
+      depth,
+    },
+    ...flattenCategoryChildren(
+      item.children,
+      depth + 1,
+    ),
+  ]);
+};
 
-  const imageSize =
-    size === "medium" ? "size-11" : "size-8";
-
-  const iconSize =
-    size === "medium" ? "size-5" : "size-4";
-
-  if (!image) {
-    return (
-      <span
-        className={`grid ${imageSize} shrink-0 place-items-center rounded-md bg-[var(--store-bg-2)]`}
-      >
-        <Armchair
-          className={`${iconSize} text-gray-400`}
-        />
-      </span>
-    );
-  }
-
-  return (
-    <span
-      className={`relative block ${imageSize} shrink-0 overflow-hidden rounded-md bg-[var(--store-bg-2)]`}
-    >
-      <Image
-        src={imageUrlSet(image)}
-        alt={item.category.name}
-        fill
-        sizes={size === "medium" ? "44px" : "32px"}
-        className="object-contain p-1"
-      />
-    </span>
-  );
+type MobileCategoryItemProps = {
+  item: CategoryTreeItem;
+  onCategoryClick: (
+    categoryId: string,
+  ) => void;
 };
 
 const MobileCategoryItem = ({
   item,
   onCategoryClick,
-}: {
-  item: CategoryTreeItem;
-  onCategoryClick: (categoryId: string) => void;
-}) => {
-  const hasChildren = item.children.length > 0;
+}: MobileCategoryItemProps) => {
+  const hasChildren =
+    item.children.length > 0;
 
   if (!hasChildren) {
     return (
@@ -111,80 +94,62 @@ const MobileCategoryItem = ({
         onClick={() =>
           onCategoryClick(item.category.id)
         }
-        className="flex w-full items-center gap-3 border-b border-[var(--store-border)] py-3.5 text-left text-sm font-medium text-[var(--store-text-primary)] transition hover:text-[var(--store-primary)]"
+        className="flex w-full items-center border-b border-white/10 px-5 py-4 text-left text-sm font-medium text-white transition hover:bg-white/5 hover:text-white"
       >
-        <CategoryImage
-          item={item}
-          size="medium"
-        />
-
-        <span>{item.category.name}</span>
+        {item.category.name}
       </button>
     );
   }
 
   return (
-    <details className="group border-b border-[var(--store-border)]">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-3.5 text-sm font-medium text-[var(--store-text-primary)]">
-        <span className="flex min-w-0 items-center gap-3">
-          <CategoryImage
-            item={item}
-            size="medium"
-          />
-
-          <span className="truncate">
-            {item.category.name}
-          </span>
+    <details className="group border-b border-white/10">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 text-sm font-medium text-white transition hover:bg-white/5">
+        <span className="min-w-0 truncate">
+          {item.category.name}
         </span>
 
         <ChevronDown className="size-4 shrink-0 transition-transform duration-200 group-open:rotate-180" />
       </summary>
 
-      <div className="mb-3 ml-5 border-l border-[var(--store-border)] pl-4">
+      <div className="bg-black/20 pb-2">
         <button
           type="button"
           onClick={() =>
             onCategoryClick(item.category.id)
           }
-          className="block w-full py-2 text-left text-sm font-semibold text-[var(--store-primary)]"
+          className="block w-full border-b border-white/5 px-8 py-3 text-left text-sm font-semibold text-white/90 transition hover:bg-white/5 hover:text-white"
         >
-          View all {item.category.name}
+          View All {item.category.name}
         </button>
 
         {item.children.map((child) => (
-          <MobileCategoryItem
+          <div
             key={child.category.id}
-            item={child}
-            onCategoryClick={onCategoryClick}
-          />
+            className="pl-4"
+          >
+            <MobileCategoryItem
+              item={child}
+              onCategoryClick={
+                onCategoryClick
+              }
+            />
+          </div>
         ))}
       </div>
     </details>
   );
 };
 
-const VehicleNavbar = (
-  _props: NavbarProps,
-) => {
+const VehicleNavbar = ({
+  phone,
+}: NavbarProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const mobileSearchInputRef =
-    useRef<HTMLInputElement>(null);
+  const { user } = useCart();
 
-  const [searchValue, setSearchValue] =
-    useState("");
-
-  const [mobileSearchOpen, setMobileSearchOpen] =
-    useState(false);
-
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
-
-  const [
-    categoryNavbarVisible,
-    setCategoryNavbarVisible,
-  ] = useState(true);
+  const { data: categories } =
+    useProductCategoryQuery();
 
   const [
     activeDesktopCategoryId,
@@ -192,135 +157,58 @@ const VehicleNavbar = (
   ] = useState<string | null>(null);
 
   const [
-    activeDesktopChildId,
-    setActiveDesktopChildId,
-  ] = useState<string | null>(null);
+    mobileMenuOpen,
+    setMobileMenuOpen,
+  ] = useState(false);
 
-  const { user } = useCart();
-
-  const { data: categories } =
-    useProductCategoryQuery();
-
-  const { data: cart } = useAddActiveCArt();
-
-  const cartCount = cart?.items?.length ?? 0;
-
-  const categoryTree = useMemo<
-    CategoryTreeItem[]
-  >(
-    () =>
-      Array.isArray(categories)
-        ? (categories as CategoryTreeItem[])
-        : [],
-    [categories],
-  );
-
-  const desktopNavigationCategories =
-    useMemo(
-      () => categoryTree.slice(0, 10),
-      [categoryTree],
+  const categoryTree =
+    useMemo<CategoryTreeItem[]>(
+      () =>
+        Array.isArray(categories)
+          ? (categories as CategoryTreeItem[])
+          : [],
+      [categories],
     );
 
-  const activeDesktopCategory = useMemo(
-    () =>
-      categoryTree.find(
-        (item) =>
-          item.category.id ===
-          activeDesktopCategoryId,
-      ) ?? null,
-    [activeDesktopCategoryId, categoryTree],
+  const phoneNumber =
+    phone?.trim() || "+880 1234-567890";
+
+  const phoneHref = phoneNumber.replace(
+    /[^\d+]/g,
+    "",
   );
 
-  const activeDesktopChild = useMemo(() => {
-    if (!activeDesktopCategory) {
-      return null;
-    }
+  const getCategoryHref = (
+    categoryId: string,
+  ) => {
+    return `/store/products?categoryId=${encodeURIComponent(
+      categoryId,
+    )}`;
+  };
 
-    return (
-      activeDesktopCategory.children.find(
-        (item) =>
-          item.category.id ===
-          activeDesktopChildId,
-      ) ??
-      activeDesktopCategory.children[0] ??
-      null
-    );
-  }, [
-    activeDesktopCategory,
-    activeDesktopChildId,
-  ]);
-
-  const isHomeActive = pathname === "/store";
-
-  const isCartActive = pathname.startsWith(
-    "/store/dashboard/active-cart",
-  );
-
-  const isAccountActive =
-    pathname.startsWith("/store/dashboard") ||
-    pathname.startsWith("/store/login");
-
-  useEffect(() => {
-    setMobileSearchOpen(false);
+  const handleCategoryClick = (
+    categoryId: string,
+  ) => {
     setMobileMenuOpen(false);
     setActiveDesktopCategoryId(null);
-    setActiveDesktopChildId(null);
+
+    router.push(
+      getCategoryHref(categoryId),
+    );
+  };
+
+  /**
+   * Close menus after route changes.
+   */
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setActiveDesktopCategoryId(null);
   }, [pathname]);
 
   /**
-   * Focus the mobile search input after opening it.
+   * Lock page scroll while mobile category
+   * navigation is open.
    */
-  useEffect(() => {
-    if (!mobileSearchOpen) {
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      mobileSearchInputRef.current?.focus();
-    }, 200);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
-  }, [mobileSearchOpen]);
-
-  /**
-   * Keep the main navbar visible.
-   * Hide only the category navbar after scrolling.
-   */
-  useEffect(() => {
-    const handleScroll = () => {
-      const shouldShowCategoryNavbar =
-        window.scrollY <= 20;
-
-      setCategoryNavbarVisible(
-        shouldShowCategoryNavbar,
-      );
-
-      if (!shouldShowCategoryNavbar) {
-        setActiveDesktopCategoryId(null);
-        setActiveDesktopChildId(null);
-      }
-    };
-
-    handleScroll();
-
-    window.addEventListener(
-      "scroll",
-      handleScroll,
-      {
-        passive: true,
-      },
-    );
-
-    return () => {
-      window.removeEventListener(
-        "scroll",
-        handleScroll,
-      );
-    };
-  }, []);
-
   useEffect(() => {
     if (!mobileMenuOpen) {
       return;
@@ -337,7 +225,8 @@ const VehicleNavbar = (
       }
     };
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+      "hidden";
 
     window.addEventListener(
       "keydown",
@@ -355,556 +244,314 @@ const VehicleNavbar = (
     };
   }, [mobileMenuOpen]);
 
-  const getCategoryHref = (
-    categoryId: string,
-  ) => {
-    return `/store/products?categoryId=${encodeURIComponent(
-      categoryId,
-    )}`;
-  };
-
-  const handleCategoryClick = (
-    categoryId: string,
-  ) => {
-    setMobileMenuOpen(false);
-    setMobileSearchOpen(false);
-    setActiveDesktopCategoryId(null);
-    setActiveDesktopChildId(null);
-
-    router.push(getCategoryHref(categoryId));
-  };
-
-  const handleDesktopCategoryEnter = (
-    item: CategoryTreeItem,
-  ) => {
-    setActiveDesktopCategoryId(
-      item.category.id,
-    );
-
-    setActiveDesktopChildId(
-      item.children[0]?.category.id ?? null,
-    );
-  };
-
-  const handleSearchSubmit = (
-    event: FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault();
-
-    const value = searchValue.trim();
-
-    setMobileSearchOpen(false);
-
-    if (!value) {
-      router.push("/store/products");
-      return;
-    }
-
-    router.push(
-      `/store/products?search=${encodeURIComponent(
-        value,
-      )}`,
-    );
-  };
-
-  const handleMobileSearchToggle = () => {
-    setMobileMenuOpen(false);
-
-    setMobileSearchOpen((previous) => !previous);
-  };
-
   return (
     <>
-      <header className="sticky top-0 z-[70] bg-[var(--store-bg-1)] shadow-sm">
-        {/* Main navbar */}
-        <div className="border-b border-[var(--store-border)]">
-          <div className="mx-auto w-full max-w-[1440px] px-4 lg:px-6">
-            <div className="flex h-16 items-center gap-4 lg:h-[78px] lg:gap-7">
-              {/* Logo */}
-              <Link
-                href="/store"
-                aria-label="Go to store home"
-                className="shrink-0"
-              >
-                <LogoComponent />
-              </Link>
-
-              {/* Desktop search */}
-              <div className="hidden flex-1 justify-center lg:flex">
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="flex h-12 w-full max-w-[520px] overflow-hidden rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] focus-within:border-[var(--store-primary)]"
-                >
-                  <span className="grid w-12 shrink-0 place-items-center text-[var(--store-text-secondary)]">
-                    <Search className="size-5" />
-                  </span>
-
-                  <input
-                    type="search"
-                    value={searchValue}
-                    onChange={(event) =>
-                      setSearchValue(event.currentTarget.value)
-                    }
-                    placeholder='Search "Products"'
-                    aria-label="Search products"
-                    className="min-w-0 flex-1 bg-transparent pr-3 text-sm text-[var(--store-text-primary)] outline-none placeholder:text-[var(--store-text-secondary)]"
-                  />
-
-                  <button
-                    type="submit"
-                    className="min-w-24 shrink-0 bg-[var(--store-accent)] px-5 text-sm font-semibold text-white transition hover:opacity-90"
-                  >
-                    Search
-                  </button>
-                </form>
-              </div>
-
-              {/* Mobile actions */}
-              <div className="ml-auto flex items-center gap-1 lg:hidden">
-                <button
-                  type="button"
-                  onClick={handleMobileSearchToggle}
-                  aria-label={
-                    mobileSearchOpen
-                      ? "Close product search"
-                      : "Open product search"
-                  }
-                  aria-expanded={mobileSearchOpen}
-                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${mobileSearchOpen
-                      ? "bg-[var(--store-bg-2)] text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                    }`}
-                >
-                  {mobileSearchOpen ? (
-                    <X className="size-5" />
-                  ) : (
-                    <Search className="size-5" />
-                  )}
-                </button>
-
-                <Link
-                  href={
-                    user
-                      ? "/store/dashboard"
-                      : "/store/login"
-                  }
-                  aria-label={
-                    user
-                      ? "Open account"
-                      : "Login"
-                  }
-                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                    }`}
-                >
-                  <UserRound className="size-5" />
-                </Link>
-
-                <Link
-                  href="/store/dashboard/active-cart"
-                  aria-label="Open shopping cart"
-                  className={`relative grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                    }`}
-                >
-                  <ShoppingCart className="size-5" />
-
-                  {cartCount > 0 && (
-                    <span className="absolute right-0 top-0 grid min-h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold leading-none text-white">
-                      {cartCount > 99
-                        ? "99+"
-                        : cartCount}
-                    </span>
-                  )}
-                </Link>
-              </div>
-
-              {/* Desktop account and cart */}
-              <div className="hidden shrink-0 items-center gap-3 lg:flex">
-                <Link
-                  href={
-                    user
-                      ? "/store/dashboard"
-                      : "/store/login"
-                  }
-                  className={`flex min-w-[112px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                    }`}
-                >
-                  <UserRound className="size-7 shrink-0" />
-
-                  <span className="leading-tight">
-                    <span className="block text-xs text-[var(--store-text-secondary)]">
-                      Account
-                    </span>
-
-                    <span className="block text-sm font-semibold">
-                      {user
-                        ? "My Account"
-                        : "Login"}
-                    </span>
-                  </span>
-                </Link>
-
-                <Link
-                  href="/store/dashboard/active-cart"
-                  className={`flex min-w-[105px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
-                    }`}
-                >
-                  <span className="relative">
-                    <ShoppingCart className="size-7" />
-
-                    {cartCount > 0 && (
-                      <span className="absolute -right-2.5 -top-2.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold leading-none text-white">
-                        {cartCount > 99
-                          ? "99+"
-                          : cartCount}
-                      </span>
-                    )}
-                  </span>
-
-                  <span className="leading-tight">
-                    <span className="block text-xs text-[var(--store-text-secondary)]">
-                      Cart
-                    </span>
-
-                    <span className="block text-sm font-semibold">
-                      {cartCount}{" "}
-                      {cartCount === 1
-                        ? "item"
-                        : "items"}
-                    </span>
-                  </span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Mobile search input */}
-            <div
-              className={`overflow-hidden transition-[max-height,opacity,padding] duration-300 lg:hidden ${mobileSearchOpen
-                  ? "max-h-24 pb-3 opacity-100"
-                  : "pointer-events-none max-h-0 pb-0 opacity-0"
-                }`}
+      <header className="sticky top-0 z-[80] w-full shadow-sm">
+        {/* =========================================
+            DESKTOP NAVBAR
+        ========================================== */}
+        <div className="hidden min-h-[120px] grid-cols-[290px_minmax(0,1fr)] lg:grid">
+          {/* Desktop logo section */}
+          <div className="row-span-2 flex min-h-[120px] items-center justify-center bg-[#131a25] px-6 py-4">
+            <Link
+              href="/store"
+              aria-label="Go to store home"
+              className="flex w-full items-center justify-center [&_img]:h-auto [&_img]:max-h-[82px] [&_img]:w-auto [&_img]:max-w-full [&_img]:brightness-0 [&_img]:invert"
             >
-              <form
-                onSubmit={handleSearchSubmit}
-                className="flex h-11 overflow-hidden rounded-lg border border-[var(--store-border)] bg-[var(--store-bg-1)] focus-within:border-[var(--store-primary)]"
+              <LogoComponent
+              textColor="white"
+              />
+            </Link>
+          </div>
+
+          {/* Desktop top utility navbar */}
+          <div className="flex h-10 items-center justify-end border-b border-black/5 bg-[#e8e8e8] px-5 xl:px-8">
+            <div className="flex h-full items-center">
+              <a
+                href={`tel:${phoneHref}`}
+                className="flex h-full items-center gap-2 border-r border-black/15 px-4 text-sm font-semibold text-[#111827] transition hover:bg-black/5"
               >
-                <span className="grid w-11 shrink-0 place-items-center text-[var(--store-text-secondary)]">
-                  <Search className="size-4" />
-                </span>
+                <Phone className="size-4" />
 
-                <input
-                  ref={mobileSearchInputRef}
-                  type="search"
-                  value={searchValue}
-                  onChange={(event) =>
-                    setSearchValue(
-                      event.currentTarget.value,
-                    )
-                  }
-                  placeholder="Search products..."
-                  aria-label="Search products"
-                  className="min-w-0 flex-1 bg-transparent pr-2 text-sm text-[var(--store-text-primary)] outline-none placeholder:text-[var(--store-text-secondary)]"
-                />
+                <span>{phoneNumber}</span>
+              </a>
 
-                <button
-                  type="submit"
-                  className="shrink-0 bg-[var(--store-primary)] px-4 text-sm font-semibold text-white transition hover:opacity-90"
-                >
-                  Search
-                </button>
-              </form>
+              <div className="flex h-full items-center border-r border-black/15 px-4">
+                {user ? (
+                  <AvatarDropdown />
+                ) : (
+                  <Link
+                    href="/store/login"
+                    className="flex items-center gap-2 text-sm font-semibold text-[#111827] transition hover:text-black"
+                  >
+                    <UserRound className="size-4" />
+                    Sign In
+                  </Link>
+                )}
+              </div>
+
+              <div className="flex h-full items-center px-4">
+                <StoreThemeToggle />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Category navbar */}
-        <div
-          className={`relative bg-[var(--store-bg-1)] transition-[max-height,opacity,transform] duration-300 ${categoryNavbarVisible
-              ? "max-h-14 translate-y-0 overflow-visible opacity-100"
-              : "pointer-events-none max-h-0 -translate-y-3 overflow-hidden opacity-0"
-            }`}
-          onMouseLeave={() => {
-            setActiveDesktopCategoryId(null);
-            setActiveDesktopChildId(null);
-          }}
-        >
-          <nav className="border-b border-[var(--store-border)]">
-            <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:gap-7 lg:px-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileSearchOpen(false);
-                  setMobileMenuOpen(true);
-                }}
-                className="flex shrink-0 items-center gap-2 rounded-md bg-[var(--store-bg-2)] px-3 py-2 text-sm font-semibold text-[var(--store-text-primary)] lg:hidden"
-              >
-                <Menu className="size-4" />
-                Categories
-              </button>
+          {/* Desktop category navbar */}
+          <div
+            className="relative border-b border-[#dddddd] bg-white"
+            onMouseLeave={() =>
+              setActiveDesktopCategoryId(
+                null,
+              )
+            }
+          >
+            <nav
+              aria-label="Product categories"
+              className="flex min-h-20 flex-wrap items-stretch justify-center px-3 xl:px-6"
+            >
+              {categoryTree.map((item) => {
+                const isOpen =
+                  activeDesktopCategoryId ===
+                  item.category.id;
 
-              <Link
-                href="/store"
-                onMouseEnter={() => {
-                  setActiveDesktopCategoryId(
-                    null,
+                const dropdownCategories =
+                  flattenCategoryChildren(
+                    item.children,
                   );
-                  setActiveDesktopChildId(null);
-                }}
-                className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition hover:text-[var(--store-primary)] ${isHomeActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                  }`}
-              >
-                Home
 
-                {isHomeActive && (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--store-primary)]" />
-                )}
-              </Link>
+                const hasChildren =
+                  dropdownCategories.length > 0;
 
-              {desktopNavigationCategories.map(
-                (item) => {
-                  const isOpen =
-                    activeDesktopCategoryId ===
-                    item.category.id;
-
-                  return (
+                return (
+                  <div
+                    key={item.category.id}
+                    className="relative flex min-h-20 items-stretch"
+                    onMouseEnter={() =>
+                      setActiveDesktopCategoryId(
+                        item.category.id,
+                      )
+                    }
+                  >
                     <Link
-                      key={item.category.id}
                       href={getCategoryHref(
                         item.category.id,
                       )}
-                      onMouseEnter={() =>
-                        handleDesktopCategoryEnter(
-                          item,
-                        )
-                      }
                       onFocus={() =>
-                        handleDesktopCategoryEnter(
-                          item,
+                        setActiveDesktopCategoryId(
+                          item.category.id,
                         )
                       }
-                      onClick={() => {
+                      onClick={() =>
                         setActiveDesktopCategoryId(
                           null,
-                        );
-                        setActiveDesktopChildId(
-                          null,
-                        );
-                      }}
-                      className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition ${isOpen
-                          ? "text-[var(--store-primary)]"
-                          : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
-                        }`}
-                    >
-                      {item.category.name}
-
-                      {isOpen && (
-                        <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--store-primary)]" />
-                      )}
-                    </Link>
-                  );
-                },
-              )}
-            </div>
-          </nav>
-
-          {/* Desktop category mega menu */}
-          {activeDesktopCategory && (
-            <div className="absolute left-1/2 top-full z-[90] hidden w-[680px] -translate-x-1/2 overflow-hidden rounded-b-xl border border-t-0 border-[var(--store-border)] bg-[var(--store-bg-1)] shadow-2xl lg:grid lg:grid-cols-[280px_1fr]">
-              <div className="border-r border-[var(--store-border)] p-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCategoryClick(
-                      activeDesktopCategory
-                        .category.id,
-                    )
-                  }
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                >
-                  <CategoryImage
-                    item={activeDesktopCategory}
-                  />
-
-                  <span className="flex-1">
-                    All
-                  </span>
-                </button>
-
-                {activeDesktopCategory.children.map(
-                  (child) => {
-                    const isChildActive =
-                      activeDesktopChild?.category
-                        .id === child.category.id;
-
-                    return (
-                      <button
-                        key={child.category.id}
-                        type="button"
-                        onMouseEnter={() =>
-                          setActiveDesktopChildId(
-                            child.category.id,
-                          )
-                        }
-                        onFocus={() =>
-                          setActiveDesktopChildId(
-                            child.category.id,
-                          )
-                        }
-                        onClick={() =>
-                          handleCategoryClick(
-                            child.category.id,
-                          )
-                        }
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${isChildActive
-                            ? "bg-[var(--store-bg-2)] font-semibold text-[var(--store-primary)]"
-                            : "text-[var(--store-text-primary)] hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                          }`}
-                      >
-                        <CategoryImage
-                          item={child}
-                        />
-
-                        <span className="min-w-0 flex-1 truncate">
-                          {child.category.name}
-                        </span>
-
-                        <ChevronRight className="size-4 shrink-0" />
-                      </button>
-                    );
-                  },
-                )}
-              </div>
-
-              <div className="p-3">
-                {activeDesktopChild ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCategoryClick(
-                          activeDesktopChild
-                            .category.id,
                         )
                       }
-                      className="mb-2 flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                      className={`relative flex min-h-20 items-center gap-1.5 px-4 text-sm font-medium uppercase tracking-[0.01em] transition xl:px-5 ${
+                        isOpen
+                          ? "text-black"
+                          : "text-[#111827] hover:text-black"
+                      }`}
                     >
-                      <span>
-                        All{" "}
-                        {
-                          activeDesktopChild
-                            .category.name
-                        }
+                      <span className="whitespace-nowrap">
+                        {item.category.name}
                       </span>
 
-                      <ChevronRight className="size-4" />
-                    </button>
-
-                    <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                      {activeDesktopChild.children
-                        .length > 0 ? (
-                        activeDesktopChild.children.map(
-                          (child) => (
-                            <button
-                              key={
-                                child.category.id
-                              }
-                              type="button"
-                              onClick={() =>
-                                handleCategoryClick(
-                                  child.category.id,
-                                )
-                              }
-                              className="flex items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                            >
-                              <CategoryImage
-                                item={child}
-                              />
-
-                              <span className="line-clamp-2">
-                                {
-                                  child.category
-                                    .name
-                                }
-                              </span>
-                            </button>
-                          ),
-                        )
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleCategoryClick(
-                              activeDesktopChild
-                                .category.id,
-                            )
-                          }
-                          className="col-span-full flex items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                        >
-                          <CategoryImage
-                            item={
-                              activeDesktopChild
-                            }
-                            size="medium"
-                          />
-
-                          Browse{" "}
-                          {
-                            activeDesktopChild
-                              .category.name
-                          }
-                        </button>
+                      {hasChildren && (
+                        <ChevronDown
+                          className={`size-3.5 transition-transform duration-200 ${
+                            isOpen
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                        />
                       )}
-                    </div>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleCategoryClick(
-                        activeDesktopCategory
-                          .category.id,
-                      )
-                    }
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                  >
-                    <CategoryImage
-                      item={activeDesktopCategory}
-                      size="medium"
-                    />
 
-                    Browse{" "}
-                    {
-                      activeDesktopCategory
-                        .category.name
-                    }
-                  </button>
+                      <span
+                        className={`absolute inset-x-4 bottom-0 h-[3px] origin-center bg-[#131a25] transition-transform duration-200 xl:inset-x-5 ${
+                          isOpen
+                            ? "scale-x-100"
+                            : "scale-x-0"
+                        }`}
+                      />
+                    </Link>
+
+                    {/* Desktop dark dropdown */}
+                    {isOpen &&
+                      hasChildren && (
+                        <div className="absolute left-0 top-full z-[100] w-[280px] border-t-4 border-[#131a25] bg-[#151c28] shadow-[0_16px_35px_rgba(0,0,0,0.3)]">
+                          <Link
+                            href={getCategoryHref(
+                              item.category.id,
+                            )}
+                            onClick={() =>
+                              setActiveDesktopCategoryId(
+                                null,
+                              )
+                            }
+                            className="block border-b border-white/20 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10"
+                          >
+                            All{" "}
+                            {item.category.name}
+                          </Link>
+
+                          <div className="max-h-[420px] overflow-y-auto">
+                            {dropdownCategories.map(
+                              ({
+                                item:
+                                  dropdownItem,
+                                depth,
+                              }) => (
+                                <Link
+                                  key={
+                                    dropdownItem
+                                      .category.id
+                                  }
+                                  href={getCategoryHref(
+                                    dropdownItem
+                                      .category.id,
+                                  )}
+                                  onClick={() =>
+                                    setActiveDesktopCategoryId(
+                                      null,
+                                    )
+                                  }
+                                  style={{
+                                    paddingLeft:
+                                      16 +
+                                      depth *
+                                        14,
+                                  }}
+                                  className="block border-b border-white/20 py-3.5 pr-4 text-sm text-white transition last:border-b-0 hover:bg-white/10"
+                                >
+                                  {
+                                    dropdownItem
+                                      .category
+                                      .name
+                                  }
+                                </Link>
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                );
+              })}
+
+              {categoryTree.length ===
+                0 && (
+                <div className="flex min-h-20 items-center text-sm text-gray-500">
+                  No categories found
+                </div>
+              )}
+            </nav>
+          </div>
+        </div>
+
+        {/* =========================================
+            MOBILE NAVBAR
+        ========================================== */}
+        <div className="lg:hidden">
+          {/* Mobile top utility navbar */}
+          <div className="flex h-10 items-center justify-between border-b border-black/10 bg-[#e8e8e8] px-3">
+            <a
+              href={`tel:${phoneHref}`}
+              className="flex min-w-0 items-center gap-1.5 text-xs font-semibold text-[#111827]"
+            >
+              <Phone className="size-3.5 shrink-0" />
+
+              <span className="truncate">
+                {phoneNumber}
+              </span>
+            </a>
+
+            <div className="flex h-full shrink-0 items-center">
+              <div className="flex h-full items-center border-l border-black/10 px-2.5">
+                {user ? (
+                  <AvatarDropdown />
+                ) : (
+                  <Link
+                    href="/store/login"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-[#111827]"
+                  >
+                    <UserRound className="size-3.5" />
+                    Sign In
+                  </Link>
                 )}
               </div>
+
+              <div className="flex h-full items-center border-l border-black/10 pl-2.5">
+                <StoreThemeToggle />
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Mobile black logo and menu navbar */}
+          <div className="flex h-16 items-center justify-between bg-[#131a25] px-4">
+            <Link
+              href="/store"
+              onClick={() =>
+                setMobileMenuOpen(false)
+              }
+              aria-label="Go to store home"
+              className="flex min-w-0 items-center [&_img]:h-auto [&_img]:max-h-11 [&_img]:w-auto [&_img]:max-w-[190px] [&_img]:brightness-0 [&_img]:invert"
+            >
+              <LogoComponent 
+              textColor="white"
+              />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() =>
+                setMobileMenuOpen(
+                  (previous) => !previous,
+                )
+              }
+              aria-label={
+                mobileMenuOpen
+                  ? "Close category menu"
+                  : "Open category menu"
+              }
+              aria-expanded={
+                mobileMenuOpen
+              }
+              className="grid size-11 shrink-0 place-items-center border border-white/20 text-white transition hover:bg-white/10"
+            >
+              {mobileMenuOpen ? (
+                <X className="size-6" />
+              ) : (
+                <Menu className="size-6" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Mobile drawer overlay */}
+      {/* Desktop dropdown background */}
+      {activeDesktopCategoryId && (
+        <button
+          type="button"
+          aria-label="Close category menu"
+          onClick={() =>
+            setActiveDesktopCategoryId(null)
+          }
+          className="fixed inset-0 z-[70] hidden bg-black/20 lg:block"
+        />
+      )}
+
+      {/* Mobile menu overlay */}
       <button
         type="button"
-        aria-label="Close category menu"
+        aria-label="Close mobile category menu"
         onClick={() =>
           setMobileMenuOpen(false)
         }
-        className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${mobileMenuOpen
+        className={`fixed inset-x-0 bottom-0 top-[104px] z-[90] bg-black/60 transition-opacity duration-300 lg:hidden ${
+          mobileMenuOpen
             ? "visible opacity-100"
             : "pointer-events-none invisible opacity-0"
-          }`}
+        }`}
       />
 
       {/* Mobile category drawer */}
@@ -913,20 +560,21 @@ const VehicleNavbar = (
         aria-modal="true"
         aria-label="Product categories"
         aria-hidden={!mobileMenuOpen}
-        className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${mobileMenuOpen
+        className={`fixed bottom-0 right-0 top-[104px] z-[100] flex w-[88%] max-w-sm flex-col bg-[#131a25] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileMenuOpen
             ? "translate-x-0"
-            : "-translate-x-full"
-          }`}
+            : "translate-x-full"
+        }`}
       >
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/10 px-5">
           <div>
-            <p className="text-lg font-semibold text-[var(--store-text-primary)]">
-              Categories
+            <p className="text-xs uppercase tracking-[0.22em] text-white/50">
+              Navigation
             </p>
 
-            <p className="text-xs text-[var(--store-text-secondary)]">
-              Browse all product categories
-            </p>
+            <h2 className="mt-0.5 text-lg font-semibold text-white">
+              Categories
+            </h2>
           </div>
 
           <button
@@ -934,26 +582,14 @@ const VehicleNavbar = (
             onClick={() =>
               setMobileMenuOpen(false)
             }
-            aria-label="Close menu"
-            className="grid size-10 place-items-center rounded-full bg-[var(--store-bg-2)] text-[var(--store-text-primary)]"
+            aria-label="Close categories"
+            className="grid size-10 place-items-center border border-white/20 text-white transition hover:bg-white/10"
           >
             <X className="size-5" />
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-3">
-          <Link
-            href="/store/products"
-            onClick={() =>
-              setMobileMenuOpen(false)
-            }
-            className="flex items-center justify-between border-b border-[var(--store-border)] py-4 text-sm font-semibold text-[var(--store-primary)]"
-          >
-            View all products
-
-            <ChevronRight className="size-4" />
-          </Link>
-
+        <nav className="min-h-0 flex-1 overflow-y-auto">
           {categoryTree.length > 0 ? (
             categoryTree.map((item) => (
               <MobileCategoryItem
@@ -965,49 +601,11 @@ const VehicleNavbar = (
               />
             ))
           ) : (
-            <p className="py-10 text-center text-sm text-[var(--store-text-secondary)]">
+            <p className="px-5 py-10 text-center text-sm text-white/60">
               No categories found.
             </p>
           )}
-        </div>
-
-        <div className="grid shrink-0 grid-cols-2 gap-3 border-t border-[var(--store-border)] px-5 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4">
-          <Link
-            href={
-              user
-                ? "/store/dashboard"
-                : "/store/login"
-            }
-            onClick={() =>
-              setMobileMenuOpen(false)
-            }
-            className="flex items-center justify-center gap-2 rounded-lg border border-[var(--store-border)] px-3 py-3 text-sm font-medium text-[var(--store-text-primary)]"
-          >
-            <UserRound className="size-4" />
-
-            {user ? "Account" : "Login"}
-          </Link>
-
-          <Link
-            href="/store/dashboard/active-cart"
-            onClick={() =>
-              setMobileMenuOpen(false)
-            }
-            className="relative flex items-center justify-center gap-2 rounded-lg border border-[var(--store-border)] px-3 py-3 text-sm font-medium text-[var(--store-text-primary)]"
-          >
-            <ShoppingCart className="size-4" />
-
-            Cart
-
-            {cartCount > 0 && (
-              <span className="grid min-h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold text-white">
-                {cartCount > 99
-                  ? "99+"
-                  : cartCount}
-              </span>
-            )}
-          </Link>
-        </div>
+        </nav>
       </aside>
     </>
   );
