@@ -40,6 +40,7 @@ type ThemeStyle = React.CSSProperties & {
   "--store-neutral"?: string;
   "--store-dark"?: string;
   "--store-light"?: string;
+  "--store-footer-cosmetic"?: string;
 };
 
 const StoreThemeContext = createContext<StoreThemeContextType | null>(null);
@@ -108,6 +109,7 @@ export function StoreThemeProvider({
   "--store-neutral": "#64748b",
   "--store-dark": "#020617",
   "--store-light": "#f3f4f6",
+  "--store-footer-cosmetic": "#fff8f7",
 };
 
   return (

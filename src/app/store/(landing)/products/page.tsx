@@ -1,3 +1,4 @@
+import CosmeticsProductPage from '@/app/templates/cosmetics/pages/cosmetics-product-page';
 import ElectronicProduct from '@/app/templates/electronic/pages/electronic-product';
 import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
@@ -83,6 +84,17 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
     if (res?.data?.data?.template === "VEHICLE") {
         return (
             <VehicleProductPage
+                search={search}
+                brandId={brandId}
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "COSMETICS") {
+        return (
+            <CosmeticsProductPage
                 search={search}
                 brandId={brandId}
                 theme={theme}

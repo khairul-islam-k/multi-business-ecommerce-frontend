@@ -12,6 +12,8 @@ import PharmacyNavbar from "@/app/templates/pharmacy/_components/pharmacy-navbar
 import PharmacyFooter from "@/app/templates/pharmacy/_components/pharmacy-footer";
 import VehicleNavbar from "@/app/templates/vehicle/_components/vehicle-navbar";
 import VehicleFooter from "@/app/templates/vehicle/_components/vehicle-footer";
+import CosmeticsNavbar from "@/app/templates/cosmetics/_components/cosmetics-navbar";
+import CosmeticsFooter from "@/app/templates/cosmetics/_components/cosmetics-footer";
 
 const WebsiteLayout = async ({
   children,
@@ -42,6 +44,7 @@ const WebsiteLayout = async ({
   const isFurniture = res?.data?.data?.template === "FURNITURE";
   const isPharmacy = res?.data?.data?.template === "PHARMACY";
   const isVehicle = res?.data?.data?.template === "VEHICLE";
+  const isCosmetics = res?.data?.data?.template === "COSMETICS";
 
   return (
     <div>
@@ -86,6 +89,12 @@ const WebsiteLayout = async ({
         phone={phone}
       /> : null}
 
+      {isCosmetics ? <CosmeticsNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+      /> : null}
+
       {children}
 
       {isElectronic ? <ElectronicFooter /> : null}
@@ -107,6 +116,10 @@ const WebsiteLayout = async ({
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 
       {isVehicle ? <VehicleFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isCosmetics ? <CosmeticsFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 

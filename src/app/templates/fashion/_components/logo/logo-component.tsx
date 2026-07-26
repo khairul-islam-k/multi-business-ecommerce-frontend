@@ -15,11 +15,9 @@ const LogoComponent = ({
   sidebarCollapsed = false,
   textColor,
 }: LogoProps) => {
-  const { data: resolve } =
-    useResolveWebsite();
+  const { data: resolve } = useResolveWebsite();
 
-  const fullName =
-    resolve?.name?.trim() || "Store";
+  const fullName = resolve?.name?.trim() || "Store";
 
   const firstLetter =
     fullName.charAt(0).toUpperCase() || "S";
@@ -34,8 +32,8 @@ const LogoComponent = ({
   return (
     <Link
       href="/store"
-      // aria-label={`${fullName} home`}
-      className="inline-flex items-center"
+      aria-label={`${fullName} home`}
+      className="inline-flex min-w-0 items-center"
     >
       {logoSrc ? (
         <Image
@@ -57,14 +55,15 @@ const LogoComponent = ({
           }}
         />
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 font-semibold text-white">
             {firstLetter}
           </div>
 
           {!sidebarCollapsed && (
             <span
-              className="text-lg font-bold"
+              title={fullName}
+              className="block max-w-[160px] truncate whitespace-nowrap text-lg font-bold"
               style={{
                 color:
                   textColor ||

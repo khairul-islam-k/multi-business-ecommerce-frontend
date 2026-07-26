@@ -5,7 +5,6 @@ import CategoriesSection from '../_components/categories-section';
 import MonthOffer from '../_components/month-offer';
 import ExploreOurProduct from '../_components/explore-our-product';
 import PartnerSection from '../_components/partner-section';
-// import BestSellingProducts from '../_components/best-selling-products';
 
 const GroceryHome = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
     const bannerSlide = resolveData?.config?.headerConfig?.slide;

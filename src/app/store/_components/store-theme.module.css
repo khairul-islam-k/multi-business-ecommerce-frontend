@@ -31,6 +31,7 @@
   --store-neutral: #64748b;
   --store-dark: #020617;
   --store-light: #f3f4f6;
+  --store-footer-cosmetic: #fff8f7;
 }
 
 /* Dark mode */
@@ -59,4 +60,5 @@
   --store-neutral: #94a3b8;
   --store-dark: #020617;
   --store-light: #e5e7eb;
+  --store-footer-cosmetic: #120f14;
 }
