@@ -146,7 +146,7 @@ const ThemeColorField = ({
   const [mode, setMode] = useState<ColorInputMode>("picker");
 
   return (
-    <Form.Item label={label} required>
+    <Form.Item label={label} >
       <div className="mb-2 flex justify-end">
         <Segmented
           size="small"
