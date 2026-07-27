@@ -39,9 +39,9 @@ export default function AvatarDropdown() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-3 rounded-full border border-gray-200 px-2 py-1.5 shadow-sm transition hover:bg-gray-50"
+        className="flex items-center gap-3 rounded-full border border-gray-200 px-1 py-1.5 shadow-sm transition hover:bg-gray-50"
       >
-        <div className="relative size-9 overflow-hidden rounded-full bg-gray-100">
+        <div className="relative size-7 overflow-hidden rounded-full bg-gray-100">
           <Image
             src="https://ui-avatars.com/api/?name=User&background=e5e7eb&color=374151&size=128"
             alt={user.name}

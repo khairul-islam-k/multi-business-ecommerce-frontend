@@ -14,6 +14,7 @@ import VehicleNavbar from "@/app/templates/vehicle/_components/vehicle-navbar";
 import VehicleFooter from "@/app/templates/vehicle/_components/vehicle-footer";
 import CosmeticsNavbar from "@/app/templates/cosmetics/_components/cosmetics-navbar";
 import CosmeticsFooter from "@/app/templates/cosmetics/_components/cosmetics-footer";
+import ShoesNavbar from "@/app/templates/shoes/_components/shoes-navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -45,6 +46,7 @@ const WebsiteLayout = async ({
   const isPharmacy = res?.data?.data?.template === "PHARMACY";
   const isVehicle = res?.data?.data?.template === "VEHICLE";
   const isCosmetics = res?.data?.data?.template === "COSMETICS";
+  const isShoes = res?.data?.data?.template === "SHOES";
 
   return (
     <div>
@@ -93,6 +95,13 @@ const WebsiteLayout = async ({
         faqs={faqs}
         terms={terms}
         privacy={privacy}
+      /> : null}
+
+      {isShoes ? <ShoesNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
       /> : null}
 
       {children}

@@ -1,3 +1,4 @@
+import CosmeticsRegisterPage from '@/app/templates/cosmetics/pages/cosmetics-register-page';
 import ElectronicRegister from '@/app/templates/electronic/pages/electronic-register';
 import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register';
 import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
@@ -51,6 +52,12 @@ const Register = async () => {
         if (res?.data?.data?.template === "VEHICLE") {
             return (
                 <VehicleRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "COSMETICS") {
+            return (
+                <CosmeticsRegisterPage />
             );
         }
 };

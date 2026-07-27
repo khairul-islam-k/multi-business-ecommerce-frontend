@@ -37,6 +37,10 @@ const MyReviews = async () => {
     if (res?.data?.data?.template === "VEHICLE") {
         return <FashionReviewPage />;
     }
+
+    if (res?.data?.data?.template === "COSMETICS") {
+        return <FashionReviewPage />;
+    }
 };
 
 export default MyReviews;

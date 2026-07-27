@@ -5,6 +5,7 @@ import {
   Poppins,
   Roboto,
   Montserrat,
+  Open_Sans,
 } from "next/font/google";
 
 const inter = Inter({
@@ -48,13 +49,21 @@ const montserrat = Montserrat({
   preload: false,
 });
 
+const opensans = Open_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  preload: false,
+});
+
 export const TemplateFont = {
   INTER: "INTER",
   POPPINS: "POPPINS",
   ROBOTO: "ROBOTO",
   PLAYFAIR_DISPLAY: "PLAYFAIR_DISPLAY",
   NOTO_SANS_BENGALI: "NOTO_SANS_BENGALI",
-  MONTSERRAT: "MONTSERRAT"
+  MONTSERRAT: "MONTSERRAT",
+  OPEN_SANS: "OPEN_SANS",
 } as const;
 
 export type TemplateFont =
@@ -67,6 +76,7 @@ const templateFontMap: Record<TemplateFont, string> = {
   PLAYFAIR_DISPLAY: playfairDisplay.className,
   NOTO_SANS_BENGALI: notoSansBengali.className,
   MONTSERRAT: montserrat.className,
+  OPEN_SANS: opensans.className,
 };
 
 /**
@@ -114,5 +124,9 @@ export const templateFontOptions = [
   {
     label: "Montserrat",
     value: TemplateFont.MONTSERRAT,
+  },
+  {
+    label: "Open Sans",
+    value: TemplateFont.OPEN_SANS,
   },
 ];

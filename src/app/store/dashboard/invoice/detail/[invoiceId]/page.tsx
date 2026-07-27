@@ -30,7 +30,15 @@ const InvoiceDetailsPage = async () => {
         return <FashionInvoiceDetails />;
     }
 
+    if (res?.data?.data?.template === "FURNITURE") {
+        return <FashionInvoiceDetails />;
+    }
+
     if (res?.data?.data?.template === "VEHICLE") {
+        return <FashionInvoiceDetails />;
+    }
+
+    if (res?.data?.data?.template === "COSMETICS") {
         return <FashionInvoiceDetails />;
     }
 };

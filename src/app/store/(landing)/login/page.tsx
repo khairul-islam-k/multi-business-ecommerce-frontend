@@ -1,3 +1,4 @@
+import CosmeticsLoginPage from '@/app/templates/cosmetics/pages/cosmetics-login-page';
 import ElectronicLogin from '@/app/templates/electronic/pages/electronic-login';
 import FashionLoginPage from '@/app/templates/fashion/pages/fashion-login';
 import FurnitureLoginPage from '@/app/templates/furniture/pages/furniture-login-page';
@@ -51,6 +52,12 @@ const Login = async () => {
     if (res?.data?.data?.template === "VEHICLE") {
         return (
             <VehicleLoginPage />
+        );
+    }
+
+    if (res?.data?.data?.template === "COSMETICS") {
+        return (
+            <CosmeticsLoginPage />
         );
     }
 };

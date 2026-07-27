@@ -45,6 +45,10 @@ const UpdateCustomerAddress = async ({ params }: UpdateCustomerAddressProps) => 
     return <FashionUpdateCustomerAddress addressId={id} />;
   }
 
+  if (res?.data?.data?.template === "COSMETICS") {
+    return <FashionUpdateCustomerAddress addressId={id} />;
+  }
+
   return null;
 };
 

@@ -15,6 +15,9 @@ import Image from "next/image";
 import type { HeaderSlide } from "@/types/website/website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import BannerSidebar from "./banner-sidebar";
+import BannerCategory from "./banner-category";
+import BannerProduct from "./banner-product";
+import BannerSlideClickable from "./banner-slide-clickable";
 
 type HeroSectionProps = {
     bannerSlide: HeaderSlide[];
@@ -133,34 +136,23 @@ const HeroSection = ({
     }
 
     return (
-        <div>
+        <div className="mt-4">
 
-            {/* clickable image */}
-            <div className="flex gap-4">
-                {
-                    bannerSlide.map((item, index) => <div
-                        onClick={() => setActiveIndex(index)}
-                        key={index}>
-                        <Image src={imageUrlSet(item.imageUrl)} height={200} width={200} alt={item.title ?? ''} />
-                    </div>)
-                }
-            </div>
-
-            <div className="mx-auto grid
-            gap-2
-             lg:grid-cols-12 lg:w-[1100px] 2xl:w-[1300px]">
-                <aside className="bg-blue-400 lg:col-span-3">
+            <div className="grid
+            gap-4
+             lg:grid-cols-12 lg:h-[450px]">
+                <aside className="lg:col-span-3 bg-[var(--store-card)]">
                     <BannerSidebar />
                 </aside>
 
                 {/* middle container with slide */}
-                <main className="lg:col-span-7">
+                <main className="lg:col-span-9">
 
                     <section
                         tabIndex={0}
                         onKeyDown={handleKeyDown}
                         aria-label="Banner slider"
-                        className="relative h-[180px] w-full overflow-hidden bg-[var(--store-bg-2)] outline-none sm:h-[280px] md:h-[340px] lg:h-[300px] rounded-[5px]"
+                        className="relative h-[180px] w-full overflow-hidden bg-[var(--store-bg-2)] outline-none sm:h-[280px] md:h-[340px] lg:h-[450px] rounded-[5px]"
                     >
                         <AnimatePresence
                             initial={false}
@@ -238,12 +230,7 @@ const HeroSection = ({
 
                 </main>
 
-                <aside className="bg-blue-400 lg:col-span-2">
-                    side
-                </aside>
             </div>
-
-
         </div>
     );
 };

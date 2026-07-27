@@ -1,8 +1,8 @@
 import React from 'react';
 import { WebsiteTemplatePayload } from '@/types/website/website';
 import CategoriesSection from '../_components/categories-section';
-import ExploreOurProduct from '../_components/explore-our-product';
 import HeroSection from '../_components/hero-section';
+import ExploreOurProduct from '../_components/explore-our-product';
 // import BestSellingProducts from '../_components/best-selling-products';
 
 const ShoesHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
@@ -13,14 +13,14 @@ const ShoesHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => 
 
 
     return (
-        <div>
+        <div className='mx-auto lg:w-[1100px] 2xl:w-[1300px]'>
             <div className='px-4 lg:px-5'>
                 <HeroSection bannerSlide={bannerSlide ?? []} />
             </div>
             
             {/* <CategoriesSection /> */}
 
-            {/* <ExploreOurProduct /> */}
+            <ExploreOurProduct />
 
         </div>
     );

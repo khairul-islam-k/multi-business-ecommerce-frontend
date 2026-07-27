@@ -53,14 +53,6 @@ const CosmeticsFooter = ({
           label: "All Products",
           href: "/store/products",
         },
-        ...(hasAboutPage
-          ? [
-              {
-                label: "About Us",
-                href: "/store/about",
-              },
-            ]
-          : []),
         {
           label: "Contact Us",
           href: "/store/contact",
@@ -91,7 +83,7 @@ const CosmeticsFooter = ({
     {
       title: "Information",
       links: [
-        ...(hasTermsPage
+        ...(hasAboutPage
           ? [
               {
                 label: "Terms & Conditions",

@@ -36,4 +36,8 @@ export default async function DashboardPage() {
   if (res?.data?.data?.template === "VEHICLE") {
     return <ElectricDashboard />;
   }
+
+  if (res?.data?.data?.template === "COSMETICS") {
+    return <ElectricDashboard />;
+  }
 }
