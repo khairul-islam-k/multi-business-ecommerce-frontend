@@ -874,7 +874,8 @@ export default function WebsiteTemplateForm({
                               const showOfferTextFields = [
                                 "FURNITURE",
                                 "VEHICLE",
-                                "COSMETICS"
+                                "COSMETICS",
+                                "SHOES"
                               ].includes(selectedTemplate ?? "");
 
                               return (

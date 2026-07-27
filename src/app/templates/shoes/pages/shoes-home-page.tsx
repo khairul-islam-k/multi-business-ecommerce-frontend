@@ -1,8 +1,10 @@
 import React from 'react';
 import { WebsiteTemplatePayload } from '@/types/website/website';
-import CategoriesSection from '../_components/categories-section';
 import HeroSection from '../_components/hero-section';
 import ExploreOurProduct from '../_components/explore-our-product';
+import CategoriesSection from '../_components/category-section';
+import BrandSection from '../_components/brand-section';
+import MonthOffer from '../_components/month-offer';
 // import BestSellingProducts from '../_components/best-selling-products';
 
 const ShoesHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
@@ -17,10 +19,14 @@ const ShoesHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => 
             <div className='px-4 lg:px-5'>
                 <HeroSection bannerSlide={bannerSlide ?? []} />
             </div>
-            
-            {/* <CategoriesSection /> */}
 
             <ExploreOurProduct />
+
+            <CategoriesSection />
+
+            <MonthOffer monthlyOffer={monthlyOffer} />
+
+            <BrandSection />
 
         </div>
     );

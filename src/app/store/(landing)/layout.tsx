@@ -15,6 +15,7 @@ import VehicleFooter from "@/app/templates/vehicle/_components/vehicle-footer";
 import CosmeticsNavbar from "@/app/templates/cosmetics/_components/cosmetics-navbar";
 import CosmeticsFooter from "@/app/templates/cosmetics/_components/cosmetics-footer";
 import ShoesNavbar from "@/app/templates/shoes/_components/shoes-navbar";
+import ShoesFooter from "@/app/templates/shoes/_components/shoes-footer";
 
 const WebsiteLayout = async ({
   children,
@@ -129,6 +130,10 @@ const WebsiteLayout = async ({
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 
       {isCosmetics ? <CosmeticsFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isShoes ? <ShoesFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 

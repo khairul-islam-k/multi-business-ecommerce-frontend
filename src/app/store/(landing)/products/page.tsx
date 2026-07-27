@@ -4,6 +4,7 @@ import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
 import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
 import PharmacyProductPage from '@/app/templates/pharmacy/pages/pharmacy-product-page';
+import ShoesProductPage from '@/app/templates/shoes/pages/shoes-product-page';
 import VehicleProductPage from '@/app/templates/vehicle/pages/vehicle-product-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -95,6 +96,17 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
     if (res?.data?.data?.template === "COSMETICS") {
         return (
             <CosmeticsProductPage
+                search={search}
+                brandId={brandId}
+                theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "SHOES") {
+        return (
+            <ShoesProductPage
                 search={search}
                 brandId={brandId}
                 theme={theme}
