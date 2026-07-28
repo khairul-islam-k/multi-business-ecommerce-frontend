@@ -41,6 +41,10 @@ const InvoiceDetailsPage = async () => {
     if (res?.data?.data?.template === "COSMETICS") {
         return <FashionInvoiceDetails />;
     }
+
+    if (res?.data?.data?.template === "SHOES") {
+        return <FashionInvoiceDetails />;
+    }
 };
 
 export default InvoiceDetailsPage;

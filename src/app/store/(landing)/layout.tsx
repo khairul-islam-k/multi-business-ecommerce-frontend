@@ -16,6 +16,8 @@ import CosmeticsNavbar from "@/app/templates/cosmetics/_components/cosmetics-nav
 import CosmeticsFooter from "@/app/templates/cosmetics/_components/cosmetics-footer";
 import ShoesNavbar from "@/app/templates/shoes/_components/shoes-navbar";
 import ShoesFooter from "@/app/templates/shoes/_components/shoes-footer";
+import ToyNavbar from "@/app/templates/toy/_components/Toy-navbar";
+import ToyFooter from "@/app/templates/toy/_components/toy-footer";
 
 const WebsiteLayout = async ({
   children,
@@ -35,8 +37,6 @@ const WebsiteLayout = async ({
   const terms = res.data.data.config?.generalConfig?.extraPage?.termsAndConditions;
   const privacy = res.data.data.config?.generalConfig?.extraPage?.about;
   const phone = res.data.data.config?.footerConfig?.phone;
-
-
   const generalConfig = res.data.data.config?.generalConfig;
 
 
@@ -48,6 +48,7 @@ const WebsiteLayout = async ({
   const isVehicle = res?.data?.data?.template === "VEHICLE";
   const isCosmetics = res?.data?.data?.template === "COSMETICS";
   const isShoes = res?.data?.data?.template === "SHOES";
+  const isToy = res?.data?.data?.template === "TOY";
 
   return (
     <div>
@@ -105,6 +106,13 @@ const WebsiteLayout = async ({
         phone={phone}
       /> : null}
 
+      {isToy ? <ToyNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+        phone={phone}
+      /> : null}
+
       {children}
 
       {isElectronic ? <ElectronicFooter /> : null}
@@ -134,6 +142,10 @@ const WebsiteLayout = async ({
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 
       {isShoes ? <ShoesFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isToy ? <ToyFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 

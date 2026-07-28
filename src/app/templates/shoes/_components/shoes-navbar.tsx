@@ -29,7 +29,7 @@ import {
     useProductCategoryQuery,
 } from "@/lib/api/hooks/public-website";
 import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
-import type { FAQItem } from "@/types/website/website";
+import type { DashboardColors, FAQItem } from "@/types/website/website";
 
 import AvatarDropdown from "../../fashion/_components/avatar-dropdown";
 import LogoComponent from "../../fashion/_components/logo/logo-component";
@@ -239,7 +239,7 @@ const MobileCategoryItem = ({
 };
 
 const ShoesNavbar = ({
-    phone,
+    phone
 }: NavbarProps) => {
     const router = useRouter();
     const pathname = usePathname();
@@ -480,7 +480,7 @@ const ShoesNavbar = ({
         <>
             <header className="sticky top-0 z-[60] bg-[var(--store-bg-1)]">
                 {/* Desktop main header */}
-                <div className="hidden text-white bg-[var(--store-bg-3)] border-b border-[var(--store-bg-1)] lg:block">
+                <div className="hidden text-[var(--store-navbar-text)] bg-[var(--store-navbar-bg)] border-b border-[var(--store-bg-1)] lg:block">
                     <div className="mx-auto grid h-[82px] w-full lg:w-[1100px] 2xl:w-[1300px] grid-cols-[1fr_minmax(280px,480px)_1fr] items-center gap-6 px-4 xl:px-6">
                         {/* Logo */}
                         <div className="flex min-w-0 items-center justify-start">
@@ -817,7 +817,7 @@ const ShoesNavbar = ({
                 {/* Mobile top header */}
                 <div
                     ref={desktopSearchRef}
-                    className="relative border-b border-[var(--store-border)] lg:hidden bg-[var(--store-bg-3)] text-white"
+                    className="relative border-b border-[var(--store-border)] lg:hidden bg-[var(--store-navbar-bg)] text-[var(--store-navbar-text)]"
                 >
                     <div className="flex h-16 items-center justify-between px-4">
                         {/* Logo on the left */}

@@ -70,6 +70,8 @@ export type DashboardColors = {
   sidebarBackgroundColor?: string;
   sidebarTextColor?: string;
   cardColor?: string;
+  navbarColor?: string;
+  navbarText?: string;
 };
 
 export type GeneralConfig = {

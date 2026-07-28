@@ -40,6 +40,10 @@ const OrderReturn = async () => {
   if (res?.data?.data?.template === "COSMETICS") {
     return <FashionReturn />;
   }
+
+  if (res?.data?.data?.template === "SHOES") {
+    return <FashionReturn />;
+  }
 };
 
 export default OrderReturn;

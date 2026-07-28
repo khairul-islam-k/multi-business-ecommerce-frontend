@@ -20,6 +20,9 @@
   --store-muted: #6b7280;
   --store-border: #e5e7eb;
 
+  --store-navbar-bg: #ffffff;
+  --store-navbar-text: #111827;
+
   --store-primary: #f16d59;
   --store-secondary: #111827;
 
@@ -48,6 +51,9 @@
   --store-sidebar-text: #f8fafc;
   --store-muted: #94a3b8;
   --store-border: #1e293b;
+
+  --store-navbar-bg: #111827;
+  --store-navbar-text: #f9fafb;
 
   --store-primary: #f16d59;
   --store-secondary: #334155;

@@ -346,7 +346,9 @@ export default function WebsiteTemplateForm({
           dashboardColors: {
             sidebarBackgroundColor: values.config?.generalConfig?.dashboardColors?.sidebarBackgroundColor,
             sidebarTextColor: values.config?.generalConfig?.dashboardColors?.sidebarTextColor,
-            cardColor: values.config?.generalConfig?.dashboardColors?.cardColor
+            cardColor: values.config?.generalConfig?.dashboardColors?.cardColor,
+            navbarColor: values.config?.generalConfig?.dashboardColors?.navbarColor,
+            navbarText: values.config?.generalConfig?.dashboardColors?.navbarText,
           }
         },
       },
@@ -850,6 +852,32 @@ export default function WebsiteTemplateForm({
                                 placeholder="#0f172a or var(--card-color)"
                               />
                             </Col>
+
+                            <Col xs={24} md={8}>
+                              <ThemeColorField
+                                label="Navbar Color"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "navbarColor",
+                                ]}
+                                placeholder="#0f172a or var(--card-color)"
+                              />
+                            </Col>
+
+                            <Col xs={24} md={8}>
+                              <ThemeColorField
+                                label="Navbar Text"
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "navbarText",
+                                ]}
+                                placeholder="#0f172a or var(--card-color)"
+                              />
+                            </Col>
                           </Row>
                         ),
                       },
@@ -875,7 +903,8 @@ export default function WebsiteTemplateForm({
                                 "FURNITURE",
                                 "VEHICLE",
                                 "COSMETICS",
-                                "SHOES"
+                                "SHOES",
+                                "TOY",
                               ].includes(selectedTemplate ?? "");
 
                               return (

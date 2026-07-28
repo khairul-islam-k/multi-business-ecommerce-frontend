@@ -9,6 +9,7 @@ import PharmacyHome from '@/app/templates/pharmacy/pages/pharmacy-home';
 import VehicleHome from '@/app/templates/vehicle/pages/vehicle-home';
 import CosmeticsHomePage from '@/app/templates/cosmetics/pages/cosmetics-home-page';
 import ShoesHomePage from '@/app/templates/shoes/pages/shoes-home-page';
+import ToyHomePage from '@/app/templates/toy/pages/toy-home-page';
 
 const Homepage = async () => {
 
@@ -50,6 +51,10 @@ const Homepage = async () => {
 
   if (res?.data?.data?.template === "SHOES") {
     return <ShoesHomePage resolveData={res?.data?.data} />;
+  }
+
+  if (res?.data?.data?.template === "TOY") {
+    return <ToyHomePage resolveData={res?.data?.data} />;
   }
 
 };

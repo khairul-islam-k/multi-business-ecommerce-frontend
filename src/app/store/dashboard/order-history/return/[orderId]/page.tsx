@@ -34,7 +34,7 @@ const ReturnPage = async () => {
         return <FashionOrderReturn />;
     }
 
-    if (res?.data?.data?.template === "VEHICLE") {
+    if (res?.data?.data?.template === "SHOES") {
         return <FashionOrderReturn />;
     }
 };

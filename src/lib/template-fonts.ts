@@ -6,6 +6,7 @@ import {
   Roboto,
   Montserrat,
   Open_Sans,
+  Alegreya,
 } from "next/font/google";
 
 const inter = Inter({
@@ -56,6 +57,13 @@ const opensans = Open_Sans({
   preload: false,
 });
 
+const alegreya = Alegreya({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+  preload: false,
+});
+
 export const TemplateFont = {
   INTER: "INTER",
   POPPINS: "POPPINS",
@@ -64,6 +72,7 @@ export const TemplateFont = {
   NOTO_SANS_BENGALI: "NOTO_SANS_BENGALI",
   MONTSERRAT: "MONTSERRAT",
   OPEN_SANS: "OPEN_SANS",
+  ALEGREYA: "ALEGREYA",
 } as const;
 
 export type TemplateFont =
@@ -77,6 +86,7 @@ const templateFontMap: Record<TemplateFont, string> = {
   NOTO_SANS_BENGALI: notoSansBengali.className,
   MONTSERRAT: montserrat.className,
   OPEN_SANS: opensans.className,
+  ALEGREYA: alegreya.className
 };
 
 /**
@@ -128,5 +138,9 @@ export const templateFontOptions = [
   {
     label: "Open Sans",
     value: TemplateFont.OPEN_SANS,
+  },
+  {
+    label: "Alegreya",
+    value: TemplateFont.ALEGREYA,
   },
 ];

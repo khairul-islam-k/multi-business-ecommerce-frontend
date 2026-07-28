@@ -22,6 +22,7 @@ import type {
   ThemeConfig,
 } from "@/types/website/website";
 import Pagination from "@/app/store/_components/pagination";
+import { useRouter } from "next/navigation";
 
 type ProductProps = {
   categoryId?: string;
@@ -40,6 +41,7 @@ const ShoesProductPage = ({
 }: ProductProps) => {
   const [sortBy, setSortBy] =
     useState<string>("createdAt");
+    const router = useRouter();
 
   const [sortOrder, setSortOrder] =
     useState<SortOrder>("desc");
@@ -111,156 +113,123 @@ const ShoesProductPage = ({
         </div>
 
         {/* Top filter toolbar */}
-        <div className="mb-6 rounded-2xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-4 shadow-sm sm:p-5">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            {/* Result information */}
-            <div className="flex items-center gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-[var(--store-primary)]/10 text-[var(--store-primary)]">
-                <SlidersHorizontal className="size-5" />
-              </span>
+        <div className="hidden md:grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[auto_220px_auto_auto] p-5 md:p-7 my-4 bg-[var(--store-card)] rounded-lg">
+          {/* All products button */}
+          <div className="flex flex-col justify-end">
+            <button
+              type="button"
+              onClick={() => router.push('/store/products')}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-[var(--store-primary)] bg-[var(--store-primary)] px-5 text-sm font-semibold text-white shadow-sm transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--store-primary)]/15"
+            >
+              <Grid2X2 className="size-4" />
+              All Products
+            </button>
+          </div>
 
-              <div>
-                <h2 className="text-sm font-bold text-[var(--store-text-primary)]">
-                  Product Filters
-                </h2>
+          {/* Sort field */}
+          <div>
+            <label
+              htmlFor="product-sort"
+              className="mb-1.5 block text-xs font-semibold text-[var(--store-muted)]"
+            >
+              Sort products by
+            </label>
 
-                <p className="mt-0.5 text-xs text-[var(--store-muted)]">
-                  {total}{" "}
-                  {total === 1
-                    ? "product"
-                    : "products"}{" "}
-                  found
-                </p>
-              </div>
+            <div className="relative">
+              <select
+                id="product-sort"
+                value={sortBy}
+                onChange={(event) =>
+                  setSortBy(event.currentTarget.value)
+                }
+                className="h-11 w-full appearance-none rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 pr-10 text-sm font-medium text-[var(--store-text-primary)] outline-none transition focus:border-[var(--store-primary)] focus:ring-4 focus:ring-[var(--store-primary)]/10"
+              >
+                <option value="createdAt">
+                  Newest products
+                </option>
+
+                <option value="name">
+                  Product name
+                </option>
+
+                <option value="price">
+                  Product price
+                </option>
+              </select>
+
+              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[var(--store-muted)]" />
             </div>
+          </div>
 
-            {/* Filter controls */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[220px_auto_auto]">
-              {/* Sort field */}
-              <div>
-                <label
-                  htmlFor="product-sort"
-                  className="mb-1.5 block text-xs font-semibold text-[var(--store-muted)]"
-                >
-                  Sort products by
-                </label>
+          {/* Sort direction */}
+          <div>
+            <p className="mb-1.5 text-xs font-semibold text-[var(--store-muted)]">
+              Sort direction
+            </p>
 
-                <div className="relative">
-                  <select
-                    id="product-sort"
-                    value={sortBy}
-                    onChange={(event) =>
-                      setSortBy(
-                        event.currentTarget
-                          .value,
-                      )
-                    }
-                    className="h-11 w-full appearance-none rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] px-4 pr-10 text-sm font-medium text-[var(--store-text-primary)] outline-none transition focus:border-[var(--store-primary)] focus:ring-4 focus:ring-[var(--store-primary)]/10"
-                  >
-                    <option value="createdAt">
-                      Newest products
-                    </option>
+            <div className="grid h-11 grid-cols-2 rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-2)] p-1">
+              <button
+                type="button"
+                onClick={() => setSortOrder("asc")}
+                aria-label="Sort ascending"
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${sortOrder === "asc"
+                    ? "bg-[var(--store-primary)] text-white shadow-sm"
+                    : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
+                  }`}
+              >
+                <ArrowUpAZ className="size-4" />
+                ASC
+              </button>
 
-                    <option value="name">
-                      Product name
-                    </option>
+              <button
+                type="button"
+                onClick={() => setSortOrder("desc")}
+                aria-label="Sort descending"
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${sortOrder === "desc"
+                    ? "bg-[var(--store-primary)] text-white shadow-sm"
+                    : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
+                  }`}
+              >
+                <ArrowDownAZ className="size-4" />
+                DESC
+              </button>
+            </div>
+          </div>
 
-                    <option value="price">
-                      Product price
-                    </option>
-                  </select>
+          {/* View mode */}
+          <div className="sm:col-span-2 xl:col-span-1">
+            <p className="mb-1.5 text-xs font-semibold text-[var(--store-muted)]">
+              Product view
+            </p>
 
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[var(--store-muted)]" />
-                </div>
-              </div>
+            <div className="grid h-11 grid-cols-2 rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-2)] p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-label="Grid view"
+                aria-pressed={viewMode === "grid"}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${viewMode === "grid"
+                    ? "bg-[var(--store-primary)] text-white shadow-sm"
+                    : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
+                  }`}
+              >
+                <Grid2X2 className="size-4" />
+                Grid
+              </button>
 
-              {/* Sort direction */}
-              <div>
-                <p className="mb-1.5 text-xs font-semibold text-[var(--store-muted)]">
-                  Sort direction
-                </p>
-
-                <div className="grid h-11 grid-cols-2 rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-2)] p-1">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setSortOrder("asc")
-                    }
-                    aria-label="Sort ascending"
-                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${
-                      sortOrder === "asc"
-                        ? "bg-[var(--store-primary)] text-white shadow-sm"
-                        : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
-                    }`}
-                  >
-                    <ArrowUpAZ className="size-4" />
-                    ASC
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setSortOrder("desc")
-                    }
-                    aria-label="Sort descending"
-                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${
-                      sortOrder === "desc"
-                        ? "bg-[var(--store-primary)] text-white shadow-sm"
-                        : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
-                    }`}
-                  >
-                    <ArrowDownAZ className="size-4" />
-                    DESC
-                  </button>
-                </div>
-              </div>
-
-              {/* View mode */}
-              <div className="sm:col-span-2 lg:col-span-1">
-                <p className="mb-1.5 text-xs font-semibold text-[var(--store-muted)]">
-                  Product view
-                </p>
-
-                <div className="grid h-11 grid-cols-2 rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-2)] p-1">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setViewMode("grid")
-                    }
-                    aria-label="Grid view"
-                    aria-pressed={
-                      viewMode === "grid"
-                    }
-                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${
-                      viewMode === "grid"
-                        ? "bg-[var(--store-primary)] text-white shadow-sm"
-                        : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
-                    }`}
-                  >
-                    <Grid2X2 className="size-4" />
-                    Grid
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setViewMode("list")
-                    }
-                    aria-label="List view"
-                    aria-pressed={
-                      viewMode === "list"
-                    }
-                    className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${
-                      viewMode === "list"
-                        ? "bg-[var(--store-primary)] text-white shadow-sm"
-                        : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
-                    }`}
-                  >
-                    <List className="size-4" />
-                    List
-                  </button>
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                aria-label="List view"
+                aria-pressed={viewMode === "list"}
+                className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${viewMode === "list"
+                    ? "bg-[var(--store-primary)] text-white shadow-sm"
+                    : "text-[var(--store-muted)] hover:text-[var(--store-primary)]"
+                  }`}
+              >
+                <List className="size-4" />
+                List
+              </button>
             </div>
           </div>
         </div>

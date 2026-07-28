@@ -30,6 +30,9 @@ type ThemeStyle = React.CSSProperties & {
   "--store-sidebar-bg"?: string;
   "--store-sidebar-text"?: string;
 
+  "--store-navbar-bg"?: string;
+  "--store-navbar-text"?: string;
+
   "--store-primary"?: string;
   "--store-secondary"?: string;
   "--store-accent"?: string;
@@ -60,6 +63,8 @@ export function StoreThemeProvider({
 }: StoreThemeProviderProps) {
   const [mode, setModeState] = useState<StoreThemeMode>("light");
 
+  console.log('sidebar', sideBar);
+
   useEffect(() => {
     const savedMode = localStorage.getItem(
       STORE_THEME_MODE_KEY
@@ -87,30 +92,34 @@ export function StoreThemeProvider({
    * Dark mode colors come from StoreTheme.module.css.
    */
   const lightStyle: ThemeStyle = {
-  "--store-bg-1": backendTheme?.accentColor || "#ffffff",
-  "--store-bg-2": backendTheme?.primaryColor || "#fef8ee",
-  "--store-bg-3": backendTheme?.secondaryColor || "#f6f6f6",
-  "--store-card": sideBar?.cardColor || "#ffffff",
+    "--store-bg-1": backendTheme?.accentColor || "#ffffff",
+    "--store-bg-2": backendTheme?.primaryColor || "#fef8ee",
+    "--store-bg-3": backendTheme?.secondaryColor || "#f6f6f6",
+    "--store-card": sideBar?.cardColor || "#ffffff",
 
-  "--store-sidebar-bg": sideBar?.sidebarBackgroundColor || "#ffffff",
-  "--store-sidebar-text": sideBar?.sidebarTextColor || "#111827",
+    "--store-sidebar-bg": sideBar?.sidebarBackgroundColor || "#ffffff",
+    "--store-sidebar-text": sideBar?.sidebarTextColor || "#111827",
 
-  "--store-text": "#111827",
-  "--store-muted": "#6b7280",
-  "--store-border": "#e5e7eb",
+    // navbar
+    "--store-navbar-bg": sideBar.navbarColor || "#ffffff",
+    "--store-navbar-text": sideBar.navbarText || "#111827",
 
-  "--store-primary": "#f16d59",
-  "--store-secondary": "#111827",
-  "--store-accent": "#0e7673",
-  "--store-success": "#01be5f",
-  "--store-danger": "#dc2626",
-  "--store-warning": "#d97706",
-  "--store-info": "#2563eb",
-  "--store-neutral": "#64748b",
-  "--store-dark": "#020617",
-  "--store-light": "#f3f4f6",
-  "--store-footer-cosmetic": "#fff8f7",
-};
+    "--store-text": "#111827",
+    "--store-muted": "#6b7280",
+    "--store-border": "#e5e7eb",
+
+    "--store-primary": "#f16d59",
+    "--store-secondary": "#111827",
+    "--store-accent": "#0e7673",
+    "--store-success": "#01be5f",
+    "--store-danger": "#dc2626",
+    "--store-warning": "#d97706",
+    "--store-info": "#2563eb",
+    "--store-neutral": "#64748b",
+    "--store-dark": "#020617",
+    "--store-light": "#f3f4f6",
+    "--store-footer-cosmetic": "#fff8f7",
+  };
 
   return (
     <StoreThemeContext.Provider value={{ mode, toggleTheme, setMode }}>

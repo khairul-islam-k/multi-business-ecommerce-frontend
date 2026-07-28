@@ -126,15 +126,14 @@ export default function CosmeticsLoginPage() {
     "w-full rounded-2xl border bg-[var(--store-bg-1)] py-3.5 pl-12 pr-4 text-sm outline-none transition placeholder:text-[#a9969e] hover:border-[#d9bcc7] focus:border-[#bd6f8c] focus:ring-4 focus:ring-[#bd6f8c]/10 dark:bg-white/5 dark:text-white dark:placeholder:text-white/40 dark:hover:border-white/20 dark:focus:border-[#e6a7bd] dark:focus:bg-white/[0.07]";
 
   return (
-    <main className="min-h-screen bg-[var(--store-bg-2)] dark:bg-[#160f13]">
+    <main className="min-h-screen">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[1.02fr_0.98fr]">
         {/* Left Login Form */}
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8 lg:px-12 xl:px-20">
           {/* Decorative cosmetics background */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -left-20 -top-20 size-72 rounded-full bg-[#e8b8c9]/30 blur-3xl dark:bg-[#8d3d5a]/15" />
-            <div className="absolute -bottom-28 right-0 size-80 rounded-full bg-[#f3d8c9]/45 blur-3xl dark:bg-[#9d5d3f]/10" />
-            <div className="absolute left-[45%] top-[16%] size-32 rounded-full bg-white/80 blur-3xl dark:bg-white/5" />
+            <div className="absolute -bottom-28 right-0 size-80 rounded-full blur-3xl" />
+            <div className="absolute left-[45%] top-[16%] size-32 rounded-full blur-3xl" />
           </div>
 
           <div className="relative z-10 w-full max-w-[560px]">

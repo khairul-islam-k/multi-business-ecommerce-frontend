@@ -4,6 +4,8 @@ import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register'
 import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
 import GroceryRegisterPage from '@/app/templates/grocery/pages/grocery-register-page';
 import PharmacyRegisterPage from '@/app/templates/pharmacy/pages/furniture-register-page';
+import ShoesRegisterPage from '@/app/templates/shoes/pages/shoes-register-page';
+import ToyRegisterPage from '@/app/templates/toy/pages/toy-register-page';
 import VehicleRegisterPage from '@/app/templates/vehicle/pages/vehicle-register-page';
 import { publicApi } from '@/lib/axios';
 import { headers } from 'next/headers';
@@ -58,6 +60,18 @@ const Register = async () => {
         if (res?.data?.data?.template === "COSMETICS") {
             return (
                 <CosmeticsRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "SHOES") {
+            return (
+                <ShoesRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "TOY") {
+            return (
+                <ToyRegisterPage />
             );
         }
 };
