@@ -21,6 +21,7 @@ import LogoComponent from "@/app/templates/fashion/_components/logo/logo-compone
 import { useState } from "react";
 import StoreThemeToggle from "../_components/store-theme-switcher";
 import { usePathname } from "next/navigation";
+import { useCart } from "../_components/contex/CartContex";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -73,6 +74,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const pathname = usePathname();
+  const { handleLogout } = useCart();
 
   return (
     <AuthGuard>
@@ -143,6 +145,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="absolute bottom-0 left-0 right-0 border-t p-3">
             <button
               type="button"
+              onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
             >
               <LogOut size={20} />

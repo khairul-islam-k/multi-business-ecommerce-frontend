@@ -165,14 +165,15 @@ export default function ToyLoginPage() {
   };
 
   const inputBaseClass =
-    "h-12 w-full rounded-2xl border bg-white py-3 pl-12 pr-4 text-sm text-[#241f3a] outline-none transition placeholder:text-[#aaa4bb] hover:border-[#c9bee5] focus:border-[#6c4ce5] focus:ring-4 focus:ring-[#6c4ce5]/10 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/20 dark:focus:border-[#9b86ff] dark:focus:ring-[#9b86ff]/10";
+    "h-12 w-full rounded-2xl border bg-[var(--store-bg-1)] py-3 pl-12 pr-4 text-sm outline-none transition placeholder:text-[#aaa4bb] hover:border-[#c9bee5] focus:border-[#6c4ce5] focus:ring-4 focus:ring-[#6c4ce5]/10 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/20 dark:focus:border-[#9b86ff] dark:focus:ring-[#9b86ff]/10";
 
   return (
-    <main className="min-h-screen bg-[#fffaf0] dark:bg-[#121022]">
+    <main className="min-h-screen dark:bg-[#121022]">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[0.96fr_1.04fr]">
         {/* Login form section */}
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8 lg:px-12 xl:px-20">
-          {/* Playful background decoration */}
+
+          {/* Playful background decoration animation */}
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -left-24 -top-24 size-72 rounded-full bg-[#ffd84d]/35 blur-3xl dark:bg-[#ffd84d]/10" />
 
@@ -200,7 +201,7 @@ export default function ToyLoginPage() {
               Back to toy store
             </Link>
 
-            <div className="overflow-hidden rounded-[32px] border border-white bg-white/95 shadow-[0_30px_90px_-40px_rgba(74,50,136,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.85)]">
+            <div className="overflow-hidden rounded-[32px] border border-white bg-[var(--store-card)] shadow-[0_30px_90px_-40px_rgba(74,50,136,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.85)]">
               {/* Color ribbon */}
               <div className="grid h-2 grid-cols-4">
                 <span className="bg-[#ffd84d]" />
@@ -212,7 +213,7 @@ export default function ToyLoginPage() {
               <div className="p-6 sm:p-8 lg:p-10">
                 {/* Heading */}
                 <div className="mb-8">
-                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#eee8ff] bg-[#f8f5ff] px-3.5 py-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#6c4ce5] dark:border-white/10 dark:bg-white/5 dark:text-[#b4a7ff]">
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#eee8ff] bg-[var(--store-bg-1)] px-3.5 py-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#6c4ce5] dark:border-white/10 dark:bg-white/5 dark:text-[#b4a7ff]">
                     <Sparkles className="size-4" />
                     Welcome back
                   </div>
@@ -223,14 +224,14 @@ export default function ToyLoginPage() {
                     </span>
 
                     <div>
-                      <h1 className="text-3xl font-black tracking-[-0.03em] text-[#241f3a] sm:text-[40px] dark:text-white">
+                      <h1 className="text-3xl font-black tracking-[-0.03em] sm:text-[40px] dark:text-white">
                         Continue your
                         <span className="block text-[#6c4ce5] dark:text-[#a996ff]">
                           playtime journey
                         </span>
                       </h1>
 
-                      <p className="mt-3 max-w-md text-sm leading-6 text-[#7d768c] dark:text-white/50">
+                      <p className="mt-3 max-w-md text-sm leading-6 dark:text-white/50">
                         Sign in to revisit favourite toys,
                         manage your orders and discover more
                         joyful picks.
@@ -259,7 +260,7 @@ export default function ToyLoginPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="mb-2 block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                      className="mb-2 block text-sm font-bold dark:text-white/80"
                     >
                       Email Address
                     </label>
@@ -293,7 +294,7 @@ export default function ToyLoginPage() {
                     <div className="mb-2 flex items-center justify-between gap-4">
                       <label
                         htmlFor="password"
-                        className="block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                        className="block text-sm font-bold dark:text-white/80"
                       >
                         Password
                       </label>
@@ -361,10 +362,10 @@ export default function ToyLoginPage() {
                   </div>
 
                   {/* Remember me */}
-                  <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm font-medium text-[#7d768c] dark:text-white/50">
+                  <label className="flex w-fit cursor-pointer items-center gap-2.5 text-sm font-medium">
                     <input
                       type="checkbox"
-                      className="size-4 cursor-pointer rounded border-[#c9bee5] accent-[#6c4ce5] dark:border-white/20 dark:bg-white/5"
+                      className="size-4 cursor-pointer rounded border-[#c9bee5] accent-[#6c4ce5] bg-black dark:border-white/20"
                     />
 
                     <span>Remember me</span>
@@ -399,7 +400,7 @@ export default function ToyLoginPage() {
 
                 <Link
                   href="/store/register"
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[#ddd4f5] bg-[#faf8ff] px-5 text-sm font-bold text-[#6c4ce5] transition hover:border-[#6c4ce5] hover:bg-[#f2edff] dark:border-white/10 dark:bg-white/5 dark:text-[#b4a7ff] dark:hover:border-[#9b86ff]/50 dark:hover:bg-white/[0.08]"
+                  className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-[#ddd4f5] bg-[var(--store-light)] px-5 text-sm font-bold text-[#6c4ce5] transition hover:border-[#6c4ce5] hover:bg-[#f2edff] dark:border-white/10 dark:bg-white/5 dark:text-[#b4a7ff] dark:hover:border-[#9b86ff]/50 dark:hover:bg-white/[0.08]"
                 >
                   <Gift className="size-4" />
                   Create a Toy Store Account

@@ -139,10 +139,10 @@ export default function ToyRegisterPage() {
   };
 
   const inputClassName =
-    "h-12 w-full rounded-2xl border border-[#e8e3f4] bg-white py-3 pl-12 pr-4 text-sm text-[#241f3a] outline-none transition placeholder:text-[#aaa4bb] hover:border-[#c9bee5] focus:border-[#6c4ce5] focus:ring-4 focus:ring-[#6c4ce5]/10 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/20 dark:focus:border-[#9b86ff] dark:focus:ring-[#9b86ff]/10";
+    "h-12 w-full rounded-2xl border border-[#e8e3f4] bg-[var(--store-bg-1)] py-3 pl-12 pr-4 text-sm outline-none transition placeholder:text-[#aaa4bb] hover:border-[#c9bee5] focus:border-[#6c4ce5] focus:ring-4 focus:ring-[#6c4ce5]/10 dark:border-white/10 dark:bg-white/[0.06] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/20 dark:focus:border-[#9b86ff] dark:focus:ring-[#9b86ff]/10";
 
   return (
-    <main className="min-h-screen bg-[#fffaf0] dark:bg-[#121022]">
+    <main className="min-h-screen dark:bg-[#121022]">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[0.96fr_1.04fr]">
         {/* Form section */}
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-10 sm:px-8 lg:px-12 xl:px-20">
@@ -170,7 +170,7 @@ export default function ToyRegisterPage() {
               Back to toy store
             </Link>
 
-            <div className="overflow-hidden rounded-[32px] border border-white bg-white/95 shadow-[0_30px_90px_-40px_rgba(74,50,136,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.85)]">
+            <div className="overflow-hidden rounded-[32px] border border-white bg-[var(--store-card)] shadow-[0_30px_90px_-40px_rgba(74,50,136,0.45)] backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.06] dark:shadow-[0_30px_90px_-40px_rgba(0,0,0,0.85)]">
               <div className="grid h-2 grid-cols-4">
                 <span className="bg-[#ffd84d]" />
                 <span className="bg-[#ff83b5]" />
@@ -191,14 +191,14 @@ export default function ToyRegisterPage() {
                     </span>
 
                     <div>
-                      <h1 className="text-3xl font-black tracking-[-0.03em] text-[#241f3a] sm:text-[40px] dark:text-white">
+                      <h1 className="text-3xl font-black tracking-[-0.03em] sm:text-[40px] dark:text-white">
                         Create your
                         <span className="block text-[#6c4ce5] dark:text-[#a996ff]">
                           playtime account
                         </span>
                       </h1>
 
-                      <p className="mt-3 max-w-md text-sm leading-6 text-[#7d768c] dark:text-white/50">
+                      <p className="mt-3 max-w-md text-sm leading-6 dark:text-white/50">
                         Save favourite toys, track orders
                         and discover playful picks for
                         every age.
@@ -223,7 +223,7 @@ export default function ToyRegisterPage() {
                   <div>
                     <label
                       htmlFor="name"
-                      className="mb-2 block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                      className="mb-2 block text-sm font-bold dark:text-white/80"
                     >
                       Full Name
                     </label>
@@ -255,7 +255,7 @@ export default function ToyRegisterPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="mb-2 block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                      className="mb-2 block text-sm font-bold dark:text-white/80"
                     >
                       Email Address
                     </label>
@@ -287,7 +287,7 @@ export default function ToyRegisterPage() {
                   <div>
                     <label
                       htmlFor="phone"
-                      className="mb-2 block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                      className="mb-2 block text-sm font-bold dark:text-white/80"
                     >
                       Phone Number
                       <span className="ml-1 font-medium text-[#aaa4bb] dark:text-white/35">
@@ -322,7 +322,7 @@ export default function ToyRegisterPage() {
                   <div>
                     <label
                       htmlFor="password"
-                      className="mb-2 block text-sm font-bold text-[#3c3651] dark:text-white/80"
+                      className="mb-2 block text-sm font-bold dark:text-white/80"
                     >
                       Password
                     </label>

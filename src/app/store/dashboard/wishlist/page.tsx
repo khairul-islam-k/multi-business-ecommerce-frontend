@@ -45,6 +45,10 @@ const WishListPage = async () => {
     if (res?.data?.data?.template === "SHOES") {
         return <FashionWishList />;
     }
+
+    if (res?.data?.data?.template === "TOY") {
+        return <FashionWishList />;
+    }
 };
 
 export default WishListPage;

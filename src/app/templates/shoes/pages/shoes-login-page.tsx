@@ -123,10 +123,10 @@ export default function ShoesLoginPage() {
   };
 
   const inputBaseClass =
-    "w-full rounded-xl border bg-white py-3.5 pl-12 pr-4 text-sm font-medium text-[#151515] outline-none transition placeholder:text-[#9b9b92] hover:border-[#a6a69d] focus:border-[#171717] focus:ring-4 focus:ring-[#b8ff35]/35 dark:bg-white/[0.055] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/25 dark:focus:border-[#b8ff35] dark:focus:ring-[#b8ff35]/15";
+    "w-full rounded-xl border bg-[var(--store-bg-1)] py-3.5 pl-12 pr-4 text-sm font-medium outline-none transition placeholder:text-[#9b9b92] hover:border-[#a6a69d] focus:border-[#171717] focus:ring-4 focus:ring-[#b8ff35]/35 dark:bg-white/[0.055] dark:text-white dark:placeholder:text-white/35 dark:hover:border-white/25 dark:focus:border-[#b8ff35] dark:focus:ring-[#b8ff35]/15";
 
   return (
-    <main className="min-h-screen bg-[#f1f1ec] dark:bg-[#080808]">
+    <main className="min-h-screen dark:bg-[#080808]">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[0.96fr_1.04fr]">
         {/* Left Login Form */}
         <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-5 py-8 sm:px-8 lg:px-12 xl:px-20">
@@ -144,23 +144,23 @@ export default function ShoesLoginPage() {
             <div className="mb-6 flex items-center justify-between gap-4">
               <Link
                 href="/store"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-[#5f5f58] transition hover:text-black dark:text-white/55 dark:hover:text-white"
+                className="inline-flex items-center gap-2 text-sm font-semibold transition hover:text-black dark:text-white/55 dark:hover:text-white"
               >
                 <ArrowLeft className="size-4" />
                 Back to store
               </Link>
 
-              <div className="hidden items-center gap-2 rounded-full border border-black/10 bg-white/60 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[#42423d] backdrop-blur sm:flex dark:border-white/10 dark:bg-white/5 dark:text-white/55">
+              <div className="hidden items-center gap-2 rounded-full border border-black/10 bg-[var(--store-card)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] backdrop-blur sm:flex dark:border-white/10 dark:bg-white/5 dark:text-white/55">
                 <ShieldCheck className="size-3.5" />
                 Secure login
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-[28px] border border-black/[0.08] bg-[#fafaf7] shadow-[0_35px_90px_-45px_rgba(0,0,0,0.42)] dark:border-white/10 dark:bg-[#111111] dark:shadow-[0_35px_90px_-45px_rgba(0,0,0,0.95)]">
+            <div className="overflow-hidden rounded-[28px] border border-black/[0.08] bg-[var(--store-card)] shadow-[0_35px_90px_-45px_rgba(0,0,0,0.42)] dark:border-white/10 dark:bg-[#111111] dark:shadow-[0_35px_90px_-45px_rgba(0,0,0,0.95)]">
               <div className="grid grid-cols-[1fr_auto] border-b border-black/[0.08] dark:border-white/10">
                 <div className="flex items-center gap-2 px-6 py-4 sm:px-8">
                   <span className="size-2 rounded-full bg-[#b8ff35] shadow-[0_0_0_5px_rgba(184,255,53,0.18)]" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#55554e] dark:text-white/50">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.22em] dark:text-white/50">
                     Member access
                   </span>
                 </div>
@@ -173,19 +173,19 @@ export default function ShoesLoginPage() {
               <div className="p-6 sm:p-8 lg:p-10">
                 {/* Heading */}
                 <div className="mb-8">
-                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#383832] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
+                  <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-black/10 bg-[var(--store-card)] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#383832] dark:border-white/10 dark:bg-white/5 dark:text-white/65">
                     <Sparkles className="size-3.5 text-[#76a800] dark:text-[#b8ff35]" />
                     Continue your rotation
                   </div>
 
-                  <h1 className="max-w-lg text-4xl font-black uppercase leading-[0.98] tracking-[-0.055em] text-[#111111] sm:text-[48px] dark:text-white">
+                  <h1 className="max-w-lg text-4xl font-black uppercase leading-[0.98] tracking-[-0.055em] sm:text-[48px] dark:text-white">
                     Welcome back to
                     <span className="block text-[#76a800] dark:text-[#b8ff35]">
                       your sneaker space
                     </span>
                   </h1>
 
-                  <p className="mt-4 max-w-md text-sm leading-6 text-[#6d6d65] dark:text-white/50">
+                  <p className="mt-4 max-w-md text-sm leading-6 dark:text-white/50">
                     Sign in to view saved pairs, follow your orders and get back
                     to the latest footwear drops.
                   </p>
@@ -206,7 +206,7 @@ export default function ShoesLoginPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="mb-2 block text-xs font-bold uppercase tracking-[0.1em] text-[#383832] dark:text-white/75"
+                      className="mb-2 block text-xs font-bold uppercase tracking-[0.1em] dark:text-white/75"
                     >
                       Email Address
                     </label>
@@ -240,7 +240,7 @@ export default function ShoesLoginPage() {
                     <div className="mb-2 flex items-center justify-between gap-4">
                       <label
                         htmlFor="password"
-                        className="block text-xs font-bold uppercase tracking-[0.1em] text-[#383832] dark:text-white/75"
+                        className="block text-xs font-bold uppercase tracking-[0.1em] dark:text-white/75"
                       >
                         Password
                       </label>
@@ -328,7 +328,7 @@ export default function ShoesLoginPage() {
 
                 <Link
                   href="/store/register"
-                  className="flex w-full items-center justify-center rounded-xl border border-black/15 bg-transparent px-5 py-3.5 text-sm font-bold uppercase tracking-[0.06em] text-[#171717] transition hover:border-[#171717] hover:bg-[#b8ff35] dark:border-white/15 dark:text-white dark:hover:border-[#b8ff35] dark:hover:bg-[#b8ff35] dark:hover:text-black"
+                  className="flex w-full items-center justify-center rounded-xl border border-black/15 bg-transparent px-5 py-3.5 text-sm font-bold uppercase tracking-[0.06em] transition hover:border-[#171717] hover:bg-[#b8ff35] dark:border-white/15 dark:text-white dark:hover:border-[#b8ff35] dark:hover:bg-[#b8ff35] dark:hover:text-black"
                 >
                   Create a Shoe Account
                 </Link>
@@ -339,7 +339,7 @@ export default function ShoesLoginPage() {
                   <button
                     type="button"
                     onClick={() => setOtpOpen(true)}
-                    className="font-bold text-[#111111] underline decoration-[#b8ff35] decoration-2 underline-offset-4 transition hover:text-[#628d00] dark:text-[#b8ff35] dark:hover:text-white"
+                    className="font-bold underline decoration-[#b8ff35] decoration-2 underline-offset-4 transition hover:text-[#628d00] dark:text-[#b8ff35] dark:hover:text-white"
                   >
                     Verify email
                   </button>

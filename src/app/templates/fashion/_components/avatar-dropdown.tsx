@@ -9,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 export default function AvatarDropdown() {
   const [open, setOpen] = useState(false);
 
-  const { user, handleLogout, newAccessToken } = useCart();
+  const { user, handleLogout } = useCart();
 
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
