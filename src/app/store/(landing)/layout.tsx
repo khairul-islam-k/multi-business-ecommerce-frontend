@@ -18,6 +18,7 @@ import ShoesNavbar from "@/app/templates/shoes/_components/shoes-navbar";
 import ShoesFooter from "@/app/templates/shoes/_components/shoes-footer";
 import ToyNavbar from "@/app/templates/toy/_components/Toy-navbar";
 import ToyFooter from "@/app/templates/toy/_components/toy-footer";
+import RestaurantNavbar from "@/app/templates/restaurant/_components/restaurant-navbar";
 
 const WebsiteLayout = async ({
   children,
@@ -49,6 +50,7 @@ const WebsiteLayout = async ({
   const isCosmetics = res?.data?.data?.template === "COSMETICS";
   const isShoes = res?.data?.data?.template === "SHOES";
   const isToy = res?.data?.data?.template === "TOY";
+  const isRestaurant = res?.data?.data?.template === "RESTAURANT";
 
   return (
     <div>
@@ -113,6 +115,12 @@ const WebsiteLayout = async ({
         phone={phone}
       /> : null}
 
+      {isRestaurant ? <RestaurantNavbar
+        faqs={faqs}
+        terms={terms}
+        privacy={privacy}
+      /> : null}
+
       {children}
 
       {isElectronic ? <ElectronicFooter /> : null}
@@ -146,6 +154,10 @@ const WebsiteLayout = async ({
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 
       {isToy ? <ToyFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+
+      {isRestaurant ? <ToyFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}
 

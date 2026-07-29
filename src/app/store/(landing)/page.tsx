@@ -10,6 +10,7 @@ import VehicleHome from '@/app/templates/vehicle/pages/vehicle-home';
 import CosmeticsHomePage from '@/app/templates/cosmetics/pages/cosmetics-home-page';
 import ShoesHomePage from '@/app/templates/shoes/pages/shoes-home-page';
 import ToyHomePage from '@/app/templates/toy/pages/toy-home-page';
+import RestaurantHomePage from '@/app/templates/restaurant/pages/restaurant-home-page';
 
 const Homepage = async () => {
 
@@ -55,6 +56,10 @@ const Homepage = async () => {
 
   if (res?.data?.data?.template === "TOY") {
     return <ToyHomePage resolveData={res?.data?.data} />;
+  }
+
+  if (res?.data?.data?.template === "RESTAURANT") {
+    return <RestaurantHomePage resolveData={res?.data?.data} />;
   }
 
 };

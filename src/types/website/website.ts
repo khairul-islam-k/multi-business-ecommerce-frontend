@@ -12,8 +12,12 @@ export type WebsiteTemplate =
   | "ELECTRONIC"
   | "GROCERY"
   | "FURNITURE"
-  | "JEWELRY"
-  | "BOOKS";
+  | "PHARMACY"
+  | "VEHICLE"
+  | "SHOES"
+  | "COSMETICS"
+  | "TOY"
+  | "RESTAURANT";
 
 export type WebsiteTemplateOption = {
   key: WebsiteTemplate;
@@ -74,12 +78,25 @@ export type DashboardColors = {
   navbarText?: string;
 };
 
+export type RestaurantSection = {
+  name: string;
+  description: string;
+  image: string;
+};
+
+export type ChefItem = {
+  name: string;
+  image: string;
+};
+
 export type GeneralConfig = {
   bestOfferImages?: BestOfferImage[];
   partners?: string[];
   extraPage?: ExtraPage;
   faqs?: FAQItem[];
   dashboardColors?: DashboardColors;
+  restaurantSection?: RestaurantSection;
+  ourChef?: ChefItem[];
 };
 
 export type ThemeConfig = {
@@ -101,6 +118,7 @@ export type SeoConfig = {
   ogImageUrl?: string;
   canonicalUrl?: string;
 };
+
 
 export type WebsiteTemplatePayload = {
   template: WebsiteTemplate;

@@ -15,9 +15,6 @@ import Image from "next/image";
 import type { HeaderSlide } from "@/types/website/website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import BannerSidebar from "./banner-sidebar";
-import BannerCategory from "./banner-category";
-import BannerProduct from "./banner-product";
-import BannerSlideClickable from "./banner-slide-clickable";
 
 type HeroSectionProps = {
     bannerSlide: HeaderSlide[];

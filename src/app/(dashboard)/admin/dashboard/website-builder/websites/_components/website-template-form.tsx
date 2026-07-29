@@ -22,6 +22,7 @@ import { useActiveBusinessId } from "@/hooks/use-active-business";
 import { useWebsiteTemplates } from "@/lib/api/hooks/website";
 import {
   BestOfferImage,
+  ChefItem,
   HeaderSlide,
   WebsiteTemplatePayload,
 } from "@/types/website/website";
@@ -97,6 +98,10 @@ const toFormValues = (
 
       generalConfig: {
         bestOfferImages: offerValue ? offerValue : [],
+
+        restaurantSection: data?.config?.generalConfig?.restaurantSection,
+
+        ourChef: data?.config?.generalConfig?.ourChef ?? [],
 
         extraPage: data?.config?.generalConfig?.extraPage ?? {},
         faqs: data?.config?.generalConfig?.faqs ?? [],
@@ -189,12 +194,9 @@ export default function WebsiteTemplateForm({
   const businessId = useActiveBusinessId();
   const websiteTemplatesQuery = useWebsiteTemplates(businessId ?? "");
 
-  console.log('website', websiteTemplatesQuery.data);
-
   const {
     data: products,
     isLoading,
-    isFetching,
   } = useProductsQuery(businessId, {
     inOffer: true
   });
@@ -226,8 +228,6 @@ export default function WebsiteTemplateForm({
     initialData?.config?.generalConfig?.bestOfferImages,
   ]);
 
-  console.log('offer', activeOffer);
-
 
 
   const templateOptions =
@@ -254,6 +254,9 @@ export default function WebsiteTemplateForm({
   const [themeLogoModalOpen, setThemeLogoModalOpen] = useState(false);
   const [themeFaviconModalOpen, setThemeFaviconModalOpen] = useState(false);
 
+
+  const [restaurantImageModalOpen, setRestaurantImageModalOpen] = useState(false);
+
   const slides = Form.useWatch(["config", "headerConfig", "slide"], form) as
     | HeaderSlide[]
     | undefined;
@@ -261,6 +264,7 @@ export default function WebsiteTemplateForm({
   const selectedSlideImage =
     activeSlideIndex !== null ? slides?.[activeSlideIndex]?.imageUrl : "";
 
+  // best offer
   const bestOfferImages = Form.useWatch(
     ["config", "generalConfig", "bestOfferImages", "banner"],
     form,
@@ -270,6 +274,26 @@ export default function WebsiteTemplateForm({
     activeBestOfferIndex !== null
       ? bestOfferImages?.[activeBestOfferIndex]?.banner
       : "";
+
+  // chef
+  const [activeChefIndex, setActiveChefIndex] = useState<number | null>(null);
+
+  const [chefImageModalOpen, setChefImageModalOpen] = useState(false);
+
+  const ourChef = Form.useWatch(
+    ["config", "generalConfig", "ourChef"],
+    form,
+  ) as ChefItem[] | undefined;
+
+  const selectedOurChef =
+    activeChefIndex !== null
+      ? ourChef?.[activeChefIndex].image : "";
+
+  // restaurant
+  const selectRestaurantImage = Form.useWatch(["config",
+    "generalConfig", "restaurantSection", "image"], form) as
+    | string
+    | undefined;
 
   const partners = Form.useWatch(
     ["config", "generalConfig", "partners"],
@@ -335,6 +359,12 @@ export default function WebsiteTemplateForm({
         generalConfig: {
           bestOfferImages: values.config?.generalConfig?.bestOfferImages,
           partners: values.config?.generalConfig?.partners,
+
+          ourChef: values.config?.generalConfig?.ourChef?.map((chef) => ({
+            name: chef.name.trim(),
+            image: chef.image.trim(),
+          })) ?? [],
+
           extraPage: {
             about: values.config?.generalConfig?.extraPage?.about,
             termsAndConditions: values.config?.generalConfig?.extraPage?.termsAndConditions
@@ -343,6 +373,13 @@ export default function WebsiteTemplateForm({
             question: faq.question?.trim(),
             answer: faq.answer?.trim(),
           })) ?? [],
+
+          restaurantSection: {
+            name: values.config?.generalConfig?.restaurantSection?.name ?? '',
+            description: values.config?.generalConfig?.restaurantSection?.description ?? '',
+            image: values.config?.generalConfig?.restaurantSection?.image ?? ''
+          },
+
           dashboardColors: {
             sidebarBackgroundColor: values.config?.generalConfig?.dashboardColors?.sidebarBackgroundColor,
             sidebarTextColor: values.config?.generalConfig?.dashboardColors?.sidebarTextColor,
@@ -376,6 +413,8 @@ export default function WebsiteTemplateForm({
 
     const payload = rawPayload;
 
+    console.log('payload', payload);
+
     await onSubmit(payload);
   };
 
@@ -400,6 +439,9 @@ export default function WebsiteTemplateForm({
     }
   };
 
+  // template watch
+  const selectedTemplate = Form.useWatch("template", form);
+  const isRestaurantTemplate = selectedTemplate === "RESTAURANT";
 
   return (
     <Card
@@ -479,165 +521,239 @@ export default function WebsiteTemplateForm({
                         label: "Header Config",
                         forceRender: true,
                         children: (
-                          <Form.List name={["config", "headerConfig", "slide"]}>
-                            {(fields, { add, remove }) => (
-                              <>
-                                <div className="mb-4 flex items-center justify-between">
-                                  <strong>Header Slides</strong>
+                          <Form.List
+                            name={[
+                              "config",
+                              "headerConfig",
+                              "slide",
+                            ]}
+                          >
+                            {(fields, { add, remove }) => {
 
-                                  <Button
-                                    type="dashed"
-                                    onClick={() =>
-                                      add({
-                                        id: Date.now(),
-                                        title: "",
-                                        imageUrl: "",
-                                        subTitle: "",
-                                        buttonText: "",
-                                        description: "",
-                                      })
-                                    }
-                                  >
-                                    Add Slide
-                                  </Button>
-                                </div>
+                              const displayedFields =
+                                isRestaurantTemplate
+                                  ? fields.slice(0, 1)
+                                  : fields;
 
-                                {fields.map(
-                                  ({ key, name, ...restField }, index) => (
-                                    <Collapse
-                                      key={key}
-                                      className="mb-4"
-                                      defaultActiveKey={[String(index)]}
-                                      items={[
-                                        {
-                                          key: String(index),
-                                          label: `Slide ${index + 1}`,
-                                          forceRender: true,
-                                          children: (
-                                            <Row gutter={16}>
-                                              <Form.Item
-                                                {...restField}
-                                                name={[name, "id"]}
-                                                hidden
-                                              >
-                                                <Input />
-                                              </Form.Item>
+                              return (
+                                <>
+                                  <div className="mb-4 flex items-center justify-between">
+                                    <strong>
+                                      {isRestaurantTemplate
+                                        ? "Header Slide"
+                                        : "Header Slides"}
+                                    </strong>
 
-                                              <Col xs={24} md={12}>
+                                    {!isRestaurantTemplate && (
+                                      <Button
+                                        type="dashed"
+                                        onClick={() =>
+                                          add({
+                                            id: Date.now(),
+                                            title: "",
+                                            imageUrl: "",
+                                            subTitle: "",
+                                            buttonText: "",
+                                            description: "",
+                                          })
+                                        }
+                                      >
+                                        Add Slide
+                                      </Button>
+                                    )}
+                                  </div>
+
+                                  {displayedFields.map(
+                                    (
+                                      { key, name, ...restField },
+                                      index,
+                                    ) => (
+                                      <Collapse
+                                        key={key}
+                                        className="mb-4"
+                                        defaultActiveKey={[
+                                          String(index),
+                                        ]}
+                                        items={[
+                                          {
+                                            key: String(index),
+                                            label: `Slide ${index + 1}`,
+                                            forceRender: true,
+                                            children: (
+                                              <Row gutter={16}>
                                                 <Form.Item
                                                   {...restField}
-                                                  label="Slide Title"
-                                                  name={[name, "title"]}
-                                                  rules={[
-                                                    {
-                                                      required: true,
-                                                      message:
-                                                        "Please enter slide title",
-                                                    },
-                                                  ]}
+                                                  name={[name, "id"]}
+                                                  hidden
                                                 >
-                                                  <Input placeholder="New Fashion Collection" />
+                                                  <Input />
                                                 </Form.Item>
-                                              </Col>
 
-                                              <Col xs={24} md={12}>
-                                                <Form.Item
-                                                  {...restField}
-                                                  label="Slide Image"
-                                                  name={[name, "imageUrl"]}
-                                                  rules={[
-                                                    {
-                                                      required: true,
-                                                      message:
-                                                        "Please select slide image",
-                                                    },
-                                                  ]}
-                                                >
-                                                  <Input
-                                                    readOnly
-                                                    placeholder="Select slide image"
-                                                    onClick={() => {
-                                                      setActiveSlideIndex(name);
-                                                      setSlideImageModalOpen(
-                                                        true,
-                                                      );
-                                                    }}
-                                                  />
-                                                </Form.Item>
-                                              </Col>
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Slide Title"
+                                                    name={[name, "title"]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please enter slide title",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      placeholder={
+                                                        isRestaurantTemplate
+                                                          ? "Delicious Food Delivered Fresh"
+                                                          : "New Fashion Collection"
+                                                      }
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
 
-                                              <Col xs={24} md={12}>
-                                                <Form.Item
-                                                  {...restField}
-                                                  label="Slide Sub Title"
-                                                  name={[name, "subTitle"]}
-                                                  rules={[
-                                                    {
-                                                      required: true,
-                                                      message:
-                                                        "Please enter slide sub title",
-                                                    },
-                                                  ]}
-                                                >
-                                                  <Input placeholder="Fresh Styles Arrived" />
-                                                </Form.Item>
-                                              </Col>
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Slide Image"
+                                                    name={[
+                                                      name,
+                                                      "imageUrl",
+                                                    ]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please select slide image",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      readOnly
+                                                      placeholder="Select slide image"
+                                                      onClick={() => {
+                                                        setActiveSlideIndex(
+                                                          name,
+                                                        );
 
-                                              <Col xs={24} md={12}>
-                                                <Form.Item
-                                                  {...restField}
-                                                  label="Button Text"
-                                                  name={[name, "buttonText"]}
-                                                  rules={[
-                                                    {
-                                                      required: true,
-                                                      message:
-                                                        "Please enter button text",
-                                                    },
-                                                  ]}
-                                                >
-                                                  <Input placeholder="Shop" />
-                                                </Form.Item>
-                                              </Col>
+                                                        setSlideImageModalOpen(
+                                                          true,
+                                                        );
+                                                      }}
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
 
-                                              <Col xs={24}>
-                                                <Form.Item
-                                                  {...restField}
-                                                  label="Slide Description"
-                                                  name={[name, "description"]}
-                                                  rules={[
-                                                    {
-                                                      required: true,
-                                                      message:
-                                                        "Please enter slide description",
-                                                    },
-                                                  ]}
-                                                >
-                                                  <TextArea
-                                                    rows={4}
-                                                    placeholder="Find clothing that matches your personality, comfort, and confidence in every season."
-                                                  />
-                                                </Form.Item>
-                                              </Col>
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Slide Sub Title"
+                                                    name={[
+                                                      name,
+                                                      "subTitle",
+                                                    ]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please enter slide sub title",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      placeholder={
+                                                        isRestaurantTemplate
+                                                          ? "Fresh, Hot and Tasty"
+                                                          : "Fresh Styles Arrived"
+                                                      }
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
 
-                                              <Col xs={24}>
-                                                <Button
-                                                  danger
-                                                  onClick={() => remove(name)}
-                                                  disabled={fields.length === 1}
-                                                >
-                                                  Remove Slide
-                                                </Button>
-                                              </Col>
-                                            </Row>
-                                          ),
-                                        },
-                                      ]}
-                                    />
-                                  ),
-                                )}
-                              </>
-                            )}
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Button Text"
+                                                    name={[
+                                                      name,
+                                                      "buttonText",
+                                                    ]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please enter button text",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      placeholder={
+                                                        isRestaurantTemplate
+                                                          ? "Order Now"
+                                                          : "Shop"
+                                                      }
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+
+                                                <Col xs={24}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Slide Description"
+                                                    name={[
+                                                      name,
+                                                      "description",
+                                                    ]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please enter slide description",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <TextArea
+                                                      rows={4}
+                                                      placeholder={
+                                                        isRestaurantTemplate
+                                                          ? "Enjoy freshly prepared meals made with quality ingredients."
+                                                          : "Find clothing that matches your personality, comfort, and confidence in every season."
+                                                      }
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+
+                                                {!isRestaurantTemplate && (
+                                                  <Col xs={24}>
+                                                    <Button
+                                                      danger
+                                                      onClick={() =>
+                                                        remove(name)
+                                                      }
+                                                      disabled={
+                                                        fields.length === 1
+                                                      }
+                                                    >
+                                                      Remove Slide
+                                                    </Button>
+                                                  </Col>
+                                                )}
+                                              </Row>
+                                            ),
+                                          },
+                                        ]}
+                                      />
+                                    ),
+                                  )}
+
+                                  {displayedFields.length === 0 && (
+                                    <div className="rounded-md border border-dashed border-gray-300 p-6 text-center text-gray-500">
+                                      No header slide found.
+                                    </div>
+                                  )}
+                                </>
+                              );
+                            }}
                           </Form.List>
                         ),
                       },
@@ -1203,6 +1319,466 @@ export default function WebsiteTemplateForm({
                           </Form.Item>
                         ),
                       },
+
+                      ...(isRestaurantTemplate
+                        ? [
+                          {
+                            key: "ourChef",
+                            label: "Our Chef",
+                            forceRender: true,
+                            children: (
+                              <Form.List
+                                name={[
+                                  "config",
+                                  "generalConfig",
+                                  "ourChef",
+                                ]}
+                              >
+                                {(fields, { add, remove }) => (
+                                  <div>
+                                    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                      <div>
+                                        <h3 className="mb-1 text-base font-semibold">
+                                          Our Chefs
+                                        </h3>
+
+                                        <p className="mb-0 text-sm text-gray-500">
+                                          Add chef name and image.
+                                        </p>
+                                      </div>
+
+                                      <Button
+                                        type="dashed"
+                                        onClick={() =>
+                                          add({
+                                            name: "",
+                                            image: "",
+                                          })
+                                        }
+                                      >
+                                        Add Chef
+                                      </Button>
+                                    </div>
+
+                                    {fields.length === 0 ? (
+                                      <Alert
+                                        type="info"
+                                        showIcon
+                                        message="No chef added"
+                                        description="Click Add Chef to add your first chef."
+                                      />
+                                    ) : (
+                                      <div className="space-y-4">
+                                        {fields.map(
+                                          (
+                                            {
+                                              key,
+                                              name,
+                                              ...restField
+                                            },
+                                            index,
+                                          ) => (
+                                            <div
+                                              key={key}
+                                              className="rounded-xl border border-gray-200 p-4"
+                                            >
+                                              <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-3">
+                                                <div>
+                                                  <h4 className="mb-0 font-semibold">
+                                                    Chef {index + 1}
+                                                  </h4>
+
+                                                  <p className="mb-0 mt-1 text-sm text-gray-500">
+                                                    Add chef name and photo.
+                                                  </p>
+                                                </div>
+
+                                                <Button
+                                                  danger
+                                                  type="text"
+                                                  onClick={() =>
+                                                    remove(name)
+                                                  }
+                                                >
+                                                  Remove
+                                                </Button>
+                                              </div>
+
+                                              <Row gutter={[16, 8]}>
+                                                {/* Chef name */}
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Chef Name"
+                                                    name={[name, "name"]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        whitespace: true,
+                                                        message:
+                                                          "Please enter the chef name.",
+                                                      },
+                                                      {
+                                                        max: 120,
+                                                        message:
+                                                          "Chef name cannot exceed 120 characters.",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      maxLength={120}
+                                                      showCount
+                                                      placeholder="Khairul"
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+
+                                                {/* Chef image */}
+                                                <Col xs={24} md={12}>
+                                                  <Form.Item
+                                                    {...restField}
+                                                    label="Chef Image"
+                                                    name={[name, "image"]}
+                                                    rules={[
+                                                      {
+                                                        required: true,
+                                                        message:
+                                                          "Please select a chef image.",
+                                                      },
+                                                    ]}
+                                                  >
+                                                    <Input
+                                                      readOnly
+                                                      placeholder="Select chef image"
+                                                      onClick={() => {
+                                                        setActiveChefIndex(
+                                                          name,
+                                                        );
+
+                                                        setChefImageModalOpen(
+                                                          true,
+                                                        );
+                                                      }}
+                                                      addonAfter={
+                                                        <Button
+                                                          type="text"
+                                                          size="small"
+                                                          icon={
+                                                            <ImageIcon className="h-4 w-4" />
+                                                          }
+                                                          onClick={(
+                                                            event,
+                                                          ) => {
+                                                            event.stopPropagation();
+
+                                                            setActiveChefIndex(
+                                                              name,
+                                                            );
+
+                                                            setChefImageModalOpen(
+                                                              true,
+                                                            );
+                                                          }}
+                                                        >
+                                                          Select
+                                                        </Button>
+                                                      }
+                                                    />
+                                                  </Form.Item>
+                                                </Col>
+
+                                                {/* Chef image preview */}
+                                                <Col xs={24}>
+                                                  <Form.Item
+                                                    noStyle
+                                                    shouldUpdate={(
+                                                      previousValues,
+                                                      currentValues,
+                                                    ) => {
+                                                      const previousImage =
+                                                        previousValues
+                                                          ?.config
+                                                          ?.generalConfig
+                                                          ?.ourChef?.[
+                                                          name
+                                                        ]?.image;
+
+                                                      const currentImage =
+                                                        currentValues
+                                                          ?.config
+                                                          ?.generalConfig
+                                                          ?.ourChef?.[
+                                                          name
+                                                        ]?.image;
+
+                                                      return (
+                                                        previousImage !==
+                                                        currentImage
+                                                      );
+                                                    }}
+                                                  >
+                                                    {({
+                                                      getFieldValue,
+                                                    }) => {
+                                                      const chefImage =
+                                                        getFieldValue([
+                                                          "config",
+                                                          "generalConfig",
+                                                          "ourChef",
+                                                          name,
+                                                          "image",
+                                                        ]) as
+                                                        | string
+                                                        | undefined;
+
+                                                      if (!chefImage) {
+                                                        return (
+                                                          <div className="flex min-h-44 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50">
+                                                            <div className="text-center text-gray-500">
+                                                              <ImageIcon className="mx-auto mb-2 h-8 w-8" />
+
+                                                              <p className="mb-0 text-sm">
+                                                                No chef image
+                                                                selected
+                                                              </p>
+                                                            </div>
+                                                          </div>
+                                                        );
+                                                      }
+
+                                                      return (
+                                                        <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                                                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                          <img
+                                                            src={imageUrlSet(
+                                                              chefImage,
+                                                            )}
+                                                            alt={`Chef ${index + 1}`}
+                                                            className="h-64 w-full object-cover object-top"
+                                                          />
+                                                        </div>
+                                                      );
+                                                    }}
+                                                  </Form.Item>
+                                                </Col>
+                                              </Row>
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </Form.List>
+                            ),
+                          },
+                        ]
+                        : []),
+
+                      ...(isRestaurantTemplate
+                        ? [
+                          {
+                            key: "restaurantSection",
+                            label: "Restaurant Section",
+                            forceRender: true,
+                            children: (
+                              <div>
+                                <div className="mb-5">
+                                  <h3 className="mb-1 text-base font-semibold">
+                                    Restaurant Information
+                                  </h3>
+
+                                  <p className="mb-0 text-sm text-gray-500">
+                                    Add the restaurant section name,
+                                    description and image.
+                                  </p>
+                                </div>
+
+                                <Row gutter={[16, 8]}>
+                                  {/* Name */}
+                                  <Col xs={24} md={12}>
+                                    <Form.Item
+                                      label="Name"
+                                      name={[
+                                        "config",
+                                        "generalConfig",
+                                        "restaurantSection",
+                                        "name",
+                                      ]}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          whitespace: true,
+                                          message:
+                                            "Please enter the restaurant section name.",
+                                        },
+                                        {
+                                          max: 150,
+                                          message:
+                                            "Name cannot exceed 150 characters.",
+                                        },
+                                      ]}
+                                    >
+                                      <Input
+                                        maxLength={150}
+                                        showCount
+                                        placeholder="Our Food Categories"
+                                      />
+                                    </Form.Item>
+                                  </Col>
+
+                                  {/* Image */}
+                                  <Col xs={24} md={12}>
+                                    <Form.Item
+                                      label="Image"
+                                      name={[
+                                        "config",
+                                        "generalConfig",
+                                        "restaurantSection",
+                                        "image",
+                                      ]}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          message:
+                                            "Please select an image.",
+                                        },
+                                      ]}
+                                    >
+                                      <Input
+                                        readOnly
+                                        placeholder="Select restaurant image"
+                                        onClick={() =>
+                                          setRestaurantImageModalOpen(
+                                            true,
+                                          )
+                                        }
+                                        addonAfter={
+                                          <Button
+                                            type="text"
+                                            size="small"
+                                            icon={
+                                              <ImageIcon className="h-4 w-4" />
+                                            }
+                                            onClick={(event) => {
+                                              event.stopPropagation();
+
+                                              setRestaurantImageModalOpen(
+                                                true,
+                                              );
+                                            }}
+                                          >
+                                            Select
+                                          </Button>
+                                        }
+                                      />
+                                    </Form.Item>
+                                  </Col>
+
+                                  {/* Description */}
+                                  <Col xs={24}>
+                                    <Form.Item
+                                      label="Description"
+                                      name={[
+                                        "config",
+                                        "generalConfig",
+                                        "restaurantSection",
+                                        "description",
+                                      ]}
+                                      rules={[
+                                        {
+                                          required: true,
+                                          whitespace: true,
+                                          message:
+                                            "Please enter the restaurant description.",
+                                        },
+                                        {
+                                          max: 500,
+                                          message:
+                                            "Description cannot exceed 500 characters.",
+                                        },
+                                      ]}
+                                    >
+                                      <Input.TextArea
+                                        rows={4}
+                                        maxLength={500}
+                                        showCount
+                                        placeholder="Discover delicious fast food, street food, traditional meals and freshly prepared dishes."
+                                      />
+                                    </Form.Item>
+                                  </Col>
+
+                                  {/* Image preview */}
+                                  <Col xs={24}>
+                                    <Form.Item
+                                      noStyle
+                                      shouldUpdate={(
+                                        previousValues,
+                                        currentValues,
+                                      ) => {
+                                        const previousImage =
+                                          previousValues?.config
+                                            ?.generalConfig
+                                            ?.restaurantSection
+                                            ?.image;
+
+                                        const currentImage =
+                                          currentValues?.config
+                                            ?.generalConfig
+                                            ?.restaurantSection
+                                            ?.image;
+
+                                        return (
+                                          previousImage !==
+                                          currentImage
+                                        );
+                                      }}
+                                    >
+                                      {({ getFieldValue }) => {
+                                        const image =
+                                          getFieldValue([
+                                            "config",
+                                            "generalConfig",
+                                            "restaurantSection",
+                                            "image",
+                                          ]) as
+                                          | string
+                                          | undefined;
+
+                                        if (!image) {
+                                          return (
+                                            <div className="flex min-h-44 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50">
+                                              <div className="text-center text-gray-500">
+                                                <ImageIcon className="mx-auto mb-2 h-8 w-8" />
+
+                                                <p className="mb-0 text-sm">
+                                                  No restaurant image
+                                                  selected
+                                                </p>
+                                              </div>
+                                            </div>
+                                          );
+                                        }
+
+                                        return (
+                                          <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                              src={imageUrlSet(image)}
+                                              alt="Restaurant section"
+                                              className="h-52 w-full object-cover sm:h-72"
+                                            />
+                                          </div>
+                                        );
+                                      }}
+                                    </Form.Item>
+                                  </Col>
+                                </Row>
+                              </div>
+                            ),
+                          },
+                        ]
+                        : []),
 
                       {
                         key: "extraPage",
@@ -1771,6 +2347,49 @@ export default function WebsiteTemplateForm({
           setThemeFaviconModalOpen(false);
         }}
       />
+
+      <ImageSelectModal
+        open={restaurantImageModalOpen}
+        selectedUrl={selectRestaurantImage ?? ""}
+        onClose={() => {
+          setRestaurantImageModalOpen(false);
+        }}
+        onSelect={(url) => {
+          form.setFieldValue([
+            "config",
+            "generalConfig",
+            "restaurantSection",
+            "image"
+          ], url);
+          setRestaurantImageModalOpen(false);
+        }}
+      />
+
+      <ImageSelectModal
+        open={chefImageModalOpen}
+        selectedUrl={selectedOurChef ?? ""}
+        onClose={() => {
+          setChefImageModalOpen(false);
+          setActiveChefIndex(null);
+        }}
+        onSelect={(url) => {
+          if (activeChefIndex === null) return;
+
+          form.setFieldValue(
+            ["config",
+              "generalConfig",
+              "ourChef",
+              activeChefIndex,
+              "image"
+            ],
+            url,
+          );
+
+          setChefImageModalOpen(false);
+          setActiveChefIndex(null);
+        }}
+      />
+
     </Card>
   );
 }

@@ -33,7 +33,7 @@ const LogoComponent = ({
     <Link
       href="/store"
       aria-label={`${fullName} home`}
-      className="inline-flex min-w-0 items-center"
+      className="inline-flex w-fit shrink-0 items-center"
     >
       {logoSrc ? (
         <Image
@@ -42,7 +42,7 @@ const LogoComponent = ({
           height={50}
           alt={`${fullName} logo`}
           priority
-          className="h-[45px] w-[200px] object-contain"
+          className="h-[45px] w-auto max-w-[200px] object-contain object-left"
           style={{
             filter: "none",
           }}
@@ -55,7 +55,7 @@ const LogoComponent = ({
           }}
         />
       ) : (
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex w-fit items-center gap-2">
           <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gray-900 font-semibold text-white">
             {firstLetter}
           </div>
