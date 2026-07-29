@@ -1021,6 +1021,7 @@ export default function WebsiteTemplateForm({
                                 "COSMETICS",
                                 "SHOES",
                                 "TOY",
+                                "RESTAURANT",
                               ].includes(selectedTemplate ?? "");
 
                               return (

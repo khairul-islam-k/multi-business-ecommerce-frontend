@@ -4,6 +4,7 @@ import FashionProduct from '@/app/templates/fashion/pages/fashion-product';
 import FurnitureProductPage from '@/app/templates/furniture/pages/furniture-product-page';
 import GroceryProduct from '@/app/templates/grocery/pages/grocery-product';
 import PharmacyProductPage from '@/app/templates/pharmacy/pages/pharmacy-product-page';
+import RestaurantProductPage from '@/app/templates/restaurant/pages/restaurant-product-page';
 import ShoesProductPage from '@/app/templates/shoes/pages/shoes-product-page';
 import ToyProductPage from '@/app/templates/toy/pages/toy-product-page';
 import VehicleProductPage from '@/app/templates/vehicle/pages/vehicle-product-page';
@@ -32,9 +33,9 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
         }
     })
 
-    console.log('product', res.data.data.config.generalConfig.dashboardColors);
     const theme = res.data.data.theme
     const dashboardColor = res.data.data.config.generalConfig.dashboardColors;
+    const restaurantSlide = res.data.data.config.headerConfig.slide[0];
 
     if (res?.data?.data?.template === "ELECTRONIC") {
         return (
@@ -122,6 +123,18 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
                 search={search}
                 brandId={brandId}
                 theme={theme}
+                dashboardColor={dashboardColor}
+                categoryId={categoryId} />
+        );
+    }
+
+    if (res?.data?.data?.template === "RESTAURANT") {
+        return (
+            <RestaurantProductPage
+                search={search}
+                brandId={brandId}
+                theme={theme}
+                restaurantSlide={restaurantSlide}
                 dashboardColor={dashboardColor}
                 categoryId={categoryId} />
         );
