@@ -49,6 +49,10 @@ const InvoicePage = async () => {
     if (res?.data?.data?.template === "TOY") {
         return <FashionInvoice />;
     }
+
+    if (res?.data?.data?.template === "RESTAURANT") {
+        return <FashionInvoice />;
+    }
 };
 
 export default InvoicePage;

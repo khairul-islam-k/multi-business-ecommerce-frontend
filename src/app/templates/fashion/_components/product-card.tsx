@@ -111,7 +111,7 @@ const ProductCard = ({
       <div
         className={`relative overflow-hidden bg-[#f8f5f1] ${isList
           ? "h-[300px] lg:h-auto lg:min-h-[280px] lg:w-[320px] lg:shrink-0"
-          : "h-[300px]"
+          : "h-[200px]"
           }`}
       >
         {thumbnail && (

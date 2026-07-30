@@ -15,6 +15,10 @@ const MyProfile = async () => {
     if (res?.data?.data?.template === "FASHION") {
         return <FashionUserProfile />;
     }
+
+    if (res?.data?.data?.template === "FURNITURE") {
+        return <FashionUserProfile />;
+    }
 };
 
 export default MyProfile;

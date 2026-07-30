@@ -58,8 +58,8 @@ const FashionUserProfile = () => {
 
     if (isLoading) {
         return (
-            <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-10">
-                <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--store-card,#ffffff)] p-10 text-center shadow-sm">
+            <section className="min-h-screen bg-[var(--store-bg-1)] px-4 py-10">
+                <div className="mx-auto max-w-5xl rounded-3xl bg-[var(--store-card)] p-10 text-center shadow-sm">
                     <p className="text-[var(--store-muted,#6b7280)]">
                         Profile is loading...
                     </p>
@@ -84,7 +84,7 @@ const FashionUserProfile = () => {
     const isActive = customer.status === "ACTIVE";
 
     return (
-        <section className="min-h-screen bg-[var(--store-secondary,#f8f5f1)] px-4 py-10 sm:px-6 lg:px-8">
+        <section className="min-h-screen bg-[var(--store-bg-1)] px-4 py-10 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-5xl">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-[var(--store-text,#111827)]">
@@ -95,9 +95,9 @@ const FashionUserProfile = () => {
                     </p>
                 </div>
 
-                <div className="overflow-hidden rounded-3xl bg-[var(--store-card,#ffffff)] shadow-sm">
+                <div className="overflow-hidden rounded-3xl bg-[var(--store-card)] shadow-sm border-[var(--store-border)] border">
                     {/* Profile Header */}
-                    <div className="bg-[var(--store-primary,#f16d59)] px-6 py-10 text-white sm:px-10">
+                    <div className="bg-[var(--store-primary,#f16d59)] px-6 py-10 text-white sm:px-10 border-[var(--store-border)]">
                         <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
                             <div className="grid size-28 shrink-0 place-items-center rounded-full border-4 border-white/40 bg-white text-3xl font-bold text-[var(--store-primary,#f16d59)] shadow-lg">
                                 {getInitials(customer.name)}
@@ -190,7 +190,9 @@ const FashionUserProfile = () => {
                         </h3>
 
                         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                            <div className="flex items-center justify-between rounded-2xl bg-[var(--store-secondary,#f8f5f1)] px-5 py-4">
+                            <div className="flex items-center justify-between rounded-2xl bg-[var(--store-bg-1)]
+                            border-[var(--store-border)] border
+                            px-5 py-4">
                                 <span className="text-sm font-medium text-[var(--store-muted,#6b7280)]">
                                     Status
                                 </span>
@@ -205,7 +207,9 @@ const FashionUserProfile = () => {
                                 </span>
                             </div>
 
-                            <div className="flex items-center justify-between rounded-2xl bg-[var(--store-secondary,#f8f5f1)] px-5 py-4">
+                            <div className="flex items-center justify-between rounded-2xl bg-[var(--store-bg-1)]
+                            border-[var(--store-border)] border
+                            px-5 py-4">
                                 <span className="text-sm font-medium text-[var(--store-muted,#6b7280)]">
                                     Email Verification
                                 </span>

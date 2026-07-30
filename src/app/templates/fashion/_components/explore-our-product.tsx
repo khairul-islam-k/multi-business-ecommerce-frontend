@@ -8,7 +8,9 @@ import { useProductTagsQuery, useTemplateProductQuery } from "@/lib/api/hooks/pu
 
 
 const ExploreOurProduct = () => {
-  const { data: productTabs } = useProductTagsQuery();
+  const { data: productTabs } = useProductTagsQuery({
+    limit: 10
+  });
   const [activeTab, setActiveTab] = useState('');
 
   const {data: products} = useTemplateProductQuery({
@@ -23,11 +25,11 @@ const ExploreOurProduct = () => {
   }, [productTabs]);
 
   return (
-    <section className="bg-[var(--store-bg-3)] py-16">
+    <section className="bg-[var(--store-bg-3)] py-8 mt-5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <h2 className="text-3xl font-bold">
             Explore Our Products
           </h2>
 
@@ -37,7 +39,7 @@ const ExploreOurProduct = () => {
         </div>
 
         {/* Tabs */}
-        <div className="mt-8 w-full overflow-x-auto overflow-y-hidden">
+        <div className="mt-4 w-full overflow-x-auto overflow-y-hidden">
           <div className="flex w-max min-w-full items-center justify-start gap-8 px-4 md:justify-center">
             {productTabs?.map((tab) => {
               const isActive = activeTab === tab.id;
@@ -65,7 +67,7 @@ const ExploreOurProduct = () => {
         </div>
 
         {/* Products */}
-        <div className="mt-12">
+        <div className="mt-8">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -73,7 +75,7 @@ const ExploreOurProduct = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -30 }}
               transition={{ duration: 0.35, ease: "easeOut" }}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5"
             >
               {products?.items.map((product) => (
                 <ProductCard key={product.id}

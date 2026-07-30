@@ -44,6 +44,10 @@ const CreateCustomerAddress = async () => {
     if (res?.data?.data?.template === "TOY") {
         return <FashionCreateCustomerAddress />;
     }
+
+    if (res?.data?.data?.template === "RESTAURANT") {
+        return <FashionCreateCustomerAddress />;
+    }
 };
 
 export default CreateCustomerAddress;

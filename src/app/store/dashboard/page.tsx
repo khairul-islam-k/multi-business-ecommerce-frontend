@@ -48,4 +48,8 @@ export default async function DashboardPage() {
   if (res?.data?.data?.template === "TOY") {
     return <ElectricDashboard />;
   }
+
+  if (res?.data?.data?.template === "RESTAURANT") {
+    return <ElectricDashboard />;
+  }
 }

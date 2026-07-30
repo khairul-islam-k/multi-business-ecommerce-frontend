@@ -172,7 +172,7 @@ const ToyFooter = ({
 
             <div>
               <p className="text-sm font-bold">
-                Safe & trusted toys
+                Safe & trusted
               </p>
 
               <p className="mt-1 text-xs leading-5 text-white/55">
@@ -368,7 +368,7 @@ const ToyFooter = ({
                     </p>
 
                     <h3 className="mt-1 text-lg font-bold">
-                      Talk to our toy team
+                      Talk to our team
                     </h3>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ const ToyFooter = ({
               href="/store/products"
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#17152f] px-6 text-sm font-bold text-white transition hover:bg-[#292653]"
             >
-              Shop toys
+              Shop now
               <ShoppingBag className="size-4" />
             </Link>
           </div>

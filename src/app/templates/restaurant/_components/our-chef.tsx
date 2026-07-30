@@ -114,7 +114,7 @@ const OurChef = ({
              
             </div>
 
-            <h2 className="text-3xl font-bold leading-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white">
+            <h2 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl dark:text-white">
               Our Professional Chefs
             </h2>
 

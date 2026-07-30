@@ -4,6 +4,7 @@ import FashionRegisterPage from '@/app/templates/fashion/pages/fashion-register'
 import FurnitureRegisterPage from '@/app/templates/furniture/pages/furniture-register-page';
 import GroceryRegisterPage from '@/app/templates/grocery/pages/grocery-register-page';
 import PharmacyRegisterPage from '@/app/templates/pharmacy/pages/furniture-register-page';
+import RestaurantRegisterPage from '@/app/templates/restaurant/pages/restaurant-register-page';
 import ShoesRegisterPage from '@/app/templates/shoes/pages/shoes-register-page';
 import ToyRegisterPage from '@/app/templates/toy/pages/toy-register-page';
 import VehicleRegisterPage from '@/app/templates/vehicle/pages/vehicle-register-page';
@@ -72,6 +73,12 @@ const Register = async () => {
         if (res?.data?.data?.template === "TOY") {
             return (
                 <ToyRegisterPage />
+            );
+        }
+
+        if (res?.data?.data?.template === "RESTAURANT") {
+            return (
+                <RestaurantRegisterPage />
             );
         }
 };

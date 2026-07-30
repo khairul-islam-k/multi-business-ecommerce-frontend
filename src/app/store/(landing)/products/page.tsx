@@ -131,7 +131,6 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
     if (res?.data?.data?.template === "RESTAURANT") {
         return (
             <RestaurantProductPage
-                search={search}
                 brandId={brandId}
                 theme={theme}
                 restaurantSlide={restaurantSlide}

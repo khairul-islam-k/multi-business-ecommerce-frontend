@@ -67,7 +67,7 @@ const IconButton = ({
     <Link
       href={href}
       aria-label={label}
-      className="relative grid size-10 place-items-center rounded-full border border-transparent text-gray-700 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white dark:text-gray-200"
+      className="relative grid size-10 place-items-center rounded-full border border-transparent transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white dark:text-gray-200"
     >
       {children}
 
@@ -163,7 +163,7 @@ const MobileCategoryItem = ({
         onClick={() =>
           onCategoryClick(item.category.id)
         }
-        className="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-[#f16d59]/10 hover:text-[#f16d59] dark:text-gray-200"
+        className="block w-full rounded-xl px-4 py-3 text-left text-sm font-medium transition hover:bg-[#f16d59]/10 hover:text-[#f16d59] dark:text-gray-200"
       >
         {item.category.name}
       </button>
@@ -309,7 +309,7 @@ const RestaurantNavbar = ({
       "hover:text-[#f16d59]",
       isActive(href)
         ? "text-[#f16d59]"
-        : "text-gray-700 dark:text-gray-200",
+        : "dark:text-gray-200",
     ].join(" ");
   };
 
@@ -321,7 +321,7 @@ const RestaurantNavbar = ({
       "rounded-xl px-1 py-2 text-[10px] font-semibold transition-all duration-300",
       active
         ? "bg-[#f16d59]/10 text-[#f16d59]"
-        : "text-gray-500 hover:text-[#f16d59] dark:text-gray-400",
+        : "hover:text-[#f16d59] dark:text-gray-400",
     ].join(" ");
   };
 
@@ -363,7 +363,7 @@ const RestaurantNavbar = ({
                   "hover:text-[#f16d59]",
                   categoryActive
                     ? "text-[#f16d59]"
-                    : "text-gray-700 dark:text-gray-200",
+                    : "dark:text-gray-200",
                 ].join(" ")}
               >
                 Category
@@ -543,14 +543,14 @@ const RestaurantNavbar = ({
             className="fixed inset-x-0 bottom-[76px] top-20 z-[60] bg-black/45 backdrop-blur-[2px] lg:hidden"
           />
 
-          <aside className="fixed inset-x-3 bottom-[88px] top-24 z-[70] flex flex-col overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-950 lg:hidden">
+          <aside className="fixed inset-x-3 bottom-[88px] top-24 z-[70] flex flex-col overflow-hidden rounded-3xl border border-gray-200 bg-[var(--store-card)] shadow-2xl dark:border-white/10 dark:bg-zinc-950 lg:hidden">
             <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/10">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#f16d59]">
                   Our Menu
                 </p>
 
-                <h2 className="mt-1 text-lg font-bold text-gray-950 dark:text-white">
+                <h2 className="mt-1 text-lg font-bold dark:text-white">
                   Food Categories
                 </h2>
               </div>
@@ -609,7 +609,7 @@ const RestaurantNavbar = ({
       )}
 
       {/* Mobile fixed bottom navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-200 bg-white/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/95 lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-200 px-2 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/95 lg:hidden">
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
           {/* Home */}
           <Link

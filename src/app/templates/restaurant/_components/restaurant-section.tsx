@@ -33,13 +33,13 @@ const RestaurantSection = ({
             </div>
 
             {name && (
-              <h2 className="max-w-xl text-3xl font-bold leading-tight text-gray-950 sm:text-4xl lg:text-5xl dark:text-white">
+              <h2 className="max-w-xl text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl dark:text-white">
                 {name}
               </h2>
             )}
 
             {description && (
-              <div className="mt-6 max-h-[260px] overflow-y-auto pr-3 text-sm leading-7 text-gray-600 [scrollbar-width:thin] sm:text-base sm:leading-8 dark:text-gray-300">
+              <div className="mt-6 max-h-[260px] overflow-y-auto pr-3 text-sm leading-7 [scrollbar-width:thin] sm:text-base sm:leading-8 dark:text-gray-300">
                 <p className="whitespace-pre-line">
                   {description}
                 </p>

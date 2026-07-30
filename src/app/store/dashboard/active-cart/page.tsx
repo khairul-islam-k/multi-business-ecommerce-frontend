@@ -50,6 +50,10 @@ const ActiveCart = async () => {
     if (res?.data?.data?.template === "TOY") {
         return <FashionActiveCart />;
     }
+
+    if (res?.data?.data?.template === "RESTAURANT") {
+        return <FashionActiveCart />;
+    }
 };
 
 export default ActiveCart;

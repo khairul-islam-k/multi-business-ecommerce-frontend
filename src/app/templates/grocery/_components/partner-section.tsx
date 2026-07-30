@@ -1,6 +1,6 @@
 "use client";
 
-import React, {
+import {
   useEffect,
   useRef,
   useState,
@@ -33,11 +33,17 @@ type Brand = {
   deletedAt: string | null;
 };
 
-const PartnerSection = () => {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+const AUTO_SLIDE_DELAY = 5000;
 
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(1);
+const PartnerSection = () => {
+  const sliderRef =
+    useRef<HTMLDivElement | null>(null);
+
+  const [activeSlide, setActiveSlide] =
+    useState(0);
+
+  const [itemsPerView, setItemsPerView] =
+    useState(1);
 
   const {
     data: brandsData,
@@ -45,18 +51,22 @@ const PartnerSection = () => {
     isFetching,
   } = useProductBrands();
 
-  /*
-   * Prevent undefined errors while the API is loading.
-   */
   const brands: Brand[] = brandsData ?? [];
 
   const totalSlides = Math.max(
     1,
-    Math.ceil(brands.length / itemsPerView),
+    Math.ceil(
+      brands.length / itemsPerView,
+    ),
   );
 
-  const hasMultipleSlides = totalSlides > 1;
+  const hasMultipleSlides =
+    totalSlides > 1;
 
+  /*
+   * Set the number of visible cards
+   * according to the screen width.
+   */
   useEffect(() => {
     const updateItemsPerView = () => {
       const width = window.innerWidth;
@@ -74,7 +84,10 @@ const PartnerSection = () => {
 
     updateItemsPerView();
 
-    window.addEventListener("resize", updateItemsPerView);
+    window.addEventListener(
+      "resize",
+      updateItemsPerView,
+    );
 
     return () => {
       window.removeEventListener(
@@ -84,16 +97,28 @@ const PartnerSection = () => {
     };
   }, []);
 
+  /*
+   * Return to the first slide when
+   * the responsive item count changes
+   * or brand data changes.
+   */
   useEffect(() => {
-    if (activeSlide >= totalSlides) {
-      setActiveSlide(Math.max(totalSlides - 1, 0));
-    }
-  }, [activeSlide, totalSlides]);
+    setActiveSlide(0);
 
-  const scrollToSlide = (slideIndex: number) => {
+    sliderRef.current?.scrollTo({
+      left: 0,
+      behavior: "auto",
+    });
+  }, [itemsPerView, brands.length]);
+
+  const scrollToSlide = (
+    slideIndex: number,
+  ) => {
     const slider = sliderRef.current;
 
-    if (!slider) return;
+    if (!slider) {
+      return;
+    }
 
     const safeIndex = Math.min(
       Math.max(slideIndex, 0),
@@ -101,7 +126,9 @@ const PartnerSection = () => {
     );
 
     slider.scrollTo({
-      left: safeIndex * slider.clientWidth,
+      left:
+        safeIndex *
+        slider.clientWidth,
       behavior: "smooth",
     });
 
@@ -109,6 +136,10 @@ const PartnerSection = () => {
   };
 
   const handleNext = () => {
+    if (!hasMultipleSlides) {
+      return;
+    }
+
     const nextSlide =
       activeSlide >= totalSlides - 1
         ? 0
@@ -118,6 +149,10 @@ const PartnerSection = () => {
   };
 
   const handlePrevious = () => {
+    if (!hasMultipleSlides) {
+      return;
+    }
+
     const previousSlide =
       activeSlide <= 0
         ? totalSlides - 1
@@ -129,12 +164,16 @@ const PartnerSection = () => {
   const handleSliderScroll = () => {
     const slider = sliderRef.current;
 
-    if (!slider || slider.clientWidth === 0) {
+    if (
+      !slider ||
+      slider.clientWidth === 0
+    ) {
       return;
     }
 
     const currentSlide = Math.round(
-      slider.scrollLeft / slider.clientWidth,
+      slider.scrollLeft /
+        slider.clientWidth,
     );
 
     setActiveSlide(
@@ -145,8 +184,60 @@ const PartnerSection = () => {
     );
   };
 
+  /*
+   * Automatically move to the next
+   * slide every five seconds.
+   */
+  // useEffect(() => {
+  //   if (
+  //     !hasMultipleSlides ||
+  //     isLoading ||
+  //     isFetching
+  //   ) {
+  //     return;
+  //   }
+
+  //   const intervalId =
+  //     window.setInterval(() => {
+  //       setActiveSlide(
+  //         (previousSlide) => {
+  //           const nextSlide =
+  //             previousSlide >=
+  //             totalSlides - 1
+  //               ? 0
+  //               : previousSlide + 1;
+
+  //           const slider =
+  //             sliderRef.current;
+
+  //           if (slider) {
+  //             slider.scrollTo({
+  //               left:
+  //                 nextSlide *
+  //                 slider.clientWidth,
+  //               behavior: "smooth",
+  //             });
+  //           }
+
+  //           return nextSlide;
+  //         },
+  //       );
+  //     }, AUTO_SLIDE_DELAY);
+
+  //   return () => {
+  //     window.clearInterval(
+  //       intervalId,
+  //     );
+  //   };
+  // }, [
+  //   hasMultipleSlides,
+  //   isLoading,
+  //   isFetching,
+  //   totalSlides,
+  // ]);
+
   return (
-    <section className="bg-[var(--store-bg-1)] my-4 sm:my-5 md:my-7 lg:my-10">
+    <section className="my-4 bg-[var(--store-bg-1)] sm:my-5 md:my-7 lg:my-10">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 flex items-end justify-between gap-5 sm:mb-8">
@@ -156,7 +247,8 @@ const PartnerSection = () => {
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--store-muted)] sm:text-base">
-              Browse products from our popular brands.
+              Browse products from our popular
+              brands.
             </p>
           </div>
 
@@ -187,18 +279,18 @@ const PartnerSection = () => {
         {isLoading || isFetching ? (
           /* Loading skeleton */
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {Array.from({ length: 6 }).map(
-              (_, index) => (
-                <div
-                  key={index}
-                  className="animate-pulse rounded-xl border border-[var(--store-border)] bg-[var(--store-card)] p-4"
-                >
-                  <div className="mx-auto h-14 w-24 rounded-lg bg-[var(--store-bg-3)]" />
+            {Array.from({
+              length: 6,
+            }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse rounded-xl border border-[var(--store-border)] bg-[var(--store-card)] p-4"
+              >
+                <div className="mx-auto h-14 w-24 rounded-lg bg-[var(--store-bg-3)]" />
 
-                  <div className="mx-auto mt-4 h-4 w-3/4 rounded bg-[var(--store-bg-3)]" />
-                </div>
-              ),
-            )}
+                <div className="mx-auto mt-4 h-4 w-3/4 rounded bg-[var(--store-bg-3)]" />
+              </div>
+            ))}
           </div>
         ) : brands.length === 0 ? (
           /* Empty state */
@@ -210,7 +302,8 @@ const PartnerSection = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[var(--store-muted)]">
-              Product brands are not available right now.
+              Product brands are not available
+              right now.
             </p>
           </div>
         ) : (
@@ -234,7 +327,9 @@ const PartnerSection = () => {
                   {/* Brand logo */}
                   <div className="relative h-14 w-16 overflow-hidden rounded-lg">
                     <Image
-                      src={imageUrlSet(brand.logoUrl)}
+                      src={imageUrlSet(
+                        brand.logoUrl,
+                      )}
                       alt={brand.name}
                       fill
                       sizes="96px"
@@ -264,7 +359,8 @@ const PartnerSection = () => {
                 </button>
 
                 <span className="min-w-16 text-center text-sm font-medium text-[var(--store-muted)]">
-                  {activeSlide + 1} / {totalSlides}
+                  {activeSlide + 1} /{" "}
+                  {totalSlides}
                 </span>
 
                 <button
@@ -287,10 +383,17 @@ const PartnerSection = () => {
                   <button
                     key={index}
                     type="button"
-                    onClick={() => scrollToSlide(index)}
+                    onClick={() =>
+                      scrollToSlide(index)
+                    }
                     aria-label={`Go to brand slide ${
                       index + 1
                     }`}
+                    aria-current={
+                      activeSlide === index
+                        ? "true"
+                        : undefined
+                    }
                     className={`h-2.5 rounded-full transition-all duration-300 ${
                       activeSlide === index
                         ? "w-8 bg-[var(--store-primary)]"

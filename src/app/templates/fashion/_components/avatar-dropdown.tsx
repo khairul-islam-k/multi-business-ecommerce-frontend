@@ -90,12 +90,6 @@ export default function AvatarDropdown() {
               Dashboard
             </Link>
 
-            <a
-              href="/settings"
-              className="block px-4 py-2.5 text-sm hover:text-black transition hover:bg-gray-100"
-            >
-              Settings
-            </a>
           </div>
 
           <div className="border-t hover:text-black border-gray-100 p-2">

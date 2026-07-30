@@ -1,13 +1,11 @@
 import BestSellingProducts from '../_components/best-selling-products';
 import CategoriesSection from '../_components/categories-section';
-import DealOfDay from '../_components/deal-of-day';
 import ExploreOurProduct from '../_components/explore-our-product';
 import HeroSection from '../_components/hero-section';
 import MonthOffer from '../_components/month-offer';
-import PartnerSection from '../_components/partner-section';
-import PolicyLabel from '../_components/policy-label';
 import React from 'react';
 import { WebsiteTemplatePayload } from '@/types/website/website';
+import BrandSection from '../_components/brand-section';
 
 const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) => {
     const bannerSlide = resolveData?.config?.headerConfig?.slide;
@@ -25,11 +23,7 @@ const FashionHomePage = ({resolveData}: {resolveData: WebsiteTemplatePayload}) =
 
             <ExploreOurProduct />
 
-            <PolicyLabel />
-
-            {/* <DealOfDay /> */}
-
-            <PartnerSection partners={partners} />
+            <BrandSection />
 
             <BestSellingProducts />
         </div>
