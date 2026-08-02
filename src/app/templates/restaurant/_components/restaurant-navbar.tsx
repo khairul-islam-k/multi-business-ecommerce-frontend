@@ -1,9 +1,13 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import {
+  ReactNode,
+  useState,
+} from "react";
 import Link from "next/link";
 import {
   ChevronDown,
+  ChevronRight,
   Heart,
   Home,
   LayoutGrid,
@@ -20,9 +24,7 @@ import {
 import { useCart } from "@/app/store/_components/contex/CartContex";
 import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
-import {
-  useProductCategoryQuery,
-} from "@/lib/api/hooks/public-website";
+import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
 import { FAQItem } from "@/types/website/website";
 
@@ -81,62 +83,221 @@ const IconButton = ({
   );
 };
 
-type CategoryMenuItemProps = {
+type DesktopParentCategoryProps = {
   item: CategoryTreeItem;
+  active: boolean;
+  onHover: (
+    categoryId: string | null,
+  ) => void;
   onCategoryClick: (
     categoryId: string,
   ) => void;
 };
 
-const CategoryMenuItem = ({
+/**
+ * Parent category item shown in the
+ * left side of the desktop dropdown.
+ */
+const DesktopParentCategory = ({
+  item,
+  active,
+  onHover,
+  onCategoryClick,
+}: DesktopParentCategoryProps) => {
+  const hasChildren =
+    Array.isArray(item.children) &&
+    item.children.length > 0;
+
+  const handleHover = () => {
+    onHover(
+      hasChildren
+        ? item.category.id
+        : null,
+    );
+  };
+
+  return (
+    <button
+      type="button"
+      onMouseEnter={handleHover}
+      onFocus={handleHover}
+      onClick={() =>
+        onCategoryClick(item.category.id)
+      }
+      aria-haspopup={
+        hasChildren ? "menu" : undefined
+      }
+      className={`flex w-full items-center justify-between gap-3 border-b border-gray-100 px-4 py-3 text-left text-sm transition last:border-b-0 dark:border-white/10 ${
+        active
+          ? "bg-[#f16d59]/10 font-semibold text-[#f16d59]"
+          : "font-medium text-gray-700 hover:bg-[#f16d59]/10 hover:text-[#f16d59] dark:text-gray-200"
+      }`}
+    >
+      <span className="min-w-0 truncate">
+        {item.category.name}
+      </span>
+
+      {hasChildren && (
+        <ChevronRight
+          className={`size-4 shrink-0 transition-all duration-200 ${
+            active
+              ? "translate-x-0.5 text-[#f16d59]"
+              : "text-gray-400"
+          }`}
+        />
+      )}
+    </button>
+  );
+};
+
+type DesktopChildCategoryProps = {
+  item: CategoryTreeItem;
+  onCategoryClick: (
+    categoryId: string,
+  ) => void;
+  depth?: number;
+};
+
+/**
+ * Recursive child category renderer.
+ */
+const DesktopChildCategory = ({
   item,
   onCategoryClick,
-}: CategoryMenuItemProps) => {
-  const [open, setOpen] = useState(false);
-
+  depth = 0,
+}: DesktopChildCategoryProps) => {
   const hasChildren =
     Array.isArray(item.children) &&
     item.children.length > 0;
 
   return (
     <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      className={
+        depth === 0
+          ? "border-b border-gray-100 pb-4 last:border-b-0 last:pb-0 dark:border-white/10"
+          : ""
+      }
     >
       <button
         type="button"
         onClick={() =>
           onCategoryClick(item.category.id)
         }
-        className="flex w-full items-center justify-between gap-4 rounded-lg px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition hover:bg-[#f16d59]/10 hover:text-[#f16d59] dark:text-gray-200 dark:hover:bg-[#f16d59]/15"
+        className={`block w-full text-left transition hover:text-[#f16d59] ${
+          depth === 0
+            ? "text-sm font-semibold text-gray-800 dark:text-gray-100"
+            : "text-sm font-medium text-gray-600 dark:text-gray-300"
+        }`}
       >
-        <span className="line-clamp-1">
-          {item.category.name}
-        </span>
-
-        {hasChildren && (
-          <ChevronDown className="size-4 shrink-0 -rotate-90 text-gray-400" />
-        )}
+        {item.category.name}
       </button>
 
-      {hasChildren && open && (
-        <div className="absolute left-full top-0 z-[80] w-64 pl-2">
-          <div className="rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl dark:border-white/10 dark:bg-zinc-900">
-            {item.children.map(
-              (child) => (
-                <CategoryMenuItem
-                  key={child.category.id}
-                  item={child}
-                  onCategoryClick={
-                    onCategoryClick
-                  }
-                />
-              ),
-            )}
-          </div>
+      {hasChildren && (
+        <div
+          className={`mt-2 space-y-2 ${
+            depth === 0
+              ? "border-l-2 border-[#f16d59]/30 pl-3"
+              : "pl-3"
+          }`}
+        >
+          {item.children.map((child) => (
+            <DesktopChildCategory
+              key={child.category.id}
+              item={child}
+              depth={depth + 1}
+              onCategoryClick={
+                onCategoryClick
+              }
+            />
+          ))}
         </div>
       )}
+    </div>
+  );
+};
+
+type DesktopChildrenPanelProps = {
+  item: CategoryTreeItem;
+  onCategoryClick: (
+    categoryId: string,
+  ) => void;
+};
+
+/**
+ * Child categories shown on the right.
+ */
+const DesktopChildrenPanel = ({
+  item,
+  onCategoryClick,
+}: DesktopChildrenPanelProps) => {
+  return (
+    <div
+      role="menu"
+      aria-label={`${item.category.name} categories`}
+      className="h-full w-[360px] shrink-0 border-l border-gray-200 bg-white dark:border-white/10 dark:bg-zinc-900"
+    >
+      <div className="max-h-[430px] overflow-y-auto p-6">
+        <div className="border-b border-gray-200 pb-4 dark:border-white/10">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#f16d59]">
+            Explore Category
+          </p>
+
+          <button
+            type="button"
+            onClick={() =>
+              onCategoryClick(
+                item.category.id,
+              )
+            }
+            className="mt-1 block w-full text-left text-lg font-bold text-gray-900 transition hover:text-[#f16d59] dark:text-white"
+          >
+            {item.category.name}
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              onCategoryClick(
+                item.category.id,
+              )
+            }
+            className="mt-2 text-sm font-semibold text-[#f16d59] transition hover:underline"
+          >
+            View all {item.category.name}
+          </button>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {item.children.map((child) => (
+            <DesktopChildCategory
+              key={child.category.id}
+              item={child}
+              onCategoryClick={
+                onCategoryClick
+              }
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DesktopEmptyChildrenPanel = () => {
+  return (
+    <div className="flex h-full w-[360px] shrink-0 items-center justify-center border-l border-gray-200 bg-white p-8 text-center dark:border-white/10 dark:bg-zinc-900">
+      <div>
+        <LayoutGrid className="mx-auto size-10 text-[#f16d59]/50" />
+
+        <p className="mt-4 text-sm font-semibold text-gray-700 dark:text-gray-200">
+          Browse food categories
+        </p>
+
+        <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+          Hover over a parent category to
+          see its child categories.
+        </p>
+      </div>
     </div>
   );
 };
@@ -213,8 +374,15 @@ const RestaurantNavbar = ({
   const router = useRouter();
   const pathname = usePathname();
 
-  const [mobileCategoryOpen, setMobileCategoryOpen] =
-    useState(false);
+  const [
+    mobileCategoryOpen,
+    setMobileCategoryOpen,
+  ] = useState(false);
+
+  const [
+    activeDesktopCategoryId,
+    setActiveDesktopCategoryId,
+  ] = useState<string | null>(null);
 
   const { user } = useCart();
 
@@ -226,6 +394,17 @@ const RestaurantNavbar = ({
 
   const { data: wishList } =
     useTemplateProductWishListQuery();
+
+  const categoryItems =
+    (categories ?? []) as CategoryTreeItem[];
+
+  const activeDesktopCategory =
+    categoryItems.find(
+      (item) =>
+        item.category.id ===
+          activeDesktopCategoryId &&
+        item.children?.length > 0,
+    ) ?? null;
 
   const cartCount =
     cart?.items?.length ?? 0;
@@ -269,9 +448,7 @@ const RestaurantNavbar = ({
 
     return (
       pathname === href ||
-      pathname.startsWith(
-        `${href}/`,
-      )
+      pathname.startsWith(`${href}/`)
     );
   };
 
@@ -295,6 +472,7 @@ const RestaurantNavbar = ({
     categoryId: string,
   ) => {
     setMobileCategoryOpen(false);
+    setActiveDesktopCategoryId(null);
 
     router.push(
       `/store/products?categoryId=${categoryId}`,
@@ -354,7 +532,7 @@ const RestaurantNavbar = ({
               )}
             </Link>
 
-            {/* Category dropdown */}
+            {/* Desktop category dropdown */}
             <div className="group relative">
               <button
                 type="button"
@@ -375,39 +553,80 @@ const RestaurantNavbar = ({
                 )}
               </button>
 
-              <div className="invisible absolute left-1/2 top-full z-[70] w-72 -translate-x-1/2 pt-6 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                <div className="max-h-[70vh] overflow-y-auto rounded-2xl border border-gray-200 bg-white p-3 shadow-2xl dark:border-white/10 dark:bg-zinc-900">
-                  <Link
-                    href="/store/products"
-                    className="mb-2 flex items-center justify-between rounded-xl bg-[#f16d59]/10 px-4 py-3 text-sm font-semibold text-[#f16d59] transition hover:bg-[#f16d59] hover:text-white"
-                  >
-                    View All Categories
+              {/* Dropdown bridge */}
+              <div className="invisible absolute left-1/2 top-full z-[100] w-[650px] -translate-x-1/2 pt-6 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+                <div
+                  onMouseLeave={() =>
+                    setActiveDesktopCategoryId(
+                      null,
+                    )
+                  }
+                  className="flex h-[430px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-900"
+                >
+                  {/* Left parent list */}
+                  <div className="flex w-[290px] shrink-0 flex-col bg-white dark:bg-zinc-900">
+                    <Link
+                      href="/store/products"
+                      onMouseEnter={() =>
+                        setActiveDesktopCategoryId(
+                          null,
+                        )
+                      }
+                      className="m-3 flex items-center justify-between rounded-xl bg-[#f16d59] px-4 py-3 text-sm font-semibold text-white transition hover:bg-gray-950"
+                    >
+                      View All Categories
 
-                    <LayoutGrid className="size-4" />
-                  </Link>
+                      <LayoutGrid className="size-4" />
+                    </Link>
 
-                  {categories?.length ? (
-                    categories.map((item) => (
-                      <CategoryMenuItem
-                        key={
-                          item.category.id
-                        }
-                        item={item}
-                        onCategoryClick={
-                          handleCategoryClick
-                        }
-                      />
-                    ))
+                    <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
+                      {categoryItems.length ? (
+                        categoryItems.map(
+                          (item) => (
+                            <DesktopParentCategory
+                              key={
+                                item.category.id
+                              }
+                              item={item}
+                              active={
+                                activeDesktopCategoryId ===
+                                item.category.id
+                              }
+                              onHover={
+                                setActiveDesktopCategoryId
+                              }
+                              onCategoryClick={
+                                handleCategoryClick
+                              }
+                            />
+                          ),
+                        )
+                      ) : (
+                        <p className="px-4 py-8 text-center text-sm text-gray-500">
+                          No categories found.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Right child panel */}
+                  {activeDesktopCategory ? (
+                    <DesktopChildrenPanel
+                      item={
+                        activeDesktopCategory
+                      }
+                      onCategoryClick={
+                        handleCategoryClick
+                      }
+                    />
                   ) : (
-                    <p className="px-4 py-5 text-center text-sm text-gray-500">
-                      No categories found.
-                    </p>
+                    <DesktopEmptyChildrenPanel />
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Pages */}
+            {/* Pages dropdown */}
             {pageLinks.length > 0 && (
               <div className="group relative">
                 <button
@@ -489,7 +708,6 @@ const RestaurantNavbar = ({
 
           {/* Right side */}
           <div className="flex items-center justify-end gap-2 justify-self-end">
-            {/* Desktop wishlist */}
             <div className="hidden lg:block">
               <IconButton
                 href="/store/dashboard/wishlist"
@@ -500,7 +718,6 @@ const RestaurantNavbar = ({
               </IconButton>
             </div>
 
-            {/* Desktop cart */}
             <div className="hidden lg:block">
               <IconButton
                 href="/store/dashboard/active-cart"
@@ -511,10 +728,8 @@ const RestaurantNavbar = ({
               </IconButton>
             </div>
 
-            {/* Desktop and mobile theme */}
             <StoreThemeToggle />
 
-            {/* Login or user */}
             {user ? (
               <AvatarDropdown />
             ) : (
@@ -523,7 +738,6 @@ const RestaurantNavbar = ({
                 className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-950"
               >
                 <LogIn className="hidden size-4 sm:block" />
-
                 <span>Login</span>
               </Link>
             )}
@@ -558,9 +772,7 @@ const RestaurantNavbar = ({
               <button
                 type="button"
                 onClick={() =>
-                  setMobileCategoryOpen(
-                    false,
-                  )
+                  setMobileCategoryOpen(false)
                 }
                 aria-label="Close categories"
                 className="grid size-10 place-items-center rounded-full bg-gray-100 text-gray-700 transition hover:bg-[#f16d59] hover:text-white dark:bg-white/10 dark:text-gray-200"
@@ -573,9 +785,7 @@ const RestaurantNavbar = ({
               <Link
                 href="/store/products"
                 onClick={() =>
-                  setMobileCategoryOpen(
-                    false,
-                  )
+                  setMobileCategoryOpen(false)
                 }
                 className="mb-3 flex items-center justify-between rounded-2xl bg-[#f16d59] px-4 py-3.5 text-sm font-semibold text-white"
               >
@@ -585,18 +795,20 @@ const RestaurantNavbar = ({
               </Link>
 
               <div className="space-y-1">
-                {categories?.length ? (
-                  categories.map((item) => (
-                    <MobileCategoryItem
-                      key={
-                        item.category.id
-                      }
-                      item={item}
-                      onCategoryClick={
-                        handleCategoryClick
-                      }
-                    />
-                  ))
+                {categoryItems.length ? (
+                  categoryItems.map(
+                    (item) => (
+                      <MobileCategoryItem
+                        key={
+                          item.category.id
+                        }
+                        item={item}
+                        onCategoryClick={
+                          handleCategoryClick
+                        }
+                      />
+                    ),
+                  )
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-300 px-4 py-10 text-center text-sm text-gray-500 dark:border-white/15">
                     No categories found.
@@ -609,9 +821,8 @@ const RestaurantNavbar = ({
       )}
 
       {/* Mobile fixed bottom navigation */}
-      <nav className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-200 px-2 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/95 lg:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-[80] border-t border-gray-200 bg-[var(--store-bg-1)]/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.4rem)] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/95 lg:hidden">
         <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
-          {/* Home */}
           <Link
             href="/store"
             onClick={() =>
@@ -625,7 +836,6 @@ const RestaurantNavbar = ({
             <span>Home</span>
           </Link>
 
-          {/* Category */}
           <button
             type="button"
             onClick={() =>
@@ -646,7 +856,6 @@ const RestaurantNavbar = ({
             <span>Category</span>
           </button>
 
-          {/* Cart */}
           <Link
             href="/store/dashboard/active-cart"
             onClick={() =>
@@ -673,7 +882,6 @@ const RestaurantNavbar = ({
             <span>Cart</span>
           </Link>
 
-          {/* Wishlist */}
           <Link
             href="/store/dashboard/wishlist"
             onClick={() =>
@@ -700,7 +908,6 @@ const RestaurantNavbar = ({
             <span>Wishlist</span>
           </Link>
 
-          {/* Login/account */}
           <Link
             href={accountHref}
             onClick={() =>

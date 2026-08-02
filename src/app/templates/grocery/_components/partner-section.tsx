@@ -173,7 +173,7 @@ const PartnerSection = () => {
 
     const currentSlide = Math.round(
       slider.scrollLeft /
-        slider.clientWidth,
+      slider.clientWidth,
     );
 
     setActiveSlide(
@@ -386,19 +386,17 @@ const PartnerSection = () => {
                     onClick={() =>
                       scrollToSlide(index)
                     }
-                    aria-label={`Go to brand slide ${
-                      index + 1
-                    }`}
+                    aria-label={`Go to brand slide ${index + 1
+                      }`}
                     aria-current={
                       activeSlide === index
                         ? "true"
                         : undefined
                     }
-                    className={`h-2.5 rounded-full transition-all duration-300 ${
-                      activeSlide === index
+                    className={`h-2.5 rounded-full transition-all duration-300 ${activeSlide === index
                         ? "w-8 bg-[var(--store-primary)]"
                         : "w-2.5 bg-[var(--store-muted)]/30"
-                    }`}
+                      }`}
                   />
                 ))}
               </div>

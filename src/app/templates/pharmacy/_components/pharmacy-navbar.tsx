@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import {
+  usePathname,
+  useRouter,
+} from "next/navigation";
 import {
   type FormEvent,
   useEffect,
@@ -56,17 +59,30 @@ type CategoryImageProps = {
   size?: "small" | "medium";
 };
 
+type DesktopMenuPosition = {
+  left: number;
+  top: number;
+};
+
+const DESKTOP_MENU_WIDTH = 680;
+const VIEWPORT_PADDING = 16;
+
 const CategoryImage = ({
   item,
   size = "small",
 }: CategoryImageProps) => {
-  const image = item.category.imageUrl?.trim();
+  const image =
+    item.category.imageUrl?.trim();
 
   const imageSize =
-    size === "medium" ? "size-11" : "size-8";
+    size === "medium"
+      ? "size-11"
+      : "size-8";
 
   const iconSize =
-    size === "medium" ? "size-5" : "size-4";
+    size === "medium"
+      ? "size-5"
+      : "size-4";
 
   if (!image) {
     return (
@@ -88,28 +104,39 @@ const CategoryImage = ({
         src={imageUrlSet(image)}
         alt={item.category.name}
         fill
-        sizes={size === "medium" ? "44px" : "32px"}
+        sizes={
+          size === "medium"
+            ? "44px"
+            : "32px"
+        }
         className="object-contain p-1"
       />
     </span>
   );
 };
 
+type MobileCategoryItemProps = {
+  item: CategoryTreeItem;
+  onCategoryClick: (
+    categoryId: string,
+  ) => void;
+};
+
 const MobileCategoryItem = ({
   item,
   onCategoryClick,
-}: {
-  item: CategoryTreeItem;
-  onCategoryClick: (categoryId: string) => void;
-}) => {
-  const hasChildren = item.children.length > 0;
+}: MobileCategoryItemProps) => {
+  const hasChildren =
+    item.children.length > 0;
 
   if (!hasChildren) {
     return (
       <button
         type="button"
         onClick={() =>
-          onCategoryClick(item.category.id)
+          onCategoryClick(
+            item.category.id,
+          )
         }
         className="flex w-full items-center gap-3 border-b border-[var(--store-border)] py-3.5 text-left text-sm font-medium text-[var(--store-text-primary)] transition hover:text-[var(--store-primary)]"
       >
@@ -118,7 +145,9 @@ const MobileCategoryItem = ({
           size="medium"
         />
 
-        <span>{item.category.name}</span>
+        <span>
+          {item.category.name}
+        </span>
       </button>
     );
   }
@@ -144,20 +173,27 @@ const MobileCategoryItem = ({
         <button
           type="button"
           onClick={() =>
-            onCategoryClick(item.category.id)
+            onCategoryClick(
+              item.category.id,
+            )
           }
           className="block w-full py-2 text-left text-sm font-semibold text-[var(--store-primary)]"
         >
-          View all {item.category.name}
+          View all{" "}
+          {item.category.name}
         </button>
 
-        {item.children.map((child) => (
-          <MobileCategoryItem
-            key={child.category.id}
-            item={child}
-            onCategoryClick={onCategoryClick}
-          />
-        ))}
+        {item.children.map(
+          (child) => (
+            <MobileCategoryItem
+              key={child.category.id}
+              item={child}
+              onCategoryClick={
+                onCategoryClick
+              }
+            />
+          ),
+        )}
       </div>
     </details>
   );
@@ -175,11 +211,15 @@ const PharmacyNavbar = (
   const [searchValue, setSearchValue] =
     useState("");
 
-  const [mobileSearchOpen, setMobileSearchOpen] =
-    useState(false);
+  const [
+    mobileSearchOpen,
+    setMobileSearchOpen,
+  ] = useState(false);
 
-  const [mobileMenuOpen, setMobileMenuOpen] =
-    useState(false);
+  const [
+    mobileMenuOpen,
+    setMobileMenuOpen,
+  ] = useState(false);
 
   const [
     categoryNavbarVisible,
@@ -196,14 +236,24 @@ const PharmacyNavbar = (
     setActiveDesktopChildId,
   ] = useState<string | null>(null);
 
+  const [
+    desktopMenuPosition,
+    setDesktopMenuPosition,
+  ] =
+    useState<DesktopMenuPosition | null>(
+      null,
+    );
+
   const { user } = useCart();
 
   const { data: categories } =
     useProductCategoryQuery();
 
-  const { data: cart } = useAddActiveCArt();
+  const { data: cart } =
+    useAddActiveCArt();
 
-  const cartCount = cart?.items?.length ?? 0;
+  const cartCount =
+    cart?.items?.length ?? 0;
 
   const categoryTree = useMemo<
     CategoryTreeItem[]
@@ -221,86 +271,122 @@ const PharmacyNavbar = (
       [categoryTree],
     );
 
-  const activeDesktopCategory = useMemo(
-    () =>
-      categoryTree.find(
-        (item) =>
-          item.category.id ===
-          activeDesktopCategoryId,
-      ) ?? null,
-    [activeDesktopCategoryId, categoryTree],
-  );
-
-  const activeDesktopChild = useMemo(() => {
-    if (!activeDesktopCategory) {
-      return null;
-    }
-
-    return (
-      activeDesktopCategory.children.find(
-        (item) =>
-          item.category.id ===
-          activeDesktopChildId,
-      ) ??
-      activeDesktopCategory.children[0] ??
-      null
+  const activeDesktopCategory =
+    useMemo(
+      () =>
+        categoryTree.find(
+          (item) =>
+            item.category.id ===
+            activeDesktopCategoryId,
+        ) ?? null,
+      [
+        activeDesktopCategoryId,
+        categoryTree,
+      ],
     );
-  }, [
-    activeDesktopCategory,
-    activeDesktopChildId,
-  ]);
 
-  const isHomeActive = pathname === "/store";
+  const activeDesktopChild =
+    useMemo(() => {
+      if (!activeDesktopCategory) {
+        return null;
+      }
 
-  const isCartActive = pathname.startsWith(
-    "/store/dashboard/active-cart",
-  );
+      return (
+        activeDesktopCategory.children.find(
+          (item) =>
+            item.category.id ===
+            activeDesktopChildId,
+        ) ??
+        activeDesktopCategory
+          .children[0] ??
+        null
+      );
+    }, [
+      activeDesktopCategory,
+      activeDesktopChildId,
+    ]);
+
+  const isHomeActive =
+    pathname === "/store";
+
+  const isCartActive =
+    pathname.startsWith(
+      "/store/dashboard/active-cart",
+    );
 
   const isAccountActive =
-    pathname.startsWith("/store/dashboard") ||
-    pathname.startsWith("/store/login");
+    pathname.startsWith(
+      "/store/dashboard",
+    ) ||
+    pathname.startsWith(
+      "/store/login",
+    );
+
+  const closeDesktopCategoryMenu =
+    () => {
+      setActiveDesktopCategoryId(
+        null,
+      );
+
+      setActiveDesktopChildId(null);
+      setDesktopMenuPosition(null);
+    };
 
   useEffect(() => {
     setMobileSearchOpen(false);
     setMobileMenuOpen(false);
-    setActiveDesktopCategoryId(null);
-    setActiveDesktopChildId(null);
+    closeDesktopCategoryMenu();
   }, [pathname]);
 
-  /**
-   * Focus the mobile search input after opening it.
+  /*
+   * Focus mobile search after opening.
    */
   useEffect(() => {
     if (!mobileSearchOpen) {
       return;
     }
 
-    const timeout = window.setTimeout(() => {
-      mobileSearchInputRef.current?.focus();
-    }, 200);
+    const timeoutId =
+      window.setTimeout(() => {
+        mobileSearchInputRef.current?.focus();
+      }, 200);
 
     return () => {
-      window.clearTimeout(timeout);
+      window.clearTimeout(timeoutId);
     };
   }, [mobileSearchOpen]);
 
-  /**
-   * Keep the main navbar visible.
-   * Hide only the category navbar after scrolling.
+  /*
+   * Hide only the category navbar
+   * while scrolling down.
    */
-
   useEffect(() => {
     const hideCategoryNavbar = () => {
       setCategoryNavbarVisible(false);
+      closeDesktopCategoryMenu();
     };
 
     const showCategoryNavbar = () => {
       setCategoryNavbarVisible(true);
     };
 
-    const handleWheel = (event: WheelEvent) => {
-      // Scrolling inside the desktop category dropdown
-      // should scroll the list, not hide the navbar.
+    const handleWheel = (
+      event: WheelEvent,
+    ) => {
+      const target = event.target;
+
+      /*
+       * Allow scrolling inside the
+       * desktop category dropdown.
+       */
+      if (
+        target instanceof Element &&
+        target.closest(
+          "[data-desktop-category-menu='true']",
+        )
+      ) {
+        return;
+      }
 
       if (event.deltaY > 0) {
         hideCategoryNavbar();
@@ -312,51 +398,65 @@ const PharmacyNavbar = (
       }
     };
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      const activeElement = document.activeElement;
-      // console.log('active', activeElement instanceof HTMLTextAreaElement)
+    const handleKeyDown = (
+      event: KeyboardEvent,
+    ) => {
+      const activeElement =
+        document.activeElement;
 
       const isTyping =
-        activeElement instanceof HTMLInputElement ||
-        activeElement instanceof HTMLTextAreaElement ||
-        activeElement instanceof HTMLSelectElement ||
-        activeElement?.getAttribute("contenteditable") ===
-        "true";
+        activeElement instanceof
+          HTMLInputElement ||
+        activeElement instanceof
+          HTMLTextAreaElement ||
+        activeElement instanceof
+          HTMLSelectElement ||
+        activeElement?.getAttribute(
+          "contenteditable",
+        ) === "true";
 
       if (isTyping) {
         return;
       }
 
-      // Do not close the dropdown when keyboard input is
-      // being used while focus is inside the category menu.
-
       const hideKeys = [
-      "ArrowDown",
-      "PageDown",
-      "End",
-      " ",
-    ];
+        "ArrowDown",
+        "PageDown",
+        "End",
+        " ",
+      ];
 
-    const showKeys = [
-      "ArrowUp",
-      "PageUp",
-      "Home",
-    ];
+      const showKeys = [
+        "ArrowUp",
+        "PageUp",
+        "Home",
+      ];
 
-    if (hideKeys.includes(event.key)) {
-      hideCategoryNavbar();
-      return;
-    }
+      if (
+        hideKeys.includes(event.key)
+      ) {
+        hideCategoryNavbar();
+        return;
+      }
 
-    if (showKeys.includes(event.key)) {
-      showCategoryNavbar();
-    }
+      if (
+        showKeys.includes(event.key)
+      ) {
+        showCategoryNavbar();
+      }
 
+      if (event.key === "Escape") {
+        closeDesktopCategoryMenu();
+      }
     };
 
-    window.addEventListener("wheel", handleWheel, {
-      passive: true,
-    });
+    window.addEventListener(
+      "wheel",
+      handleWheel,
+      {
+        passive: true,
+      },
+    );
 
     window.addEventListener(
       "keydown",
@@ -376,6 +476,32 @@ const PharmacyNavbar = (
     };
   }, []);
 
+  /*
+   * Close desktop menu when the
+   * browser is resized.
+   */
+  useEffect(() => {
+    const handleResize = () => {
+      closeDesktopCategoryMenu();
+    };
+
+    window.addEventListener(
+      "resize",
+      handleResize,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        handleResize,
+      );
+    };
+  }, []);
+
+  /*
+   * Prevent body scrolling while
+   * mobile drawer is open.
+   */
   useEffect(() => {
     if (!mobileMenuOpen) {
       return;
@@ -392,7 +518,8 @@ const PharmacyNavbar = (
       }
     };
 
-    document.body.style.overflow = "hidden";
+    document.body.style.overflow =
+      "hidden";
 
     window.addEventListener(
       "keydown",
@@ -423,21 +550,77 @@ const PharmacyNavbar = (
   ) => {
     setMobileMenuOpen(false);
     setMobileSearchOpen(false);
-    setActiveDesktopCategoryId(null);
-    setActiveDesktopChildId(null);
+    closeDesktopCategoryMenu();
 
-    router.push(getCategoryHref(categoryId));
+    router.push(
+      getCategoryHref(categoryId),
+    );
   };
 
+  /*
+   * Open the dropdown directly below
+   * the category link being hovered.
+   */
   const handleDesktopCategoryEnter = (
     item: CategoryTreeItem,
+    triggerElement: HTMLElement,
   ) => {
+    /*
+     * Categories without children do
+     * not need to open a mega menu.
+     */
+    if (!item.children.length) {
+      closeDesktopCategoryMenu();
+      return;
+    }
+
+    const triggerRect =
+      triggerElement.getBoundingClientRect();
+
+    const availableWidth =
+      window.innerWidth -
+      VIEWPORT_PADDING * 2;
+
+    const actualMenuWidth = Math.min(
+      DESKTOP_MENU_WIDTH,
+      availableWidth,
+    );
+
+    /*
+     * Start the menu from the left
+     * side of the hovered link.
+     */
+    const preferredLeft =
+      triggerRect.left;
+
+    const maximumLeft =
+      window.innerWidth -
+      actualMenuWidth -
+      VIEWPORT_PADDING;
+
+    const safeLeft = Math.min(
+      Math.max(
+        preferredLeft,
+        VIEWPORT_PADDING,
+      ),
+      Math.max(
+        maximumLeft,
+        VIEWPORT_PADDING,
+      ),
+    );
+
+    setDesktopMenuPosition({
+      left: safeLeft,
+      top: triggerRect.bottom,
+    });
+
     setActiveDesktopCategoryId(
       item.category.id,
     );
 
     setActiveDesktopChildId(
-      item.children[0]?.category.id ?? null,
+      item.children[0]?.category.id ??
+        null,
     );
   };
 
@@ -462,11 +645,14 @@ const PharmacyNavbar = (
     );
   };
 
-  const handleMobileSearchToggle = () => {
-    setMobileMenuOpen(false);
+  const handleMobileSearchToggle =
+    () => {
+      setMobileMenuOpen(false);
 
-    setMobileSearchOpen((previous) => !previous);
-  };
+      setMobileSearchOpen(
+        (previous) => !previous,
+      );
+    };
 
   return (
     <>
@@ -487,7 +673,9 @@ const PharmacyNavbar = (
               {/* Desktop search */}
               <div className="hidden flex-1 justify-center lg:flex">
                 <form
-                  onSubmit={handleSearchSubmit}
+                  onSubmit={
+                    handleSearchSubmit
+                  }
                   className="flex h-12 w-full max-w-[520px] overflow-hidden rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] focus-within:border-[var(--store-primary)]"
                 >
                   <span className="grid w-12 shrink-0 place-items-center text-[var(--store-text-secondary)]">
@@ -498,7 +686,10 @@ const PharmacyNavbar = (
                     type="search"
                     value={searchValue}
                     onChange={(event) =>
-                      setSearchValue(event.currentTarget.value)
+                      setSearchValue(
+                        event.currentTarget
+                          .value,
+                      )
                     }
                     placeholder='Search "Products"'
                     aria-label="Search products"
@@ -518,17 +709,22 @@ const PharmacyNavbar = (
               <div className="ml-auto flex items-center gap-1 lg:hidden">
                 <button
                   type="button"
-                  onClick={handleMobileSearchToggle}
+                  onClick={
+                    handleMobileSearchToggle
+                  }
                   aria-label={
                     mobileSearchOpen
                       ? "Close product search"
                       : "Open product search"
                   }
-                  aria-expanded={mobileSearchOpen}
-                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${mobileSearchOpen
-                    ? "bg-[var(--store-bg-2)] text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                    }`}
+                  aria-expanded={
+                    mobileSearchOpen
+                  }
+                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${
+                    mobileSearchOpen
+                      ? "bg-[var(--store-bg-2)] text-[var(--store-primary)]"
+                      : "text-[var(--store-text-primary)]"
+                  }`}
                 >
                   {mobileSearchOpen ? (
                     <X className="size-5" />
@@ -548,10 +744,11 @@ const PharmacyNavbar = (
                       ? "Open account"
                       : "Login"
                   }
-                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                    }`}
+                  className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${
+                    isAccountActive
+                      ? "text-[var(--store-primary)]"
+                      : "text-[var(--store-text-primary)]"
+                  }`}
                 >
                   <UserRound className="size-5" />
                 </Link>
@@ -559,10 +756,11 @@ const PharmacyNavbar = (
                 <Link
                   href="/store/dashboard/active-cart"
                   aria-label="Open shopping cart"
-                  className={`relative grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                    }`}
+                  className={`relative grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${
+                    isCartActive
+                      ? "text-[var(--store-primary)]"
+                      : "text-[var(--store-text-primary)]"
+                  }`}
                 >
                   <ShoppingCart className="size-5" />
 
@@ -584,10 +782,11 @@ const PharmacyNavbar = (
                       ? "/store/dashboard"
                       : "/store/login"
                   }
-                  className={`flex min-w-[112px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                    }`}
+                  className={`flex min-w-[112px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${
+                    isAccountActive
+                      ? "text-[var(--store-primary)]"
+                      : "text-[var(--store-text-primary)]"
+                  }`}
                 >
                   <UserRound className="size-7 shrink-0" />
 
@@ -606,10 +805,11 @@ const PharmacyNavbar = (
 
                 <Link
                   href="/store/dashboard/active-cart"
-                  className={`flex min-w-[105px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
-                    }`}
+                  className={`flex min-w-[105px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${
+                    isCartActive
+                      ? "text-[var(--store-primary)]"
+                      : "text-[var(--store-text-primary)]"
+                  }`}
                 >
                   <span className="relative">
                     <ShoppingCart className="size-7" />
@@ -639,15 +839,18 @@ const PharmacyNavbar = (
               </div>
             </div>
 
-            {/* Mobile search input */}
+            {/* Mobile search */}
             <div
-              className={`overflow-hidden transition-[max-height,opacity,padding] duration-300 lg:hidden ${mobileSearchOpen
-                ? "max-h-24 pb-3 opacity-100"
-                : "pointer-events-none max-h-0 pb-0 opacity-0"
-                }`}
+              className={`overflow-hidden transition-[max-height,opacity,padding] duration-300 lg:hidden ${
+                mobileSearchOpen
+                  ? "max-h-24 pb-3 opacity-100"
+                  : "pointer-events-none max-h-0 pb-0 opacity-0"
+              }`}
             >
               <form
-                onSubmit={handleSearchSubmit}
+                onSubmit={
+                  handleSearchSubmit
+                }
                 className="flex h-11 overflow-hidden rounded-lg border border-[var(--store-border)] bg-[var(--store-bg-1)] focus-within:border-[var(--store-primary)]"
               >
                 <span className="grid w-11 shrink-0 place-items-center text-[var(--store-text-secondary)]">
@@ -655,12 +858,15 @@ const PharmacyNavbar = (
                 </span>
 
                 <input
-                  ref={mobileSearchInputRef}
+                  ref={
+                    mobileSearchInputRef
+                  }
                   type="search"
                   value={searchValue}
                   onChange={(event) =>
                     setSearchValue(
-                      event.currentTarget.value,
+                      event.currentTarget
+                        .value,
                     )
                   }
                   placeholder="Search products..."
@@ -681,17 +887,18 @@ const PharmacyNavbar = (
 
         {/* Category navbar */}
         <div
-          className={`relative bg-[var(--store-bg-1)] transition-[max-height,opacity,transform] duration-300 ${categoryNavbarVisible
-            ? "max-h-14 translate-y-0 overflow-visible opacity-100"
-            : "pointer-events-none max-h-0 -translate-y-3 overflow-hidden opacity-0"
-            }`}
-          onMouseLeave={() => {
-            setActiveDesktopCategoryId(null);
-            setActiveDesktopChildId(null);
-          }}
+          className={`relative bg-[var(--store-bg-1)] transition-[max-height,opacity] duration-300 ${
+            categoryNavbarVisible
+              ? "max-h-14 overflow-visible opacity-100"
+              : "pointer-events-none max-h-0 overflow-hidden opacity-0"
+          }`}
+          onMouseLeave={
+            closeDesktopCategoryMenu
+          }
         >
           <nav className="border-b border-[var(--store-border)]">
             <div className="mx-auto flex h-14 max-w-[1440px] items-center gap-2 overflow-x-auto px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:gap-7 lg:px-6">
+              {/* Mobile categories button */}
               <button
                 type="button"
                 onClick={() => {
@@ -704,18 +911,17 @@ const PharmacyNavbar = (
                 Categories
               </button>
 
+              {/* Home */}
               <Link
                 href="/store"
-                onMouseEnter={() => {
-                  setActiveDesktopCategoryId(
-                    null,
-                  );
-                  setActiveDesktopChildId(null);
-                }}
-                className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition hover:text-[var(--store-primary)] ${isHomeActive
-                  ? "text-[var(--store-primary)]"
-                  : "text-[var(--store-text-primary)]"
-                  }`}
+                onMouseEnter={
+                  closeDesktopCategoryMenu
+                }
+                className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition hover:text-[var(--store-primary)] ${
+                  isHomeActive
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
+                }`}
               >
                 Home
 
@@ -724,6 +930,7 @@ const PharmacyNavbar = (
                 )}
               </Link>
 
+              {/* Desktop categories */}
               {desktopNavigationCategories.map(
                 (item) => {
                   const isOpen =
@@ -736,30 +943,41 @@ const PharmacyNavbar = (
                       href={getCategoryHref(
                         item.category.id,
                       )}
-                      onMouseEnter={() =>
+                      onMouseEnter={(
+                        event,
+                      ) =>
                         handleDesktopCategoryEnter(
                           item,
+                          event.currentTarget,
                         )
                       }
-                      onFocus={() =>
+                      onFocus={(event) =>
                         handleDesktopCategoryEnter(
                           item,
+                          event.currentTarget,
                         )
                       }
-                      onClick={() => {
-                        setActiveDesktopCategoryId(
-                          null,
-                        );
-                        setActiveDesktopChildId(
-                          null,
-                        );
-                      }}
-                      className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition ${isOpen
-                        ? "text-[var(--store-primary)]"
-                        : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
-                        }`}
+                      onClick={
+                        closeDesktopCategoryMenu
+                      }
+                      className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition ${
+                        isOpen
+                          ? "text-[var(--store-primary)]"
+                          : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
+                      }`}
                     >
                       {item.category.name}
+
+                      {item.children.length >
+                        0 && (
+                        <ChevronDown
+                          className={`ml-1 size-3.5 transition-transform duration-200 ${
+                            isOpen
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                        />
+                      )}
 
                       {isOpen && (
                         <span className="absolute inset-x-0 bottom-0 h-0.5 bg-[var(--store-primary)]" />
@@ -771,156 +989,25 @@ const PharmacyNavbar = (
             </div>
           </nav>
 
-          {/* Desktop category mega menu */}
-          {activeDesktopCategory && (
-            <div className="absolute left-1/2 top-full z-[90] hidden w-[680px] -translate-x-1/2 overflow-hidden rounded-b-xl border border-t-0 border-[var(--store-border)] bg-[var(--store-bg-1)] shadow-2xl lg:grid lg:grid-cols-[280px_1fr]">
-              <div className="border-r border-[var(--store-border)] p-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCategoryClick(
-                      activeDesktopCategory
-                        .category.id,
-                    )
-                  }
-                  className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                >
-                  <CategoryImage
-                    item={activeDesktopCategory}
-                  />
-
-                  <span className="flex-1">
-                    All
-                  </span>
-                </button>
-
-                {activeDesktopCategory.children.map(
-                  (child) => {
-                    const isChildActive =
-                      activeDesktopChild?.category
-                        .id === child.category.id;
-
-                    return (
-                      <button
-                        key={child.category.id}
-                        type="button"
-                        onMouseEnter={() =>
-                          setActiveDesktopChildId(
-                            child.category.id,
-                          )
-                        }
-                        onFocus={() =>
-                          setActiveDesktopChildId(
-                            child.category.id,
-                          )
-                        }
-                        onClick={() =>
-                          handleCategoryClick(
-                            child.category.id,
-                          )
-                        }
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${isChildActive
-                          ? "bg-[var(--store-bg-2)] font-semibold text-[var(--store-primary)]"
-                          : "text-[var(--store-text-primary)] hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                          }`}
-                      >
-                        <CategoryImage
-                          item={child}
-                        />
-
-                        <span className="min-w-0 flex-1 truncate">
-                          {child.category.name}
-                        </span>
-
-                        <ChevronRight className="size-4 shrink-0" />
-                      </button>
-                    );
-                  },
-                )}
-              </div>
-
-              <div className="p-3">
-                {activeDesktopChild ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleCategoryClick(
-                          activeDesktopChild
-                            .category.id,
-                        )
-                      }
-                      className="mb-2 flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                    >
-                      <span>
-                        All{" "}
-                        {
-                          activeDesktopChild
-                            .category.name
-                        }
-                      </span>
-
-                      <ChevronRight className="size-4" />
-                    </button>
-
-                    <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-                      {activeDesktopChild.children
-                        .length > 0 ? (
-                        activeDesktopChild.children.map(
-                          (child) => (
-                            <button
-                              key={
-                                child.category.id
-                              }
-                              type="button"
-                              onClick={() =>
-                                handleCategoryClick(
-                                  child.category.id,
-                                )
-                              }
-                              className="flex items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                            >
-                              <CategoryImage
-                                item={child}
-                              />
-
-                              <span className="line-clamp-2">
-                                {
-                                  child.category
-                                    .name
-                                }
-                              </span>
-                            </button>
-                          ),
-                        )
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleCategoryClick(
-                              activeDesktopChild
-                                .category.id,
-                            )
-                          }
-                          className="col-span-full flex items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
-                        >
-                          <CategoryImage
-                            item={
-                              activeDesktopChild
-                            }
-                            size="medium"
-                          />
-
-                          Browse{" "}
-                          {
-                            activeDesktopChild
-                              .category.name
-                          }
-                        </button>
-                      )}
-                    </div>
-                  </>
-                ) : (
+          {/* Desktop mega menu */}
+          {activeDesktopCategory &&
+            desktopMenuPosition && (
+              <div
+                data-desktop-category-menu="true"
+                onMouseEnter={() => {
+                  /*
+                   * Keep menu open while
+                   * pointer is inside.
+                   */
+                }}
+                className="fixed z-[120] hidden w-[680px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-b-xl border border-t-0 border-[var(--store-border)] bg-[var(--store-bg-1)] shadow-2xl lg:grid lg:grid-cols-[280px_minmax(0,1fr)]"
+                style={{
+                  left: `${desktopMenuPosition.left}px`,
+                  top: `${desktopMenuPosition.top}px`,
+                }}
+              >
+                {/* Child category list */}
+                <div className="max-h-[430px] overflow-y-auto border-r border-[var(--store-border)] p-2">
                   <button
                     type="button"
                     onClick={() =>
@@ -929,38 +1016,212 @@ const PharmacyNavbar = (
                           .category.id,
                       )
                     }
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
                   >
                     <CategoryImage
-                      item={activeDesktopCategory}
-                      size="medium"
+                      item={
+                        activeDesktopCategory
+                      }
                     />
 
-                    Browse{" "}
-                    {
-                      activeDesktopCategory
-                        .category.name
-                    }
+                    <span className="flex-1">
+                      All{" "}
+                      {
+                        activeDesktopCategory
+                          .category.name
+                      }
+                    </span>
                   </button>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
 
+                  {activeDesktopCategory.children.map(
+                    (child) => {
+                      const isChildActive =
+                        activeDesktopChild
+                          ?.category.id ===
+                        child.category.id;
+
+                      return (
+                        <button
+                          key={
+                            child.category.id
+                          }
+                          type="button"
+                          onMouseEnter={() =>
+                            setActiveDesktopChildId(
+                              child.category.id,
+                            )
+                          }
+                          onFocus={() =>
+                            setActiveDesktopChildId(
+                              child.category.id,
+                            )
+                          }
+                          onClick={() =>
+                            handleCategoryClick(
+                              child.category.id,
+                            )
+                          }
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${
+                            isChildActive
+                              ? "bg-[var(--store-bg-2)] font-semibold text-[var(--store-primary)]"
+                              : "text-[var(--store-text-primary)] hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                          }`}
+                        >
+                          <CategoryImage
+                            item={child}
+                          />
+
+                          <span className="min-w-0 flex-1 truncate">
+                            {
+                              child.category
+                                .name
+                            }
+                          </span>
+
+                          {child.children
+                            .length > 0 && (
+                            <ChevronRight className="size-4 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    },
+                  )}
+                </div>
+
+                {/* Nested category panel */}
+                <div className="max-h-[430px] overflow-y-auto p-3">
+                  {activeDesktopChild ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCategoryClick(
+                            activeDesktopChild
+                              .category.id,
+                          )
+                        }
+                        className="mb-2 flex w-full items-center justify-between rounded-lg px-3 py-3 text-left text-sm font-semibold text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                      >
+                        <span>
+                          All{" "}
+                          {
+                            activeDesktopChild
+                              .category.name
+                          }
+                        </span>
+
+                        <ChevronRight className="size-4" />
+                      </button>
+
+                      <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
+                        {activeDesktopChild
+                          .children.length >
+                        0 ? (
+                          activeDesktopChild.children.map(
+                            (child) => (
+                              <button
+                                key={
+                                  child
+                                    .category.id
+                                }
+                                type="button"
+                                onClick={() =>
+                                  handleCategoryClick(
+                                    child
+                                      .category
+                                      .id,
+                                  )
+                                }
+                                className="flex items-center gap-3 rounded-lg px-3 py-3 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                              >
+                                <CategoryImage
+                                  item={
+                                    child
+                                  }
+                                />
+
+                                <span className="line-clamp-2">
+                                  {
+                                    child
+                                      .category
+                                      .name
+                                  }
+                                </span>
+                              </button>
+                            ),
+                          )
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCategoryClick(
+                                activeDesktopChild
+                                  .category
+                                  .id,
+                              )
+                            }
+                            className="col-span-full flex items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                          >
+                            <CategoryImage
+                              item={
+                                activeDesktopChild
+                              }
+                              size="medium"
+                            />
+
+                            Browse{" "}
+                            {
+                              activeDesktopChild
+                                .category
+                                .name
+                            }
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCategoryClick(
+                          activeDesktopCategory
+                            .category.id,
+                        )
+                      }
+                      className="flex w-full items-center gap-3 rounded-lg px-3 py-4 text-left text-sm text-[var(--store-text-primary)] transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                    >
+                      <CategoryImage
+                        item={
+                          activeDesktopCategory
+                        }
+                        size="medium"
+                      />
+
+                      Browse{" "}
+                      {
+                        activeDesktopCategory
+                          .category.name
+                      }
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+        </div>
       </header>
 
-      {/* Mobile drawer overlay */}
+      {/* Mobile overlay */}
       <button
         type="button"
         aria-label="Close category menu"
         onClick={() =>
           setMobileMenuOpen(false)
         }
-        className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${mobileMenuOpen
-          ? "visible opacity-100"
-          : "pointer-events-none invisible opacity-0"
-          }`}
+        className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${
+          mobileMenuOpen
+            ? "visible opacity-100"
+            : "pointer-events-none invisible opacity-0"
+        }`}
       />
 
       {/* Mobile category drawer */}
@@ -969,10 +1230,11 @@ const PharmacyNavbar = (
         aria-modal="true"
         aria-label="Product categories"
         aria-hidden={!mobileMenuOpen}
-        className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${mobileMenuOpen
-          ? "translate-x-0"
-          : "-translate-x-full"
-          }`}
+        className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
       >
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
           <div>
@@ -981,7 +1243,8 @@ const PharmacyNavbar = (
             </p>
 
             <p className="text-xs text-[var(--store-text-secondary)]">
-              Browse all product categories
+              Browse all product
+              categories
             </p>
           </div>
 
@@ -1011,15 +1274,17 @@ const PharmacyNavbar = (
           </Link>
 
           {categoryTree.length > 0 ? (
-            categoryTree.map((item) => (
-              <MobileCategoryItem
-                key={item.category.id}
-                item={item}
-                onCategoryClick={
-                  handleCategoryClick
-                }
-              />
-            ))
+            categoryTree.map(
+              (item) => (
+                <MobileCategoryItem
+                  key={item.category.id}
+                  item={item}
+                  onCategoryClick={
+                    handleCategoryClick
+                  }
+                />
+              ),
+            )
           ) : (
             <p className="py-10 text-center text-sm text-[var(--store-text-secondary)]">
               No categories found.
@@ -1041,7 +1306,9 @@ const PharmacyNavbar = (
           >
             <UserRound className="size-4" />
 
-            {user ? "Account" : "Login"}
+            {user
+              ? "Account"
+              : "Login"}
           </Link>
 
           <Link

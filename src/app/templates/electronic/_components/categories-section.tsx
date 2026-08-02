@@ -1,32 +1,34 @@
 "use client";
 
-import React, {
+import Image from "next/image";
+import Link from "next/link";
+import { Package } from "lucide-react";
+import {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Package,
-} from "lucide-react";
 
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import type {
   StorefrontCategory,
   StorefrontCategoryTreeItem,
 } from "@/types/template/public-website";
-import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
+
+const AUTO_SLIDE_DELAY = 3500;
+const DRAG_THRESHOLD = 6;
 
 function flattenCategoryTree(
   tree: StorefrontCategoryTreeItem[],
 ): StorefrontCategory[] {
   const result: StorefrontCategory[] = [];
 
-  const walk = (items: StorefrontCategoryTreeItem[]) => {
+  const walk = (
+    items: StorefrontCategoryTreeItem[],
+  ) => {
     items.forEach((item) => {
       if (item.category) {
         result.push(item.category);
@@ -57,10 +59,29 @@ function removeDuplicateCategories(
 }
 
 const CategoriesSection = () => {
-  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const sliderRef =
+    useRef<HTMLDivElement | null>(null);
 
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [itemsPerView, setItemsPerView] = useState(1);
+  const activeSlideRef = useRef(0);
+  const isPointerDownRef = useRef(false);
+  const hasDraggedRef = useRef(false);
+  const pointerStartXRef = useRef(0);
+  const initialScrollLeftRef = useRef(0);
+
+  const [activeSlide, setActiveSlide] =
+    useState(0);
+
+  const [itemsPerView, setItemsPerView] =
+    useState(1);
+
+  const [isDragging, setIsDragging] =
+    useState(false);
+
+  const [isInteracting, setIsInteracting] =
+    useState(false);
+
+  const [isHovered, setIsHovered] =
+    useState(false);
 
   const {
     data: categoriesData,
@@ -69,9 +90,10 @@ const CategoriesSection = () => {
   } = useProductCategoryQuery();
 
   const categories = useMemo(() => {
-    const flattenedCategories = flattenCategoryTree(
-      categoriesData ?? [],
-    );
+    const flattenedCategories =
+      flattenCategoryTree(
+        categoriesData ?? [],
+      );
 
     return removeDuplicateCategories(
       flattenedCategories,
@@ -80,25 +102,42 @@ const CategoriesSection = () => {
 
   const totalSlides = Math.max(
     1,
-    Math.ceil(categories.length / itemsPerView),
+    Math.ceil(
+      categories.length / itemsPerView,
+    ),
   );
 
-  const hasMultipleSlides = totalSlides > 1;
+  const hasMultipleSlides =
+    totalSlides > 1;
 
-  // Detect responsive card count
+  useEffect(() => {
+    activeSlideRef.current = activeSlide;
+  }, [activeSlide]);
+
+  /*
+   * Detect how many cards are visible
+   * at each responsive breakpoint.
+   */
   useEffect(() => {
     const updateItemsPerView = () => {
       const width = window.innerWidth;
 
       if (width >= 1280) {
         setItemsPerView(5);
-      } else if (width >= 1024) {
-        setItemsPerView(3);
-      } else if (width >= 640) {
-        setItemsPerView(2);
-      } else {
-        setItemsPerView(1);
+        return;
       }
+
+      if (width >= 1024) {
+        setItemsPerView(3);
+        return;
+      }
+
+      if (width >= 640) {
+        setItemsPerView(2);
+        return;
+      }
+
+      setItemsPerView(1);
     };
 
     updateItemsPerView();
@@ -118,121 +157,336 @@ const CategoriesSection = () => {
 
   useEffect(() => {
     if (activeSlide >= totalSlides) {
-      setActiveSlide(totalSlides - 1);
+      const newSlide = Math.max(
+        totalSlides - 1,
+        0,
+      );
+
+      setActiveSlide(newSlide);
+      activeSlideRef.current = newSlide;
     }
   }, [activeSlide, totalSlides]);
 
-  const scrollToSlide = (slideIndex: number) => {
+  const getMaximumScroll = useCallback(() => {
     const slider = sliderRef.current;
 
-    if (!slider) return;
+    if (!slider) {
+      return 0;
+    }
 
-    const safeIndex = Math.min(
-      Math.max(slideIndex, 0),
+    return Math.max(
+      slider.scrollWidth -
+        slider.clientWidth,
+      0,
+    );
+  }, []);
+
+  const getSlidePosition = useCallback(
+    (slideIndex: number) => {
+      const slider = sliderRef.current;
+
+      if (!slider) {
+        return 0;
+      }
+
+      const maximumScroll =
+        getMaximumScroll();
+
+      if (totalSlides <= 1) {
+        return 0;
+      }
+
+      /*
+       * Distribute slide positions evenly
+       * across the available scroll width.
+       */
+      const progress =
+        slideIndex / (totalSlides - 1);
+
+      return maximumScroll * progress;
+    },
+    [getMaximumScroll, totalSlides],
+  );
+
+  const scrollToSlide = useCallback(
+    (
+      slideIndex: number,
+      behavior: ScrollBehavior = "smooth",
+    ) => {
+      const slider = sliderRef.current;
+
+      if (!slider) {
+        return;
+      }
+
+      const safeIndex = Math.min(
+        Math.max(slideIndex, 0),
+        totalSlides - 1,
+      );
+
+      slider.scrollTo({
+        left: getSlidePosition(safeIndex),
+        behavior,
+      });
+
+      activeSlideRef.current = safeIndex;
+      setActiveSlide(safeIndex);
+    },
+    [getSlidePosition, totalSlides],
+  );
+
+  const getCurrentSlide = useCallback(() => {
+    const slider = sliderRef.current;
+
+    if (!slider || totalSlides <= 1) {
+      return 0;
+    }
+
+    const maximumScroll =
+      getMaximumScroll();
+
+    if (maximumScroll === 0) {
+      return 0;
+    }
+
+    const progress =
+      slider.scrollLeft / maximumScroll;
+
+    const calculatedSlide = Math.round(
+      progress * (totalSlides - 1),
+    );
+
+    return Math.min(
+      Math.max(calculatedSlide, 0),
       totalSlides - 1,
     );
+  }, [getMaximumScroll, totalSlides]);
 
-    slider.scrollTo({
-      left: safeIndex * slider.clientWidth,
-      behavior: "smooth",
-    });
+  /*
+   * Automatically move to the next slide.
+   *
+   * Auto sliding pauses while the user is
+   * hovering, touching, or dragging.
+   */
+  useEffect(() => {
+    if (
+      !hasMultipleSlides ||
+      isHovered ||
+      isInteracting ||
+      isDragging
+    ) {
+      return;
+    }
 
-    setActiveSlide(safeIndex);
-  };
+    const intervalId =
+      window.setInterval(() => {
+        const currentSlide =
+          activeSlideRef.current;
 
-  const handleNext = () => {
-    const nextSlide =
-      activeSlide >= totalSlides - 1
-        ? 0
-        : activeSlide + 1;
+        const nextSlide =
+          currentSlide >=
+          totalSlides - 1
+            ? 0
+            : currentSlide + 1;
 
-    scrollToSlide(nextSlide);
-  };
+        scrollToSlide(nextSlide);
+      }, AUTO_SLIDE_DELAY);
 
-  const handlePrevious = () => {
-    const previousSlide =
-      activeSlide <= 0
-        ? totalSlides - 1
-        : activeSlide - 1;
-
-    scrollToSlide(previousSlide);
-  };
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    hasMultipleSlides,
+    isDragging,
+    isHovered,
+    isInteracting,
+    scrollToSlide,
+    totalSlides,
+  ]);
 
   const handleSliderScroll = () => {
+    if (isPointerDownRef.current) {
+      return;
+    }
+
+    const currentSlide =
+      getCurrentSlide();
+
+    activeSlideRef.current =
+      currentSlide;
+
+    setActiveSlide(currentSlide);
+  };
+
+  const handlePointerDown = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    setIsInteracting(true);
+
+    /*
+     * Touch devices use native horizontal
+     * swipe scrolling.
+     */
+    if (event.pointerType === "touch") {
+      return;
+    }
+
     const slider = sliderRef.current;
 
-    if (!slider || slider.clientWidth === 0) return;
+    if (!slider) {
+      return;
+    }
 
-    const currentSlide = Math.round(
-      slider.scrollLeft / slider.clientWidth,
-    );
+    isPointerDownRef.current = true;
+    hasDraggedRef.current = false;
 
-    setActiveSlide(
-      Math.min(currentSlide, totalSlides - 1),
+    pointerStartXRef.current =
+      event.clientX;
+
+    initialScrollLeftRef.current =
+      slider.scrollLeft;
+
+    setIsDragging(true);
+
+    slider.setPointerCapture(
+      event.pointerId,
     );
+  };
+
+  const handlePointerMove = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    if (
+      !isPointerDownRef.current ||
+      event.pointerType === "touch"
+    ) {
+      return;
+    }
+
+    const slider = sliderRef.current;
+
+    if (!slider) {
+      return;
+    }
+
+    const distance =
+      event.clientX -
+      pointerStartXRef.current;
+
+    if (
+      Math.abs(distance) >
+      DRAG_THRESHOLD
+    ) {
+      hasDraggedRef.current = true;
+    }
+
+    slider.scrollLeft =
+      initialScrollLeftRef.current -
+      distance;
+  };
+
+  const finishPointerInteraction = (
+    event: React.PointerEvent<HTMLDivElement>,
+  ) => {
+    setIsInteracting(false);
+
+    /*
+     * Touch scrolling is handled natively.
+     */
+    if (event.pointerType === "touch") {
+      window.requestAnimationFrame(() => {
+        const currentSlide =
+          getCurrentSlide();
+
+        activeSlideRef.current =
+          currentSlide;
+
+        setActiveSlide(currentSlide);
+      });
+
+      return;
+    }
+
+    if (!isPointerDownRef.current) {
+      return;
+    }
+
+    const slider = sliderRef.current;
+
+    isPointerDownRef.current = false;
+    setIsDragging(false);
+
+    if (
+      slider?.hasPointerCapture(
+        event.pointerId,
+      )
+    ) {
+      slider.releasePointerCapture(
+        event.pointerId,
+      );
+    }
+
+    /*
+     * Snap to the nearest slide after
+     * releasing the mouse.
+     */
+    if (hasDraggedRef.current) {
+      const nearestSlide =
+        getCurrentSlide();
+
+      window.requestAnimationFrame(() => {
+        scrollToSlide(nearestSlide);
+      });
+    }
+  };
+
+  const handleLostPointerCapture = () => {
+    isPointerDownRef.current = false;
+
+    setIsDragging(false);
+    setIsInteracting(false);
+  };
+
+  const handleClickCapture = (
+    event: React.MouseEvent<HTMLDivElement>,
+  ) => {
+    /*
+     * Prevent category navigation when
+     * the user dragged the slider.
+     */
+    if (!hasDraggedRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.setTimeout(() => {
+      hasDraggedRef.current = false;
+    }, 0);
   };
 
   return (
-    <section className="bg-[var(--store-bg-1)] py-12 sm:py-16">
+    <section className="bg-[var(--store-bg-1)] py-5 sm:py-8">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8 flex items-end justify-between gap-5 sm:mb-10">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--store-primary)]">
-              Shop by Category
-            </p>
-
-            <h2 className="mt-3 text-3xl font-bold text-[var(--store-text)] sm:text-4xl">
-              Explore Our Categories
-            </h2>
-
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--store-muted)] sm:text-base">
-              Browse our electronics categories and find
-              products that match your needs.
-            </p>
-          </div>
-
-          {/* Desktop arrows */}
-          {hasMultipleSlides && (
-            <div className="hidden shrink-0 items-center gap-3 sm:flex">
-              <button
-                type="button"
-                onClick={handlePrevious}
-                aria-label="Previous categories"
-                className="grid size-11 place-items-center rounded-full border border-[var(--store-border)] bg-[var(--store-card)] text-[var(--store-text)] shadow-sm transition hover:border-[var(--store-primary)] hover:bg-[var(--store-primary)] hover:text-white"
-              >
-                <ChevronLeft className="size-5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={handleNext}
-                aria-label="Next categories"
-                className="grid size-11 place-items-center rounded-full border border-[var(--store-border)] bg-[var(--store-card)] text-[var(--store-text)] shadow-sm transition hover:border-[var(--store-primary)] hover:bg-[var(--store-primary)] hover:text-white"
-              >
-                <ChevronRight className="size-5" />
-              </button>
-            </div>
-          )}
-        </div>
-
         {isLoading || isFetching ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {Array.from({ length: 5 }).map(
-              (_, index) => (
-                <div
-                  key={index}
-                  className="flex animate-pulse items-center gap-4 rounded-2xl border border-[var(--store-border)] bg-[var(--store-card)] p-4"
-                >
-                  <div className="size-20 shrink-0 rounded-xl bg-[var(--store-bg-3)]" />
+            {Array.from({
+              length: 5,
+            }).map((_, index) => (
+              <div
+                key={index}
+                className="flex animate-pulse items-center gap-4 rounded-2xl border border-[var(--store-border)] bg-[var(--store-card)] p-4"
+              >
+                <div className="size-20 shrink-0 rounded-xl bg-[var(--store-bg-3)]" />
 
-                  <div className="flex-1 space-y-3">
-                    <div className="h-4 w-3/4 rounded bg-[var(--store-bg-3)]" />
-                    <div className="h-3 w-1/2 rounded bg-[var(--store-bg-3)]" />
-                  </div>
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 w-3/4 rounded bg-[var(--store-bg-3)]" />
+
+                  <div className="h-3 w-1/2 rounded bg-[var(--store-bg-3)]" />
                 </div>
-              ),
-            )}
+              </div>
+            ))}
           </div>
         ) : categories.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-[var(--store-border)] bg-[var(--store-card)] px-6 py-14 text-center">
@@ -243,91 +497,101 @@ const CategoriesSection = () => {
             </h3>
 
             <p className="mt-2 text-sm text-[var(--store-muted)]">
-              Product categories are not available right
-              now.
+              Product categories are not
+              available right now.
             </p>
           </div>
         ) : (
           <>
-            {/* Real horizontal slider */}
+            {/* Auto-running draggable slider */}
             <div
               ref={sliderRef}
               onScroll={handleSliderScroll}
-              className="grid snap-x snap-mandatory grid-flow-col auto-cols-[88%] gap-4 overflow-x-auto scroll-smooth pb-2 sm:auto-cols-[calc((100%-1rem)/2)] lg:auto-cols-[calc((100%-2rem)/3)] xl:auto-cols-[calc((100%-4rem)/5)] [&::-webkit-scrollbar]:hidden"
+              onPointerDown={
+                handlePointerDown
+              }
+              onPointerMove={
+                handlePointerMove
+              }
+              onPointerUp={
+                finishPointerInteraction
+              }
+              onPointerCancel={
+                finishPointerInteraction
+              }
+              onLostPointerCapture={
+                handleLostPointerCapture
+              }
+              onClickCapture={
+                handleClickCapture
+              }
+              onMouseEnter={() =>
+                setIsHovered(true)
+              }
+              onMouseLeave={() => {
+                setIsHovered(false);
+                setIsInteracting(false);
+              }}
+              className={`grid grid-flow-col gap-4 overflow-x-auto pb-2 select-none touch-pan-x [&::-webkit-scrollbar]:hidden ${
+                isDragging
+                  ? "cursor-grabbing snap-none scroll-auto"
+                  : "cursor-grab snap-x snap-mandatory scroll-smooth"
+              } auto-cols-[88%] sm:auto-cols-[calc((100%-1rem)/2)] lg:auto-cols-[calc((100%-2rem)/3)] xl:auto-cols-[calc((100%-4rem)/5)]`}
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
               }}
             >
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/store/products?categoryId=${category.id}`}
-                  className="group flex min-w-0 snap-start items-center gap-4 rounded-2xl border border-[var(--store-border)] bg-[var(--store-card)] p-4 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--store-primary)] hover:shadow-lg"
-                >
-                  {/* Left image */}
-                  <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-[var(--store-bg-3)]">
-                    <Image
-                      src={imageUrlSet(
-                        category.imageUrl,
-                      )}
-                      alt={category.name}
-                      fill
-                      sizes="80px"
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      unoptimized
-                    />
-                  </div>
-
-                  {/* Right text */}
-                  <div className="min-w-0 flex-1">
-                    <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-[var(--store-text)] transition group-hover:text-[var(--store-primary)]">
-                      {category.name}
-                    </h3>
-
-                    <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--store-muted)]">
-                      <Package className="size-4 shrink-0" />
-
-                      <span>
-                        {category._count?.products ?? 0}{" "}
-                        Products
-                      </span>
+              {categories.map(
+                (category) => (
+                  <Link
+                    key={category.id}
+                    href={`/store/products?categoryId=${category.id}`}
+                    draggable={false}
+                    onDragStart={(event) =>
+                      event.preventDefault()
+                    }
+                    className="group flex min-w-0 snap-start items-center gap-4 border border-[var(--store-border)] bg-[var(--store-card)] p-4 shadow-sm transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[var(--store-primary)] hover:shadow-lg"
+                  >
+                    {/* Category image */}
+                    <div className="relative size-20 shrink-0 overflow-hidden bg-[var(--store-bg-3)]">
+                      <Image
+                        src={imageUrlSet(
+                          category.imageUrl,
+                        )}
+                        alt={category.name}
+                        fill
+                        sizes="80px"
+                        draggable={false}
+                        className="pointer-events-none object-cover transition-transform duration-500 group-hover:scale-110"
+                        unoptimized
+                      />
                     </div>
 
-                    <p className="mt-3 text-xs font-semibold text-[var(--store-primary)]">
-                      Explore category
-                    </p>
-                  </div>
-                </Link>
-              ))}
+                    {/* Category information */}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-[var(--store-text)] transition group-hover:text-[var(--store-primary)]">
+                        {category.name}
+                      </h3>
+
+                      <div className="mt-2 flex items-center gap-1.5 text-xs text-[var(--store-muted)]">
+                        <Package className="size-4 shrink-0" />
+
+                        <span>
+                          {category._count
+                            ?.products ?? 0}{" "}
+                          Products
+                        </span>
+                      </div>
+
+                      <p className="mt-3 text-xs font-semibold text-[var(--store-primary)]">
+                        Explore category
+                      </p>
+                    </div>
+                  </Link>
+                ),
+              )}
             </div>
-
-            {/* Mobile arrows */}
-            {hasMultipleSlides && (
-              <div className="mt-7 flex items-center justify-center gap-3 sm:hidden">
-                <button
-                  type="button"
-                  onClick={handlePrevious}
-                  aria-label="Previous categories"
-                  className="grid size-11 place-items-center rounded-full border border-[var(--store-border)] bg-[var(--store-card)] text-[var(--store-text)] shadow-sm transition hover:border-[var(--store-primary)] hover:bg-[var(--store-primary)] hover:text-white"
-                >
-                  <ChevronLeft className="size-5" />
-                </button>
-
-                <span className="min-w-16 text-center text-sm font-medium text-[var(--store-muted)]">
-                  {activeSlide + 1} / {totalSlides}
-                </span>
-
-                <button
-                  type="button"
-                  onClick={handleNext}
-                  aria-label="Next categories"
-                  className="grid size-11 place-items-center rounded-full border border-[var(--store-border)] bg-[var(--store-card)] text-[var(--store-text)] shadow-sm transition hover:border-[var(--store-primary)] hover:bg-[var(--store-primary)] hover:text-white"
-                >
-                  <ChevronRight className="size-5" />
-                </button>
-              </div>
-            )}
 
             {/* Slider dots */}
             {hasMultipleSlides && (

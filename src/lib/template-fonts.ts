@@ -6,7 +6,7 @@ import {
   Roboto,
   Montserrat,
   Open_Sans,
-  Alegreya,
+  Alegreya
 } from "next/font/google";
 
 const inter = Inter({

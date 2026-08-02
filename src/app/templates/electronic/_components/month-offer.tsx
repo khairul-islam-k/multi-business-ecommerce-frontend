@@ -1,191 +1,292 @@
-import Image, { type StaticImageData } from "next/image";
+"use client";
+
+import Image from "next/image";
 import Link from "next/link";
+import {
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
-import monthOffer_1 from "@/assets/fashion/month-offer/month-offer-1.png";
-import monthOffer_2 from "@/assets/fashion/month-offer/month-offer-2.png";
-import monthOffer_3 from "@/assets/fashion/month-offer/month-offer-3.png";
-
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import type { BestOfferImage } from "@/types/website/website";
 
 type MonthOfferProps = {
   monthlyOffer?: BestOfferImage[];
 };
 
-const MEDIA_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
+type ValidOffer = BestOfferImage & {
+  slug: string;
+  banner: string;
+};
 
-const getImageUrl = (
-  imageUrl: string | null | undefined,
-  fallbackImage: StaticImageData,
-): string | StaticImageData => {
-  if (!imageUrl) {
-    return fallbackImage;
-  }
+const AUTO_SLIDE_DELAY = 4000;
 
-  if (
-    imageUrl.startsWith("http://") ||
-    imageUrl.startsWith("https://")
-  ) {
-    return imageUrl;
-  }
-
-  const normalizedPath = imageUrl.startsWith("/")
-    ? imageUrl
-    : `/${imageUrl}`;
-
-  return `${MEDIA_BASE_URL}${normalizedPath}`;
+const isValidOffer = (
+  offer: BestOfferImage,
+): offer is ValidOffer => {
+  return (
+    typeof offer.slug === "string" &&
+    offer.slug.trim().length > 0 &&
+    typeof offer.banner === "string" &&
+    offer.banner.trim().length > 0
+  );
 };
 
 const MonthOffer = ({
   monthlyOffer = [],
 }: MonthOfferProps) => {
-  const centerImage = getImageUrl(
-    monthlyOffer[0]?.banner,
-    monthOffer_1,
+  const [currentSlide, setCurrentSlide] =
+    useState(0);
+
+  const [isHovered, setIsHovered] =
+    useState(false);
+
+  const activeOffers = useMemo(
+    () =>
+      monthlyOffer.filter(isValidOffer),
+    [monthlyOffer],
   );
 
-  const leftImage = getImageUrl(
-    monthlyOffer[1]?.banner,
-    monthOffer_2,
-  );
+  const totalSlides = activeOffers.length;
+  const hasMultipleSlides =
+    totalSlides > 1;
 
-  const rightImage = getImageUrl(
-    monthlyOffer[2]?.banner,
-    monthOffer_3,
-  );
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [activeOffers.length]);
+
+  useEffect(() => {
+    if (
+      !hasMultipleSlides ||
+      isHovered
+    ) {
+      return;
+    }
+
+    const intervalId =
+      window.setInterval(() => {
+        setCurrentSlide(
+          (previousSlide) =>
+            previousSlide >=
+            totalSlides - 1
+              ? 0
+              : previousSlide + 1,
+        );
+      }, AUTO_SLIDE_DELAY);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [
+    hasMultipleSlides,
+    isHovered,
+    totalSlides,
+  ]);
+
+  const handlePreviousSlide = () => {
+    if (!hasMultipleSlides) {
+      return;
+    }
+
+    setCurrentSlide(
+      (previousSlide) =>
+        previousSlide <= 0
+          ? totalSlides - 1
+          : previousSlide - 1,
+    );
+  };
+
+  const handleNextSlide = () => {
+    if (!hasMultipleSlides) {
+      return;
+    }
+
+    setCurrentSlide(
+      (previousSlide) =>
+        previousSlide >= totalSlides - 1
+          ? 0
+          : previousSlide + 1,
+    );
+  };
+
+  if (activeOffers.length === 0) {
+    return null;
+  }
 
   return (
-    <section className="overflow-hidden bg-[var(--store-bg-2)] py-14 sm:py-16 lg:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Heading */}
-        <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-12">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-[var(--store-primary)]">
-            Limited Time Deals
-          </p>
+    <section className="w-full bg-[var(--store-bg-1)]">
+      <div className="mx-auto w-full">
+        <div
+          className="group/slider relative overflow-hidden"
+          onMouseEnter={() =>
+            setIsHovered(true)
+          }
+          onMouseLeave={() =>
+            setIsHovered(false)
+          }
+        >
+          {/* Sliding cards */}
+          <div
+            className="flex items-stretch transition-transform duration-700 ease-in-out"
+            style={{
+              transform: `translateX(-${
+                currentSlide * 100
+              }%)`,
+            }}
+          >
+            {activeOffers.map(
+              (offer, slideIndex) => (
+                <div
+                  key={`${offer.slug}-${slideIndex}`}
+                  className="min-w-full self-stretch"
+                >
+                  <article className="flex min-h-[620px] flex-col overflow-hidden rounded-2xl border border-[var(--store-border)] bg-[var(--store-card)] p-5 shadow-sm transition-shadow duration-300 hover:shadow-xl sm:min-h-[700px] sm:p-6 lg:min-h-[740px]">
+                    {/* Section title */}
+                    <div className="mb-5 text-center">
+                      <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#f16d59]">
+                        Limited Time
+                      </p>
 
-          <h2 className="mt-3 text-3xl font-bold text-[var(--store-text)] sm:text-4xl lg:text-5xl">
-            Best Offers of the Month
-          </h2>
+                      <h3 className="mt-1 text-xl font-bold text-[var(--store-text-primary)]">
+                        Special Offer
+                      </h3>
+                    </div>
 
-          <p className="mt-4 text-sm leading-7 text-[var(--store-muted)] sm:text-base sm:leading-8">
-            Discover this month&apos;s best fashion deals on selected
-            clothing, accessories, and seasonal essentials. Shop your
-            favorite styles at special prices while stocks last.
-          </p>
+                    {/* Offer image */}
+                    <Link
+                      href={`/store/products/details/${offer.slug}`}
+                      className="
+                        relative mx-auto block
+                        h-[260px] w-[88%]
+                        max-w-[320px]
+                        overflow-hidden rounded-xl
+                        bg-[var(--store-bg-3)]
+                        sm:h-[330px]
+                        sm:max-w-[380px]
+                        lg:h-[370px]
+                        lg:max-w-[420px]
+                      "
+                    >
+                      <Image
+                        src={imageUrlSet(
+                          offer.banner,
+                        )}
+                        alt={
+                          offer.title ||
+                          `${offer.slug} offer`
+                        }
+                        fill
+                        priority={
+                          slideIndex === 0
+                        }
+                        sizes="
+                          (max-width: 640px) 88vw,
+                          (max-width: 1024px) 380px,
+                          420px
+                        "
+                        className="object-contain p-2 transition-transform duration-700 group-hover/slider:scale-105"
+                      />
+
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
+
+                      <span className="absolute left-3 top-3 rounded-full bg-[#f16d59] px-3 py-1.5 text-xs font-semibold text-white shadow-md">
+                        Special Offer
+                      </span>
+                    </Link>
+
+                    {/* Text content */}
+                    <div className="flex flex-1 flex-col px-1 pb-1 pt-6 text-center sm:px-3">
+                      {offer.title && (
+                        <h2 className="line-clamp-2 text-xl font-bold leading-tight text-[var(--store-text-primary)] sm:text-2xl">
+                          {offer.title}
+                        </h2>
+                      )}
+
+                      {offer.subTitle && (
+                        <p className="mx-auto mt-3 line-clamp-3 max-w-md text-sm leading-6 text-[var(--store-muted)]">
+                          {offer.subTitle}
+                        </p>
+                      )}
+
+                      {/* Button remains at card bottom */}
+                      <div className="mt-auto pt-6">
+                        <Link
+                          href={`/store/products/details/${offer.slug}`}
+                          className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#f16d59] px-6 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
+                        >
+                          Shop Now
+                        </Link>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              ),
+            )}
+          </div>
+
+          {/* Previous button */}
+          {hasMultipleSlides && (
+            <button
+              type="button"
+              onClick={handlePreviousSlide}
+              aria-label="Previous offer"
+              className="absolute left-3 top-[245px] z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-black/40 text-white shadow-lg backdrop-blur-sm transition hover:scale-110 hover:bg-[#f16d59] sm:left-4 sm:top-[285px] sm:size-10 lg:top-[315px]"
+            >
+              <ChevronLeft className="size-5" />
+            </button>
+          )}
+
+          {/* Next button */}
+          {hasMultipleSlides && (
+            <button
+              type="button"
+              onClick={handleNextSlide}
+              aria-label="Next offer"
+              className="absolute right-3 top-[245px] z-20 grid size-9 -translate-y-1/2 place-items-center rounded-full border border-white/40 bg-black/40 text-white shadow-lg backdrop-blur-sm transition hover:scale-110 hover:bg-[#f16d59] sm:right-4 sm:top-[285px] sm:size-10 lg:top-[315px]"
+            >
+              <ChevronRight className="size-5" />
+            </button>
+          )}
         </div>
 
-        {/* Offer images */}
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[0.8fr_1.4fr_0.8fr] lg:items-center lg:gap-6">
-          {/* Left small offer */}
-          <Link
-            href="/store/products"
-            className="group relative min-h-[320px] overflow-hidden rounded-3xl bg-[var(--store-bg-3)] sm:min-h-[400px] lg:min-h-[500px]"
-          >
-            <Image
-              src={leftImage}
-              alt="Monthly fashion offer"
-              fill
-              sizes="(max-width: 1024px) 100vw, 25vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
-                Trending
-              </span>
-
-              <h3 className="mt-3 text-2xl font-bold">
-                New Style Collection
-              </h3>
-
-              <p className="mt-2 text-sm text-white/80">
-                Explore fresh designs made for your everyday style.
-              </p>
-
-              <span className="mt-5 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-950 transition group-hover:bg-[var(--store-primary)] group-hover:text-white">
-                Shop Now
-              </span>
-            </div>
-          </Link>
-
-          {/* Center big offer */}
-          <Link
-            href="/store/products"
-            className="group relative min-h-[440px] overflow-hidden rounded-3xl bg-[var(--store-bg-3)] shadow-xl sm:min-h-[600px] lg:min-h-[680px]"
-          >
-            <Image
-              src={centerImage}
-              alt="Best offer of the month"
-              fill
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/5" />
-
-            <div className="absolute left-5 top-5 sm:left-7 sm:top-7">
-              <span className="inline-flex rounded-full bg-[var(--store-primary)] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
-                Best Offer
-              </span>
-            </div>
-
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8 lg:p-10">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-white/80">
-                Up to 50% Off
-              </p>
-
-              <h3 className="mt-3 max-w-lg text-3xl font-bold leading-tight sm:text-4xl lg:text-5xl">
-                Upgrade Your Wardrobe This Month
-              </h3>
-
-              <p className="mt-4 max-w-lg text-sm leading-7 text-white/80 sm:text-base">
-                Discover premium fashion essentials at special monthly
-                prices before the offer ends.
-              </p>
-
-              <span className="mt-6 inline-flex rounded-full bg-[var(--store-primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg transition group-hover:bg-white group-hover:text-gray-950">
-                Explore Offers
-              </span>
-            </div>
-          </Link>
-
-          {/* Right small offer */}
-          <Link
-            href="/store/products"
-            className="group relative min-h-[320px] overflow-hidden rounded-3xl bg-[var(--store-bg-3)] sm:min-h-[400px] lg:min-h-[500px]"
-          >
-            <Image
-              src={rightImage}
-              alt="Special monthly fashion offer"
-              fill
-              sizes="(max-width: 1024px) 100vw, 25vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-
-            <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-              <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-md">
-                Special Deal
-              </span>
-
-              <h3 className="mt-3 text-2xl font-bold">
-                Seasonal Essentials
-              </h3>
-
-              <p className="mt-2 text-sm text-white/80">
-                Find must-have clothing and accessories at special prices.
-              </p>
-
-              <span className="mt-5 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-950 transition group-hover:bg-[var(--store-primary)] group-hover:text-white">
-                View Collection
-              </span>
-            </div>
-          </Link>
-        </div>
+        {/* Navigation dots */}
+        {hasMultipleSlides && (
+          <div className="mt-5 flex items-center justify-center gap-2">
+            {activeOffers.map(
+              (offer, slideIndex) => (
+                <button
+                  key={`${offer.slug}-dot`}
+                  type="button"
+                  onClick={() =>
+                    setCurrentSlide(
+                      slideIndex,
+                    )
+                  }
+                  aria-label={`Go to offer slide ${
+                    slideIndex + 1
+                  }`}
+                  aria-current={
+                    currentSlide ===
+                    slideIndex
+                      ? "true"
+                      : undefined
+                  }
+                  className={`h-2.5 rounded-full transition-all duration-300 ${
+                    currentSlide ===
+                    slideIndex
+                      ? "w-8 bg-[#f16d59]"
+                      : "w-2.5 bg-gray-300 hover:bg-gray-400"
+                  }`}
+                />
+              ),
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
