@@ -66,14 +66,14 @@ const paymentMethodOptions: Array<{
   label: string;
   value: OrderPaymentMethod;
 }> = [
-  { label: "Cash", value: "CASH" },
-  { label: "COD", value: "COD" },
-  { label: "bKash", value: "BKASH" },
-  { label: "Nagad", value: "NAGAD" },
-  { label: "Card", value: "CARD" },
-  { label: "Bank Transfer", value: "BANK_TRANSFER" },
-  { label: "Other", value: "OTHER" },
-];
+    { label: "Cash", value: "CASH" },
+    { label: "COD", value: "COD" },
+    { label: "bKash", value: "BKASH" },
+    { label: "Nagad", value: "NAGAD" },
+    { label: "Card", value: "CARD" },
+    { label: "Bank Transfer", value: "BANK_TRANSFER" },
+    { label: "Other", value: "OTHER" },
+  ];
 
 const createCartId = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -180,15 +180,44 @@ export default function CreateOrder() {
     setValues((current) => ({ ...current, ...nextValues }));
   };
 
-  const handleAddItem = (item: Omit<PosCartItem, "id">) => {
-    setCart((current) => [
+  const handleAddItem = (
+  item: Omit<PosCartItem, "id">,
+) => {
+  setCart((current) => {
+    const existingItem = current.find(
+      (cartItem) =>
+        cartItem.product.id === item.product.id &&
+        cartItem.variant?.id === item.variant?.id,
+    );
+
+    // Increase quantity when the exact product/variant exists
+    if (existingItem) {
+      return current.map((cartItem) => {
+        const isSameItem =
+          cartItem.product.id === item.product.id &&
+          cartItem.variant?.id === item.variant?.id;
+
+        if (isSameItem) {
+          return {
+            ...cartItem,
+            quantity: cartItem.quantity + 1,
+          };
+        }
+
+        return cartItem;
+      });
+    }
+
+    // Add a new product or variant
+    return [
       ...current,
       {
         ...item,
         id: createCartId(),
       },
-    ]);
-  };
+    ];
+  });
+};
 
   const handleProductSelect = (product: ResponseProduct) => {
     const availableQuantity = getProductAvailableQuantity(product);

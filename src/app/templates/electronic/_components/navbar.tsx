@@ -1,27 +1,30 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronDown,
-  GitCompareArrows,
+  Grid2X2,
   Heart,
+  Home,
   LogIn,
   Menu,
-  Search,
+  Phone,
   ShoppingBag,
+  UserRound,
   X,
 } from "lucide-react";
 
 import { useProductCategoryQuery } from "@/lib/api/hooks/public-website";
 import { useCart } from "@/app/store/_components/contex/CartContex";
 import { useAddActiveCArt } from "@/lib/api/hooks/add-cart";
-import StoreThemeToggle from "@/app/store/_components/store-theme-switcher";
 import { useTemplateProductWishListQuery } from "@/lib/api/hooks/template-product-wishList";
 import { FAQItem } from "@/types/website/website";
+
 import AvatarDropdown from "../../fashion/_components/avatar-dropdown";
 import LogoComponent from "../../fashion/_components/logo/logo-component";
+import SearchField from "../../grocery/_components/search-field";
 
 type Category = {
   id: string;
@@ -38,80 +41,11 @@ type CategoryTreeItem = {
   children: CategoryTreeItem[];
 };
 
-const IconButton = ({
-  href,
-  label,
-  count,
-  children,
-  className = "",
-}: {
-  href: string;
-  label: string;
-  count?: number;
-  children: ReactNode;
-  className?: string;
-}) => {
-  return (
-    <Link
-      href={href}
-      aria-label={label}
-      className={`relative grid h-10 w-10 place-items-center rounded-full transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white ${className}`}
-    >
-      {children}
-
-      {typeof count === "number" && count > 0 && (
-        <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
-          {count}
-        </span>
-      )}
-    </Link>
-  );
-};
-
-const CategoryMenuItem = ({
-  item,
-  onCategoryClick,
-}: {
-  item: CategoryTreeItem;
-  onCategoryClick: (categoryId: string) => void;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  const hasChildren = item.children && item.children.length > 0;
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        type="button"
-        onClick={() => onCategoryClick(item.category.id)}
-        className="flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-left text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-[#f16d59]/10 hover:text-[#f16d59]"
-      >
-        <span>{item.category.name}</span>
-
-        {hasChildren && (
-          <ChevronDown className="h-4 w-4 -rotate-90 text-gray-400" />
-        )}
-      </button>
-
-      {hasChildren && open && (
-        <div className="absolute left-full top-0 z-50 w-60 pl-2">
-          <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
-            {item.children.map((child, index) => (
-              <CategoryMenuItem
-                key={`${child.category.id}-${index}`}
-                item={child}
-                onCategoryClick={onCategoryClick}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+type NavbarProps = {
+  faqs?: FAQItem[];
+  privacy?: string;
+  terms?: string;
+  phone?: string;
 };
 
 const MobileCategoryItem = ({
@@ -121,14 +55,14 @@ const MobileCategoryItem = ({
   item: CategoryTreeItem;
   onCategoryClick: (categoryId: string) => void;
 }) => {
-  const hasChildren = item.children && item.children.length > 0;
+  const hasChildren = item.children?.length > 0;
 
   if (!hasChildren) {
     return (
       <button
         type="button"
         onClick={() => onCategoryClick(item.category.id)}
-        className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition hover:bg-white hover:text-[#f16d59]"
+        className="flex w-full items-center rounded-lg px-3 py-2.5 text-left text-sm font-medium text-[var(--store-text-primary)] transition hover:bg-gray-100 hover:text-[var(--store-primary)]"
       >
         {item.category.name}
       </button>
@@ -136,25 +70,25 @@ const MobileCategoryItem = ({
   }
 
   return (
-    <details>
-      <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-white">
-        {item.category.name}
+    <details className="group">
+      <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--store-text-primary)] transition hover:bg-gray-100">
+        <span>{item.category.name}</span>
 
-        <ChevronDown className="h-4 w-4" />
+        <ChevronDown className="h-4 w-4 transition group-open:rotate-180" />
       </summary>
 
-      <div className="mt-2 space-y-1 border-l-2 border-[#f16d59] pl-3">
+      <div className="ml-3 mt-1 space-y-1 border-l-2 border-[var(--store-primary)] pl-3">
         <button
           type="button"
           onClick={() => onCategoryClick(item.category.id)}
-          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 transition hover:bg-white hover:text-[#f16d59]"
+          className="block w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-[var(--store-primary)] transition hover:bg-gray-100"
         >
           All {item.category.name}
         </button>
 
-        {item.children.map((child, index) => (
+        {item.children.map((child) => (
           <MobileCategoryItem
-            key={`${child.category.id}-${index}`}
+            key={child.category.id}
             item={child}
             onCategoryClick={onCategoryClick}
           />
@@ -164,44 +98,13 @@ const MobileCategoryItem = ({
   );
 };
 
-type NavbarProps = {
-  faqs?: FAQItem[]
-  privacy?: string;
-  terms?: string;
-}
-
-const ElectronicNavbar = ({
-  faqs,
-  privacy,
-  terms
-}: NavbarProps) => {
+const ElectronicNavbar = ({ phone }: NavbarProps) => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const pageLinks: Array<{
-    label: string;
-    href: string;
-  }> = [
-      ...(privacy
-        ? [
-          {
-            label: "Privacy Policy",
-            href: "/store/privacy",
-          },
-        ]
-        : []),
-
-      ...(terms
-        ? [
-          {
-            label: "Terms & Conditions",
-            href: "/store/term-condition",
-          },
-        ]
-        : []),
-    ];
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopCategoriesOpen, setDesktopCategoriesOpen] = useState(true);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  const [showSecondNavbar, setShowSecondNavbar] = useState(true);
 
   const { user } = useCart();
 
@@ -209,421 +112,500 @@ const ElectronicNavbar = ({
   const { data: cart } = useAddActiveCArt();
   const { data: wishList } = useTemplateProductWishListQuery();
 
-  const cartCount = cart?.items.length ?? 0;
-  const compareCount = 2;
-  const favoriteCount = wishList?.meta.total ?? 0;
+  const cartCount = cart?.items?.length ?? 0;
+  const favoriteCount = wishList?.meta?.total ?? 0;
 
-  /**
-   * Check whether a navbar route is currently active.
-   *
-   * Home uses exact matching because every store route begins with "/store".
-   * Other routes use startsWith so their nested pages remain active.
+  const phoneNumber = phone?.trim() || "+880 1234-567890";
+  const phoneHref = phoneNumber.replace(/[^\d+]/g, "");
+
+  const isHomeActive = pathname === "/store";
+
+  const isProductsActive =
+    pathname === "/store/products" ||
+    pathname.startsWith("/store/products/");
+
+  const isWishlistActive = pathname.startsWith(
+    "/store/dashboard/wishlist",
+  );
+
+  const isCartActive = pathname.startsWith(
+    "/store/dashboard/active-cart",
+  );
+
+  const isAccountActive =
+    pathname.startsWith("/store/dashboard") ||
+    pathname.startsWith("/store/login");
+
+  /*
+   * Hide the second desktop navbar after scrolling.
+   * Show it again when the user returns to the top.
    */
-  const isActive = (href: string) => {
-    if (href === "/store") {
-      return pathname === "/store";
+  useEffect(() => {
+    const hideCategoryNavbar = () => {
+      setShowSecondNavbar(false);
+    };
+
+    const showCategoryNavbar = () => {
+      setShowSecondNavbar(true);
+    };
+
+    const handleWheel = (event: WheelEvent) => {
+      // Scrolling inside the desktop category dropdown
+      // should scroll the list, not hide the navbar.
+
+      if (event.deltaY > 0) {
+        hideCategoryNavbar();
+        return;
+      }
+
+      if (event.deltaY < 0) {
+        showCategoryNavbar();
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      // console.log('active', activeElement instanceof HTMLTextAreaElement)
+
+      const isTyping =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") ===
+        "true";
+
+      if (isTyping) {
+        return;
+      }
+
+      // Do not close the dropdown when keyboard input is
+      // being used while focus is inside the category menu.
+
+      const hideKeys = [
+        "ArrowDown",
+        "PageDown",
+        "End",
+        " ",
+      ];
+
+      const showKeys = [
+        "ArrowUp",
+        "PageUp",
+        "Home",
+      ];
+
+      if (hideKeys.includes(event.key)) {
+        hideCategoryNavbar();
+        return;
+      }
+
+      if (showKeys.includes(event.key)) {
+        showCategoryNavbar();
+      }
+
+    };
+
+    window.addEventListener("wheel", handleWheel, {
+      passive: true,
+    });
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
+    return () => {
+      window.removeEventListener(
+        "wheel",
+        handleWheel,
+      );
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+    };
+
+  }, []);
+
+  /*
+   * Prevent body scrolling while the mobile category drawer is open.
+   * Also close the drawer when Escape is pressed.
+   */
+  useEffect(() => {
+    if (!mobileCategoriesOpen) {
+      return;
     }
 
-    return pathname === href || pathname.startsWith(`${href}/`);
-  };
+    const previousOverflow = document.body.style.overflow;
 
-  const productsActive = isActive("/store/products");
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMobileCategoriesOpen(false);
+      }
+    };
 
-  const pagesActive = pageLinks.some((link) => isActive(link.href));
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [mobileCategoriesOpen]);
 
   const handleCategoryClick = (categoryId: string) => {
-    setMobileMenuOpen(false);
+    setDesktopCategoriesOpen(false);
+    setMobileCategoriesOpen(false);
 
     router.push(`/store/products?categoryId=${categoryId}`);
   };
 
-  const desktopLinkClass = (href: string) => {
-    return `relative text-sm font-medium transition hover:text-[#f16d59] ${isActive(href) ? "text-[#f16d59]" : ""
-      }`;
-  };
-
-  const mobileLinkClass = (href: string) => {
-    return `block rounded-lg px-3 py-2 text-sm font-medium transition ${isActive(href)
-      ? "bg-[#f16d59]/10 text-[#f16d59]"
-      : "text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
-      }`;
-  };
-
   return (
-    <header className="sticky top-0 z-50 bg-[var(--store-bg-1)]">
-      <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 sm:px-6 lg:grid-cols-[1fr_auto_1fr] lg:px-8">
-        {/* Logo */}
-        <LogoComponent />
-
-        {/* Desktop navigation */}
-        <div className="hidden items-center justify-center gap-8 lg:flex">
-          {/* Home */}
-          <Link
-            href="/store"
-            aria-current={isActive("/store") ? "page" : undefined}
-            className={desktopLinkClass("/store")}
-          >
-            Home
-
-            {isActive("/store") && (
-              <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-            )}
-          </Link>
-
-          {/* Products dropdown */}
-          <div className="group relative">
-            <button
-              type="button"
-              className={`relative flex items-center gap-1 text-sm font-medium transition hover:text-[#f16d59] ${productsActive ? "text-[#f16d59]" : ""
-                }`}
-            >
-              Products
-
-              <ChevronDown className="h-4 w-4 transition duration-300 group-hover:rotate-180" />
-
-              {productsActive && (
-                <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-              )}
-            </button>
-
-            <div className="invisible absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-              <div className="rounded-xl bg-white p-2 shadow-xl">
-                {categories?.map((item, index) => (
-                  <CategoryMenuItem
-                    key={`${item.category.id}-${index}`}
-                    item={item}
-                    onCategoryClick={handleCategoryClick}
-                  />
-                ))}
-              </div>
+    <>
+      <header className="sticky top-0 z-50 bg-[var(--store-bg-1)] shadow-sm">
+        {/* First navbar */}
+        <div className="border-b border-[var(--store-border)]">
+          {/* Desktop navbar */}
+          <div className="mx-auto hidden min-h-16 w-full max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-6 px-6 lg:grid">
+            {/* Logo */}
+            <div className="flex items-center">
+              <LogoComponent />
             </div>
-          </div>
 
-          {/* Pages dropdown */}
-          <div className="group relative">
-            <button
-              type="button"
-              className={`relative flex items-center gap-1 text-sm font-medium transition hover:text-[#f16d59] ${pagesActive ? "text-[#f16d59]" : ""
-                }`}
-            >
-              Pages
-
-              <ChevronDown className="h-4 w-4 transition duration-300 group-hover:rotate-180" />
-
-              {pagesActive && (
-                <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-              )}
-            </button>
-
-            <div className="invisible absolute left-1/2 top-full z-50 w-60 -translate-x-1/2 pt-5 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">
-              <div className="rounded-xl border border-gray-200 bg-white p-2 shadow-xl">
-                {pageLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    aria-current={isActive(link.href) ? "page" : undefined}
-                    className={`block rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-300 ${isActive(link.href)
-                      ? "bg-[#f16d59]/10 text-[#f16d59]"
-                      : "text-gray-700 hover:bg-[#f16d59]/10 hover:text-[#f16d59]"
-                      }`}
-                  >
-                    <span className="flex items-center justify-between gap-3">
-                      {link.label}
-
-                      {isActive(link.href) && (
-                        <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                      )}
-                    </span>
-                  </Link>
-                ))}
-              </div>
+            {/* Center search field */}
+            <div className="mx-auto w-full max-w-2xl">
+              <SearchField />
             </div>
-          </div>
 
-          {/* FAQ */}
-          {
-            faqs &&
-            <Link
-              href="/store/faq"
-              aria-current={isActive("/store/faq") ? "page" : undefined}
-              className={desktopLinkClass("/store/faq")}
-            >
-              FAQ
-
-              {isActive("/store/faq") && (
-                <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-              )}
-            </Link>
-          }
-
-          {/* Contact */}
-          <Link
-            href="/store/contact"
-            aria-current={isActive("/store/contact") ? "page" : undefined}
-            className={desktopLinkClass("/store/contact")}
-          >
-            Contact Us
-
-            {isActive("/store/contact") && (
-              <span className="absolute -bottom-2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-[#f16d59]" />
-            )}
-          </Link>
-        </div>
-
-        {/* Right icons */}
-        <div className="flex items-center justify-end gap-2">
-
-          <IconButton
-            href="/store/dashboard/wishlist"
-            label="Wishlist"
-            count={favoriteCount}
-            className="hidden lg:grid"
-          >
-            <Heart className="h-5 w-5" />
-          </IconButton>
-
-          <IconButton
-            href="/store/dashboard/active-cart"
-            label="Cart"
-            count={cartCount}
-            className="hidden lg:grid"
-          >
-            <ShoppingBag className="h-5 w-5" />
-          </IconButton>
-
-          <StoreThemeToggle />
-
-          {user ? (
-            <AvatarDropdown />
-          ) : (
-            <Link
-              href="/store/login"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#f16d59] px-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-950"
-            >
-              <LogIn className="hidden h-4 w-4 sm:block" />
-              Login
-            </Link>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen((previous) => !previous)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-900 transition-all duration-300 hover:border-[#f16d59] hover:bg-[#f16d59] hover:text-white lg:hidden"
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-      </nav>
-
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="border-t border-gray-200 bg-white px-4 py-4 lg:hidden">
-          <div className="space-y-2">
-            {/* Home */}
-            <Link
-              href="/store"
-              aria-current={isActive("/store") ? "page" : undefined}
-              onClick={() => setMobileMenuOpen(false)}
-              className={mobileLinkClass("/store")}
-            >
-              <span className="flex items-center justify-between">
-                Home
-
-                {isActive("/store") && (
-                  <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                )}
-              </span>
-            </Link>
-
-            {/* Products */}
-            <details open={productsActive || undefined}>
-              <summary
-                className={`flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition ${productsActive
-                  ? "bg-[#f16d59]/10 text-[#f16d59]"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
-                  }`}
-              >
-                <span className="flex items-center gap-2">
-                  Products
-
-                  {productsActive && (
-                    <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                  )}
-                </span>
-
-                <ChevronDown className="h-4 w-4" />
-              </summary>
-
-              <div className="mt-2 space-y-1 rounded-xl bg-gray-50 p-3">
-                {categories?.map((item, index) => (
-                  <MobileCategoryItem
-                    key={`${item.category.id}-${index}`}
-                    item={item}
-                    onCategoryClick={handleCategoryClick}
-                  />
-                ))}
-              </div>
-            </details>
-
-            {/* Pages */}
-            <details open={pagesActive || undefined}>
-              <summary
-                className={`flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition ${pagesActive
-                  ? "bg-[#f16d59]/10 text-[#f16d59]"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-[#f16d59]"
-                  }`}
-              >
-                <span className="flex items-center gap-2">
-                  Pages
-
-                  {pagesActive && (
-                    <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                  )}
-                </span>
-
-                <ChevronDown className="h-4 w-4" />
-              </summary>
-
-              <div className="mt-2 space-y-1 rounded-xl bg-gray-50 p-3">
-                {pageLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    aria-current={isActive(link.href) ? "page" : undefined}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`block rounded-lg px-3 py-2 text-sm font-medium transition ${isActive(link.href)
-                      ? "bg-white text-[#f16d59] shadow-sm"
-                      : "text-gray-700 hover:bg-white hover:text-[#f16d59]"
-                      }`}
-                  >
-                    <span className="flex items-center justify-between">
-                      {link.label}
-
-                      {isActive(link.href) && (
-                        <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                      )}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </details>
-
-            {/* FAQ */}
-            {
-              faqs &&
+            {/* Favourite and account */}
+            <div className="flex items-center justify-end gap-4">
               <Link
-                href="/store/faq"
-                aria-current={isActive("/store/faq") ? "page" : undefined}
-                onClick={() => setMobileMenuOpen(false)}
-                className={mobileLinkClass("/store/faq")}
+                href="/store/dashboard/wishlist"
+                className="group relative flex items-center gap-2"
               >
-                <span className="flex items-center justify-between">
-                  FAQ
-
-                  {isActive("/store/faq") && (
-                    <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                  )}
-                </span>
-              </Link>
-            }
-
-            {/* Contact */}
-            <Link
-              href="/store/contact"
-              aria-current={
-                isActive("/store/contact") ? "page" : undefined
-              }
-              onClick={() => setMobileMenuOpen(false)}
-              className={mobileLinkClass("/store/contact")}
-            >
-              <span className="flex items-center justify-between">
-                Contact Us
-
-                {isActive("/store/contact") && (
-                  <span className="h-2 w-2 rounded-full bg-[#f16d59]" />
-                )}
-              </span>
-            </Link>
-
-            {/* Mobile icons */}
-            <div className="mt-4 border-t border-gray-200 pt-4">
-              <div className="grid grid-cols-4 gap-3">
-                <Link
-                  href="/search"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex flex-col items-center justify-center gap-1 rounded-xl border border-gray-200 py-3 text-xs font-medium text-gray-700 transition hover:border-[#f16d59] hover:text-[#f16d59]"
-                >
-                  <Search className="h-5 w-5" />
-                  Search
-                </Link>
-
-                <Link
-                  href="/compare"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-gray-200 py-3 text-xs font-medium text-gray-700 transition hover:border-[#f16d59] hover:text-[#f16d59]"
-                >
-                  <GitCompareArrows className="h-5 w-5" />
-                  Compare
-
-                  {compareCount > 0 && (
-                    <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
-                      {compareCount}
-                    </span>
-                  )}
-                </Link>
-
-                <Link
-                  href="/store/dashboard/wishlist"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-gray-200 py-3 text-xs font-medium text-gray-700 transition hover:border-[#f16d59] hover:text-[#f16d59]"
-                >
-                  <Heart className="h-5 w-5" />
-                  Favorite
+                <span className="relative grid h-7 w-7 place-items-center rounded-full border border-[var(--store-border)] transition group-hover:border-[var(--store-primary)] bg-[var(--store-success)] text-white group-hover:text-[var(--store-primary)]">
+                  <Heart className="h-4 w-4" />
 
                   {favoriteCount > 0 && (
-                    <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
+                    <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold text-white">
                       {favoriteCount}
                     </span>
                   )}
-                </Link>
+                </span>
 
-                <Link
-                  href="/store/dashboard/active-cart"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="relative flex flex-col items-center justify-center gap-1 rounded-xl border border-gray-950 bg-gray-950 py-3 text-xs font-medium text-white"
-                >
-                  <ShoppingBag className="h-5 w-5" />
-                  Cart
+                <span className="hidden xl:block">
 
-                  {cartCount > 0 && (
-                    <span className="absolute right-2 top-2 grid h-5 min-w-5 place-items-center rounded-full bg-[#f16d59] px-1 text-[10px] font-bold text-white">
-                      {cartCount}
+                  <span className="block text-sm font-semibold text-[var(--store-text-primary)]">
+                    Favorite
+                  </span>
+                </span>
+              </Link>
+
+              {user ? (
+                <div className="flex items-center gap-2">
+                  <div className="hidden text-right xl:block">
+
+                    <span className="block text-sm font-semibold text-[var(--store-text-primary)]">
+                      Account
                     </span>
-                  )}
-                </Link>
-              </div>
+                  </div>
 
-              {!user && (
+                  <AvatarDropdown />
+                </div>
+              ) : (
                 <Link
                   href="/store/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="mt-3 flex h-11 items-center justify-center gap-2 rounded-xl bg-[#f16d59] px-5 text-sm font-semibold text-white transition hover:bg-gray-950"
+                  className="group flex items-center gap-2"
                 >
-                  <LogIn className="h-4 w-4" />
-                  Login
+                  <span className="grid h-7 w-7 place-items-center rounded-full border border-[var(--store-border)] transition group-hover:border-[var(--store-primary)] bg-[var(--store-success)] text-white group-hover:text-[var(--store-primary)]">
+                    <UserRound className="h-4 w-4" />
+                  </span>
+
+                  <span className="hidden xl:block">
+
+                    <span className="block text-sm font-semibold text-[var(--store-text-primary)]">
+                      Account
+                    </span>
+                  </span>
                 </Link>
               )}
             </div>
           </div>
+
+          {/* Mobile navbar */}
+          <div className="relative mx-auto max-w-7xl px-4 py-2 lg:hidden">
+            <div className="flex min-h-11 items-center justify-between">
+              <LogoComponent />
+
+              <div className="flex items-center gap-2">
+                <SearchField />
+
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Second navbar - desktop only */}
+        <div
+          className={`hidden transition-all duration-300 ease-in-out lg:block ${showSecondNavbar
+            ? "max-h-14 overflow-visible border-b border-[var(--store-border)] opacity-100"
+            : "pointer-events-none max-h-0 -translate-y-2 overflow-hidden border-b border-transparent opacity-0"
+            }`}
+        >
+          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+            {/* Left side */}
+            <div className="flex h-full items-center gap-8">
+              <div className="relative h-full">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDesktopCategoriesOpen((previous) => !previous)
+                  }
+                  aria-expanded={desktopCategoriesOpen}
+                  className="flex p-3 my-auto min-w-56 items-center justify-between gap-3 bg-[var(--store-dark)] font-semibold text-white rounded-lg"
+                >
+                  <span className="flex items-center gap-3">
+                    <Menu className="h-5 w-5" />
+                    Browse Categories
+                  </span>
+
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${desktopCategoriesOpen ? "rotate-180" : ""
+                      }`}
+                  />
+                </button>
+
+                {desktopCategoriesOpen && (
+                  <div className="absolute left-0 top-full z-[70] w-72 pt-2">
+                    <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-[var(--store-border)] bg-[var(--store-bg-1)] p-2 shadow-2xl">
+                      {categories?.length ? (
+                        categories.map((item: CategoryTreeItem) => (
+                          <MobileCategoryItem
+                            key={item.category.id}
+                            item={item}
+                            onCategoryClick={handleCategoryClick}
+                          />
+                        ))
+                      ) : (
+                        <p className="px-4 py-5 text-center text-sm text-gray-500">
+                          No categories found.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <Link
+                href="/store"
+                className={`flex items-center gap-2 text-sm font-semibold transition hover:text-[var(--store-primary)] ${isHomeActive
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
+                  }`}
+              >
+                <Home className="h-4 w-4" />
+                Home
+              </Link>
+            </div>
+
+            {/* Right side */}
+            <div className="flex items-center gap-7">
+              <a
+                href={`tel:${phoneHref}`}
+                className="flex items-center gap-3 text-sm text-[var(--store-text-primary)]"
+              >
+                <span className="grid h-9 w-9 place-items-center rounded-full bg-gray-100 text-[var(--store-primary)]">
+                  <Phone className="h-4 w-4" />
+                </span>
+
+                <span>
+
+                  <span className="font-semibold">
+                    {phoneNumber}
+                  </span>
+                </span>
+              </a>
+
+              <Link
+                href="/store/dashboard/active-cart"
+                className="relative flex h-11 items-center gap-3 rounded-full bg-[var(--store-success)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
+              >
+                <ShoppingBag className="h-5 w-5" />
+
+                My Cart
+
+                {cartCount > 0 && (
+                  <span className="grid h-5 min-w-5 place-items-center rounded-full bg-white px-1 text-[10px] font-bold text-[var(--store-primary)]">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Desktop category overlay */}
+      {desktopCategoriesOpen && (
+        <button
+          type="button"
+          aria-label="Close category menu"
+          onClick={() => setDesktopCategoriesOpen(false)}
+          className="fixed inset-0 z-40 hidden bg-black/10 lg:block"
+        />
       )}
-    </header>
+
+      {/* Mobile category dark overlay */}
+      <button
+        type="button"
+        aria-label="Close categories"
+        onClick={() => setMobileCategoriesOpen(false)}
+        className={`fixed inset-0 z-[85] bg-black/50 transition-opacity duration-300 lg:hidden ${mobileCategoriesOpen
+          ? "visible opacity-100"
+          : "pointer-events-none invisible opacity-0"
+          }`}
+      />
+
+      {/* Mobile category left drawer */}
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-label="Browse categories"
+        aria-hidden={!mobileCategoriesOpen}
+        className={`fixed left-0 top-0 z-[90] flex h-dvh w-[80%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${mobileCategoriesOpen
+          ? "translate-x-0"
+          : "-translate-x-full"
+          }`}
+      >
+        {/* Drawer header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">
+          <div className="min-w-0 pr-3">
+            <h2 className="truncate text-lg font-bold text-[var(--store-text-primary)]">
+              Browse Categories
+            </h2>
+
+            <p className="mt-0.5 text-xs text-gray-500">
+              Select a category to browse products
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setMobileCategoriesOpen(false)}
+            aria-label="Close categories"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gray-100 text-gray-700 transition hover:bg-gray-200"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Drawer category list */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+          {categories?.length ? (
+            <div className="space-y-1">
+              {categories.map((item: CategoryTreeItem) => (
+                <MobileCategoryItem
+                  key={item.category.id}
+                  item={item}
+                  onCategoryClick={handleCategoryClick}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="py-10 text-center text-sm text-gray-500">
+              No categories found.
+            </p>
+          )}
+        </div>
+      </aside>
+
+      {/* Fixed mobile bottom navbar */}
+      <nav className="fixed inset-x-0 bottom-0 z-[80] border-t border-[var(--store-border)] bg-[var(--store-bg-1)] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] lg:hidden">
+        <div className="grid h-17 grid-cols-5 pb-[env(safe-area-inset-bottom)]">
+          <Link
+            href="/store"
+            className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${isHomeActive
+              ? "text-[var(--store-primary)]"
+              : "text-gray-500"
+              }`}
+          >
+            <Home className="h-5 w-5" />
+            Home
+          </Link>
+
+          <button
+            type="button"
+            onClick={() =>
+              setMobileCategoriesOpen((previous) => !previous)
+            }
+            className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${mobileCategoriesOpen || isProductsActive
+              ? "text-[var(--store-primary)]"
+              : "text-gray-500"
+              }`}
+          >
+            <Grid2X2 className="h-5 w-5" />
+            Category
+          </button>
+
+          <Link
+            href="/store/dashboard/active-cart"
+            className={`relative flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${isCartActive
+              ? "text-[var(--store-primary)]"
+              : "text-gray-500"
+              }`}
+          >
+            <span className="relative">
+              <ShoppingBag className="h-5 w-5" />
+
+              {cartCount > 0 && (
+                <span className="absolute -right-3 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold text-white">
+                  {cartCount}
+                </span>
+              )}
+            </span>
+
+            Cart
+          </Link>
+
+          <Link
+            href="/store/dashboard/wishlist"
+            className={`relative flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${isWishlistActive
+              ? "text-[var(--store-primary)]"
+              : "text-gray-500"
+              }`}
+          >
+            <span className="relative">
+              <Heart className="h-5 w-5" />
+
+              {favoriteCount > 0 && (
+                <span className="absolute -right-3 -top-2 grid h-4 min-w-4 place-items-center rounded-full bg-[var(--store-primary)] px-1 text-[9px] font-bold text-white">
+                  {favoriteCount}
+                </span>
+              )}
+            </span>
+
+            Wishlist
+          </Link>
+
+          <Link
+            href={user ? "/store/dashboard" : "/store/login"}
+            className={`flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${isAccountActive
+              ? "text-[var(--store-primary)]"
+              : "text-gray-500"
+              }`}
+          >
+            {user ? (
+              <UserRound className="h-5 w-5" />
+            ) : (
+              <LogIn className="h-5 w-5" />
+            )}
+
+            {user ? "Account" : "Login"}
+          </Link>
+        </div>
+      </nav>
+    </>
   );
 };
 

@@ -141,25 +141,91 @@ const GroceryNavbar = ({ phone }: NavbarProps) => {
    * Show it again when the user returns to the top.
    */
   useEffect(() => {
-    const handleScroll = () => {
-      const shouldShow = window.scrollY <= 20;
+    const hideCategoryNavbar = () => {
+      setShowSecondNavbar(false);
+    };
 
-      setShowSecondNavbar(shouldShow);
+    const showCategoryNavbar = () => {
+      setShowSecondNavbar(true);
+    };
 
-      if (!shouldShow) {
-        setDesktopCategoriesOpen(false);
+    const handleWheel = (event: WheelEvent) => {
+      // Scrolling inside the desktop category dropdown
+      // should scroll the list, not hide the navbar.
+
+      if (event.deltaY > 0) {
+        hideCategoryNavbar();
+        return;
+      }
+
+      if (event.deltaY < 0) {
+        showCategoryNavbar();
       }
     };
 
-    handleScroll();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      // console.log('active', activeElement instanceof HTMLTextAreaElement)
 
-    window.addEventListener("scroll", handleScroll, {
+      const isTyping =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") ===
+        "true";
+
+      if (isTyping) {
+        return;
+      }
+
+      // Do not close the dropdown when keyboard input is
+      // being used while focus is inside the category menu.
+
+      const hideKeys = [
+        "ArrowDown",
+        "PageDown",
+        "End",
+        " ",
+      ];
+
+      const showKeys = [
+        "ArrowUp",
+        "PageUp",
+        "Home",
+      ];
+
+      if (hideKeys.includes(event.key)) {
+        hideCategoryNavbar();
+        return;
+      }
+
+      if (showKeys.includes(event.key)) {
+        showCategoryNavbar();
+      }
+
+    };
+
+    window.addEventListener("wheel", handleWheel, {
       passive: true,
     });
 
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener(
+        "wheel",
+        handleWheel,
+      );
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
     };
+
   }, []);
 
   /*

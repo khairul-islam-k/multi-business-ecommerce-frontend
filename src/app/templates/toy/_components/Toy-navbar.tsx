@@ -254,12 +254,12 @@ const ToyNavbar = ({
     const desktopSearchRef = useRef<HTMLDivElement>(null);
     const desktopCategoryRef = useRef<HTMLDivElement>(null);
 
+
     const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
     const [desktopCategoryMenuOpen, setDesktopCategoryMenuOpen] =
         useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [categoryNavbarVisible, setCategoryNavbarVisible] =
-        useState(true);
+    const [categoryNavbarVisible, setCategoryNavbarVisible] = useState(true);
 
     const touchStartYRef = useRef<number | null>(null);
 
@@ -405,6 +405,8 @@ const ToyNavbar = ({
         const isInsideDesktopCategoryMenu = (
             target: EventTarget | null,
         ) => {
+            console.log('target', target instanceof Node)
+
             if (
                 !desktopCategoryMenuOpen ||
                 !(target instanceof Node)
@@ -487,6 +489,8 @@ const ToyNavbar = ({
 
         const handleKeyDown = (event: KeyboardEvent) => {
             const activeElement = document.activeElement;
+            console.log('active', activeElement instanceof HTMLTextAreaElement)
+            
             const isTyping =
                 activeElement instanceof HTMLInputElement ||
                 activeElement instanceof HTMLTextAreaElement ||
@@ -525,6 +529,7 @@ const ToyNavbar = ({
                 event.key === "PageUp" ||
                 event.key === "Home"
             ) {
+                console.log('show')
                 showCategoryNavbar();
             }
         };
@@ -737,7 +742,7 @@ const ToyNavbar = ({
                             ? "h-[56px] translate-y-0 overflow-visible opacity-100"
                             : "pointer-events-none h-0 -translate-y-full overflow-hidden opacity-0"
                         }`}
-                    aria-hidden={!categoryNavbarVisible}
+                    // aria-hidden={!categoryNavbarVisible}
                 >
                     <nav className="relative h-[56px] border-b border-[var(--store-border)] bg-[var(--store-bg-1)]">
                         <div className="mx-auto flex h-full w-full items-center gap-7 px-4 lg:w-[1100px]">

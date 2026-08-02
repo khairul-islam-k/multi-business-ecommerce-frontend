@@ -288,38 +288,90 @@ const PharmacyNavbar = (
    * Keep the main navbar visible.
    * Hide only the category navbar after scrolling.
    */
-  
+
   useEffect(() => {
-    const handleScroll = () => {
-      const shouldShowCategoryNavbar =
-        window.scrollY <= 0;
+    const hideCategoryNavbar = () => {
+      setCategoryNavbarVisible(false);
+    };
 
-        console.log('scroll', window.scrollY);
+    const showCategoryNavbar = () => {
+      setCategoryNavbarVisible(true);
+    };
 
-      setCategoryNavbarVisible(
-        shouldShowCategoryNavbar,
-      );
+    const handleWheel = (event: WheelEvent) => {
+      // Scrolling inside the desktop category dropdown
+      // should scroll the list, not hide the navbar.
 
-      if (!shouldShowCategoryNavbar) {
-        setActiveDesktopCategoryId(null);
-        setActiveDesktopChildId(null);
+      if (event.deltaY > 0) {
+        hideCategoryNavbar();
+        return;
+      }
+
+      if (event.deltaY < 0) {
+        showCategoryNavbar();
       }
     };
 
-    handleScroll();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const activeElement = document.activeElement;
+      // console.log('active', activeElement instanceof HTMLTextAreaElement)
+
+      const isTyping =
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLTextAreaElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement?.getAttribute("contenteditable") ===
+        "true";
+
+      if (isTyping) {
+        return;
+      }
+
+      // Do not close the dropdown when keyboard input is
+      // being used while focus is inside the category menu.
+
+      const hideKeys = [
+      "ArrowDown",
+      "PageDown",
+      "End",
+      " ",
+    ];
+
+    const showKeys = [
+      "ArrowUp",
+      "PageUp",
+      "Home",
+    ];
+
+    if (hideKeys.includes(event.key)) {
+      hideCategoryNavbar();
+      return;
+    }
+
+    if (showKeys.includes(event.key)) {
+      showCategoryNavbar();
+    }
+
+    };
+
+    window.addEventListener("wheel", handleWheel, {
+      passive: true,
+    });
 
     window.addEventListener(
-      "scroll",
-      handleScroll,
-      {
-        passive: true,
-      },
+      "keydown",
+      handleKeyDown,
     );
 
     return () => {
       window.removeEventListener(
-        "scroll",
-        handleScroll,
+        "wheel",
+        handleWheel,
+      );
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
       );
     };
   }, []);
@@ -474,8 +526,8 @@ const PharmacyNavbar = (
                   }
                   aria-expanded={mobileSearchOpen}
                   className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${mobileSearchOpen
-                      ? "bg-[var(--store-bg-2)] text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
+                    ? "bg-[var(--store-bg-2)] text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
                     }`}
                 >
                   {mobileSearchOpen ? (
@@ -497,8 +549,8 @@ const PharmacyNavbar = (
                       : "Login"
                   }
                   className={`grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
                     }`}
                 >
                   <UserRound className="size-5" />
@@ -508,8 +560,8 @@ const PharmacyNavbar = (
                   href="/store/dashboard/active-cart"
                   aria-label="Open shopping cart"
                   className={`relative grid size-10 place-items-center rounded-md transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
                     }`}
                 >
                   <ShoppingCart className="size-5" />
@@ -533,8 +585,8 @@ const PharmacyNavbar = (
                       : "/store/login"
                   }
                   className={`flex min-w-[112px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isAccountActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
                     }`}
                 >
                   <UserRound className="size-7 shrink-0" />
@@ -555,8 +607,8 @@ const PharmacyNavbar = (
                 <Link
                   href="/store/dashboard/active-cart"
                   className={`flex min-w-[105px] items-center gap-3 rounded-lg px-2 py-2 transition hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)] ${isCartActive
-                      ? "text-[var(--store-primary)]"
-                      : "text-[var(--store-text-primary)]"
+                    ? "text-[var(--store-primary)]"
+                    : "text-[var(--store-text-primary)]"
                     }`}
                 >
                   <span className="relative">
@@ -590,8 +642,8 @@ const PharmacyNavbar = (
             {/* Mobile search input */}
             <div
               className={`overflow-hidden transition-[max-height,opacity,padding] duration-300 lg:hidden ${mobileSearchOpen
-                  ? "max-h-24 pb-3 opacity-100"
-                  : "pointer-events-none max-h-0 pb-0 opacity-0"
+                ? "max-h-24 pb-3 opacity-100"
+                : "pointer-events-none max-h-0 pb-0 opacity-0"
                 }`}
             >
               <form
@@ -630,8 +682,8 @@ const PharmacyNavbar = (
         {/* Category navbar */}
         <div
           className={`relative bg-[var(--store-bg-1)] transition-[max-height,opacity,transform] duration-300 ${categoryNavbarVisible
-              ? "max-h-14 translate-y-0 overflow-visible opacity-100"
-              : "pointer-events-none max-h-0 -translate-y-3 overflow-hidden opacity-0"
+            ? "max-h-14 translate-y-0 overflow-visible opacity-100"
+            : "pointer-events-none max-h-0 -translate-y-3 overflow-hidden opacity-0"
             }`}
           onMouseLeave={() => {
             setActiveDesktopCategoryId(null);
@@ -661,8 +713,8 @@ const PharmacyNavbar = (
                   setActiveDesktopChildId(null);
                 }}
                 className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition hover:text-[var(--store-primary)] ${isHomeActive
-                    ? "text-[var(--store-primary)]"
-                    : "text-[var(--store-text-primary)]"
+                  ? "text-[var(--store-primary)]"
+                  : "text-[var(--store-text-primary)]"
                   }`}
               >
                 Home
@@ -703,8 +755,8 @@ const PharmacyNavbar = (
                         );
                       }}
                       className={`relative flex h-full shrink-0 items-center px-1 text-sm font-medium transition ${isOpen
-                          ? "text-[var(--store-primary)]"
-                          : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
+                        ? "text-[var(--store-primary)]"
+                        : "text-[var(--store-text-primary)] hover:text-[var(--store-primary)]"
                         }`}
                     >
                       {item.category.name}
@@ -768,8 +820,8 @@ const PharmacyNavbar = (
                           )
                         }
                         className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition ${isChildActive
-                            ? "bg-[var(--store-bg-2)] font-semibold text-[var(--store-primary)]"
-                            : "text-[var(--store-text-primary)] hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
+                          ? "bg-[var(--store-bg-2)] font-semibold text-[var(--store-primary)]"
+                          : "text-[var(--store-text-primary)] hover:bg-[var(--store-bg-2)] hover:text-[var(--store-primary)]"
                           }`}
                       >
                         <CategoryImage
@@ -895,7 +947,7 @@ const PharmacyNavbar = (
             </div>
           )}
         </div>
-        
+
       </header>
 
       {/* Mobile drawer overlay */}
@@ -906,8 +958,8 @@ const PharmacyNavbar = (
           setMobileMenuOpen(false)
         }
         className={`fixed inset-0 z-[90] bg-black/50 transition-opacity duration-300 lg:hidden ${mobileMenuOpen
-            ? "visible opacity-100"
-            : "pointer-events-none invisible opacity-0"
+          ? "visible opacity-100"
+          : "pointer-events-none invisible opacity-0"
           }`}
       />
 
@@ -918,8 +970,8 @@ const PharmacyNavbar = (
         aria-label="Product categories"
         aria-hidden={!mobileMenuOpen}
         className={`fixed left-0 top-0 z-[100] flex h-dvh w-[88%] max-w-sm flex-col bg-[var(--store-bg-1)] shadow-2xl transition-transform duration-300 ease-in-out lg:hidden ${mobileMenuOpen
-            ? "translate-x-0"
-            : "-translate-x-full"
+          ? "translate-x-0"
+          : "-translate-x-full"
           }`}
       >
         <div className="flex shrink-0 items-center justify-between border-b border-[var(--store-border)] px-5 pb-4 pt-[calc(1rem+env(safe-area-inset-top))]">

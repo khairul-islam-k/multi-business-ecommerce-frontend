@@ -63,8 +63,6 @@ export function StoreThemeProvider({
 }: StoreThemeProviderProps) {
   const [mode, setModeState] = useState<StoreThemeMode>("light");
 
-  console.log('sidebar', sideBar);
-
   useEffect(() => {
     const savedMode = localStorage.getItem(
       STORE_THEME_MODE_KEY
