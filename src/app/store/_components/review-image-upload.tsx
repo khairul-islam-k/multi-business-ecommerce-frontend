@@ -7,42 +7,34 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
-import { ChangeEvent, useRef, useState } from "react";
-
-import { useMediaMutations } from "@/lib/api/hooks/media";
+import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useStoreFontMediaMutations } from "@/lib/api/hooks/store-font-media";
 
 type ReviewImageUploadProps = {
   businessId: string;
-  onUpload: (imageUrl: string) => void;
+  setUrls: Dispatch<SetStateAction<string[]>>;
   required?: boolean;
 };
 
 const ReviewImageUpload = ({
   businessId,
-  onUpload,
+  setUrls,
   required = false,
 }: ReviewImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const [selectedFile, setSelectedFile] =
-    useState<File | null>(null);
-
-  const [uploadedFileName, setUploadedFileName] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [errorMessage, setErrorMessage] =
     useState("");
 
-    const {uploadMedia} = useStoreFontMediaMutations();
+  const { uploadMedia } = useStoreFontMediaMutations();
 
   const isUploading = uploadMedia.isPending;
 
   const handleUploadImage = async (file: File) => {
     setErrorMessage("");
-    setSelectedFile(file);
-
-    console.log('file', file);
 
     try {
       if (!businessId) {
@@ -50,22 +42,26 @@ const ReviewImageUpload = ({
         return;
       }
 
+      setSelectedFiles((currentFiles) => [
+      ...currentFiles,
+      file,
+    ]);
+
       const response = await uploadMedia.mutateAsync({
         file,
       });
-
-      console.log('file', response);
       const uploadedUrl = response?.fileUrl;
 
       if (uploadedUrl) {
-        onUpload(uploadedUrl);
-        setUploadedFileName(file.name);
+        setUrls((currentImages) => [
+          ...currentImages,
+          uploadedUrl
+        ])
       }
     } catch (error) {
       console.log('error', error);
-      // setSelectedFile(null);
-      // setUploadedFileName("");
-      // setErrorMessage(getApiErrorMessage(error));
+      setSelectedFiles([]);
+      setErrorMessage(getApiErrorMessage(error));
     }
   };
 
@@ -83,19 +79,26 @@ const ReviewImageUpload = ({
     event.target.value = "";
   };
 
+  const removeImage = (ind: number) => {
+    setSelectedFiles((currentFiles) => currentFiles.filter((file, index) => index !== ind));
+    setUrls((currentImages) => currentImages.filter((file, index) => index !== ind));
+  }
+
   const handleRemoveImage = () => {
-    setSelectedFile(null);
-    setUploadedFileName("");
+    setSelectedFiles([]);
+    setUrls([])
     setErrorMessage("");
-    onUpload("");
   };
 
   return (
     <div>
       <label className="mb-2 block text-sm font-semibold text-[var(--store-text)]">
-        Review Image
+        Review Images
+
         {required && (
-          <span className="ml-1 text-red-500">*</span>
+          <span className="ml-1 text-red-500">
+            *
+          </span>
         )}
       </label>
 
@@ -103,63 +106,112 @@ const ReviewImageUpload = ({
         ref={inputRef}
         type="file"
         accept="image/*"
-        required={required && !uploadedFileName}
+        multiple
         disabled={isUploading}
         onChange={handleFileChange}
-        className="hidden"
+        className="sr-only"
       />
 
       <button
         type="button"
         disabled={isUploading}
-        onClick={() => inputRef.current?.click()}
+        onClick={() =>
+          inputRef.current?.click()
+        }
         className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-[#f16d59] bg-[var(--store-bg-1)] px-4 text-sm font-semibold text-[#f16d59] transition hover:bg-[#f16d59]/10 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isUploading ? (
           <>
             <LoaderCircle className="size-5 animate-spin" />
-            Uploading image...
+            Uploading images...
           </>
-        ) : uploadedFileName ? (
+        ) : selectedFiles.length > 0 ? (
           <>
             <ImageIcon className="size-5" />
-            Change Image
+            Add More Images
           </>
         ) : (
           <>
             <UploadCloud className="size-5" />
-            Upload Review Image
+            Upload Review Images
           </>
         )}
       </button>
 
-      {(selectedFile || uploadedFileName) && (
-        <div className="mt-2 flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-[var(--store-bg-1)] px-3 py-2 dark:border-gray-700">
-          <div className="flex min-w-0 items-center gap-2">
-            {isUploading ? (
-              <LoaderCircle className="size-4 shrink-0 animate-spin text-[#f16d59]" />
-            ) : (
-              <CheckCircle2 className="size-4 shrink-0 text-green-600" />
-            )}
+      {selectedFiles.length > 0 && (
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-[var(--store-text)]">
+              {selectedFiles.length}{" "}
+              {selectedFiles.length === 1
+                ? "image"
+                : "images"}{" "}
+              uploaded
+            </p>
 
-            <span className="truncate text-sm text-[var(--store-text)]">
-              {uploadedFileName ||
-                selectedFile?.name}
-            </span>
+            {!isUploading && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="text-xs font-medium text-red-500 transition hover:text-red-600"
+              >
+                Remove all
+              </button>
+            )}
           </div>
 
-          {!isUploading && (
-            <button
-              type="button"
-              aria-label="Remove selected image"
-              onClick={handleRemoveImage}
-              className="grid size-7 shrink-0 place-items-center rounded-md text-gray-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
-            >
-              <X className="size-4" />
-            </button>
+          {selectedFiles.map(
+            (file, imageIndex) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${imageIndex}`}
+                className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-[var(--store-bg-1)] px-3 py-2 dark:border-gray-700"
+              >
+                <div className="flex min-w-0 items-center gap-2">
+                  <CheckCircle2 className="size-4 shrink-0 text-green-600" />
+
+                  <span className="truncate text-sm text-[var(--store-text)]">
+                    {file.name}
+                  </span>
+                </div>
+
+                {!isUploading && (
+                  <button
+                    type="button"
+                    aria-label={`Remove ${file.name}`}
+                    onClick={() =>
+                      removeImage(
+                        imageIndex,
+                      )
+                    }
+                    className="grid size-7 shrink-0 place-items-center rounded-md text-gray-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                  >
+                    <X className="size-4" />
+                  </button>
+                )}
+              </div>
+            ),
           )}
         </div>
       )}
+
+      {isUploading && (
+        <div className="mt-2 flex items-center gap-2 rounded-lg border border-gray-200 bg-[var(--store-bg-1)] px-3 py-2 dark:border-gray-700">
+          <LoaderCircle className="size-4 shrink-0 animate-spin text-[#f16d59]" />
+
+          <span className="text-sm text-[var(--store-text)]">
+            Uploading selected images...
+          </span>
+        </div>
+      )}
+
+      {required &&
+        selectedFiles.length === 0 &&
+        !errorMessage && (
+          <p className="mt-2 text-xs text-gray-500">
+            At least one review image is
+            required.
+          </p>
+        )}
 
       {errorMessage && (
         <p className="mt-2 text-sm text-red-500">

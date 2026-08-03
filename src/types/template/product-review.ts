@@ -4,6 +4,7 @@ export type CreateProductReviewPayload = {
   rating: number;
   title: string;
   comment: string;
+  images?: string[];
 };
 
 

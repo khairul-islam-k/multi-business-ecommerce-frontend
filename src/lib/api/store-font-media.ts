@@ -1,4 +1,3 @@
-import api from "@/lib/axios";
 import {
   unwrapApiResponse,
 } from "@/lib/api/response";
@@ -7,6 +6,7 @@ import type {
   MediaAsset,
   UploadMediaPayload,
 } from "@/lib/api/types";
+import webApi from "../public-api-hook/web-api";
 
 const mediaPath = () =>`/storefront/customer/images`;
 
@@ -28,7 +28,7 @@ const mediaForm = (payload: {
 
 export const storeFontMedia = {
   upload(payload: UploadMediaPayload) {
-    return api
+    return webApi
       .post<ApiResponse<MediaAsset>>(mediaPath(), mediaForm(payload))
       .then((res) => unwrapApiResponse(res.data));
   },

@@ -27,6 +27,9 @@ const ProductReviewForm = ({ productId, businessId }: DetailsProps) => {
     productReviewDefaultData,
   );
 
+  // image 
+  const [urls, setUrls] = useState<string[]>([]);
+  
   const router = useRouter();
 
   const message = useMessage();
@@ -72,6 +75,7 @@ const ProductReviewForm = ({ productId, businessId }: DetailsProps) => {
         rating: formData.rating,
         title: formData.title,
         comment: formData.comment,
+        images: urls
       };
 
       await createReview.mutateAsync(payload);
@@ -89,8 +93,6 @@ const ProductReviewForm = ({ productId, businessId }: DetailsProps) => {
       message.error(getWebErrorMessage(error));
     }
   };
-
-  const [currentUrl, setCurrentUrl] = useState("");
 
   return (
     <div className="lg:px-8 mx-auto max-w-[1220px] mt-8 border border-gray-200 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8">
@@ -181,9 +183,7 @@ const ProductReviewForm = ({ productId, businessId }: DetailsProps) => {
 
         <ReviewImageUpload
           businessId={businessId}
-          onUpload={(uploadedUrl) => {
-            setCurrentUrl(uploadedUrl);
-          }}
+          setUrls={setUrls}
           required
         />
 
