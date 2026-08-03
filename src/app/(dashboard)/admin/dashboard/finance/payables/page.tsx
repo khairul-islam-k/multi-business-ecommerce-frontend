@@ -181,7 +181,7 @@ const PayablePage = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         <Col xs={12} md={6}>
           <Card>
             <Text type="secondary">Total Payables</Text>
@@ -217,7 +217,7 @@ const PayablePage = () => {
             </Title>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
 
       <Card>
         <DataTable

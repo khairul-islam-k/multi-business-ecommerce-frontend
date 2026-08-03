@@ -1,4 +1,3 @@
-import { ElectronicFooter } from "@/app/templates/electronic/_components/footer";
 import FashionFooter from "@/app/templates/fashion/_components/fashion-footer";
 import FashionNavbar from "@/app/templates/fashion/_components/navbar";
 import React from "react";
@@ -19,6 +18,7 @@ import ShoesFooter from "@/app/templates/shoes/_components/shoes-footer";
 import ToyNavbar from "@/app/templates/toy/_components/Toy-navbar";
 import ToyFooter from "@/app/templates/toy/_components/toy-footer";
 import RestaurantNavbar from "@/app/templates/restaurant/_components/restaurant-navbar";
+import ElectronicFooter from "@/app/templates/electronic/_components/footer";
 
 const WebsiteLayout = async ({
   children,
@@ -123,7 +123,10 @@ const WebsiteLayout = async ({
 
       {children}
 
-      {isElectronic ? <ElectronicFooter /> : null}
+      {isElectronic ? <ElectronicFooter
+      generalConfig={generalConfig}
+      footer={res?.data?.data?.config?.footerConfig} /> : null}
+      
       {isFashion ? <FashionFooter
       generalConfig={generalConfig}
       footer={res?.data?.data?.config?.footerConfig} /> : null}

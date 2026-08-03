@@ -1,11 +1,12 @@
 "use client";
 
 import { Button, Flex, Grid, Space, theme } from "antd";
-import { Menu, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Menu, PanelLeftClose, PanelLeftOpen, ShoppingCart } from "lucide-react";
 import React from "react";
 
 import BusinessDropdown from "./business-owner";
 import ProfileDropdown from "./profile-dropdown";
+import Link from "next/link";
 
 type TopbarProps = {
   collapsed?: boolean;
@@ -65,6 +66,12 @@ const TopBar: React.FC<TopbarProps> = ({
           </Flex>
 
           <Space size={screens.xs ? 4 : 8} align="center">
+            <Link
+            className="lg:mr-5"
+            href='/admin/dashboard/pos'>
+              <ShoppingCart />
+            </Link>
+
             <div style={{ display: screens.xs ? "none" : "block" }}>
               <BusinessDropdown />
             </div>

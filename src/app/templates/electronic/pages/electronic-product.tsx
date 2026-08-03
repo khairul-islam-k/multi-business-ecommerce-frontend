@@ -7,7 +7,6 @@ import {
   ChevronDown,
   Grid2X2,
   List,
-  Search,
 } from "lucide-react";
 
 import ProductCard from "../_components/product-card";
@@ -15,17 +14,18 @@ import {
   useTemplateProductQuery,
 } from "@/lib/api/hooks/public-website";
 import { SortOrder } from "@/lib/api";
-import { useDebounce } from "use-debounce";
 import { DashboardColors, ThemeConfig } from "@/types/website/website";
 
 type ProductProps = {
   categoryId?: string;
   theme?: ThemeConfig;
+  search?: string;
   dashboardColor?: DashboardColors;
 };
 
 const ElectronicProduct = ({
   categoryId,
+  search,
   theme,
   dashboardColor
 }: ProductProps) => {
@@ -33,8 +33,8 @@ const ElectronicProduct = ({
   const [sortBy, setSortBy] = useState<string>("");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  const [searchText, setSearchText] = useState<string>('');
-  const [search] = useDebounce(searchText, 500);
+  // const [searchText, setSearchText] = useState<string>('');
+  // const [search] = useDebounce(searchText, 500);
 
   const { data: products } = useTemplateProductQuery({
     categoryId,
@@ -50,28 +50,6 @@ const ElectronicProduct = ({
 
   return (
     <section className="bg-[var(--store-bg-3)] py-8">
-
-      {/* search field */}
-      <div className="mx-auto flex w-full max-w-2xl flex-col items-center px-4 py-8 text-center">
-        <h3 className="text-2xl font-bold text-[var(--store-text-primary)] sm:text-3xl">
-          Products
-        </h3>
-
-        <p className="mt-2 text-sm text-[var(--store-text-secondary)]">
-          Find your favorite products
-        </p>
-
-        <div className="relative mt-5 w-full max-w-md">
-          <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-text-secondary)]" />
-
-          <input
-            type="search"
-            onChange={(e) => setSearchText(e.currentTarget.value)}
-            placeholder="Search products..."
-            className="h-12 w-full rounded-full border border-[var(--store-border)] bg-[var(--store-bg-1)] py-2 pl-12 pr-5 text-sm text-[var(--store-text-primary)] outline-none transition placeholder:text-[var(--store-text-secondary)] focus:border-[var(--store-primary)] focus:ring-2 focus:ring-[var(--store-primary)]/20"
-          />
-        </div>
-      </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Top Filter Bar */}
@@ -148,7 +126,7 @@ const ElectronicProduct = ({
           <div
             className={
               viewMode === "grid"
-                ? "grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
                 : "grid grid-cols-1 gap-6"
             }
           >

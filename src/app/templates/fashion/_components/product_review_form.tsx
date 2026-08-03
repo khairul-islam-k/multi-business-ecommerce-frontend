@@ -7,6 +7,7 @@ import { useTemplateProductReviewMutation } from "@/lib/api/hooks/template-produ
 import { useMessage } from "@/app/store/_components/message/message-hook";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import { useRouter } from "next/navigation";
+import ReviewImageUpload from "@/app/store/_components/review-image-upload";
 
 const productReviewDefaultData: CreateProductReviewPayload = {
   productId: "2d8d0f8f-95aa-4f23-a2fd-0ca6f5f8a913",
@@ -18,9 +19,10 @@ const productReviewDefaultData: CreateProductReviewPayload = {
 
 type DetailsProps = {
   productId: string;
+  businessId: string;
 };
 
-const ProductReviewForm = ({ productId}: DetailsProps) => {
+const ProductReviewForm = ({ productId, businessId }: DetailsProps) => {
   const [formData, setFormData] = useState<CreateProductReviewPayload>(
     productReviewDefaultData,
   );
@@ -88,6 +90,8 @@ const ProductReviewForm = ({ productId}: DetailsProps) => {
     }
   };
 
+  const [currentUrl, setCurrentUrl] = useState("");
+
   return (
     <div className="lg:px-8 mx-auto max-w-[1220px] mt-8 border border-gray-200 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8">
       <h2 className="text-2xl font-bold">Write a Review</h2>
@@ -118,11 +122,10 @@ const ProductReviewForm = ({ productId}: DetailsProps) => {
                   className="transition hover:scale-110"
                 >
                   <Star
-                    className={`h-7 w-7 ${
-                      ratingValue <= activeRating
+                    className={`h-7 w-7 ${ratingValue <= activeRating
                         ? "fill-[#f16d59] text-[#f16d59]"
                         : "text-gray-300"
-                    }`}
+                      }`}
                   />
                 </button>
               );
@@ -175,6 +178,14 @@ const ProductReviewForm = ({ productId}: DetailsProps) => {
             required
           />
         </div>
+
+        <ReviewImageUpload
+          businessId={businessId}
+          onUpload={(uploadedUrl) => {
+            setCurrentUrl(uploadedUrl);
+          }}
+          required
+        />
 
         {/* Submit */}
         <button

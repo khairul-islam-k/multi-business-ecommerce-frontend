@@ -84,6 +84,9 @@ export const apiQueryKeys = {
     list: (businessId: ApiId, query?: MediaQuery) =>
       [...apiQueryKeys.media.lists(businessId), query ?? {}] as const,
   },
+  storeFontMedia: {
+    all: () => ["storeFontMedia"] as const,
+  },
   ProductCategories: {
     all: (businessId: ApiId) => ["categories", businessId] as const,
     list: (businessId: ApiId, query?: CategoriesQuery) =>

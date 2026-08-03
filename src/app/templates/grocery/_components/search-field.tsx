@@ -12,7 +12,6 @@ import { Search, X } from "lucide-react";
 const SearchField = () => {
   const router = useRouter();
 
-  const [searchText, setSearchText] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] =
     useState(false);
 
@@ -25,11 +24,10 @@ const SearchField = () => {
   }, [mobileSearchOpen]);
 
   const handleSearch = (
-    event: FormEvent<HTMLFormElement>,
+    search: string,
   ) => {
-    event.preventDefault();
 
-    const query = searchText.trim();
+    const query = search.trim();
 
     if (!query) return;
 
@@ -44,15 +42,13 @@ const SearchField = () => {
     <>
       {/* Desktop: search input with icon */}
       <form
-        onSubmit={handleSearch}
         className="relative hidden w-[400px] mx-auto max-w-full lg:block"
       >
         <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
 
         <input
           type="search"
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
+          onChange={(event) => handleSearch(event.target.value)}
           placeholder="Search for grocery products..."
           className="h-10 w-full rounded-full border border-[var(--store-border)] bg-[var(--store-bg-2)] pl-12 pr-5 text-sm text-[var(--store-text-primary)] outline-none transition placeholder:text-gray-400 focus:border-[var(--store-primary)]"
         />
@@ -84,7 +80,6 @@ const SearchField = () => {
           }`}
       >
         <form
-          onSubmit={handleSearch}
           className="relative mx-auto w-full"
         >
           <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
@@ -92,9 +87,8 @@ const SearchField = () => {
           <input
             ref={mobileInputRef}
             type="search"
-            value={searchText}
             onChange={(event) =>
-              setSearchText(event.target.value)
+              handleSearch(event.target.value)
             }
             placeholder="Search products..."
             className="h-12 w-full rounded-full border border-[var(--store-border)] bg-[var(--store-bg-2)] pl-12 pr-14 text-sm text-[var(--store-text-primary)] outline-none placeholder:text-gray-400 focus:border-[var(--store-primary)]"

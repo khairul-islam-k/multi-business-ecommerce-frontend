@@ -42,6 +42,7 @@ const Products = async ({ searchParams }: ProductsPageProps) => {
             <ElectronicProduct
                 theme={theme}
                 dashboardColor={dashboardColor}
+                search={search}
                 categoryId={categoryId} />
         );
     }

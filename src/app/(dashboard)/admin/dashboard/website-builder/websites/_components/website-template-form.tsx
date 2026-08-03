@@ -514,6 +514,7 @@ export default function WebsiteTemplateForm({
 
                   <Collapse
                     accordion
+                    className='mb-5'
                     defaultActiveKey={["headerConfig"]}
                     items={[
                       {
@@ -2252,7 +2253,7 @@ export default function WebsiteTemplateForm({
         <Form.Item style={{ marginBottom: 0 }}>
           <Space>
             <Button type="primary" htmlType="submit" loading={isSubmitting}>
-              {mode === "create" ? "Create Template" : "Update Template"}
+              {mode === "create" ? "Create website" : "Update website"}
             </Button>
 
             <Button onClick={() => form.resetFields()}>Reset</Button>

@@ -183,7 +183,7 @@ const ReceivablesPage = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <Row gutter={[16, 16]}>
+      {/* <Row gutter={[16, 16]}>
         <Col xs={12} md={6}>
           <Card>
             <Text type="secondary">Total Receivables</Text>
@@ -219,7 +219,7 @@ const ReceivablesPage = () => {
             </Title>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
 
       <Card>
         <DataTable
