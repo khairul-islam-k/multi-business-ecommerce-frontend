@@ -413,8 +413,6 @@ export default function WebsiteTemplateForm({
 
     const payload = rawPayload;
 
-    console.log('payload', payload);
-
     await onSubmit(payload);
   };
 
@@ -442,6 +440,28 @@ export default function WebsiteTemplateForm({
   // template watch
   const selectedTemplate = Form.useWatch("template", form);
   const isRestaurantTemplate = selectedTemplate === "RESTAURANT";
+
+  // extra color
+  const topbarColor = Form.useWatch(["config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "navbarColor"], form) as
+                                  | string
+                                  | undefined;
+
+  const topbarText = Form.useWatch(["config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "navbarText"], form) as
+                                  | string
+                                  | undefined;
+
+  const cardColor = Form.useWatch(["config",
+                                  "generalConfig",
+                                  "dashboardColors",
+                                  "cardColor"], form) as
+                                  | string
+                                  | undefined;
 
   return (
     <Card
@@ -522,240 +542,450 @@ export default function WebsiteTemplateForm({
                         label: "Header Config",
                         forceRender: true,
                         children: (
-                          <Form.List
-                            name={[
-                              "config",
-                              "headerConfig",
-                              "slide",
-                            ]}
+                          <Form.Item
+                            noStyle
+                            shouldUpdate={(previousValues, currentValues) =>
+                              previousValues.template !== currentValues.template
+                            }
                           >
-                            {(fields, { add, remove }) => {
+                            {({ getFieldValue }) => {
+                              const selectedTemplate = getFieldValue(
+                                "template",
+                              ) as string | undefined;
 
-                              const displayedFields =
-                                isRestaurantTemplate
-                                  ? fields.slice(0, 1)
-                                  : fields;
+                              const isRestaurantTemplate =
+                                selectedTemplate === "RESTAURANT";
+
+                              const showSlideTextFields = [
+                                "FASHION",
+                                "COSMETICS",
+                                "ELECTRONIC",
+                                "GROCERY",
+                                "FURNITURE",
+                                "RESTAURANT",
+                              ].includes(selectedTemplate ?? "");
 
                               return (
-                                <>
-                                  <div className="mb-4 flex items-center justify-between">
-                                    <strong>
-                                      {isRestaurantTemplate
-                                        ? "Header Slide"
-                                        : "Header Slides"}
-                                    </strong>
+                                <Form.List
+                                  name={[
+                                    "config",
+                                    "headerConfig",
+                                    "slide",
+                                  ]}
+                                >
+                                  {(fields, { add, remove }) => {
+                                    const displayedFields =
+                                      isRestaurantTemplate
+                                        ? fields.slice(0, 1)
+                                        : fields;
 
-                                    {!isRestaurantTemplate && (
-                                      <Button
-                                        type="dashed"
-                                        onClick={() =>
-                                          add({
-                                            id: Date.now(),
-                                            title: "",
-                                            imageUrl: "",
-                                            subTitle: "",
-                                            buttonText: "",
-                                            description: "",
-                                          })
-                                        }
-                                      >
-                                        Add Slide
-                                      </Button>
-                                    )}
-                                  </div>
+                                    return (
+                                      <>
+                                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                          <div>
+                                            <h3 className="mb-1 text-base font-semibold">
+                                              {isRestaurantTemplate
+                                                ? "Header Slide"
+                                                : "Header Slides"}
+                                            </h3>
 
-                                  {displayedFields.map(
-                                    (
-                                      { key, name, ...restField },
-                                      index,
-                                    ) => (
-                                      <Collapse
-                                        key={key}
-                                        className="mb-4"
-                                        defaultActiveKey={[
-                                          String(index),
-                                        ]}
-                                        items={[
-                                          {
-                                            key: String(index),
-                                            label: `Slide ${index + 1}`,
-                                            forceRender: true,
-                                            children: (
-                                              <Row gutter={16}>
-                                                <Form.Item
-                                                  {...restField}
-                                                  name={[name, "id"]}
-                                                  hidden
-                                                >
-                                                  <Input />
-                                                </Form.Item>
+                                            <p className="mb-0 text-sm text-gray-500">
+                                              {isRestaurantTemplate
+                                                ? "Configure the restaurant header banner."
+                                                : "Configure the header slider banners."}
+                                            </p>
+                                          </div>
 
-                                                <Col xs={24} md={12}>
-                                                  <Form.Item
-                                                    {...restField}
-                                                    label="Slide Title"
-                                                    name={[name, "title"]}
-                                                    rules={[
-                                                      {
-                                                        required: true,
-                                                        message:
-                                                          "Please enter slide title",
-                                                      },
-                                                    ]}
-                                                  >
-                                                    <Input
-                                                      placeholder={
-                                                        isRestaurantTemplate
-                                                          ? "Delicious Food Delivered Fresh"
-                                                          : "New Fashion Collection"
-                                                      }
-                                                    />
-                                                  </Form.Item>
-                                                </Col>
+                                          {!isRestaurantTemplate && (
+                                            <Button
+                                              type="dashed"
+                                              onClick={() =>
+                                                add({
+                                                  id: Date.now(),
+                                                  title: "",
+                                                  imageUrl: "",
+                                                  subTitle: "",
+                                                  buttonText: "",
+                                                  description: "",
+                                                })
+                                              }
+                                            >
+                                              Add Slide
+                                            </Button>
+                                          )}
+                                        </div>
 
-                                                <Col xs={24} md={12}>
-                                                  <Form.Item
-                                                    {...restField}
-                                                    label="Slide Image"
-                                                    name={[
-                                                      name,
-                                                      "imageUrl",
-                                                    ]}
-                                                    rules={[
-                                                      {
-                                                        required: true,
-                                                        message:
-                                                          "Please select slide image",
-                                                      },
-                                                    ]}
-                                                  >
-                                                    <Input
-                                                      readOnly
-                                                      placeholder="Select slide image"
-                                                      onClick={() => {
-                                                        setActiveSlideIndex(
-                                                          name,
-                                                        );
+                                        {displayedFields.map(
+                                          (
+                                            { key, name, ...restField },
+                                            index,
+                                          ) => (
+                                            <Collapse
+                                              key={key}
+                                              className="mb-4"
+                                              defaultActiveKey={[
+                                                String(index),
+                                              ]}
+                                              items={[
+                                                {
+                                                  key: String(index),
+                                                  label: `Slide ${index + 1}`,
+                                                  forceRender: true,
+                                                  children: (
+                                                    <Row gutter={[16, 8]}>
+                                                      {/* Slide ID */}
+                                                      <Form.Item
+                                                        {...restField}
+                                                        name={[name, "id"]}
+                                                        hidden
+                                                      >
+                                                        <Input />
+                                                      </Form.Item>
 
-                                                        setSlideImageModalOpen(
-                                                          true,
-                                                        );
-                                                      }}
-                                                    />
-                                                  </Form.Item>
-                                                </Col>
+                                                      {/* Slide image */}
+                                                      <Col
+                                                        xs={24}
+                                                        md={
+                                                          showSlideTextFields
+                                                            ? 12
+                                                            : 24
+                                                        }
+                                                      >
+                                                        <Form.Item
+                                                          {...restField}
+                                                          label="Slide Image"
+                                                          name={[
+                                                            name,
+                                                            "imageUrl",
+                                                          ]}
+                                                          rules={[
+                                                            {
+                                                              required: true,
+                                                              message:
+                                                                "Please select slide image",
+                                                            },
+                                                          ]}
+                                                        >
+                                                          <Input
+                                                            readOnly
+                                                            placeholder="Select slide image"
+                                                            addonAfter={
+                                                              <Button
+                                                                type="text"
+                                                                size="small"
+                                                                icon={
+                                                                  <ImageIcon className="h-4 w-4" />
+                                                                }
+                                                                onClick={(
+                                                                  event,
+                                                                ) => {
+                                                                  event.stopPropagation();
 
-                                                <Col xs={24} md={12}>
-                                                  <Form.Item
-                                                    {...restField}
-                                                    label="Slide Sub Title"
-                                                    name={[
-                                                      name,
-                                                      "subTitle",
-                                                    ]}
-                                                    rules={[
-                                                      {
-                                                        required: true,
-                                                        message:
-                                                          "Please enter slide sub title",
-                                                      },
-                                                    ]}
-                                                  >
-                                                    <Input
-                                                      placeholder={
-                                                        isRestaurantTemplate
-                                                          ? "Fresh, Hot and Tasty"
-                                                          : "Fresh Styles Arrived"
-                                                      }
-                                                    />
-                                                  </Form.Item>
-                                                </Col>
+                                                                  setActiveSlideIndex(
+                                                                    name,
+                                                                  );
 
-                                                <Col xs={24} md={12}>
-                                                  <Form.Item
-                                                    {...restField}
-                                                    label="Button Text"
-                                                    name={[
-                                                      name,
-                                                      "buttonText",
-                                                    ]}
-                                                    rules={[
-                                                      {
-                                                        required: true,
-                                                        message:
-                                                          "Please enter button text",
-                                                      },
-                                                    ]}
-                                                  >
-                                                    <Input
-                                                      placeholder={
-                                                        isRestaurantTemplate
-                                                          ? "Order Now"
-                                                          : "Shop"
-                                                      }
-                                                    />
-                                                  </Form.Item>
-                                                </Col>
+                                                                  setSlideImageModalOpen(
+                                                                    true,
+                                                                  );
+                                                                }}
+                                                              >
+                                                                Select
+                                                              </Button>
+                                                            }
+                                                            onClick={() => {
+                                                              setActiveSlideIndex(
+                                                                name,
+                                                              );
 
-                                                <Col xs={24}>
-                                                  <Form.Item
-                                                    {...restField}
-                                                    label="Slide Description"
-                                                    name={[
-                                                      name,
-                                                      "description",
-                                                    ]}
-                                                    rules={[
-                                                      {
-                                                        required: true,
-                                                        message:
-                                                          "Please enter slide description",
-                                                      },
-                                                    ]}
-                                                  >
-                                                    <TextArea
-                                                      rows={4}
-                                                      placeholder={
-                                                        isRestaurantTemplate
-                                                          ? "Enjoy freshly prepared meals made with quality ingredients."
-                                                          : "Find clothing that matches your personality, comfort, and confidence in every season."
-                                                      }
-                                                    />
-                                                  </Form.Item>
-                                                </Col>
+                                                              setSlideImageModalOpen(
+                                                                true,
+                                                              );
+                                                            }}
+                                                          />
+                                                        </Form.Item>
+                                                      </Col>
 
-                                                {!isRestaurantTemplate && (
-                                                  <Col xs={24}>
-                                                    <Button
-                                                      danger
-                                                      onClick={() =>
-                                                        remove(name)
-                                                      }
-                                                      disabled={
-                                                        fields.length === 1
-                                                      }
-                                                    >
-                                                      Remove Slide
-                                                    </Button>
-                                                  </Col>
-                                                )}
-                                              </Row>
-                                            ),
-                                          },
-                                        ]}
-                                      />
-                                    ),
-                                  )}
+                                                      {/* Slide title */}
+                                                      {showSlideTextFields && (
+                                                        <Col xs={24} md={12}>
+                                                          <Form.Item
+                                                            {...restField}
+                                                            label="Slide Title"
+                                                            name={[
+                                                              name,
+                                                              "title",
+                                                            ]}
+                                                            rules={[
+                                                              {
+                                                                required: true,
+                                                                whitespace: true,
+                                                                message:
+                                                                  "Please enter slide title",
+                                                              },
+                                                              {
+                                                                max: 150,
+                                                                message:
+                                                                  "Slide title cannot exceed 150 characters",
+                                                              },
+                                                            ]}
+                                                          >
+                                                            <Input
+                                                              maxLength={150}
+                                                              showCount
+                                                              placeholder={
+                                                                isRestaurantTemplate
+                                                                  ? "Delicious Food Delivered Fresh"
+                                                                  : "New Fashion Collection"
+                                                              }
+                                                            />
+                                                          </Form.Item>
+                                                        </Col>
+                                                      )}
 
-                                  {displayedFields.length === 0 && (
-                                    <div className="rounded-md border border-dashed border-gray-300 p-6 text-center text-gray-500">
-                                      No header slide found.
-                                    </div>
-                                  )}
-                                </>
+                                                      {/* Slide subtitle */}
+                                                      {showSlideTextFields && (
+                                                        <Col xs={24} md={12}>
+                                                          <Form.Item
+                                                            {...restField}
+                                                            label="Slide Sub Title"
+                                                            name={[
+                                                              name,
+                                                              "subTitle",
+                                                            ]}
+                                                            rules={[
+                                                              {
+                                                                required: true,
+                                                                whitespace: true,
+                                                                message:
+                                                                  "Please enter slide sub title",
+                                                              },
+                                                              {
+                                                                max: 250,
+                                                                message:
+                                                                  "Slide subtitle cannot exceed 250 characters",
+                                                              },
+                                                            ]}
+                                                          >
+                                                            <Input
+                                                              maxLength={250}
+                                                              showCount
+                                                              placeholder={
+                                                                isRestaurantTemplate
+                                                                  ? "Fresh, Hot and Tasty"
+                                                                  : "Fresh Styles Arrived"
+                                                              }
+                                                            />
+                                                          </Form.Item>
+                                                        </Col>
+                                                      )}
+
+                                                      {/* Button text */}
+                                                      {showSlideTextFields && (
+                                                        <Col xs={24} md={12}>
+                                                          <Form.Item
+                                                            {...restField}
+                                                            label="Button Text"
+                                                            name={[
+                                                              name,
+                                                              "buttonText",
+                                                            ]}
+                                                            rules={[
+                                                              {
+                                                                required: true,
+                                                                whitespace: true,
+                                                                message:
+                                                                  "Please enter button text",
+                                                              },
+                                                              {
+                                                                max: 50,
+                                                                message:
+                                                                  "Button text cannot exceed 50 characters",
+                                                              },
+                                                            ]}
+                                                          >
+                                                            <Input
+                                                              maxLength={50}
+                                                              showCount
+                                                              placeholder={
+                                                                isRestaurantTemplate
+                                                                  ? "Order Now"
+                                                                  : "Shop Now"
+                                                              }
+                                                            />
+                                                          </Form.Item>
+                                                        </Col>
+                                                      )}
+
+                                                      {/* Description */}
+                                                      {showSlideTextFields && (
+                                                        <Col xs={24}>
+                                                          <Form.Item
+                                                            {...restField}
+                                                            label="Slide Description"
+                                                            name={[
+                                                              name,
+                                                              "description",
+                                                            ]}
+                                                            rules={[
+                                                              {
+                                                                required: true,
+                                                                whitespace: true,
+                                                                message:
+                                                                  "Please enter slide description",
+                                                              },
+                                                              {
+                                                                max: 500,
+                                                                message:
+                                                                  "Description cannot exceed 500 characters",
+                                                              },
+                                                            ]}
+                                                          >
+                                                            <TextArea
+                                                              rows={4}
+                                                              maxLength={500}
+                                                              showCount
+                                                              placeholder={
+                                                                isRestaurantTemplate
+                                                                  ? "Enjoy freshly prepared meals made with quality ingredients."
+                                                                  : "Find products that match your personality, comfort, and style."
+                                                              }
+                                                            />
+                                                          </Form.Item>
+                                                        </Col>
+                                                      )}
+
+                                                      {/* Slide image preview */}
+                                                      <Col xs={24}>
+                                                        <Form.Item
+                                                          noStyle
+                                                          shouldUpdate={(
+                                                            previousValues,
+                                                            currentValues,
+                                                          ) => {
+                                                            const previousImage =
+                                                              previousValues
+                                                                ?.config
+                                                                ?.headerConfig
+                                                                ?.slide?.[
+                                                                name
+                                                              ]?.imageUrl;
+
+                                                            const currentImage =
+                                                              currentValues
+                                                                ?.config
+                                                                ?.headerConfig
+                                                                ?.slide?.[
+                                                                name
+                                                              ]?.imageUrl;
+
+                                                            return (
+                                                              previousImage !==
+                                                              currentImage
+                                                            );
+                                                          }}
+                                                        >
+                                                          {({
+                                                            getFieldValue,
+                                                          }) => {
+                                                            const imageUrl =
+                                                              getFieldValue([
+                                                                "config",
+                                                                "headerConfig",
+                                                                "slide",
+                                                                name,
+                                                                "imageUrl",
+                                                              ]) as
+                                                              | string
+                                                              | undefined;
+
+                                                            if (!imageUrl) {
+                                                              return (
+                                                                <div className="flex min-h-40 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50">
+                                                                  <div className="text-center text-gray-500">
+                                                                    <ImageIcon className="mx-auto mb-2 h-7 w-7" />
+
+                                                                    <p className="mb-0">
+                                                                      No slide
+                                                                      image selected
+                                                                    </p>
+                                                                  </div>
+                                                                </div>
+                                                              );
+                                                            }
+
+                                                            return (
+                                                              <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                <img
+                                                                  src={imageUrlSet(
+                                                                    imageUrl,
+                                                                  )}
+                                                                  alt={`Slide ${index + 1}`}
+                                                                  className="h-48 w-full object-cover sm:h-64"
+                                                                />
+                                                              </div>
+                                                            );
+                                                          }}
+                                                        </Form.Item>
+                                                      </Col>
+
+                                                      {/* Remove slide */}
+                                                      {!isRestaurantTemplate && (
+                                                        <Col xs={24}>
+                                                          <Button
+                                                            danger
+                                                            onClick={() =>
+                                                              remove(name)
+                                                            }
+                                                            disabled={
+                                                              fields.length === 1
+                                                            }
+                                                          >
+                                                            Remove Slide
+                                                          </Button>
+                                                        </Col>
+                                                      )}
+                                                    </Row>
+                                                  ),
+                                                },
+                                              ]}
+                                            />
+                                          ),
+                                        )}
+
+                                        {displayedFields.length === 0 && (
+                                          <div className="rounded-md border border-dashed border-gray-300 p-6 text-center">
+                                            <ImageIcon className="mx-auto mb-2 h-7 w-7 text-gray-400" />
+
+                                            <p className="mb-3 text-gray-500">
+                                              No header slide found.
+                                            </p>
+
+                                            <Button
+                                              type="dashed"
+                                              onClick={() =>
+                                                add({
+                                                  id: Date.now(),
+                                                  title: "",
+                                                  imageUrl: "",
+                                                  subTitle: "",
+                                                  buttonText: "",
+                                                  description: "",
+                                                })
+                                              }
+                                            >
+                                              Add First Slide
+                                            </Button>
+                                          </div>
+                                        )}
+                                      </>
+                                    );
+                                  }}
+                                </Form.List>
                               );
                             }}
-                          </Form.List>
+                          </Form.Item>
                         ),
                       },
 
@@ -917,7 +1147,7 @@ export default function WebsiteTemplateForm({
 
                       {
                         key: "dashboardColors",
-                        label: "Dashboard Colors",
+                        label: "Top and Sidebar Color",
                         forceRender: true,
                         children: (
                           <Row gutter={[16, 16]}>
@@ -926,7 +1156,8 @@ export default function WebsiteTemplateForm({
                                 <strong>Dashboard Colors</strong>
 
                                 <p className="mb-0 text-sm text-gray-500">
-                                  Customize sidebar background, sidebar text, and card colors.
+                                  Customize sidebar background, sidebar text, navbar, navbar text,
+                                  and card colors.
                                 </p>
                               </div>
                             </Col>
@@ -966,7 +1197,7 @@ export default function WebsiteTemplateForm({
                                   "dashboardColors",
                                   "cardColor",
                                 ]}
-                                placeholder="#0f172a or var(--card-color)"
+                                placeholder="#ffffff or var(--card-color)"
                               />
                             </Col>
 
@@ -979,21 +1210,314 @@ export default function WebsiteTemplateForm({
                                   "dashboardColors",
                                   "navbarColor",
                                 ]}
-                                placeholder="#0f172a or var(--card-color)"
+                                placeholder="#ffffff or var(--navbar-color)"
                               />
                             </Col>
 
                             <Col xs={24} md={8}>
                               <ThemeColorField
-                                label="Navbar Text"
+                                label="Navbar Text Color"
                                 name={[
                                   "config",
                                   "generalConfig",
                                   "dashboardColors",
                                   "navbarText",
                                 ]}
-                                placeholder="#0f172a or var(--card-color)"
+                                placeholder="#0f172a or var(--navbar-text)"
                               />
+                            </Col>
+
+                            {/* Live preview */}
+                            <Col xs={24}>
+                              <Form.Item
+                                noStyle
+                                shouldUpdate={(previousValues, currentValues) => {
+                                  const previousColors =
+                                    previousValues?.config?.generalConfig?.dashboardColors;
+
+                                  const currentColors =
+                                    currentValues?.config?.generalConfig?.dashboardColors;
+
+                                  return previousColors !== currentColors;
+                                }}
+                              >
+                                {({ getFieldValue }) => {
+                                  const dashboardColors =
+                                    getFieldValue([
+                                      "config",
+                                      "generalConfig",
+                                      "dashboardColors",
+                                    ]) ?? {};
+
+                                  const sidebarBackgroundColor =
+                                    dashboardColors.sidebarBackgroundColor || "#020617";
+
+                                  const sidebarTextColor =
+                                    dashboardColors.sidebarTextColor || "#ffffff";
+
+                                  const cardColor =
+                                    dashboardColors.cardColor || "#ffffff";
+
+                                  const navbarColor =
+                                    dashboardColors.navbarColor || "#ffffff";
+
+                                  const navbarText =
+                                    dashboardColors.navbarText || "#0f172a";
+
+                                  return (
+                                    <div className="mt-2">
+                                      <div className="mb-3">
+                                        <strong>Dashboard Preview</strong>
+
+                                        <p className="mb-0 text-sm text-gray-500">
+                                          Preview how your selected dashboard colors will look.
+                                        </p>
+                                      </div>
+
+                                      <div className="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
+                                        <div className="flex min-h-[420px]">
+                                          {/* Sidebar */}
+                                          <aside
+                                            className="hidden w-[220px] shrink-0 p-4 sm:block"
+                                            style={{
+                                              backgroundColor: sidebarBackgroundColor,
+                                              color: sidebarTextColor,
+                                            }}
+                                          >
+                                            <div
+                                              className="mb-7 flex h-11 items-center rounded-lg px-3 text-base font-bold"
+                                              style={{
+                                                backgroundColor: "rgba(255,255,255,0.08)",
+                                              }}
+                                            >
+                                              Dashboard
+                                            </div>
+
+                                            <div className="space-y-2">
+                                              {[
+                                                "Overview",
+                                                "Products",
+                                                "Orders",
+                                                "Customers",
+                                                "Settings",
+                                              ].map((item, index) => (
+                                                <div
+                                                  key={item}
+                                                  className="rounded-lg px-3 py-2.5 text-sm font-medium"
+                                                  style={{
+                                                    color: sidebarTextColor,
+                                                    backgroundColor:
+                                                      index === 0
+                                                        ? "rgba(255,255,255,0.14)"
+                                                        : "transparent",
+                                                  }}
+                                                >
+                                                  {item}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </aside>
+
+                                          {/* Dashboard content */}
+                                          <div className="min-w-0 flex-1 bg-gray-100">
+                                            {/* Navbar */}
+                                            <header
+                                              className="flex h-16 items-center justify-between border-b border-black/10 px-4 sm:px-6"
+                                              style={{
+                                                backgroundColor: navbarColor,
+                                                color: navbarText,
+                                              }}
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                <div className="grid h-9 w-9 place-items-center rounded-lg border border-current/20 sm:hidden">
+                                                  ☰
+                                                </div>
+
+                                                <div>
+                                                  <div className="font-semibold">
+                                                    Dashboard Overview
+                                                  </div>
+
+                                                  <div
+                                                    className="text-xs"
+                                                    style={{
+                                                      color: navbarText,
+                                                      opacity: 0.7,
+                                                    }}
+                                                  >
+                                                    Welcome back
+                                                  </div>
+                                                </div>
+                                              </div>
+
+                                              <div className="flex items-center gap-3">
+                                                <div className="hidden text-sm sm:block">
+                                                  Admin User
+                                                </div>
+
+                                                <div
+                                                  className="grid h-9 w-9 place-items-center rounded-full font-semibold"
+                                                  style={{
+                                                    backgroundColor: sidebarBackgroundColor,
+                                                    color: sidebarTextColor,
+                                                  }}
+                                                >
+                                                  A
+                                                </div>
+                                              </div>
+                                            </header>
+
+                                            {/* Main content */}
+                                            <main className="p-4 sm:p-6">
+                                              <div className="mb-5">
+                                                <h3 className="mb-1 text-lg font-bold text-gray-900">
+                                                  Business Summary
+                                                </h3>
+
+                                                <p className="mb-0 text-sm text-gray-500">
+                                                  Your dashboard color configuration preview.
+                                                </p>
+                                              </div>
+
+                                              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                                                {[
+                                                  {
+                                                    title: "Total Orders",
+                                                    value: "1,240",
+                                                  },
+                                                  {
+                                                    title: "Total Revenue",
+                                                    value: "$24,850",
+                                                  },
+                                                  {
+                                                    title: "Customers",
+                                                    value: "835",
+                                                  },
+                                                ].map((card) => (
+                                                  <div
+                                                    key={card.title}
+                                                    className="rounded-xl border border-black/10 p-4 shadow-sm"
+                                                    style={{
+                                                      backgroundColor: cardColor,
+                                                    }}
+                                                  >
+                                                    <p className="mb-2 text-sm text-gray-500">
+                                                      {card.title}
+                                                    </p>
+
+                                                    <p className="mb-0 text-2xl font-bold text-gray-900">
+                                                      {card.value}
+                                                    </p>
+                                                  </div>
+                                                ))}
+                                              </div>
+
+                                              <div
+                                                className="mt-4 rounded-xl border border-black/10 p-5 shadow-sm"
+                                                style={{
+                                                  backgroundColor: cardColor,
+                                                }}
+                                              >
+                                                <div className="mb-4 flex items-center justify-between">
+                                                  <div>
+                                                    <h4 className="mb-1 font-semibold text-gray-900">
+                                                      Recent Orders
+                                                    </h4>
+
+                                                    <p className="mb-0 text-xs text-gray-500">
+                                                      Latest customer orders
+                                                    </p>
+                                                  </div>
+
+                                                  <button
+                                                    type="button"
+                                                    className="rounded-md px-3 py-1.5 text-xs font-semibold"
+                                                    style={{
+                                                      backgroundColor: sidebarBackgroundColor,
+                                                      color: sidebarTextColor,
+                                                    }}
+                                                  >
+                                                    View All
+                                                  </button>
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                  {[1, 2, 3].map((item) => (
+                                                    <div
+                                                      key={item}
+                                                      className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-3"
+                                                    >
+                                                      <div>
+                                                        <p className="mb-1 text-sm font-semibold text-gray-900">
+                                                          Order #{1000 + item}
+                                                        </p>
+
+                                                        <p className="mb-0 text-xs text-gray-500">
+                                                          Customer name
+                                                        </p>
+                                                      </div>
+
+                                                      <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-600">
+                                                        Completed
+                                                      </span>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                              </div>
+                                            </main>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Selected color summary */}
+                                      <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-5">
+                                        {[
+                                          {
+                                            label: "Sidebar",
+                                            color: sidebarBackgroundColor,
+                                          },
+                                          {
+                                            label: "Sidebar Text",
+                                            color: sidebarTextColor,
+                                          },
+                                          {
+                                            label: "Navbar",
+                                            color: navbarColor,
+                                          },
+                                          {
+                                            label: "Navbar Text",
+                                            color: navbarText,
+                                          },
+                                          {
+                                            label: "Card",
+                                            color: cardColor,
+                                          },
+                                        ].map((item) => (
+                                          <div
+                                            key={item.label}
+                                            className="rounded-lg border border-gray-200 bg-white p-3"
+                                          >
+                                            <div
+                                              className="mb-2 h-8 w-full rounded-md border border-black/10"
+                                              style={{
+                                                backgroundColor: item.color,
+                                              }}
+                                            />
+
+                                            <p className="mb-1 text-xs font-semibold text-gray-700">
+                                              {item.label}
+                                            </p>
+
+                                            <p className="mb-0 truncate text-xs text-gray-500">
+                                              {item.color}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  );
+                                }}
+                              </Form.Item>
                             </Col>
                           </Row>
                         ),
@@ -2009,8 +2533,10 @@ export default function WebsiteTemplateForm({
             {
               key: "theme",
               label: "Theme",
+              forceRender: true,
               children: (
                 <Row gutter={[16, 16]}>
+                  {/* Primary color */}
                   <Col xs={24} md={8}>
                     <Form.Item label="Primary Color">
                       <div className="mb-2 flex justify-end">
@@ -2018,21 +2544,36 @@ export default function WebsiteTemplateForm({
                           size="small"
                           value={primaryMode}
                           options={[
-                            { label: "Color", value: "picker" },
-                            { label: "Text", value: "text" },
+                            {
+                              label: "Color",
+                              value: "picker",
+                            },
+                            {
+                              label: "Text",
+                              value: "text",
+                            },
                           ]}
                           onChange={(value) =>
-                            setPrimaryMode(value as ColorInputMode)
+                            setPrimaryMode(
+                              value as ColorInputMode,
+                            )
                           }
                         />
                       </div>
 
                       <Form.Item
-                        name={["theme", "primaryColor"]}
+                        name={[
+                          "theme",
+                          "primaryColor",
+                        ]}
                         noStyle
                       >
                         <Input
-                          type={primaryMode === "picker" ? "color" : "text"}
+                          type={
+                            primaryMode === "picker"
+                              ? "color"
+                              : "text"
+                          }
                           placeholder={
                             primaryMode === "text"
                               ? "#2563eb, rgb(37, 99, 235) or var(--primary)"
@@ -2048,6 +2589,7 @@ export default function WebsiteTemplateForm({
                     </Form.Item>
                   </Col>
 
+                  {/* Secondary color */}
                   <Col xs={24} md={8}>
                     <Form.Item label="Secondary Color">
                       <div className="mb-2 flex justify-end">
@@ -2055,21 +2597,36 @@ export default function WebsiteTemplateForm({
                           size="small"
                           value={secondaryMode}
                           options={[
-                            { label: "Color", value: "picker" },
-                            { label: "Text", value: "text" },
+                            {
+                              label: "Color",
+                              value: "picker",
+                            },
+                            {
+                              label: "Text",
+                              value: "text",
+                            },
                           ]}
                           onChange={(value) =>
-                            setSecondaryMode(value as ColorInputMode)
+                            setSecondaryMode(
+                              value as ColorInputMode,
+                            )
                           }
                         />
                       </div>
 
                       <Form.Item
-                        name={["theme", "secondaryColor"]}
+                        name={[
+                          "theme",
+                          "secondaryColor",
+                        ]}
                         noStyle
                       >
                         <Input
-                          type={secondaryMode === "picker" ? "color" : "text"}
+                          type={
+                            secondaryMode === "picker"
+                              ? "color"
+                              : "text"
+                          }
                           placeholder={
                             secondaryMode === "text"
                               ? "#f8f5f1, rgb(...) or var(--secondary)"
@@ -2085,6 +2642,7 @@ export default function WebsiteTemplateForm({
                     </Form.Item>
                   </Col>
 
+                  {/* Accent color */}
                   <Col xs={24} md={8}>
                     <Form.Item label="Accent Color">
                       <div className="mb-2 flex justify-end">
@@ -2092,21 +2650,36 @@ export default function WebsiteTemplateForm({
                           size="small"
                           value={accentMode}
                           options={[
-                            { label: "Color", value: "picker" },
-                            { label: "Text", value: "text" },
+                            {
+                              label: "Color",
+                              value: "picker",
+                            },
+                            {
+                              label: "Text",
+                              value: "text",
+                            },
                           ]}
                           onChange={(value) =>
-                            setAccentMode(value as ColorInputMode)
+                            setAccentMode(
+                              value as ColorInputMode,
+                            )
                           }
                         />
                       </div>
 
                       <Form.Item
-                        name={["theme", "accentColor"]}
+                        name={[
+                          "theme",
+                          "accentColor",
+                        ]}
                         noStyle
                       >
                         <Input
-                          type={accentMode === "picker" ? "color" : "text"}
+                          type={
+                            accentMode === "picker"
+                              ? "color"
+                              : "text"
+                          }
                           placeholder={
                             accentMode === "text"
                               ? "#7c3aed, rgb(...) or var(--accent)"
@@ -2122,6 +2695,7 @@ export default function WebsiteTemplateForm({
                     </Form.Item>
                   </Col>
 
+                  {/* Font */}
                   <Col xs={24} md={12}>
                     <Form.Item
                       label="Font Family"
@@ -2129,7 +2703,8 @@ export default function WebsiteTemplateForm({
                       rules={[
                         {
                           required: true,
-                          message: "Please enter font family",
+                          message:
+                            "Please enter font family",
                         },
                       ]}
                     >
@@ -2143,26 +2718,39 @@ export default function WebsiteTemplateForm({
                     </Form.Item>
                   </Col>
 
+                  {/* Logo */}
                   <Col xs={24} md={12}>
-                    <Form.Item label="Logo" name={["theme", "logoUrl"]}>
+                    <Form.Item
+                      label="Logo"
+                      name={["theme", "logoUrl"]}
+                    >
                       <Input
                         readOnly
                         placeholder="Select logo"
-                        onClick={() => setThemeLogoModalOpen(true)}
+                        onClick={() =>
+                          setThemeLogoModalOpen(true)
+                        }
                       />
                     </Form.Item>
                   </Col>
 
+                  {/* Favicon */}
                   <Col xs={24} md={12}>
-                    <Form.Item label="Favicon" name={["theme", "faviconUrl"]}>
+                    <Form.Item
+                      label="Favicon"
+                      name={["theme", "faviconUrl"]}
+                    >
                       <Input
                         readOnly
                         placeholder="Select favicon"
-                        onClick={() => setThemeFaviconModalOpen(true)}
+                        onClick={() =>
+                          setThemeFaviconModalOpen(true)
+                        }
                       />
                     </Form.Item>
                   </Col>
 
+                  {/* Custom CSS */}
                   <Col xs={24}>
                     <Form.Item
                       label="Custom CSS"
@@ -2172,6 +2760,362 @@ export default function WebsiteTemplateForm({
                         rows={8}
                         placeholder=".hero { min-height: 70vh; }"
                       />
+                    </Form.Item>
+                  </Col>
+
+                  {/* Live theme preview */}
+                  <Col xs={24}>
+                    <Form.Item
+                      noStyle
+                      shouldUpdate={(
+                        previousValues,
+                        currentValues,
+                      ) => {
+                        const previousTheme =
+                          previousValues?.theme;
+
+                        const currentTheme =
+                          currentValues?.theme;
+
+                        return (
+                          previousTheme?.primaryColor !==
+                          currentTheme?.primaryColor ||
+                          previousTheme?.secondaryColor !==
+                          currentTheme?.secondaryColor ||
+                          previousTheme?.accentColor !==
+                          currentTheme?.accentColor ||
+                          previousTheme?.fontFamily !==
+                          currentTheme?.fontFamily ||
+                          previousTheme?.logoUrl !==
+                          currentTheme?.logoUrl ||
+                          previousTheme?.faviconUrl !==
+                          currentTheme?.faviconUrl
+                        );
+                      }}
+                    >
+                      {({ getFieldValue }) => {
+                        const theme =
+                          getFieldValue("theme") ?? {};
+
+                        const primaryColor = theme.primaryColor || "#fef8ee";
+
+                        const secondaryColor = theme.secondaryColor || "#f6f6f6";
+
+                        const accentColor = theme.accentColor || "#ffffff";
+
+                        const navbarColor = topbarColor || "#ffffff";
+
+                        const navbarText = topbarText || "#000000";
+
+                        const cardBackGround = cardColor || "#ffffff"
+
+
+                        const fontFamily = theme.fontFamily || "Arial, sans-serif";
+
+                        const logoUrl = theme.logoUrl as
+                          | string
+                          | undefined;
+
+                        const faviconUrl =
+                          theme.faviconUrl as
+                          | string
+                          | undefined;
+
+                        const colorItems = [
+                          {
+                            label: "Primary",
+                            value: primaryColor,
+                          },
+                          {
+                            label: "Secondary",
+                            value: secondaryColor,
+                          },
+                          {
+                            label: "Accent",
+                            value: accentColor,
+                          },
+                        ];
+
+                        return (
+                          <div className="mt-2"
+                            style={{
+                              background: accentColor
+                            }}
+                          >
+                            <div className="mb-3">
+                              <h3 className="mb-1 text-base font-semibold">
+                                Live Theme Preview
+                              </h3>
+
+                              <p className="mb-0 text-sm text-gray-500">
+                                This preview updates when
+                                you change the theme
+                                settings.
+                              </p>
+                            </div>
+
+                            <div
+                              className="overflow-hidden rounded-2xl border border-gray-200 shadow-sm"
+                              style={{
+                                fontFamily,
+                              }}
+                            >
+                              {/* Preview navbar */}
+                              <header
+                              style={{
+                                backgroundColor: navbarColor,
+                                color: navbarText,
+                              }}
+                                className="flex min-h-16 items-center justify-between gap-3 border-b border-black/10 px-4 py-3 sm:px-6"
+                              >
+                                <div className="flex min-w-0 items-center gap-3">
+                                  {logoUrl ? (
+                                    <div className="flex h-10 max-w-36 items-center rounded-lg bg-white px-2">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={imageUrlSet(
+                                          logoUrl,
+                                        )}
+                                        alt="Theme logo"
+                                        className="max-h-8 max-w-full object-contain"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div
+                                      className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-lg font-bold bg-white"
+                                    >
+                                      S
+                                    </div>
+                                  )}
+
+                                  <div className="min-w-0">
+                                    <p className="mb-0 truncate text-base font-bold">
+                                      Your Store
+                                    </p>
+
+                                    <p className="mb-0 hidden text-xs opacity-80 sm:block">
+                                      Dynamic storefront
+                                      theme
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex shrink-0 items-center gap-2">
+                                  {faviconUrl && (
+                                    <div className="grid h-9 w-9 place-items-center rounded-full bg-white">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={imageUrlSet(
+                                          faviconUrl,
+                                        )}
+                                        alt="Theme favicon"
+                                        className="h-5 w-5 object-contain"
+                                      />
+                                    </div>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    className="rounded-lg px-3 py-2 text-xs font-semibold sm:px-4 sm:text-sm"
+                                    style={{
+                                      backgroundColor: "#5e57c7",
+                                      color: "#ffffff",
+                                    }}
+                                  >
+                                    Shop Now
+                                  </button>
+                                </div>
+                              </header>
+
+                              {/* Preview hero */}
+                              <section
+                                style={{
+                                  background: primaryColor,
+                                }}
+                                className="grid gap-6 px-4 py-8 sm:px-6 md:grid-cols-2 md:items-center md:px-10 md:py-12">
+                                <div>
+                                  <span
+                                    className="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+                                  >
+                                    New Collection
+                                  </span>
+
+                                  <h2 className="mt-4 text-2xl font-bold leading-tight text-gray-950 sm:text-3xl">
+                                    Discover products made
+                                    for your lifestyle
+                                  </h2>
+
+                                  <p className="mt-3 max-w-lg text-sm leading-6 text-gray-600">
+                                    This area previews your
+                                    selected primary,
+                                    secondary, accent and
+                                    font settings.
+                                  </p>
+
+                                  <div className="mt-5 flex flex-wrap gap-3">
+                                    <button
+                                      type="button"
+                                      className="rounded-lg px-5 py-2.5 text-sm font-semibold"
+                                      style={{
+                                        backgroundColor: "#5e57c7",
+                                        color: "#ffffff",
+                                      }}
+                                    >
+                                      Explore Products
+                                    </button>
+
+                                  </div>
+                                </div>
+
+                                <div
+                                  className="flex min-h-52 items-center justify-center rounded-2xl p-6"
+                                // style={{
+                                //   backgroundColor:
+                                //     primaryColor,
+                                // }}
+                                >
+                                  <div
+                                    className="grid h-32 w-32 place-items-center rounded-full text-center text-lg font-bold text-white shadow-lg sm:h-40 sm:w-40"
+                                  >
+                                    Product
+                                    <br />
+                                    Preview
+                                  </div>
+                                </div>
+                              </section>
+
+                              {/* Product cards */}
+                              <section
+                              style={{
+                                background: secondaryColor,
+                              }}
+                              className="px-4 py-6 sm:px-6 md:px-10">
+                                <div className="mb-4 flex items-center justify-between gap-3">
+                                  <div>
+                                    <h3 className="mb-1 text-lg font-bold text-gray-950">
+                                      Featured Products
+                                    </h3>
+
+                                    <p className="mb-0 text-xs text-gray-500">
+                                      Sample product card
+                                      preview
+                                    </p>
+                                  </div>
+
+                                  <span
+                                    className="rounded-full px-3 py-1 text-xs font-semibold"
+                                  >
+                                    Featured
+                                  </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                  {[
+                                    "Classic Product",
+                                    "Premium Product",
+                                    "Popular Product",
+                                  ].map(
+                                    (product, index) => (
+                                      <article
+                                      style={{
+                                        background: cardBackGround
+                                      }}
+                                        key={product}
+                                        className="overflow-hidden rounded-xl border border-black/10 shadow-sm"
+                                      >
+                                        <div
+                                          className="flex h-32 items-center justify-center"
+                                          style={{
+                                            backgroundColor:
+                                              secondaryColor,
+                                          }}
+                                        >
+                                          <div
+                                            className="h-16 w-16 rounded-full"
+                                          />
+                                        </div>
+
+                                        <div className="p-4">
+                                          <h4 className="mb-1 font-semibold text-gray-950">
+                                            {product}
+                                          </h4>
+
+                                          <p className="mb-3 text-xs text-gray-500">
+                                            Product category
+                                          </p>
+
+                                          <div className="flex items-center justify-between gap-3">
+                                            <strong
+                                            // style={{
+                                            //   color:
+                                            //     primaryColor,
+                                            // }}
+                                            >
+                                              $
+                                              {29 +
+                                                index * 10}
+                                              .00
+                                            </strong>
+
+                                            <button
+                                              type="button"
+                                              className="rounded-md px-3 py-1.5 text-xs font-semibold"
+
+                                            >
+                                              Add
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </article>
+                                    ),
+                                  )}
+                                </div>
+                              </section>
+                            </div>
+
+                            {/* Color values */}
+                            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                              {colorItems.map(
+                                (item) => (
+                                  <div
+                                    key={item.label}
+                                    className="rounded-xl border border-gray-200 bg-white p-3"
+                                  >
+                                    <div
+                                      className="mb-3 h-12 rounded-lg border border-black/10"
+                                      style={{
+                                        backgroundColor:
+                                          item.value,
+                                      }}
+                                    />
+
+                                    <p className="mb-1 text-sm font-semibold text-gray-800">
+                                      {item.label} Color
+                                    </p>
+
+                                    <p className="mb-0 truncate text-xs text-gray-500">
+                                      {item.value}
+                                    </p>
+                                  </div>
+                                ),
+                              )}
+                            </div>
+
+                            <div className="mt-3 rounded-xl border border-gray-200 bg-white p-4">
+                              <p className="mb-1 text-sm font-semibold text-gray-800">
+                                Font Family
+                              </p>
+
+                              <p
+                                className="mb-0 text-lg"
+                                style={{ fontFamily }}
+                              >
+                                {fontFamily}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }}
                     </Form.Item>
                   </Col>
                 </Row>

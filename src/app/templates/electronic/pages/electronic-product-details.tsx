@@ -11,8 +11,9 @@ import {
   ShoppingCart,
   Star,
 } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useProductWebReview, useTemplateProduct } from "@/lib/api/hooks/public-website";
+
+import { useParams, useRouter } from "next/navigation";
+import { useTemplateProduct } from "@/lib/api/hooks/public-website";
 import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useAddCartMutation } from "@/lib/api/hooks/add-cart";
 import { useTemplateProductWishListMutation } from "@/lib/api/hooks/template-product-wishList";
@@ -21,27 +22,16 @@ import { StorefrontProduct } from "@/types/template/template-product";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import VariantModal from "../_components/variant-modal";
 import { motion } from "framer-motion";
-import Pagination from "@/app/store/_components/pagination";
-import ProductReviewForm from "../../fashion/_components/product_review_form";
-
-const RatingStars = ({ rating }: { rating: number }) => {
-  return (
-    <div className="flex items-center gap-1">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <Star
-          key={index}
-          className={`h-4 w-4 ${index < rating ? "fill-[#f16d59] text-[#f16d59]" : "text-gray-300"
-            }`}
-        />
-      ))}
-    </div>
-  );
-};
+import { useCart } from "@/app/store/_components/contex/CartContex";
+import ProductReview from "../../fashion/_components/Product-review";
 
 const ElectronicProductDetails = () => {
   const { productSlug } = useParams<{ productSlug: string }>();
   const [selectedImage, setSelectedImage] = useState<string>("");
-  const [selectedVariantId, setSelectedVariantId] = useState("");
+  const router = useRouter();
+
+  const { getAuthUser } = useCart();
+  const user = getAuthUser();
 
   const message = useMessage();
 
@@ -55,18 +45,6 @@ const ElectronicProductDetails = () => {
   // fetch product
   const { data: product, isLoading, isFetching } = useTemplateProduct(productSlug);
 
-  // review 
-  const [currentPage, setCurrentPage] = useState(1);
-  const limit = 5;
-
-  const {data: reviewData} = useProductWebReview(productSlug, {
-    limit,
-    page: currentPage,
-  });
-
-  const total = reviewData?.meta.total ?? 1;
-  const totalPages = Math.ceil(total / limit);
-
   // select initial image
   useEffect(() => {
     if (product?.images) {
@@ -76,6 +54,10 @@ const ElectronicProductDetails = () => {
 
 
   const handleAddToCart = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
 
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
@@ -102,6 +84,10 @@ const ElectronicProductDetails = () => {
   }
 
   const handleAddToWishList = async (value: StorefrontProduct) => {
+    if (!user) {
+      message.error('please login first')
+      return router.push('/store/login');
+    }
 
     if (value.variants.length > 0) {
       setVariantModalOpen(true);
@@ -148,7 +134,6 @@ const ElectronicProductDetails = () => {
   const productImages = product?.images ?? [];
   const variants = product?.variants ?? [];
   const averageRating = product?.reviewSummary.averageRating ?? 0;
-  const reviews = reviewData?.items ?? [];
 
   if (isLoading || isFetching) return <span>Loading...</span>
 
@@ -217,8 +202,8 @@ const ElectronicProductDetails = () => {
                       whileHover={{ scale: 1.04 }}
                       whileTap={{ scale: 0.95 }}
                       className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 bg-[#f8f5f1] transition ${isActive
-                          ? "border-[#f16d59]"
-                          : "border-gray-200 hover:border-[#f16d59]/60"
+                        ? "border-[#f16d59]"
+                        : "border-gray-200 hover:border-[#f16d59]/60"
                         }`}
                     >
                       <Image
@@ -313,17 +298,12 @@ const ElectronicProductDetails = () => {
 
                 <div className="flex flex-wrap gap-3">
                   {variants?.map((variant) => {
-                    const oneVariantImage = variant?.images[0]?.imageUrl ?? "";
-                    const oneProductImage = product?.images[0].imageUrl ?? "";
+
                     return (
                       <button
                         key={variant?.id}
                         type="button"
-                        onClick={() => {
-                          // setSelectedVariantId(variant.id);
-                          setSelectedImage(oneVariantImage || oneProductImage);
-                        }}
-                        className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${selectedVariantId === variant.id
+                        className={`rounded-full border px-5 py-2 text-sm font-semibold transition ${false
                           ? "border-[#f16d59] bg-[#f16d59] text-white"
                           : "border-gray-300 text-gray-700 hover:border-[#f16d59] hover:text-[#f16d59]"
                           }`}
@@ -370,7 +350,7 @@ const ElectronicProductDetails = () => {
             {/* Product Info */}
             <div className="mt-8 border-t border-gray-200 pt-6">
               <div className="space-y-3 text-sm">
-              
+
 
                 <p>
                   <span className="font-bold">Total Stock:</span>{" "}
@@ -391,108 +371,10 @@ const ElectronicProductDetails = () => {
         </div>
       </div>
 
-      {/* Reviews Section */}
-      <div className="mt-8 bg-[var(--store-bg-1)] p-5 shadow-sm lg:p-8 mx-auto max-w-[1220px]">
-        <div className="mb-6 flex flex-col gap-2 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-950">
-              Customer Reviews
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Total Reviews: {product?.reviews.length}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <RatingStars rating={product?.reviewSummary.averageRating ?? 0} />
-
-            <span className="text-sm font-semibold text-gray-700">
-              {product?.reviewSummary.averageRating} out of 5
-            </span>
-          </div>
-        </div>
-
-        {reviews.length > 0 ? (
-          <div className="space-y-5">
-            {reviews.map((review) => (
-              <div
-                key={review.id}
-                className="rounded-xl border border-gray-200 p-5 transition hover:border-[#f16d59] hover:shadow-sm"
-              >
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <div className="grid h-11 w-11 place-items-center rounded-full bg-[#f16d59]/10 text-sm font-bold text-[#f16d59]">
-                        {review?.reviewerName?.charAt(0).toUpperCase()}
-                      </div>
-
-                      <div>
-                        <h3 className="font-bold text-gray-950">
-                          {review?.reviewerName}
-                        </h3>
-
-                        <p className="text-xs text-gray-500">
-                          {review.reviewerEmail}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-4 flex items-center gap-2">
-                      <RatingStars rating={review.rating} />
-
-                      <span className="text-sm font-semibold text-gray-700">
-                        {review.rating}/5
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-start gap-2 sm:items-end">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${review.status === "APPROVED"
-                        ? "bg-green-50 text-green-600"
-                        : "bg-yellow-50 text-yellow-600"
-                        }`}
-                    >
-                      {review.status}
-                    </span>
-
-                    <span className="text-xs text-gray-500">
-                      {new Date(review.createdAt).toLocaleDateString("en-US", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mt-5">
-                  <h4 className="text-base font-bold text-gray-950">
-                    {review.title}
-                  </h4>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-600">
-                    {review.comment}
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </div>
-        ) : (
-          <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-            <h3 className="text-lg font-bold text-gray-950">No reviews yet</h3>
-            <p className="mt-2 text-sm text-gray-500">
-              Be the first person to review this product.
-            </p>
-          </div>
-        )}
-      </div>
+      <ProductReview
+      productSlug={productSlug}
+      averageRating={product?.reviewSummary.averageRating}
+      />
 
       {
         product && <VariantModal

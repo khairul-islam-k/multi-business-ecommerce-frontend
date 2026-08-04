@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Grid, Menu, theme } from "antd";
+import { Grid, Menu, Spin, theme } from "antd";
 import type { MenuProps } from "antd";
 
 import { items } from "./side-navigation";
@@ -42,7 +42,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   const websiteAccess = usePermissionAccess(PERMISSIONS.websiteRead);
   const courierAccess = usePermissionAccess(PERMISSIONS.courierRead);
 
-  const loading =  businessAccess.loading;
+  const loading = businessAccess.loading;
 
   const { useBreakpoint } = Grid;
   const screens = useBreakpoint();
@@ -134,7 +134,11 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
 
 
   if (loading) {
-    return <span>Loading...</span>
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <Spin size="large" tip="Loading..." />
+      </div>
+    );
   }
 
   return (

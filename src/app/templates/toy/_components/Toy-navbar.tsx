@@ -57,17 +57,6 @@ type NavbarProps = {
     phone?: string;
 };
 
-type StaticNavigationItem = {
-    label: string;
-    href: string;
-};
-
-const topNavigationItems: StaticNavigationItem[] = [
-    {
-        label: "Showroom",
-        href: "/store/products",
-    }
-];
 
 type FlatCategoryItem = {
     item: CategoryTreeItem;
@@ -877,15 +866,6 @@ const ToyNavbar = ({
                                     )}
                                 </Link>
 
-                                {topNavigationItems.map((navigationItem) => (
-                                    <Link
-                                        key={navigationItem.label}
-                                        href={navigationItem.href}
-                                        className="flex h-full items-center text-sm font-medium text-[var(--store-text-primary)] transition hover:text-[var(--store-primary)]"
-                                    >
-                                        {navigationItem.label}
-                                    </Link>
-                                ))}
                             </div>
                         </div>
                     </nav>
@@ -1022,21 +1002,6 @@ const ToyNavbar = ({
                             >
                                 Home
                             </Link>
-
-                            {topNavigationItems.map(
-                                (navigationItem) => (
-                                    <Link
-                                        key={navigationItem.label}
-                                        href={navigationItem.href}
-                                        onClick={() =>
-                                            setMobileMenuOpen(false)
-                                        }
-                                        className="block text-sm font-medium text-[var(--store-text-primary)]"
-                                    >
-                                        {navigationItem.label}
-                                    </Link>
-                                ),
-                            )}
 
                         </nav>
                     </div>

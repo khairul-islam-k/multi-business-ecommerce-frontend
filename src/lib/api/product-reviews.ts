@@ -31,6 +31,51 @@ export type UpdateProductReviewStatusPayload = {
   status: ProductReviewStatus;
 };
 
+export type ReviewImage = {
+  id: string;
+  businessId: string;
+  reviewId: string;
+  imageUrl: string;
+  altText: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
+export type ReviewProduct = {
+  id: string;
+  businessId: string;
+  categoryId: string;
+  brandId: string | null;
+  unitId: string | null;
+  taxId: string | null;
+
+  name: string;
+  slug: string;
+  description: string | null;
+
+  sku: string;
+  barcode: string | null;
+
+  price: string;
+  offerPrice: string | null;
+  weight: string | null;
+
+  inOffer: boolean;
+  startingFrom: string | null;
+  endsIn: string | null;
+
+  status: string;
+
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+
+  createdBy: string | null;
+  updatedBy: string | null;
+  deletedBy: string | null;
+};
+
 export type ProductReviewResponse = {
   id: ApiId;
   businessId: ApiId;
@@ -43,11 +88,13 @@ export type ProductReviewResponse = {
   reviewerEmail?: string | null;
   reviewerPhone?: string | null;
   status: ProductReviewStatus;
-  product?: unknown;
+  images: ReviewImage[];
+  product: ReviewProduct;
   variant?: unknown;
   createdAt?: string;
   updatedAt?: string;
 };
+
 
 const basePath = (businessId: ApiId) =>
   `/product-catalog/businesses/${businessId}/reviews`;

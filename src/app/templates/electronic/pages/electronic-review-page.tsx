@@ -1,6 +1,9 @@
 "use client";
 
+import { imageUrlSet } from "@/app/(dashboard)/admin/dashboard/product-catalog/products/_components/image-url";
 import { useTemplateProductReviewQuery } from "@/lib/api/hooks/template-product-review";
+import { ImageIcon } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
 const RatingStars = ({ rating }: { rating: number }) => {
@@ -40,6 +43,8 @@ const ElectronicReviewPage = () => {
     const { data: review, isLoading, isError } = useTemplateProductReviewQuery();
 
     const reviews = review?.items ?? [];
+
+    console.log('reviews', reviews);
 
     if (isLoading) {
         return (
@@ -121,47 +126,79 @@ const ElectronicReviewPage = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
-                        {reviews.map((item) => (
-                            <article
-                                key={item.id}
-                                className="flex h-full flex-col rounded-2xl border border-gray-200 bg-[var(--store-bg-1)] p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-5"
-                            >
-                                <div className="mb-4 flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-between sm:flex-col sm:items-start lg:flex-row lg:items-center lg:justify-between">
-                                    <RatingStars rating={item.rating} />
+                        {reviews.map((item) => {
+                            const firstImage = item.images?.[0]?.imageUrl;
 
-                                    <span
-                                        className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ring-1 ${getStatusClassName(
-                                            item.status
-                                        )}`}
-                                    >
-                                        {item.status}
-                                    </span>
-                                </div>
+                            return (
+                                <article
+                                    key={item.id}
+                                    className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-[var(--store-card)] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                                >
+                                    {/* Review first image */}
+                                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 h-[200px]">
+                                        {firstImage ? (
+                                            <Image
+                                                src={imageUrlSet(firstImage)}
+                                                alt={
+                                                    item.images?.[0]?.altText ||
+                                                    item.product?.name ||
+                                                    "Review image"
+                                                }
+                                                fill
+                                                className="transition duration-300 hover:scale-105"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full w-full items-center justify-center text-gray-400">
+                                                <ImageIcon className="h-10 w-10" />
+                                            </div>
+                                        )}
+                                    </div>
 
-                                <h2 className="line-clamp-2 text-base font-semibold leading-6 sm:text-lg">
-                                    {item.title}
-                                </h2>
+                                    <div className="flex flex-1 flex-col p-4 sm:p-5">
+                                        {/* Product name */}
+                                        <p className="mb-3 line-clamp-1 text-sm font-medium text-gray-500">
+                                            {item.product?.name || "Product unavailable"}
+                                        </p>
 
-                                <div className='h-20 overflow-y-auto'>
-                                    <p className="mt-3 line-clamp-5 flex-1 text-sm leading-6 sm:line-clamp-4">
-                                        {item.comment}
-                                    </p>
-                                </div>
+                                        <div className="mb-4 flex flex-col gap-3 xs:flex-row xs:items-center xs:justify-between sm:flex-col sm:items-start lg:flex-row lg:items-center lg:justify-between">
+                                            <RatingStars rating={Number(item.rating)} />
 
-                                <div className="mt-5 border-t border-gray-100 pt-4">
-                                    <p className="text-xs leading-5 text-gray-400 sm:text-sm">
-                                        Submitted on{" "}
-                                        {item.createdAt
-                                            ? new Date(item.createdAt).toLocaleDateString("en-US", {
-                                                day: "2-digit",
-                                                month: "short",
-                                                year: "numeric",
-                                            })
-                                            : "N/A"}
-                                    </p>
-                                </div>
-                            </article>
-                        ))}
+                                            <span
+                                                className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ring-1 ${getStatusClassName(
+                                                    item.status,
+                                                )}`}
+                                            >
+                                                {item.status}
+                                            </span>
+                                        </div>
+
+                                        <h2 className="line-clamp-2 text-base font-semibold leading-6 text-gray-900 sm:text-lg">
+                                            {item.title || "Untitled review"}
+                                        </h2>
+
+                                        <div className="h-[100px] overflow-y-auto overflow-x-hidden">
+                                            <p className="mt-3 flex-1 text-sm leading-6 text-gray-600">
+                                                {item.comment || "No review comment provided."}
+                                            </p>
+                                        </div>
+
+                                        <div className="mt-5 border-t border-gray-100 pt-4">
+                                            <p className="text-xs leading-5 text-gray-400 sm:text-sm">
+                                                Submitted on{" "}
+                                                {item.createdAt
+                                                    ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                                                        day: "2-digit",
+                                                        month: "short",
+                                                        year: "numeric",
+                                                    })
+                                                    : "N/A"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </article>
+                            );
+                        })}
                     </div>
                 )}
             </div>

@@ -7,6 +7,7 @@ import {
   Space,
   Tag,
   theme,
+  Tooltip,
   Typography,
 } from "antd";
 import { FileText, LogOut } from "lucide-react";
@@ -97,27 +98,43 @@ const ProfileDropdown = () => {
         }}
         trigger={["click"]}
       >
-        <Button type="text" style={{ height: 44, paddingInline: 8 }}>
-          <Space size={10}>
-            {imageAvatar ? (
-              <Avatar alt={user?.name} src={imageAvatar} />
-            ) : (
-              <Avatar alt={avatarSeed} src={avatarSrc} />
-            )}
-            <div className="hidden min-w-0 text-left md:block">
-              <Text
-                strong
-                ellipsis
-                style={{ color: token.colorText, maxWidth: 140 }}
-              >
+        
+        <Tooltip
+          title={
+            <div className="flex flex-col gap-1">
+              <span className="font-semibold">
                 {user?.name ?? "User"}
-              </Text>
-              <div>
-                <Tag color="blue">{user?.type ?? "USER"}</Tag>
-              </div>
+              </span>
+
+              <span className="text-xs opacity-80">
+                {user?.type ?? "USER"}
+              </span>
             </div>
-          </Space>
-        </Button>
+          }
+        >
+          <Button
+            type="text"
+            style={{
+              height: 44,
+              paddingInline: 8,
+            }}
+          >
+            <Space size={10}>
+              {imageAvatar ? (
+                <Avatar
+                  alt={user?.name ?? "User"}
+                  src={imageAvatar}
+                />
+              ) : (
+                <Avatar
+                  alt={avatarSeed}
+                  src={avatarSrc}
+                />
+              )}
+            </Space>
+          </Button>
+        </Tooltip>
+
       </Dropdown>
     </div>
   );

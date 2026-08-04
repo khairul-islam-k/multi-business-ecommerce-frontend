@@ -69,6 +69,17 @@ export type ProductReviewSummary = {
   averageRating: number;
 };
 
+export type ProductReviewImage = {
+  id: string;
+  businessId: string;
+  reviewId: string;
+  imageUrl: string;
+  altText: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+};
+
 export type ProductReview = AuditFields & {
   id: string;
   businessId: string;
@@ -80,6 +91,7 @@ export type ProductReview = AuditFields & {
   rating: number;
   title: string;
   comment: string;
+  images: ProductReviewImage[];
 
   reviewerName: string | null;
   reviewerEmail: string | null;

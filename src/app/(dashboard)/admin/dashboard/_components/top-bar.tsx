@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Grid, Space, theme } from "antd";
+import { Button, Flex, Grid, Space, theme, Tooltip } from "antd";
 import { Menu, PanelLeftClose, PanelLeftOpen, ShoppingCart } from "lucide-react";
 import React from "react";
 
@@ -30,65 +30,102 @@ const TopBar: React.FC<TopbarProps> = ({
           background: "var(--dashboard-header-background-color)",
           color: "var(--dashboard-header-text-color)",
           borderBottom: `1px solid ${token.colorBorderSecondary}`,
-          boxShadow: "none",
           display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           padding: screens.xs ? "0 10px" : "0 18px",
           boxSizing: "border-box",
-          height: "100%",
-          minHeight: 64,
+          height: 64,
           width: "100%",
           lineHeight: "normal",
         }}
       >
-        <Space
-          style={{ width: "100%", justifyContent: "space-between" }}
+        {/* Left side */}
+        <Flex
           align="center"
+          style={{
+            gap: 12,
+            minWidth: 0,
+            height: "100%",
+          }}
         >
-          <Flex style={{ gap: 12, minWidth: 0 }} align="center">
-            <Button
-              type="text"
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              icon={
-                collapsed ? (
-                  <PanelLeftOpen size={20} />
-                ) : (
-                  <PanelLeftClose size={20} />
-                )
-              }
-              onClick={toggleSidebar}
-              style={{
-                display: screens.xs ? "none" : "block",
-              }}
-            />
+          <Button
+            type="text"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            icon={
+              collapsed ? (
+                <PanelLeftOpen size={20} />
+              ) : (
+                <PanelLeftClose size={20} />
+              )
+            }
+            onClick={toggleSidebar}
+            style={{
+              display: screens.xs ? "none" : "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 40,
+              height: 40,
+              padding: 0,
+            }}
+          />
 
-            {/* <GlobalSearch /> */}
-          </Flex>
+          {/* <GlobalSearch /> */}
+        </Flex>
 
-          <Space size={screens.xs ? 4 : 8} align="center">
+        {/* Right side */}
+        <Flex
+          align="center"
+          justify="flex-end"
+          style={{
+            gap: screens.xs ? 4 : 10,
+            height: "100%",
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              display: screens.xs ? "none" : "flex",
+              alignItems: "center",
+              height: 40,
+            }}
+          >
+            <BusinessDropdown />
+          </div>
+
+          <Tooltip title='Pos'>
             <Link
-            className="lg:mr-5"
-            href='/admin/dashboard/pos'>
-              <ShoppingCart />
-            </Link>
-
-            <div style={{ display: screens.xs ? "none" : "block" }}>
-              <BusinessDropdown />
-            </div>
-
-            <ProfileDropdown />
-
-            {/* Mobile menu button */}
-            <Button
+              href="/admin/dashboard/pos"
+              aria-label="Open POS"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-black/5 dark:hover:bg-white/10"
               style={{
-                display: screens.md ? "none" : "inline-flex",
+                color: "var(--dashboard-header-text-color)",
               }}
-              type="text"
-              icon={<Menu size={20} />}
-              onClick={toggle}
-            />
-          </Space>
-        </Space>
+            >
+              <ShoppingCart size={20} />
+            </Link>
+          </Tooltip>
+
+          <div className="flex h-10 shrink-0 items-center">
+            <ProfileDropdown />
+          </div>
+
+          {/* Mobile menu button */}
+          <Button
+            type="text"
+            aria-label="Open mobile menu"
+            icon={<Menu size={20} />}
+            onClick={toggle}
+            style={{
+              display: screens.md ? "none" : "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 40,
+              height: 40,
+              padding: 0,
+            }}
+          />
+        </Flex>
       </div>
     </>
   );
