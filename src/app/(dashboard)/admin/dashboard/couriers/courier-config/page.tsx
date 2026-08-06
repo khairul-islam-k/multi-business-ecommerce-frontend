@@ -267,6 +267,8 @@ export default function CourierConfig() {
       })),
     };
 
+    console.log('payload', payload);
+
     try {
       await courierBulkUpdate.mutateAsync(payload);
 

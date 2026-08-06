@@ -25,6 +25,34 @@ const PrivacyPolicy = async () => {
     if (res?.data?.data?.template === "PHARMACY") {
         return <FashionPrivacy privacy={privacy} />;
     }
+
+    if (res?.data?.data?.template === "TOY") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "SHOES") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "VEHICLE") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "GROCERY") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "COSMETICS") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "RESTAURANT") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
+
+    if (res?.data?.data?.template === "ELECTRONIC") {
+        return <FashionPrivacy privacy={privacy} />;
+    }
 };
 
 export default PrivacyPolicy;

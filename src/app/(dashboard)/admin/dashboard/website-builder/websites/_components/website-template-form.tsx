@@ -3046,10 +3046,6 @@ export default function WebsiteTemplateForm({
 
                                           <div className="flex items-center justify-between gap-3">
                                             <strong
-                                            // style={{
-                                            //   color:
-                                            //     primaryColor,
-                                            // }}
                                             >
                                               $
                                               {29 +
