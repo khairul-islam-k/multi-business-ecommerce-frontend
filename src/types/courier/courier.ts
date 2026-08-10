@@ -72,6 +72,23 @@ export type CourierAreaResponse = {
   }
 };
 
+// zone courier
+export interface PathaoZone {
+  zone_id: number;
+  zone_name: string;
+}
+
+export interface PathaoZoneListResponse {
+  data: {
+    message: string;
+    type: string;
+    code: number;
+    data: {
+      data: PathaoZone[];
+    };
+  };
+}
+
 
 // pick up store
 export type PickupStore = {

@@ -5,12 +5,15 @@ import {
     useTemplateAreasQuery,
     useTemplateCourierMutation,
     useTemplateCourierQuery,
+    useTemplateZones,
 } from "@/lib/api/hooks/template-courier";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import {
     CourierChargeCalculationResponse,
     CourierDeliveryPayload,
+    PathaoZone,
 } from "@/types/courier/courier";
+import { contentQuotesLinter } from "@ant-design/cssinjs/lib/linters";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     ArrowRight,
@@ -39,6 +42,7 @@ const courierSelectSchema = z.object({
     deliveryCityId: z.string().min(1, "Area is required"),
     weight: z.number().optional(),
     specialInstruction: z.string().optional(),
+    deliveryZoneId: z.string().optional(),
 });
 
 export type CourierSelectFormValues = z.infer<typeof courierSelectSchema>;
@@ -61,8 +65,6 @@ const CourierSellectModal = ({
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [charge, setCharge] = useState<CourierChargeCalculationResponse | undefined>(undefined);
-
-    console.log("charge", charge);
 
     const [selectedPayload, setSelectedPayload] = useState<
         CourierDeliveryPayload | undefined
@@ -94,15 +96,28 @@ const CourierSellectModal = ({
             deliveryCityId: "",
             weight: Number(weight),
             specialInstruction: "",
+            deliveryZoneId: "",
         },
     });
 
     const selectedConfigId = watch("configId");
+    const selectedCitiesId = watch("deliveryCityId");
 
-
+    // get area
     const { data: areasResponse, isLoading: isAreaLoading } =
         useTemplateAreasQuery(selectedConfigId);
 
+    // get cities
+    const {data: zones} = useTemplateZones(selectedConfigId, selectedCitiesId);
+
+    const allZones = (zones?.data?.data ?? []) as PathaoZone[];
+
+    const zonesOptions = useMemo(() => {
+        return allZones.map((area) => ({
+            label: area.zone_name,
+            value: String(area.zone_id),
+        }));
+    }, [allZones]);
 
     const courierConfigs = useMemo(() => {
         return (courierConfig ?? []);
@@ -113,16 +128,14 @@ const CourierSellectModal = ({
     }, [areasResponse]);
 
     // single courier config
-    const selectCourier = useMemo(()=> {
-        return courierConfig?.find(singleConfig => singleConfig.id === selectedConfigId);
-    }, [courierConfigs, selectedConfigId])
+    const selectCourier = courierConfig?.find(singleConfig => singleConfig.id === selectedConfigId);
 
-    console.log('courier', selectCourier);
-
+    const isPathao = selectCourier?.courier.code ==="PATHAO";
 
     const configRegister = register("configId");
     const areaRegister = register("deliveryCityId");
     const specialInstructionRegister = register("specialInstruction");
+    const zoneRegister = register("deliveryZoneId");
 
     const courierOptions = useMemo(() => {
         return courierConfigs.map((config) => ({
@@ -133,7 +146,7 @@ const CourierSellectModal = ({
         }));
     }, [courierConfigs]);
 
-    const areaOptions = useMemo(() => {
+    const citiesOptions = useMemo(() => {
         return cities.map((area) => ({
             label: `${area.city_name}`,
             value: String(area.city_id),
@@ -145,6 +158,9 @@ const CourierSellectModal = ({
         setSelectedPayload(undefined);
         onClose();
     };
+
+
+    // real time message
 
     const handleCourierChange = async (
         event: React.ChangeEvent<HTMLSelectElement>,
@@ -185,6 +201,21 @@ const CourierSellectModal = ({
         await trigger("deliveryCityId");
     };
 
+    const handleZoneChange = async (
+        event: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        await zoneRegister.onChange(event);
+
+        setCharge(undefined);
+        setSelectedPayload(undefined);
+
+        if (event.target.value) {
+            clearErrors("deliveryZoneId");
+        }
+
+        await trigger("deliveryZoneId");
+    };
+
     const handleCourierCalculate = async (values: CourierSelectFormValues) => {
         try {
             setIsSubmitting(true);
@@ -206,9 +237,12 @@ const CourierSellectModal = ({
                 deliveryPostCode: String(selectedArea.post_code),
                 deliveryDivisionName: selectedArea.district_name,
                 weight: values.weight ?? 1,
+                ...(isPathao && values.deliveryZoneId
+                    ? {
+                       deliveryZoneId: String(values.deliveryZoneId),
+                    }
+                 : {}),
             };
-
-            console.log("payload", payload);
 
             if (specialInstruction) {
                 payload.specialInstruction = specialInstruction;
@@ -340,7 +374,7 @@ const CourierSellectModal = ({
                                                 : "Select delivery area"}
                                     </option>
 
-                                    {areaOptions.map((option) => (
+                                    {citiesOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
                                         </option>
@@ -355,6 +389,48 @@ const CourierSellectModal = ({
                                     </p>
                                 )}
                         </div>
+
+                        {
+                            isPathao && <div>
+                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                Delivery Zone
+                            </label>
+
+                            <div className="relative">
+                                <MapPin className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-muted,#6b7280)]" />
+
+                                <select
+                                    name={zoneRegister.name}
+                                    ref={zoneRegister.ref}
+                                    onBlur={zoneRegister.onBlur}
+                                    onChange={handleZoneChange}
+                                    disabled={!selectedConfigId || isAreaLoading}
+                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                                >
+                                    <option value="">
+                                        {!selectedConfigId
+                                            ? "Select courier first"
+                                            : isAreaLoading
+                                                ? "Loading areas..."
+                                                : "Select delivery Zone"}
+                                    </option>
+
+                                    {zonesOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {(touchedFields.deliveryCityId || isSubmitted) &&
+                                errors.deliveryCityId && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.deliveryCityId.message}
+                                    </p>
+                                )}
+                        </div>
+                        }
 
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">

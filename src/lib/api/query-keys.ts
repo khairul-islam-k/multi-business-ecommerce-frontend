@@ -448,6 +448,8 @@ export const apiQueryKeys = {
     list: () => ["templateCourier", "list"] as const,
     listArea: (configId: ApiId) =>
       ["templateCourier", configId, "listArea"] as const,
+    listZone: (configId: ApiId, cityId: ApiId) =>
+      ["templateCourier", configId, cityId, "listZone"] as const,
 
     detail: (orderId: ApiId) => ["templateCourier", orderId, "detail"] as const,
   },

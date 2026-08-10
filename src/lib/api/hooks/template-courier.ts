@@ -21,7 +21,23 @@ export function useTemplateAreasQuery(configId: ApiId) {
         throw new Error("Business ID and Category ID are required");
       }
 
-      return templateCourierApi.getAreas(configId);
+      return templateCourierApi.getCities(configId);
+    },
+
+    enabled: Boolean(configId),
+  });
+}
+
+export function useTemplateZones(configId: ApiId, cityId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.templateCourier.listZone(configId, cityId),
+
+    queryFn: () => {
+      if (!configId && !cityId) {
+        throw new Error("Business ID and Category ID are required");
+      }
+
+      return templateCourierApi.getZoneInsideCity(configId, cityId);
     },
 
     enabled: Boolean(configId),
