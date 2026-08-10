@@ -83,7 +83,6 @@ const FashionActiveCart = () => {
         } catch (error) {
             message.error(getWebErrorMessage(error));
         }
-
     };
 
     const handleDecrease = async (item: CartItem) => {

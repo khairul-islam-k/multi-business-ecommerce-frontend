@@ -3,7 +3,7 @@ import { PaymentStatus } from "../template/template-payment";
 
 export type ApiId = string;
 
-export type CourierProviderCode = "REDX";
+export type CourierProviderCode = "REDX" | "PATHAO";
 
 export type CourierMode = "LIVE" | "SANDBOX";
 
@@ -58,14 +58,18 @@ export type UpdateCourierConfigPayload = {
 
 // Areas courier
 export type CourierAreaResponse = {
-  areas: {
-    id: number;
-    name: string;
-    post_code: number;
-    district_name: string;
-    division_name: string;
-    zone_id: number;
-  }[]
+  data: {
+    areas: {
+      city_id: number;
+      city_name: string;
+      post_code: number | null;
+      district_name: string | null;
+      division_name: string | null;
+      zone_id: number | null;
+    }[],
+    message: string;
+    type: string;
+  }
 };
 
 
@@ -94,9 +98,11 @@ export type PickupStorePayload = {
 // template courier charge 
 
 export type CourierDeliveryPayload = {
-  deliveryAreaId: string;
+  warehouseId?: string;
+  deliveryCityId: string;
+  deliveryZoneId?: string;
   deliveryAreaName: string;
-  deliveryPostCode: string;
+  deliveryPostCode?: string;
   deliveryDivisionName: string;
   weight: number;
   specialInstruction?: string;
@@ -107,27 +113,31 @@ export type CourierChargeCalculationResponse = {
   courierId: string;
   configId: string;
   weight: number;
+
   collectableAmount: number;
   shippingCharge: number;
+  courierFee: number;
   deliveryCharge: number;
   codCharge: number;
-  courierFee: number;
-  raw: {
-    deliveryCharge: number;
-    codCharge: number;
-  };
-  pickupWarehouse: {
-    id: string;
-    redxAreaId: string;
-    redxAreaName: string;
-    redxPostCode: string;
-    redxPickupStoreId: string;
-  };
+
   delivery: {
     areaId: string;
     areaName: string;
     postCode: string;
     divisionName: string;
+  };
+
+  pickupWarehouse: {
+    id: string;
+    cityId: number;
+    areaName: string;
+    PostCode: string | null;
+    pickupStoreId: number;
+  };
+
+  raw: {
+    deliveryCharge: number;
+    codCharge: number;
   };
 };
 
@@ -352,11 +362,11 @@ export type ShipmentQuery = ListQuery & {
 // Tracking 
 
 export type AddressType =
-  |"HOME"
-  |"OFFICE"
-  |"SHIPPING"
-  |"BILLING"
-  |"OTHER";
+  | "HOME"
+  | "OFFICE"
+  | "SHIPPING"
+  | "BILLING"
+  | "OTHER";
 
 export type CourierQuoteSnapshot = {
   deliveryAreaId: string;
@@ -468,10 +478,10 @@ export type ShipmentTrackingResponse = {
 
 // courier assign payload
 export type AssignToCourierPayload = {
-    deliveryAreaId: string;
-    deliveryAreaName: string;
-    deliveryPostCode: string;
-    deliveryDivisionName: string;
-    specialInstruction?: string;
-    courierConfigId: string;
+  deliveryAreaId: string;
+  deliveryAreaName: string;
+  deliveryPostCode: string;
+  deliveryDivisionName: string;
+  specialInstruction?: string;
+  courierConfigId: string;
 };

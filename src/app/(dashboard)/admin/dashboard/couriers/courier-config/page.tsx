@@ -27,52 +27,18 @@ import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import {
   CourierConfigData,
+  CourierConfigResponse,
+  CourierMode,
+  CourierProvider,
+  CourierProviderCode,
+  CourierStatus,
   UpdateCourierConfigPayload,
 } from "@/types/courier/courier";
+import { ApiId } from "@/lib/api";
+import { Rule } from "antd/es/form";
 
 const { Text } = Typography;
 
-export type ApiId = string;
-
-export type CourierProviderCode = "REDX";
-
-export type CourierMode = "LIVE" | "SANDBOX";
-
-export type CourierStatus = "ACTIVE" | "INACTIVE";
-
-export type CourierProvider = {
-  id: ApiId;
-  name: string;
-  code: CourierProviderCode | string;
-  description: string;
-  status: CourierStatus | string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type CourierConfigResponse = {
-  id: ApiId;
-  businessId: ApiId;
-  courierId: ApiId;
-
-  configData: CourierConfigData;
-
-  mode: CourierMode;
-  status: CourierStatus;
-
-  createdBy: ApiId | null;
-  updatedBy: ApiId | null;
-  deletedBy: ApiId | null;
-
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-
-  courier: CourierProvider;
-
-  webhookConfigured: boolean;
-  webhookUrlHint: string;
-};
 
 type CourierConfigFormItem = {
   configId: ApiId;
@@ -104,8 +70,31 @@ const COURIER_CONFIG_FIELDS: Record<CourierProviderCode, ConfigField[]> = {
       label: "API Access Token",
       placeholder: "Enter REDX API access token",
       secret: true,
-    },
+    }
   ],
+  PATHAO: [
+    {
+      name: "clientId",
+      label: "client Id",
+      placeholder: "Enter Pathao client id",
+    },
+    {
+      name: "clientSecret",
+      label: "Client Secret",
+      placeholder: "Enter Pathao Client Secret",
+      secret: true,
+    },
+    {
+      name: "email",
+      label: "Your Email",
+      placeholder: "test@pathao.com",
+    },
+    {
+      name: "password",
+      label: "Enter Your password",
+      placeholder: "lovePathao",
+    },
+  ]
 };
 
 function normalizeCourierCode(code?: string): CourierProviderCode | string {
@@ -158,6 +147,37 @@ function cleanConfigData(
     acc[field.name] = configData?.[field.name]?.trim?.() ?? "";
     return acc;
   }, {});
+}
+
+function isEmptyValue(value: unknown) {
+  if (value === undefined || value === null) return true;
+
+  if (typeof value === "string") {
+    return value.trim() === "";
+  }
+
+  return false;
+}
+
+function requiredWhenGatewayActive(index: number, message: string): Rule[] {
+  return [
+    ({ getFieldValue }) => ({
+      validator(_: unknown, value: unknown) {
+        const status = getFieldValue(["configs", index, "status"]);
+        // inactive gateway hole validation skip
+        if (status !== "ACTIVE") {
+          return Promise.resolve();
+        }
+
+        // active gateway hole required check
+        if (isEmptyValue(value)) {
+          return Promise.reject(new Error(message));
+        }
+
+        return Promise.resolve();
+      },
+    }),
+  ];
 }
 
 function CourierStatusSwitch({
@@ -258,13 +278,15 @@ export default function CourierConfig() {
     const values = form.getFieldsValue(true) as CourierConfigFormValues;
 
     const payload: UpdateCourierConfigPayload = {
-      configs: values.configs.map((item) => ({
-        configData: cleanConfigData(item.provider, item.configData),
-        mode: item.mode,
-        status: item.status,
-        rotateWebhookToken: item.rotateWebhookToken,
-        configId: item.configId,
-      })),
+      configs: values.configs
+        .filter((item) => item.status === "ACTIVE")
+        .map((item) => ({
+          configData: cleanConfigData(item.provider, item.configData),
+          mode: item.mode,
+          status: item.status,
+          rotateWebhookToken: item.rotateWebhookToken,
+          configId: item.configId,
+        })),
     };
 
     console.log('payload', payload);
@@ -341,12 +363,7 @@ export default function CourierConfig() {
                 <Form.Item
                   label="Courier Mode"
                   name={["configs", index, "mode"]}
-                  rules={[
-                    {
-                      required: true,
-                      message: "Courier mode is required",
-                    },
-                  ]}
+                  rules={requiredWhenGatewayActive(index, "Courier mode is required")}
                 >
                   <Radio.Group
                     optionType="button"
@@ -393,12 +410,7 @@ export default function CourierConfig() {
                         key={field.name}
                         label={field.label}
                         name={["configs", index, "configData", field.name]}
-                        rules={[
-                          {
-                            required: true,
-                            message: `${field.label} is required`,
-                          },
-                        ]}
+                        rules={requiredWhenGatewayActive(index, `${field.label} is required`)}
                       >
                         <InputComponent
                           placeholder={field.placeholder}
@@ -429,19 +441,6 @@ export default function CourierConfig() {
               <Checkbox>Do you want to rotate the webhook token?</Checkbox>
             </Form.Item>
 
-            {/* <Alert
-              type={courierItem.webhookConfigured ? "success" : "info"}
-              showIcon
-              message={
-                courierItem.webhookConfigured
-                  ? "Webhook configured"
-                  : "Webhook not configured"
-              }
-              description={
-                courierItem.webhookUrlHint ||
-                "Webhook URL hint is not available."
-              }
-            /> */}
           </div>
         ),
       };

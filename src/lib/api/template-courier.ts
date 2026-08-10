@@ -15,7 +15,7 @@ export const templateCourierApi = {
 
   getAreas(configId: ApiId) {
     return webApi
-      .get<ApiResponse<CourierAreaResponse>>(`${basePath()}/${configId}/redx/areas`)
+      .get<ApiResponse<CourierAreaResponse>>(`${basePath()}/${configId}/courier/cities`)
       .then((res) => unwrapApiResponse(res.data));
   },
 

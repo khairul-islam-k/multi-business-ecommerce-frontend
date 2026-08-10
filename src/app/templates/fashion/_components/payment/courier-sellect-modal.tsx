@@ -26,8 +26,8 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 type CourierArea = {
-    id: number;
-    name: string;
+    city_id: number;
+    city_name: string;
     post_code: number;
     district_name: string;
     division_name: string;
@@ -36,7 +36,7 @@ type CourierArea = {
 
 const courierSelectSchema = z.object({
     configId: z.string().min(1, "Courier is required"),
-    deliveryAreaId: z.string().min(1, "Area is required"),
+    deliveryCityId: z.string().min(1, "Area is required"),
     weight: z.number().optional(),
     specialInstruction: z.string().optional(),
 });
@@ -62,6 +62,8 @@ const CourierSellectModal = ({
 
     const [charge, setCharge] = useState<CourierChargeCalculationResponse | undefined>(undefined);
 
+    console.log("charge", charge);
+
     const [selectedPayload, setSelectedPayload] = useState<
         CourierDeliveryPayload | undefined
     >(undefined);
@@ -71,6 +73,7 @@ const CourierSellectModal = ({
     const { data: courierConfig, isLoading: isCourierLoading } =
         useTemplateCourierQuery();
 
+        // create api
     const { courierChargeCalculate } = useTemplateCourierMutation();
 
     const {
@@ -88,13 +91,14 @@ const CourierSellectModal = ({
         reValidateMode: "onChange",
         defaultValues: {
             configId: "",
-            deliveryAreaId: "",
+            deliveryCityId: "",
             weight: Number(weight),
             specialInstruction: "",
         },
     });
 
     const selectedConfigId = watch("configId");
+
 
     const { data: areasResponse, isLoading: isAreaLoading } =
         useTemplateAreasQuery(selectedConfigId);
@@ -104,13 +108,20 @@ const CourierSellectModal = ({
         return (courierConfig ?? []);
     }, [courierConfig]);
 
-    const areas = useMemo<CourierArea[]>(() => {
-        return (areasResponse?.areas ?? []) as CourierArea[];
-    }, [areasResponse?.areas]);
+    const cities = useMemo<CourierArea[]>(() => {
+        return (areasResponse?.data.areas ?? []) as CourierArea[];
+    }, [areasResponse]);
+
+    // single courier config
+    const selectCourier = useMemo(()=> {
+        return courierConfig?.find(singleConfig => singleConfig.id === selectedConfigId);
+    }, [courierConfigs, selectedConfigId])
+
+    console.log('courier', selectCourier);
 
 
     const configRegister = register("configId");
-    const areaRegister = register("deliveryAreaId");
+    const areaRegister = register("deliveryCityId");
     const specialInstructionRegister = register("specialInstruction");
 
     const courierOptions = useMemo(() => {
@@ -123,11 +134,11 @@ const CourierSellectModal = ({
     }, [courierConfigs]);
 
     const areaOptions = useMemo(() => {
-        return areas.map((area) => ({
-            label: `${area.name} - ${area.district_name} (${area.post_code})`,
-            value: String(area.id),
+        return cities.map((area) => ({
+            label: `${area.city_name}`,
+            value: String(area.city_id),
         }));
-    }, [areas]);
+    }, [cities]);
 
     const handleClose = () => {
         setCharge(undefined);
@@ -143,20 +154,20 @@ const CourierSellectModal = ({
         setCharge(undefined);
         setSelectedPayload(undefined);
 
-        resetField("deliveryAreaId", {
+        resetField("deliveryCityId", {
             defaultValue: "",
             keepDirty: false,
             keepTouched: false,
             keepError: false,
         });
 
-        setValue("deliveryAreaId", "", {
+        setValue("deliveryCityId", "", {
             shouldDirty: false,
             shouldTouch: false,
             shouldValidate: false,
         });
 
-        clearErrors("deliveryAreaId");
+        clearErrors("deliveryCityId");
     };
 
     const handleAreaChange = async (
@@ -168,18 +179,18 @@ const CourierSellectModal = ({
         setSelectedPayload(undefined);
 
         if (event.target.value) {
-            clearErrors("deliveryAreaId");
+            clearErrors("deliveryCityId");
         }
 
-        await trigger("deliveryAreaId");
+        await trigger("deliveryCityId");
     };
 
     const handleCourierCalculate = async (values: CourierSelectFormValues) => {
         try {
             setIsSubmitting(true);
 
-            const selectedArea = areas.find(
-                (area) => String(area.id) === values.deliveryAreaId,
+            const selectedArea = cities.find(
+                (area) => String(area.city_id) === values.deliveryCityId,
             );
 
             if (!selectedArea) {
@@ -190,12 +201,14 @@ const CourierSellectModal = ({
             const specialInstruction = values.specialInstruction?.trim();
 
             const payload: CourierDeliveryPayload = {
-                deliveryAreaId: String(selectedArea.id),
-                deliveryAreaName: selectedArea.name,
+                deliveryCityId: String(selectedArea.city_id),
+                deliveryAreaName: selectedArea.city_name,
                 deliveryPostCode: String(selectedArea.post_code),
                 deliveryDivisionName: selectedArea.district_name,
                 weight: values.weight ?? 1,
             };
+
+            console.log("payload", payload);
 
             if (specialInstruction) {
                 payload.specialInstruction = specialInstruction;
@@ -335,10 +348,10 @@ const CourierSellectModal = ({
                                 </select>
                             </div>
 
-                            {(touchedFields.deliveryAreaId || isSubmitted) &&
-                                errors.deliveryAreaId && (
+                            {(touchedFields.deliveryCityId || isSubmitted) &&
+                                errors.deliveryCityId && (
                                     <p className="mt-1 text-sm text-red-500">
-                                        {errors.deliveryAreaId.message}
+                                        {errors.deliveryCityId.message}
                                     </p>
                                 )}
                         </div>
@@ -491,7 +504,7 @@ const CourierSellectModal = ({
                                                     Area
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxAreaName}
+                                                    {charge.pickupWarehouse.areaName}
                                                 </span>
                                             </div>
 
@@ -500,7 +513,7 @@ const CourierSellectModal = ({
                                                     Post Code
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxPostCode}
+                                                    {charge.pickupWarehouse.PostCode}
                                                 </span>
                                             </div>
 
@@ -509,7 +522,7 @@ const CourierSellectModal = ({
                                                     Pickup Store ID
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxPickupStoreId}
+                                                    {charge.pickupWarehouse.pickupStoreId}
                                                 </span>
                                             </div>
                                         </div>
