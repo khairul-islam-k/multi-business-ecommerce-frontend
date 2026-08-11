@@ -5,9 +5,10 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 
-import { useAreasQuery } from "@/lib/api/hooks/courier";
 import { useAuthStore } from "@/stores/auth.store";
-import { PickupStorePayload } from "@/types/courier/courier";
+import { PathaoZone, PickupStorePayload } from "@/types/courier/courier";
+import { useCitiesQuery, useCourierAreas, useCourierQuery, useCourierZone } from "@/lib/api/hooks/courier";
+import { useWatch } from "antd/es/form/Form";
 
 type PickupStoreFormProps = {
   mode: "create" | "update";
@@ -21,7 +22,7 @@ const defaultValues: PickupStorePayload = {
   name: "",
   phone: "",
   address: "",
-  areaId: "",
+  cityId: "",
 };
 
 const PickupStoreForm = ({
@@ -36,14 +37,41 @@ const PickupStoreForm = ({
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
-  const { data: areas } = useAreasQuery(businessId, configId);
+  const {data: couriers} = useCourierQuery(businessId);
+  const courier = couriers?.items.find(data => data.id === configId);
 
-  const areaOptions = useMemo(() => {
-    return (areas?.areas ?? []).map((area) => ({
-      label: `${area.name})`,
-      value: String(area.id),
+  const isPathao = courier?.courier.code === "PATHAO";
+
+  const cityId = Form.useWatch("cityId", form);
+  const zoneId = Form.useWatch("zoneId", form);
+
+  const { data: cities } = useCitiesQuery(businessId, configId);
+
+  const {data: zones} = useCourierZone(businessId, configId, cityId);
+  const {data: areas} = useCourierAreas(businessId, configId, zoneId);
+
+  const citiesOptions = useMemo(() => {
+    return (cities?.data.areas ?? []).map((area) => ({
+      label: `${area.city_name}`,
+      value: String(area.city_id),
     }));
-  }, [areas?.areas]);
+  }, [cities]);
+
+  const allZones = (zones?.data?.data ?? []) as PathaoZone[];
+
+  const zonesOptions = useMemo(() => {
+    return allZones.map((area) => ({
+      label: area.zone_name,
+      value: String(area.zone_id),
+    }));
+  }, [allZones]);
+
+  const areasOptions = useMemo(() => {
+    return areas?.data?.data?.map((area) => ({
+      label: area.area_name,
+      value: String(area.area_id),
+    }));
+  }, [areas]);
 
   useEffect(() => {
     form.setFieldsValue({
@@ -57,7 +85,13 @@ const PickupStoreForm = ({
       name: values.name.trim(),
       phone: values.phone.trim(),
       address: values.address.trim(),
-      areaId: String(values.areaId).trim(),
+      cityId: String(values.cityId).trim(),
+      ...(values.zoneId ? {
+        zoneId: values.zoneId
+      }: {}),
+      ...(values.areaId ? {
+        areaId: values.areaId
+      }: {}),
     };
 
     await onSubmit(payload);
@@ -122,7 +156,58 @@ const PickupStoreForm = ({
           </Form.Item>
 
           <Form.Item
-            label="Area"
+            label="Cities"
+            name="cityId"
+            rules={[
+              {
+                required: true,
+                message: "Area is required",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              allowClear
+              placeholder="Search and select area"
+              options={citiesOptions}
+              optionFilterProp="label"
+              filterOption={(input, option) =>
+                String(option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
+          </Form.Item>
+
+          {
+            isPathao && <Form.Item
+            label="zones"
+            name="zoneId"
+            rules={[
+              {
+                required: true,
+                message: "Area is required",
+              },
+            ]}
+          >
+            <Select
+              showSearch
+              allowClear
+              placeholder="Search and select area"
+              options={zonesOptions}
+              optionFilterProp="label"
+              filterOption={(input, option) =>
+                String(option?.label ?? "")
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
+          </Form.Item>
+          }
+
+          {
+            isPathao && <Form.Item
+            label="areas"
             name="areaId"
             rules={[
               {
@@ -135,7 +220,7 @@ const PickupStoreForm = ({
               showSearch
               allowClear
               placeholder="Search and select area"
-              options={areaOptions}
+              options={areasOptions}
               optionFilterProp="label"
               filterOption={(input, option) =>
                 String(option?.label ?? "")
@@ -144,6 +229,7 @@ const PickupStoreForm = ({
               }
             />
           </Form.Item>
+          }
 
           <Form.Item
             label="Address"

@@ -22,6 +22,9 @@ export type WarehouseResponse = {
   address: string;
   status: WarehouseStatus;
 
+  redxStoreId: string | null;
+  pathaoStoreId: string | null;
+
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

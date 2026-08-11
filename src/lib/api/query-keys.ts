@@ -168,8 +168,12 @@ export const apiQueryKeys = {
       ["courierConfig", businessId, "gateways", query] as const,
     listShipment: (businessId: ApiId, query?: ShipmentQuery) =>
       ["courierConfig", businessId, "listShipment", query] as const,
-    listAreas: (businessId: ApiId, configId: ApiId, query?: CategoriesQuery) =>
+    listCities: (businessId: ApiId, configId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, configId, "gateways", query] as const,
+    listZones: (businessId: ApiId, configId: ApiId, cityId: ApiId) =>
+      ["courierConfig", businessId, configId, "gateways", cityId] as const,
+    listAreas: (businessId: ApiId, configId: ApiId, zoneId: ApiId) =>
+      ["courierConfig", businessId, configId, "gateways", zoneId] as const,
     configs: (businessId: ApiId, query?: CategoriesQuery) =>
       ["courierConfig", businessId, "configs", query] as const,
     pickUp: (businessId: ApiId, configId: ApiId) =>

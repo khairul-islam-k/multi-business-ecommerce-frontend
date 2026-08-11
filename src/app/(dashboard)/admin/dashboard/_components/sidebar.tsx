@@ -136,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({ close, collapsed }) => {
   if (loading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <Spin size="large" tip="Loading..." />
+        <Spin size="large" description="Loading..." />
       </div>
     );
   }

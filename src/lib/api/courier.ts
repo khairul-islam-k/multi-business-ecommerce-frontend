@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { AssignToCourierPayload, CourierAreaResponse, CourierConfigResponse, CourierProvider, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { AreaCourierResponse, AssignToCourierPayload, AssignWarehousePayload, CourierAreaResponse, CourierConfigResponse, CourierProvider, PathaoZoneListResponse, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 const basePath = (businessId: ApiId) => `/couriers/businesses/${businessId}/configs`;
 export const courierApi = {
@@ -42,15 +42,33 @@ export const courierApi = {
       .then((res) => unwrapApiResponse(res.data));
   },
 
-  getAreas(businessId: ApiId, configId: ApiId, query?: CategoriesQuery) {
+  getCities(businessId: ApiId, configId: ApiId, query?: CategoriesQuery) {
     return api
-      .get<ApiResponse<CourierAreaResponse>>(`${basePath(businessId)}/${configId}/redx/areas${buildQueryString(query)}`)
+      .get<ApiResponse<CourierAreaResponse>>(`${basePath(businessId)}/${configId}/courier/cities${buildQueryString(query)}`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  getZonesInsideCity(businessId: ApiId, configId: ApiId, cityId: ApiId) {
+    return api
+      .get<ApiResponse<PathaoZoneListResponse>>(`${basePath(businessId)}/${configId}/courier/zones/${cityId}`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  getAreasInsideZone(businessId: ApiId, configId: ApiId, zoneId: ApiId) {
+    return api
+      .get<ApiResponse<AreaCourierResponse>>(`${basePath(businessId)}/${configId}/courier/area/${zoneId}`)
       .then((res) => unwrapApiResponse(res.data));
   },
 
   getPickUp(businessId: ApiId, configId: ApiId) {
     return api
-      .get<ApiResponse<PickupStoresResponse>>(`${basePath(businessId)}/${configId}/redx/pickup-stores`)
+      .get<ApiResponse<PickupStoresResponse>>(`${basePath(businessId)}/${configId}/courier/pickup-stores`)
+      .then((res) => unwrapApiResponse(res.data));
+  },
+
+  AssignWarehouse(businessId: ApiId, storeId: ApiId, payload: AssignWarehousePayload) {
+    return api
+      .patch<ApiResponse<PickupStoresResponse>>(`/inventory/businesses/${businessId}/warehouses/${storeId}/assign_courier`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 
@@ -62,7 +80,7 @@ export const courierApi = {
 
   createPickUp(businessId: ApiId, configId: ApiId, payload: PickupStorePayload) {
     return api
-      .post<ApiResponse<PickupStore>>(`${basePath(businessId)}/${configId}/redx/pickup-stores`, payload)
+      .post<ApiResponse<PickupStore>>(`${basePath(businessId)}/${configId}/courier/pickup-stores`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 

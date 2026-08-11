@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, Card, Tabs } from "antd";
-import { CirclePlus } from "lucide-react";
+import { Button, Card, Modal, Tabs, Tooltip } from "antd";
+import { Building2, CirclePlus, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,7 +16,9 @@ import {
 } from "@/lib/api/hooks/courier";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import { PickupStore } from "@/types/courier/courier";
+import { StoreItems } from "@/types/courier/courier";
+import AssignWarehouse from "./_components/assign-warehouse";
+import ShowAssignableWarehouse from "./_components/show-assignable-warehouse";
 
 const DeliveryZones = () => {
   const [selectedConfigId, setSelectedConfigId] = useState<string>("");
@@ -26,6 +28,11 @@ const DeliveryZones = () => {
   const business = useAuthStore((s) => s.selectedBusiness);
   const businessId = business?.id ?? "";
 
+  // modal assign store
+  const [open, setOpen] = useState<boolean>(false);
+  const [warehouseOpen, setWarehouseOpen] = useState<boolean>(false);
+  const [storeId, setStoreId] = useState<string>("");
+
   const {
     data: courier,
     isLoading: courierLoading,
@@ -33,6 +40,9 @@ const DeliveryZones = () => {
   } = useCourierQuery(businessId);
 
   const courierItems = courier?.items ?? [];
+
+  // choose courier 
+  const singleCourier = courierItems.find(courierData => courierData.id === selectedConfigId);
 
   const { data: pickUpStores } = useCourierPickUp(businessId, selectedConfigId);
 
@@ -69,17 +79,31 @@ const DeliveryZones = () => {
     });
   };
 
-  const columns: Column<PickupStore>[] = [
+  const columns: Column<StoreItems>[] = [
     {
       key: "name",
       label: "Store Name",
       type: "primary",
-      render: (row) => <strong>{row.name}</strong>,
+      render: (row) => (
+        <strong
+          className="block max-w-[180px] truncate"
+          title={row.store_name}
+        >
+          {row.store_name}
+        </strong>
+      ),
     },
     {
       key: "address",
       label: "Address",
-      render: (row) => row.address || "-",
+      render: (row) => (
+        <span
+          className="block max-w-[250px] truncate"
+          title={row.store_address}
+        >
+          {row.store_address || "-"}
+        </span>
+      ),
     },
     {
       key: "area_name",
@@ -89,7 +113,7 @@ const DeliveryZones = () => {
     {
       key: "area_id",
       label: "Area ID",
-      render: (row) => row.area_id,
+      render: (row) => row.area_id ?? "-",
     },
     {
       key: "phone",
@@ -100,34 +124,38 @@ const DeliveryZones = () => {
       key: "id",
       label: "Store ID",
       type: "meta",
-      render: (row) => row.id,
+      render: (row) => row.store_id,
     },
-    // {
-    //   key: "actions",
-    //   label: "Actions",
-    //   render: (row) => (
-    //     <div className="flex items-center gap-2">
-    //       <Tooltip title="Update pickup store">
-    //         <Button
-    //           size="small"
-    //           icon={<Pencil size={16} />}
-    //           onClick={() =>
-    //             router.push(
-    //               `/admin/dashboard/couriers/pickup-stores/update/${selectedConfigId}/store/${row.id}`,
-    //             )
-    //           }
-    //         />
-    //       </Tooltip>
+    {
+      key: "actions",
+      label: "Actions",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <Tooltip title="Assign Warehouse">
+            <Button
+              type='text'
+              icon={<Building2 size={16} />}
+              onClick={() => {
+                setOpen(true)
+                setStoreId(String(row.store_id))
+              }}
+            >
+            </Button>
+          </Tooltip>
 
-    //       <Tooltip title="Delete pickup store">
-    //         <Button danger
-    //           onClick={() => handleDelete(row.id)}
-    //           size="small"
-    //           icon={<Trash2 size={16} />} />
-    //       </Tooltip>
-    //     </div>
-    //   ),
-    // },
+          <Tooltip title="Show Assignable Warehouses">
+            <Button
+            onClick={() => {
+                setWarehouseOpen(true)
+                setStoreId(String(row.store_id))
+              }}
+            type='text'
+             icon={<Eye size={16} />}>
+            </Button>
+          </Tooltip>
+        </div>
+      ),
+    }
   ];
 
   if (courierLoading || courierFetching) {
@@ -153,7 +181,7 @@ const DeliveryZones = () => {
               <Card>
                 <DataTable
                   isSearch={false}
-                  data={pickUpStores?.pickup_stores ?? []}
+                  data={pickUpStores?.stores ?? []}
                   columns={columns}
                   loading={courierLoading || courierFetching}
                   toolbarEnd={
@@ -177,6 +205,34 @@ const DeliveryZones = () => {
           ),
         }))}
       />
+
+      <Modal
+        title="Assign courier"
+        open={open}
+        onCancel={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+        footer={null}
+        centered
+      >
+        <AssignWarehouse 
+        selectedConfigId={selectedConfigId}
+        storeId={storeId}
+        setOpen={setOpen}
+        />
+      </Modal>
+
+      <Modal
+        title="Store Details"
+        open={warehouseOpen}
+        onCancel={() => setWarehouseOpen(false)}
+        onOk={() => setWarehouseOpen(false)}
+        centered
+      >
+        <ShowAssignableWarehouse
+        singleCourier={singleCourier}
+        storeId={storeId}
+        />
+      </Modal>
     </section>
   );
 };

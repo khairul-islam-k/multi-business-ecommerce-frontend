@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiQueryKeys } from "../query-keys";
 import { ApiId, CategoriesQuery } from "../types";
 import { courierApi } from "../courier";
-import { AssignToCourierPayload, PickupStorePayload, ShipmentQuery, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { AssignToCourierPayload, AssignWarehousePayload, PickupStorePayload, ShipmentQuery, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 export function useCourierProviderQuery(businessId: ApiId, query?: CategoriesQuery) {
   return useQuery({
@@ -61,19 +61,51 @@ export function useShipmentTracking(businessId: ApiId, shippingId: ApiId) {
 }
 
 
-export function useAreasQuery(businessId: ApiId, courier: ApiId, query?: CategoriesQuery) {
+export function useCitiesQuery(businessId: ApiId, courier: ApiId, query?: CategoriesQuery) {
   return useQuery({
-    queryKey: apiQueryKeys.courierConfig.listAreas(businessId, courier, query),
+    queryKey: apiQueryKeys.courierConfig.listCities(businessId, courier, query),
 
     queryFn: () => {
       if (!businessId || !courier) {
         throw new Error("Business ID and Category ID are required");
       }
 
-      return courierApi.getAreas(businessId, courier, query);
+      return courierApi.getCities(businessId, courier, query);
     },
 
     enabled: Boolean(businessId && courier),
+  });
+}
+
+export function useCourierZone(businessId: ApiId, courier: ApiId, cityId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.courierConfig.listZones(businessId, courier, cityId),
+
+    queryFn: () => {
+      if (!businessId || !courier || !cityId) {
+        throw new Error("Business ID and Category ID are required");
+      }
+
+      return courierApi.getZonesInsideCity(businessId, courier, cityId);
+    },
+
+    enabled: Boolean(businessId && courier && cityId),
+  });
+}
+
+export function useCourierAreas(businessId: ApiId, courier: ApiId, zoneId: ApiId) {
+  return useQuery({
+    queryKey: apiQueryKeys.courierConfig.listAreas(businessId, courier, zoneId),
+
+    queryFn: () => {
+      if (!businessId || !courier || !zoneId) {
+        throw new Error("Business ID and Category ID are required");
+      }
+
+      return courierApi.getAreasInsideZone(businessId, courier, zoneId);
+    },
+
+    enabled: Boolean(businessId && courier && zoneId),
   });
 }
 
@@ -129,6 +161,18 @@ export function useCourierMutation(businessId: ApiId) {
         payload: AssignToCourierPayload
       }) =>
         courierApi.courierAssign(businessId, orderId, payload),
+      onSuccess: invalidate,
+    }),
+
+    warehouseAssign: useMutation({
+      mutationFn: ({
+        storeId,
+        payload,
+      }: {
+        storeId: ApiId;
+        payload: AssignWarehousePayload;
+      }) =>
+        courierApi.AssignWarehouse(businessId, storeId, payload),
       onSuccess: invalidate,
     }),
 

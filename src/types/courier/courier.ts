@@ -72,13 +72,32 @@ export type CourierAreaResponse = {
   }
 };
 
+
+export type CourierArea = {
+  area_id: number;
+  area_name: string;
+  home_delivery_available: boolean;
+  pickup_available: boolean;
+};
+
+export type AreaCourierResponse = {
+  message: string;
+  type: "success" | "error";
+  code: number;
+  data: {
+    data: CourierArea[];
+  };
+};
+
+
+
 // zone courier
-export interface PathaoZone {
+export type PathaoZone = {
   zone_id: number;
   zone_name: string;
 }
 
-export interface PathaoZoneListResponse {
+export type PathaoZoneListResponse = {
   data: {
     message: string;
     type: string;
@@ -91,25 +110,30 @@ export interface PathaoZoneListResponse {
 
 
 // pick up store
-export type PickupStore = {
-  id: number;
-  name: string;
-  address: string;
+export interface StoreItems {
+  store_id: number;
+  store_name: string;
+  store_address: string;
   area_name: string;
-  area_id: number;
+  area_id: number | null;
   phone: string;
-};
+  city_id: number;
+  zone_id: number | null;
+  is_active: boolean | null;
+}
 
-export type PickupStoresResponse = {
-  pickup_stores: PickupStore[];
-};
+export interface PickupStoresResponse {
+    stores: StoreItems[];
+}
 
 
 export type PickupStorePayload = {
   name: string;
   phone: string;
   address: string;
-  areaId: string;
+  cityId: string;
+  zoneId?: string;
+  areaId?: string;
 };
 
 // template courier charge 
@@ -502,3 +526,8 @@ export type AssignToCourierPayload = {
   specialInstruction?: string;
   courierConfigId: string;
 };
+
+export interface AssignWarehousePayload {
+  configId: string;
+  warehouseId: string;
+}
