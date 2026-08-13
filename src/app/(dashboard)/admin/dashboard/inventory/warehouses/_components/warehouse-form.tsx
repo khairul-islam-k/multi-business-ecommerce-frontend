@@ -1,44 +1,10 @@
 "use client";
 
 import { Button, Card, Col, Form, Input, Row, Select, Space } from "antd";
-import { useEffect, useMemo, useState } from "react";
-
-import {
-  useAreasQuery,
-  useCourierPickUp,
-  useCourierQuery,
-} from "@/lib/api/hooks/courier";
-import { useAuthStore } from "@/stores/auth.store";
+import { useEffect } from "react";
 import { WarehousePayload, WarehouseStatus } from "@/types/product/warehouse";
 
 const { TextArea } = Input;
-
-type CourierConfigItem = {
-  id: string;
-  courier?: {
-    id?: string;
-    name?: string;
-    code?: string;
-  };
-};
-
-type RedxArea = {
-  id: number;
-  name: string;
-  post_code: number;
-  district_name: string;
-  division_name: string;
-  zone_id: number;
-};
-
-type PickupStore = {
-  id: number;
-  name: string;
-  address: string;
-  area_name: string;
-  area_id: number;
-  phone: string;
-};
 
 export type WarehouseFormValues = {
   name: string;
@@ -69,59 +35,7 @@ const WarehouseForm = ({
   onCancel,
 }: WarehouseFormProps) => {
   const [form] = Form.useForm<WarehouseFormValues>();
-  const [selectedConfigId, setSelectedConfigId] = useState<string>("");
 
-  const business = useAuthStore((s) => s.selectedBusiness);
-  const businessId = business?.id ?? "";
-
-  const {
-    data: courier,
-    isLoading: courierLoading,
-    isFetching: courierFetching,
-  } = useCourierQuery(businessId);
-
-  const courierItems = useMemo<CourierConfigItem[]>(() => {
-    return courier?.items ?? [];
-  }, [courier?.items]);
-
-  useEffect(() => {
-    if (courierItems.length > 0 && !selectedConfigId) {
-      setSelectedConfigId(courierItems[0].id);
-    }
-  }, [courierItems, selectedConfigId]);
-
-  const { data: areas, isLoading: areasLoading } = useAreasQuery(
-    businessId,
-    selectedConfigId,
-  );
-
-  const { data: pickUpStores, isLoading: pickupStoreLoading } =
-    useCourierPickUp(businessId, selectedConfigId);
-
-  const courierOptions = useMemo(() => {
-    return courierItems.map((item) => ({
-      label: item.courier?.name ?? item.id,
-      value: item.id,
-    }));
-  }, [courierItems]);
-
-  const areaOptions = useMemo(() => {
-    return (areas?.areas ?? []).map((area: RedxArea) => ({
-      label: `${area.name} - ${area.district_name} (${area.post_code})`,
-      value: String(area.id),
-
-      redxAreaId: String(area.id),
-      redxAreaName: area.name,
-      redxPostCode: String(area.post_code),
-    }));
-  }, [areas?.areas]);
-
-  const pickupStoreOptions = useMemo(() => {
-    return (pickUpStores?.pickup_stores ?? []).map((store: PickupStore) => ({
-      label: `${store.name} - ${store.area_name} (${store.phone})`,
-      value: String(store.id),
-    }));
-  }, [pickUpStores?.pickup_stores]);
 
   useEffect(() => {
     if (!initialValues) return;
@@ -130,67 +44,11 @@ const WarehouseForm = ({
       name: initialValues.name ?? "",
       phone: initialValues.phone ?? undefined,
       address: initialValues.address ?? undefined,
-
-      redxAreaId: initialValues.redxAreaId
-        ? String(initialValues.redxAreaId)
-        : undefined,
-
-      redxAreaName: initialValues.redxAreaName ?? undefined,
-
-      redxPostCode: initialValues.redxPostCode
-        ? String(initialValues.redxPostCode)
-        : undefined,
-
-      redxPickupStoreId: initialValues.redxPickupStoreId
-        ? String(initialValues.redxPickupStoreId)
-        : undefined,
-
       status: initialValues.status ?? undefined,
     });
   }, [form, initialValues]);
 
-  const handleCourierChange = (configId?: string) => {
-    setSelectedConfigId(configId ?? "");
 
-    form.setFieldsValue({
-      redxAreaId: undefined,
-      redxAreaName: undefined,
-      redxPostCode: undefined,
-      redxPickupStoreId: undefined,
-    });
-  };
-
-  const handleAreaChange = (
-    _value: string | undefined,
-    option:
-      | {
-        redxAreaId: string;
-        redxAreaName: string;
-        redxPostCode: string;
-      }
-      | {
-        redxAreaId: string;
-        redxAreaName: string;
-        redxPostCode: string;
-      }[]
-      | undefined,
-  ) => {
-    if (!option || Array.isArray(option)) {
-      form.setFieldsValue({
-        redxAreaId: undefined,
-        redxAreaName: undefined,
-        redxPostCode: undefined,
-      });
-
-      return;
-    }
-
-    form.setFieldsValue({
-      redxAreaId: option.redxAreaId,
-      redxAreaName: option.redxAreaName,
-      redxPostCode: option.redxPostCode,
-    });
-  };
 
   const handleFinish = (values: WarehouseFormValues) => {
     const payload: WarehousePayload = {
@@ -208,26 +66,14 @@ const WarehouseForm = ({
         }
         : {}),
 
-      ...(values.redxAreaId
-        ? {
-          redxAreaId: String(values.redxAreaId),
-          redxAreaName: values.redxAreaName,
-          redxPostCode: values.redxPostCode,
-        }
-        : {}),
-
-      ...(values.redxPickupStoreId
-        ? {
-          redxPickupStoreId: String(values.redxPickupStoreId),
-        }
-        : {}),
-
       ...(values.status
         ? {
           status: values.status,
         }
         : {}),
     };
+
+    console.log("payload", payload);
 
     onSubmit(payload);
   };
@@ -243,10 +89,6 @@ const WarehouseForm = ({
           name: "",
           phone: undefined,
           address: undefined,
-          redxAreaId: undefined,
-          redxAreaName: undefined,
-          redxPostCode: undefined,
-          redxPickupStoreId: undefined,
           status: undefined,
         }}
       >
@@ -297,63 +139,6 @@ const WarehouseForm = ({
               ]}
             >
               <Input placeholder="+8801700000000" />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={12}>
-            <Form.Item label="Courier">
-              <Select
-                showSearch
-                allowClear
-                placeholder="Select courier"
-                loading={courierLoading || courierFetching}
-                value={selectedConfigId || undefined}
-                options={courierOptions}
-                optionFilterProp="label"
-                onChange={handleCourierChange}
-                filterOption={(input, option) =>
-                  String(option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={12}>
-            <Form.Item label="REDX Area" name="redxAreaId">
-              <Select
-                showSearch
-                allowClear
-                placeholder="Search and select REDX area"
-                loading={areasLoading}
-                options={areaOptions}
-                optionFilterProp="label"
-                onChange={handleAreaChange}
-                filterOption={(input, option) =>
-                  String(option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              />
-            </Form.Item>
-          </Col>
-
-          <Col xs={24} md={12}>
-            <Form.Item label="REDX Pickup Store" name="redxPickupStoreId">
-              <Select
-                showSearch
-                allowClear
-                placeholder="Search and select pickup store"
-                loading={pickupStoreLoading}
-                options={pickupStoreOptions}
-                optionFilterProp="label"
-                filterOption={(input, option) =>
-                  String(option?.label ?? "")
-                    .toLowerCase()
-                    .includes(input.toLowerCase())
-                }
-              />
             </Form.Item>
           </Col>
 

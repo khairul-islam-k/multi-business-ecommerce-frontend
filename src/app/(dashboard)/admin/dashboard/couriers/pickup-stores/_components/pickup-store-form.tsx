@@ -8,7 +8,6 @@ import { useEffect, useMemo } from "react";
 import { useAuthStore } from "@/stores/auth.store";
 import { PathaoZone, PickupStorePayload } from "@/types/courier/courier";
 import { useCitiesQuery, useCourierAreas, useCourierQuery, useCourierZone } from "@/lib/api/hooks/courier";
-import { useWatch } from "antd/es/form/Form";
 
 type PickupStoreFormProps = {
   mode: "create" | "update";
@@ -48,7 +47,7 @@ const PickupStoreForm = ({
   const { data: cities } = useCitiesQuery(businessId, configId);
 
   const {data: zones} = useCourierZone(businessId, configId, cityId);
-  const {data: areas} = useCourierAreas(businessId, configId, zoneId);
+  const {data: areas} = useCourierAreas(businessId, configId, zoneId ?? '');
 
   const citiesOptions = useMemo(() => {
     return (cities?.data.areas ?? []).map((area) => ({

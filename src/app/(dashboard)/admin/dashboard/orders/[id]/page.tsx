@@ -209,7 +209,6 @@ export default function OrderDetails() {
   const returns = orderReturns.data?.items ?? [];
   const statusLogs = current.statusLogs ?? [];
 
-  console.log('current', current);
   // order status
   const orderStatus = current.status ?? "";
   const canShip = ["CONFIRMED", "PROCESSING"].includes(orderStatus ?? "");

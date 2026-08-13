@@ -6,13 +6,15 @@ import { useMemo, useState } from "react";
 
 import { useSwal } from "@/hooks/use-swal";
 import {
-  useAreasQuery,
+  useCitiesQuery,
   useCourierMutation,
   useCourierQuery,
+  useCourierZone,
 } from "@/lib/api/hooks/courier";
 import { getApiErrorMessage } from "@/lib/axios";
 import { useAuthStore } from "@/stores/auth.store";
-import { AssignToCourierPayload } from "@/types/courier/courier";
+import { AssignToCourierPayload, PathaoZone } from "@/types/courier/courier";
+import { useWatch } from "antd/es/form/Form";
 
 type AssignToCourierModalProps = {
   open: boolean;
@@ -35,6 +37,8 @@ const AssignToCourierModal = ({
   const [selectedCourierConfigId, setSelectedCourierConfigId] =
     useState<string>("");
 
+    const cityId = Form.useWatch("deliveryCityId", form);
+
   const {
     data: courier,
     isLoading: courierLoading,
@@ -42,53 +46,77 @@ const AssignToCourierModal = ({
   } = useCourierQuery(businessId);
 
   const {
-    data: areas,
+    data: cities,
     isLoading: areaLoading,
     isFetching: areaFetching,
-  } = useAreasQuery(businessId, selectedCourierConfigId);
+  } = useCitiesQuery(businessId, selectedCourierConfigId);
+
+  const {
+    data: zones,
+  isLoading: zoneLoading,
+  isFetching: zoneFetching,
+} = useCourierZone(businessId, selectedCourierConfigId, cityId);
 
   const { courierAssign } = useCourierMutation(businessId);
 
   const courierItems = courier?.items ?? [];
-  const areaItems = areas?.areas ?? [];
+  const cityItems = cities?.data.areas ?? [];
+  const zoneItems = (zones?.data?.data ?? []) as PathaoZone[];
 
   const selectedCourier = useMemo(() => {
     return courierItems.find((item) => item.id === selectedCourierConfigId);
   }, [courierItems, selectedCourierConfigId]);
 
-  const areaOptions = useMemo(() => {
-    return areaItems.map((area) => ({
-      label: `${area.name} - ${area.district_name} (${area.post_code})`,
-      value: String(area.id),
+  const isPathao = selectedCourier?.courier.code === "PATHAO";
+
+  const citiesOptions = useMemo(() => {
+    return cityItems.map((area) => ({
+      label: area.city_name,
+      value: String(area.city_id),
       area,
     }));
-  }, [areaItems]);
+  }, [cityItems]);
+
+  const zonesOptions = useMemo(() => {
+    return zoneItems.map((area) => ({
+      label: area.zone_name,
+      value: String(area.zone_id),
+      area,
+    }));
+  }, [zoneItems]);
 
   const handleCourierSelect = (courierConfigId: string) => {
     setSelectedCourierConfigId(courierConfigId);
 
     form.setFieldsValue({
-      deliveryAreaId: undefined,
+      deliveryCityId: undefined,
     });
   };
 
   const handleFinish = async (values: {
-    deliveryAreaId: string;
+    deliveryCityId: string;
     specialInstruction?: string;
+    deliveryZoneId?: string;
   }) => {
-    const selectedArea = areaItems.find(
-      (area) => String(area.id) === values.deliveryAreaId,
+    const selectedCity = cityItems.find(
+      (area) => String(area.city_id) === values.deliveryCityId,
     );
 
-    if (!selectedArea || !selectedCourierConfigId) return;
+    const zoneId = selectedCity?.zone_id ?? values.deliveryZoneId;
+
+    if (!selectedCity || !selectedCourierConfigId) return;
     setLoading(true);
 
     const payload: AssignToCourierPayload = {
-      deliveryAreaId: String(selectedArea.id),
-      deliveryAreaName: selectedArea.name,
-      deliveryPostCode: String(selectedArea.post_code),
-      deliveryDivisionName:
-        selectedArea.division_name || selectedArea.district_name,
+      deliveryCityId: String(selectedCity.city_id),
+      deliveryAreaName: selectedCity.city_name,
+      ...(selectedCity.post_code ? {
+        deliveryPostCode: String(selectedCity.post_code)
+      }: {}),
+        deliveryDivisionName: selectedCity.division_name ?? "",
+      ...(zoneId ? {
+        deliveryZoneId: String(zoneId),
+      }: {}),
       specialInstruction: values.specialInstruction?.trim() || undefined,
       courierConfigId: selectedCourierConfigId,
     };
@@ -100,7 +128,7 @@ const AssignToCourierModal = ({
       });
 
       swal.success("Courier Assigned successfully");
-      // handleClose();
+      handleClose();
     } catch (error) {
       swal.error(getApiErrorMessage(error));
     } finally {
@@ -216,8 +244,8 @@ const AssignToCourierModal = ({
         </div>
 
         <Form.Item
-          label="Delivery Area"
-          name="deliveryAreaId"
+          label="Delivery City"
+          name="deliveryCityId"
           rules={[{ required: true, message: "Please select delivery area" }]}
         >
           <Select
@@ -230,10 +258,32 @@ const AssignToCourierModal = ({
             loading={areaLoading || areaFetching}
             showSearch
             allowClear
-            options={areaOptions}
+            options={citiesOptions}
             optionFilterProp="label"
           />
         </Form.Item>
+
+        {
+          isPathao && <Form.Item
+          label="Delivery zones"
+          name="deliveryZoneId"
+          rules={[{ required: true, message: "Please select delivery area" }]}
+        >
+          <Select
+            placeholder={
+              selectedCourierConfigId
+                ? "Select delivery area"
+                : "Select courier first"
+            }
+            disabled={!selectedCourierConfigId && !cityId}
+            loading={zoneLoading || zoneFetching}
+            showSearch
+            allowClear
+            options={zonesOptions}
+            optionFilterProp="label"
+          />
+        </Form.Item>
+        }
 
         <Form.Item label="Special Instruction" name="specialInstruction">
           <Input.TextArea rows={4} placeholder="Please call before delivery" />

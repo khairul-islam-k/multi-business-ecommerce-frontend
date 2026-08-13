@@ -8,11 +8,8 @@ import PageHeader from "@/components/shared/page-header";
 import { adminBreadcrumb } from "@/config/breadcrumb.config";
 import { useCourierProviderQuery } from "@/lib/api/hooks/courier";
 import { useAuthStore } from "@/stores/auth.store";
+import { CourierStatus, CourierProvider as TCourierProvider } from "@/types/courier/courier";
 
-import {
-  CourierProvider as TCourierProvider,
-  CourierStatus,
-} from "../courier-config/page";
 
 const CourierProvider = () => {
   const [statusFilter, setStatusFilter] = useState<CourierStatus | undefined>();

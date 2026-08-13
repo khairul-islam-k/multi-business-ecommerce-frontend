@@ -4,11 +4,12 @@ import { CustomerAddressType } from "./customer-address";
 export type PaymentMethodStatus = "ONLINE" | "COD";
 
 export type CourierQuotePayload = {
-  deliveryAreaId: string;
+  deliveryCityId: string;
   deliveryAreaName: string;
   deliveryPostCode: string;
   deliveryDivisionName: string;
   specialInstruction?: string;
+  deliveryZoneId?: string;
 };
 
 export type PaymentPayload = {

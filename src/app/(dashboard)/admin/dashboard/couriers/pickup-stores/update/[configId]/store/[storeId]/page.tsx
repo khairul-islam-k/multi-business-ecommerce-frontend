@@ -27,11 +27,11 @@ const UpdatePickupStorePage = () => {
 
   const { updatePickupStore } = useCourierMutation(businessId);
 
-  const selectedPickupStore = useMemo(() => {
-    return pickUpStores?.pickup_stores?.find(
-      (store) => String(store.id) === String(storeId),
-    );
-  }, [pickUpStores?.pickup_stores, storeId]);
+  // const selectedPickupStore = useMemo(() => {
+  //   return pickUpStores?.stores.find(
+  //     (store) => String(store.id) === String(storeId),
+  //   );
+  // }, [pickUpStores?.pickup_stores, storeId]);
 
   const handleUpdate = async (payload: PickupStorePayload) => {
     try {
@@ -55,12 +55,12 @@ const UpdatePickupStorePage = () => {
         breadcrumb={adminBreadcrumb}
       />
 
-      <PickupStoreForm
+      {/* <PickupStoreForm
         configId={configId}
         mode="update"
         initialValues={selectedPickupStore}
         onSubmit={handleUpdate}
-      />
+      /> */}
     </div>
   );
 };

@@ -49,7 +49,7 @@ const ElectronicActiveCart = () => {
     const [openCourierModal, setOpenCourierModal] = useState<boolean>(false);
     const [courierConfigId, setCourierConfigId] = useState<string>('');
     const [getCourierInfo, setGetCourierInfo] = useState<CourierDeliveryPayload>({
-        deliveryAreaId: '',
+        deliveryCityId: '',
         deliveryAreaName: '',
         deliveryPostCode: '',
         deliveryDivisionName: '',

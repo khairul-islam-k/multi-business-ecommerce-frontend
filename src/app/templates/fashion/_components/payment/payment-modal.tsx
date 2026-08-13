@@ -160,7 +160,14 @@ export default function PaymentModal({
           paymentMethod,
           shippingAddressId: values.shippingAddressId.trim(),
           courierConfigId,
-          courierQuote: withoutWeight,
+          courierQuote: {
+            deliveryCityId: withoutWeight.deliveryCityId,
+            deliveryAreaName: withoutWeight.deliveryAreaName,
+            deliveryPostCode: withoutWeight.deliveryPostCode ?? '',
+            deliveryDivisionName: withoutWeight.deliveryDivisionName,
+            specialInstruction: withoutWeight.specialInstruction,
+            deliveryZoneId: withoutWeight.deliveryZoneId,
+          },
         };
 
         if (note) {
@@ -170,7 +177,14 @@ export default function PaymentModal({
         payload = {
           paymentMethod,
           courierConfigId,
-          courierQuote: withoutWeight,
+          courierQuote: {
+            deliveryCityId: withoutWeight.deliveryCityId,
+            deliveryAreaName: withoutWeight.deliveryAreaName,
+            deliveryPostCode: withoutWeight.deliveryPostCode ?? '',
+            deliveryDivisionName: withoutWeight.deliveryDivisionName,
+            specialInstruction: withoutWeight.specialInstruction,
+            deliveryZoneId: withoutWeight.deliveryZoneId,
+          },
           shippingAddressSnapshot: {
             address: values.shippingAddressSnapshot.address?.trim() || "",
           },

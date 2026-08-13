@@ -40,20 +40,6 @@ export default function CreateWarehousePage() {
           }
         : {}),
 
-      ...(values.redxAreaId
-        ? {
-            redxAreaId: values.redxAreaId,
-            redxAreaName: values.redxAreaName,
-            redxPostCode: values.redxPostCode,
-          }
-        : {}),
-
-      ...(values.redxPickupStoreId
-        ? {
-            redxPickupStoreId: values.redxPickupStoreId,
-          }
-        : {}),
-
       ...(values.status
         ? {
             status: values.status,

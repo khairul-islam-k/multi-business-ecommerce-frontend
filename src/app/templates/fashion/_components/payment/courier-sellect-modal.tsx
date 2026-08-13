@@ -13,7 +13,6 @@ import {
     CourierDeliveryPayload,
     PathaoZone,
 } from "@/types/courier/courier";
-import { contentQuotesLinter } from "@ant-design/cssinjs/lib/linters";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     ArrowRight,
@@ -75,7 +74,7 @@ const CourierSellectModal = ({
     const { data: courierConfig, isLoading: isCourierLoading } =
         useTemplateCourierQuery();
 
-        // create api
+    // create api
     const { courierChargeCalculate } = useTemplateCourierMutation();
 
     const {
@@ -108,7 +107,7 @@ const CourierSellectModal = ({
         useTemplateAreasQuery(selectedConfigId);
 
     // get cities
-    const {data: zones} = useTemplateZones(selectedConfigId, selectedCitiesId);
+    const { data: zones } = useTemplateZones(selectedConfigId, selectedCitiesId);
 
     const allZones = (zones?.data?.data ?? []) as PathaoZone[];
 
@@ -130,7 +129,7 @@ const CourierSellectModal = ({
     // single courier config
     const selectCourier = courierConfig?.find(singleConfig => singleConfig.id === selectedConfigId);
 
-    const isPathao = selectCourier?.courier.code ==="PATHAO";
+    const isPathao = selectCourier?.courier.code === "PATHAO";
 
     const configRegister = register("configId");
     const areaRegister = register("deliveryCityId");
@@ -239,9 +238,9 @@ const CourierSellectModal = ({
                 weight: values.weight ?? 1,
                 ...(isPathao && values.deliveryZoneId
                     ? {
-                       deliveryZoneId: String(values.deliveryZoneId),
+                        deliveryZoneId: String(values.deliveryZoneId),
                     }
-                 : {}),
+                    : {}),
             };
 
             if (specialInstruction) {
@@ -392,44 +391,44 @@ const CourierSellectModal = ({
 
                         {
                             isPathao && <div>
-                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
-                                Delivery Zone
-                            </label>
+                                <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                    Delivery Zone
+                                </label>
 
-                            <div className="relative">
-                                <MapPin className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-muted,#6b7280)]" />
+                                <div className="relative">
+                                    <MapPin className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-muted,#6b7280)]" />
 
-                                <select
-                                    name={zoneRegister.name}
-                                    ref={zoneRegister.ref}
-                                    onBlur={zoneRegister.onBlur}
-                                    onChange={handleZoneChange}
-                                    disabled={!selectedConfigId || isAreaLoading}
-                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-                                >
-                                    <option value="">
-                                        {!selectedConfigId
-                                            ? "Select courier first"
-                                            : isAreaLoading
-                                                ? "Loading areas..."
-                                                : "Select delivery Zone"}
-                                    </option>
-
-                                    {zonesOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
+                                    <select
+                                        name={zoneRegister.name}
+                                        ref={zoneRegister.ref}
+                                        onBlur={zoneRegister.onBlur}
+                                        onChange={handleZoneChange}
+                                        disabled={!selectedConfigId || isAreaLoading}
+                                        className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                                    >
+                                        <option value="">
+                                            {!selectedConfigId
+                                                ? "Select courier first"
+                                                : isAreaLoading
+                                                    ? "Loading areas..."
+                                                    : "Select delivery Zone"}
                                         </option>
-                                    ))}
-                                </select>
-                            </div>
 
-                            {(touchedFields.deliveryCityId || isSubmitted) &&
-                                errors.deliveryCityId && (
-                                    <p className="mt-1 text-sm text-red-500">
-                                        {errors.deliveryCityId.message}
-                                    </p>
-                                )}
-                        </div>
+                                        {zonesOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {(touchedFields.deliveryCityId || isSubmitted) &&
+                                    errors.deliveryCityId && (
+                                        <p className="mt-1 text-sm text-red-500">
+                                            {errors.deliveryCityId.message}
+                                        </p>
+                                    )}
+                            </div>
                         }
 
                         <div>

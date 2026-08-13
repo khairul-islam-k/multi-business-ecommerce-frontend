@@ -5,11 +5,13 @@ import {
     useTemplateAreasQuery,
     useTemplateCourierMutation,
     useTemplateCourierQuery,
+    useTemplateZones,
 } from "@/lib/api/hooks/template-courier";
 import { getWebErrorMessage } from "@/lib/public-api-hook/web-api";
 import {
     CourierChargeCalculationResponse,
     CourierDeliveryPayload,
+    PathaoZone,
 } from "@/types/courier/courier";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -26,8 +28,8 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 
 type CourierArea = {
-    id: number;
-    name: string;
+    city_id: number;
+    city_name: string;
     post_code: number;
     district_name: string;
     division_name: string;
@@ -36,9 +38,10 @@ type CourierArea = {
 
 const courierSelectSchema = z.object({
     configId: z.string().min(1, "Courier is required"),
-    deliveryAreaId: z.string().min(1, "Area is required"),
+    deliveryCityId: z.string().min(1, "Area is required"),
     weight: z.number().optional(),
     specialInstruction: z.string().optional(),
+    deliveryZoneId: z.string().optional(),
 });
 
 export type CourierSelectFormValues = z.infer<typeof courierSelectSchema>;
@@ -71,6 +74,7 @@ const CourierSellectModal = ({
     const { data: courierConfig, isLoading: isCourierLoading } =
         useTemplateCourierQuery();
 
+        // create api
     const { courierChargeCalculate } = useTemplateCourierMutation();
 
     const {
@@ -88,30 +92,49 @@ const CourierSellectModal = ({
         reValidateMode: "onChange",
         defaultValues: {
             configId: "",
-            deliveryAreaId: "",
+            deliveryCityId: "",
             weight: Number(weight),
             specialInstruction: "",
+            deliveryZoneId: "",
         },
     });
 
     const selectedConfigId = watch("configId");
+    const selectedCitiesId = watch("deliveryCityId");
 
+    // get area
     const { data: areasResponse, isLoading: isAreaLoading } =
         useTemplateAreasQuery(selectedConfigId);
 
+    // get cities
+    const {data: zones} = useTemplateZones(selectedConfigId, selectedCitiesId);
+
+    const allZones = (zones?.data?.data ?? []) as PathaoZone[];
+
+    const zonesOptions = useMemo(() => {
+        return allZones.map((area) => ({
+            label: area.zone_name,
+            value: String(area.zone_id),
+        }));
+    }, [allZones]);
 
     const courierConfigs = useMemo(() => {
         return (courierConfig ?? []);
     }, [courierConfig]);
 
-    const areas = useMemo<CourierArea[]>(() => {
-        return (areasResponse?.areas ?? []) as CourierArea[];
-    }, [areasResponse?.areas]);
+    const cities = useMemo<CourierArea[]>(() => {
+        return (areasResponse?.data.areas ?? []) as CourierArea[];
+    }, [areasResponse]);
 
+    // single courier config
+    const selectCourier = courierConfig?.find(singleConfig => singleConfig.id === selectedConfigId);
+
+    const isPathao = selectCourier?.courier.code ==="PATHAO";
 
     const configRegister = register("configId");
-    const areaRegister = register("deliveryAreaId");
+    const areaRegister = register("deliveryCityId");
     const specialInstructionRegister = register("specialInstruction");
+    const zoneRegister = register("deliveryZoneId");
 
     const courierOptions = useMemo(() => {
         return courierConfigs.map((config) => ({
@@ -122,18 +145,21 @@ const CourierSellectModal = ({
         }));
     }, [courierConfigs]);
 
-    const areaOptions = useMemo(() => {
-        return areas.map((area) => ({
-            label: `${area.name} - ${area.district_name} (${area.post_code})`,
-            value: String(area.id),
+    const citiesOptions = useMemo(() => {
+        return cities.map((area) => ({
+            label: `${area.city_name}`,
+            value: String(area.city_id),
         }));
-    }, [areas]);
+    }, [cities]);
 
     const handleClose = () => {
         setCharge(undefined);
         setSelectedPayload(undefined);
         onClose();
     };
+
+
+    // real time message
 
     const handleCourierChange = async (
         event: React.ChangeEvent<HTMLSelectElement>,
@@ -143,20 +169,20 @@ const CourierSellectModal = ({
         setCharge(undefined);
         setSelectedPayload(undefined);
 
-        resetField("deliveryAreaId", {
+        resetField("deliveryCityId", {
             defaultValue: "",
             keepDirty: false,
             keepTouched: false,
             keepError: false,
         });
 
-        setValue("deliveryAreaId", "", {
+        setValue("deliveryCityId", "", {
             shouldDirty: false,
             shouldTouch: false,
             shouldValidate: false,
         });
 
-        clearErrors("deliveryAreaId");
+        clearErrors("deliveryCityId");
     };
 
     const handleAreaChange = async (
@@ -168,18 +194,33 @@ const CourierSellectModal = ({
         setSelectedPayload(undefined);
 
         if (event.target.value) {
-            clearErrors("deliveryAreaId");
+            clearErrors("deliveryCityId");
         }
 
-        await trigger("deliveryAreaId");
+        await trigger("deliveryCityId");
+    };
+
+    const handleZoneChange = async (
+        event: React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        await zoneRegister.onChange(event);
+
+        setCharge(undefined);
+        setSelectedPayload(undefined);
+
+        if (event.target.value) {
+            clearErrors("deliveryZoneId");
+        }
+
+        await trigger("deliveryZoneId");
     };
 
     const handleCourierCalculate = async (values: CourierSelectFormValues) => {
         try {
             setIsSubmitting(true);
 
-            const selectedArea = areas.find(
-                (area) => String(area.id) === values.deliveryAreaId,
+            const selectedArea = cities.find(
+                (area) => String(area.city_id) === values.deliveryCityId,
             );
 
             if (!selectedArea) {
@@ -190,11 +231,16 @@ const CourierSellectModal = ({
             const specialInstruction = values.specialInstruction?.trim();
 
             const payload: CourierDeliveryPayload = {
-                deliveryAreaId: String(selectedArea.id),
-                deliveryAreaName: selectedArea.name,
+                deliveryCityId: String(selectedArea.city_id),
+                deliveryAreaName: selectedArea.city_name,
                 deliveryPostCode: String(selectedArea.post_code),
                 deliveryDivisionName: selectedArea.district_name,
                 weight: values.weight ?? 1,
+                ...(isPathao && values.deliveryZoneId
+                    ? {
+                       deliveryZoneId: String(values.deliveryZoneId),
+                    }
+                 : {}),
             };
 
             if (specialInstruction) {
@@ -327,7 +373,7 @@ const CourierSellectModal = ({
                                                 : "Select delivery area"}
                                     </option>
 
-                                    {areaOptions.map((option) => (
+                                    {citiesOptions.map((option) => (
                                         <option key={option.value} value={option.value}>
                                             {option.label}
                                         </option>
@@ -335,13 +381,55 @@ const CourierSellectModal = ({
                                 </select>
                             </div>
 
-                            {(touchedFields.deliveryAreaId || isSubmitted) &&
-                                errors.deliveryAreaId && (
+                            {(touchedFields.deliveryCityId || isSubmitted) &&
+                                errors.deliveryCityId && (
                                     <p className="mt-1 text-sm text-red-500">
-                                        {errors.deliveryAreaId.message}
+                                        {errors.deliveryCityId.message}
                                     </p>
                                 )}
                         </div>
+
+                        {
+                            isPathao && <div>
+                            <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                                Delivery Zone
+                            </label>
+
+                            <div className="relative">
+                                <MapPin className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-muted,#6b7280)]" />
+
+                                <select
+                                    name={zoneRegister.name}
+                                    ref={zoneRegister.ref}
+                                    onBlur={zoneRegister.onBlur}
+                                    onChange={handleZoneChange}
+                                    disabled={!selectedConfigId || isAreaLoading}
+                                    className="h-12 w-full rounded-xl border border-[var(--store-border,#e5e7eb)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text,#111827)] outline-none transition focus:border-[var(--store-primary)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
+                                >
+                                    <option value="">
+                                        {!selectedConfigId
+                                            ? "Select courier first"
+                                            : isAreaLoading
+                                                ? "Loading areas..."
+                                                : "Select delivery Zone"}
+                                    </option>
+
+                                    {zonesOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {(touchedFields.deliveryCityId || isSubmitted) &&
+                                errors.deliveryCityId && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.deliveryCityId.message}
+                                    </p>
+                                )}
+                        </div>
+                        }
 
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
@@ -491,7 +579,7 @@ const CourierSellectModal = ({
                                                     Area
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxAreaName}
+                                                    {charge.pickupWarehouse.areaName}
                                                 </span>
                                             </div>
 
@@ -500,7 +588,7 @@ const CourierSellectModal = ({
                                                     Post Code
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxPostCode}
+                                                    {charge.pickupWarehouse.PostCode}
                                                 </span>
                                             </div>
 
@@ -509,7 +597,7 @@ const CourierSellectModal = ({
                                                     Pickup Store ID
                                                 </span>
                                                 <span className="font-semibold text-[var(--store-text,#111827)]">
-                                                    {charge.pickupWarehouse.redxPickupStoreId}
+                                                    {charge.pickupWarehouse.pickupStoreId}
                                                 </span>
                                             </div>
                                         </div>

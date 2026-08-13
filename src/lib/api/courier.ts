@@ -2,7 +2,7 @@ import { normalizePaginatedResponse, unwrapApiResponse } from "./response";
 import { ApiId, ApiPaginatedResponse, ApiResponse, CategoriesQuery } from "./types";
 import api from "../axios";
 import { buildQueryString } from "./params";
-import { AreaCourierResponse, AssignToCourierPayload, AssignWarehousePayload, CourierAreaResponse, CourierConfigResponse, CourierProvider, PathaoZoneListResponse, PickupStore, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
+import { AreaCourierResponse, AssignToCourierPayload, AssignWarehousePayload, CourierAreaResponse, CourierConfigResponse, CourierProvider, PathaoZoneListResponse, PickupStorePayload, PickupStoresResponse, ShipmentQuery, ShipmentResponse, ShipmentTrackingResponse, UpdateCourierConfigPayload } from "@/types/courier/courier";
 
 const basePath = (businessId: ApiId) => `/couriers/businesses/${businessId}/configs`;
 export const courierApi = {
@@ -74,13 +74,13 @@ export const courierApi = {
 
   shipmentBook(businessId: ApiId, shipmentId: ApiId) {
     return api
-      .post<ApiResponse<PickupStore>>(`/couriers/businesses/${businessId}/shipments/${shipmentId}/book`)
+      .post<ApiResponse<unknown>>(`/couriers/businesses/${businessId}/shipments/${shipmentId}/book`)
       .then((res) => unwrapApiResponse(res.data));
   },
 
   createPickUp(businessId: ApiId, configId: ApiId, payload: PickupStorePayload) {
     return api
-      .post<ApiResponse<PickupStore>>(`${basePath(businessId)}/${configId}/courier/pickup-stores`, payload)
+      .post<ApiResponse<unknown>>(`${basePath(businessId)}/${configId}/courier/pickup-stores`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 
@@ -93,7 +93,7 @@ export const courierApi = {
 
   updatePickUp(businessId: ApiId, configId: ApiId, storeId: ApiId,  payload: PickupStorePayload) {
     return api
-      .patch<ApiResponse<PickupStore>>(`${basePath(businessId)}/${configId}/redx/pickup-stores/${storeId}`, payload)
+      .patch<ApiResponse<unknown>>(`${basePath(businessId)}/${configId}/redx/pickup-stores/${storeId}`, payload)
       .then((res) => unwrapApiResponse(res.data));
   },
 

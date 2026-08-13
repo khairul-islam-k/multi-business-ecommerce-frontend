@@ -519,9 +519,10 @@ export type ShipmentTrackingResponse = {
 
 // courier assign payload
 export type AssignToCourierPayload = {
-  deliveryAreaId: string;
-  deliveryAreaName: string;
-  deliveryPostCode: string;
+  deliveryCityId: string;
+  deliveryZoneId?: string;
+  deliveryAreaName?: string;
+  deliveryPostCode?: string;
   deliveryDivisionName: string;
   specialInstruction?: string;
   courierConfigId: string;
