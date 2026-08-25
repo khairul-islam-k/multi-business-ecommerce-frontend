@@ -16,6 +16,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     ArrowRight,
+    Check,
     Loader2,
     MapPin,
     MessageSquare,
@@ -23,9 +24,12 @@ import {
     Truck,
     X,
 } from "lucide-react";
-import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import pathao from '@/assets/courier-logo/pathao.png';
+import redx from '@/assets/courier-logo/redx.png';
+import Image, { StaticImageData } from "next/image";
 
 type CourierArea = {
     city_id: number;
@@ -52,6 +56,17 @@ type CourierSellectModalProps = {
     onClose: () => void;
     onSuccess: (data: CourierDeliveryPayload) => void;
     setCourierConfigId: Dispatch<SetStateAction<string>>;
+};
+
+
+// courier logo
+const courierLogos: Record<string, StaticImageData> = {
+    PATHAO: pathao,
+    REDX: redx,
+};
+
+const getCourierLogo = (label: string) => {
+    return courierLogos[label.toUpperCase()];
 };
 
 const CourierSellectModal = ({
@@ -102,6 +117,13 @@ const CourierSellectModal = ({
     const selectedConfigId = watch("configId");
     const selectedCitiesId = watch("deliveryCityId");
 
+     // submit check
+    const [isChargeChecked, setIsChargeChecked] = useState<boolean>(false);
+    
+    useEffect(() => {
+        setIsChargeChecked(false);
+    }, [selectedConfigId]);
+
     // get area
     const { data: areasResponse, isLoading: isAreaLoading } =
         useTemplateAreasQuery(selectedConfigId);
@@ -131,15 +153,14 @@ const CourierSellectModal = ({
 
     const isPathao = selectCourier?.courier.code === "PATHAO";
 
-    const configRegister = register("configId");
+    // const configRegister = register("configId");
     const areaRegister = register("deliveryCityId");
     const specialInstructionRegister = register("specialInstruction");
     const zoneRegister = register("deliveryZoneId");
 
     const courierOptions = useMemo(() => {
         return courierConfigs.map((config) => ({
-            label: `${config.courier?.name ?? "Courier"} ${config.mode ? `(${config.mode})` : ""
-                }`,
+            label: `${config.courier?.name ?? "Courier"}`,
             value: config.id,
             courierId: config.courierId,
         }));
@@ -159,12 +180,13 @@ const CourierSellectModal = ({
     };
 
 
-    // real time message
-
-    const handleCourierChange = async (
-        event: React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        await configRegister.onChange(event);
+    // new courier
+    const handleCourierChange = (configId: string) => {
+        setValue("configId", configId, {
+            shouldDirty: true,
+            shouldTouch: true,
+            shouldValidate: true,
+        });
 
         setCharge(undefined);
         setSelectedPayload(undefined);
@@ -271,6 +293,18 @@ const CourierSellectModal = ({
         handleClose();
     };
 
+    // scroll behave
+    const chargeSectionRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (charge && chargeSectionRef.current) {
+            chargeSectionRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }
+    }, [charge]);
+
     if (!open) return null;
 
     return (
@@ -310,45 +344,81 @@ const CourierSellectModal = ({
                 </div>
 
                 <div className="min-h-0 flex-1 overflow-y-auto">
+
                     <form
                         onSubmit={handleSubmit(handleCourierCalculate)}
                         className="space-y-5 p-6"
                     >
+
+                        {/* courier */}
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
                                 Courier
                             </label>
 
-                            <div className="relative">
-                                <Truck className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-[var(--store-muted,#6b7280)]" />
+                            {isCourierLoading ? (
+                                <div className="flex h-24 items-center justify-center rounded-xl border border-[var(--store-border)] text-sm text-[var(--store-muted,#6b7280)]">
+                                    Loading couriers...
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                    {courierOptions.map((option) => {
+                                        const isSelected = selectedConfigId === option.value;
+                                        const logo = getCourierLogo(option.label);
 
-                                <select
-                                    name={configRegister.name}
-                                    ref={configRegister.ref}
-                                    onBlur={configRegister.onBlur}
-                                    onChange={handleCourierChange}
-                                    disabled={isCourierLoading}
-                                    className="h-12 w-full rounded-xl border border-[var(--store-border)] bg-transparent pl-12 pr-4 text-sm text-[var(--store-text)] outline-none transition focus:border-[var(--store-primary,#f16d59)] focus:bg-[var(--store-bg-1)] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400"
-                                >
-                                    <option value="">
-                                        {isCourierLoading ? "Loading couriers..." : "Select courier"}
-                                    </option>
+                                        return (
+                                            <button
+                                                key={option.value}
+                                                type="button"
+                                                onClick={() => handleCourierChange(option.value)}
+                                                className={`relative flex flex-col items-center justify-center rounded-xl border p-4 text-center transition ${isSelected
+                                                    ? "border-[var(--store-primary,#f16d59)] bg-[var(--store-primary,#f16d59)]/5 ring-1 ring-[var(--store-primary,#f16d59)]"
+                                                    : "border-[var(--store-border)] bg-transparent hover:border-[var(--store-primary,#f16d59)] hover:bg-[var(--store-bg-1)]"
+                                                    }`}
+                                            >
+                                                {isSelected && (
+                                                    <div className="absolute right-2 top-2 flex size-6 items-center justify-center rounded-full bg-[var(--store-primary,#f16d59)] text-white">
+                                                        <Check size={15} strokeWidth={3} />
+                                                    </div>
+                                                )}
 
-                                    {courierOptions.map((option) => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                                                <div className="flex h-16 w-24 items-center justify-center rounded-lg bg-white p-2">
+                                                    {logo ? (
+                                                        <Image
+                                                            src={logo}
+                                                            alt={`${option.label} logo`}
+                                                            className="max-h-full w-auto object-contain"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-xs font-semibold text-gray-500">
+                                                            {option.label}
+                                                        </span>
+                                                    )}
+                                                </div>
 
-                            {(touchedFields.configId || isSubmitted) && errors.configId && (
-                                <p className="mt-1 text-sm text-red-500">
-                                    {errors.configId.message}
-                                </p>
+                                                <p
+                                                    className={`mt-1 md:mt-2 text-sm font-semibold ${isSelected
+                                                        ? "text-[var(--store-primary,#f16d59)]"
+                                                        : "text-[var(--store-text,#111827)]"
+                                                        }`}
+                                                >
+                                                    {option.label}
+                                                </p>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                             )}
+
+                            {(touchedFields.configId || isSubmitted) &&
+                                errors.configId && (
+                                    <p className="mt-1 text-sm text-red-500">
+                                        {errors.configId.message}
+                                    </p>
+                                )}
                         </div>
 
+                        {/* area */}
                         <div>
                             <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
                                 Delivery Area
@@ -484,35 +554,45 @@ const CourierSellectModal = ({
                             </div>
                         </div>
 
-                        {!charge && (
-                            <div className="flex flex-col-reverse gap-3 border-t border-[var(--store-border,#e5e7eb)] pt-5 sm:flex-row sm:justify-end">
-                                <button
-                                    type="button"
-                                    onClick={handleClose}
-                                    className="inline-flex h-12 items-center justify-center rounded-full border border-[var(--store-border,#e5e7eb)] px-6 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    type="submit"
+                        {/* check calculate */}
+                        <div className="border-t border-[var(--store-border,#e5e7eb)] pt-5">
+                            <label
+                                className={`inline-flex items-center gap-3 ${isSubmitting
+                                    ? "cursor-not-allowed opacity-60"
+                                    : "cursor-pointer"
+                                    }`}
+                            >
+                                <input
+                                    type="checkbox"
                                     disabled={isSubmitting}
-                                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--store-primary,#f16d59)] px-6 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
-                                >
-                                    {isSubmitting ? (
-                                        <Loader2 className="size-5 animate-spin" />
-                                    ) : (
-                                        <Truck className="size-5" />
-                                    )}
+                                    checked={isChargeChecked}
+                                    onChange={(e) => {
+                                        const checked = e.target.checked;
+                                        setIsChargeChecked(checked);
+                                        if (checked) {
+                                            handleSubmit(handleCourierCalculate)();
+                                        }
+                                    }}
+                                    className="size-5 cursor-pointer accent-[var(--store-primary,#f16d59)] disabled:cursor-not-allowed"
+                                />
 
-                                    {isSubmitting ? "Calculating..." : "Calculate Charge"}
-                                </button>
-                            </div>
-                        )}
+                                <span className="text-sm font-semibold text-[var(--store-text,#111827)]">
+                                    {isSubmitting
+                                        ? "Calculating..."
+                                        : "Calculate Charge"}
+                                </span>
+
+                                {isSubmitting && (
+                                    <Loader2 className="size-4 animate-spin text-[var(--store-primary,#f16d59)]" />
+                                )}
+                            </label>
+                        </div>
+
                     </form>
 
                     {charge && (
-                        <div className="px-6 pb-6">
+                        <div
+                            className="px-6 pb-6">
                             <div className="rounded-3xl border border-[var(--store-border)] bg-[var(--store-card)] p-5 shadow-sm">
                                 <div className="mb-4 flex items-center justify-between gap-3 border-b border-[var(--store-border)] pb-4">
                                     <div>
@@ -639,30 +719,42 @@ const CourierSellectModal = ({
                                     </div>
                                 </div>
 
-                                <div className="mt-5 flex flex-col-reverse gap-3 border-t border-[var(--store-border,#e5e7eb)] pt-5 sm:flex-row sm:items-center sm:justify-end">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setCharge(undefined);
-                                            setSelectedPayload(undefined);
-                                        }}
-                                        className="inline-flex h-12 items-center justify-center rounded-full border border-[var(--store-border,#e5e7eb)] px-6 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
-                                    >
-                                        Recalculate
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={handleContinue}
-                                        className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--store-primary,#f16d59)] px-6 text-sm font-semibold text-white transition hover:opacity-90"
-                                    >
-                                        Continue
-                                        <ArrowRight className="size-5" />
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     )}
+
+                    {/* calculate button */}
+                    {/* Action buttons */}
+                    <div
+                        ref={chargeSectionRef}
+                        className="px-6 pb-6">
+                        <div className="mt-5 flex flex-col-reverse gap-3 border-t border-[var(--store-border,#e5e7eb)] pt-5 sm:flex-row sm:items-center sm:justify-end">
+                            {charge && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setCharge(undefined);
+                                        setSelectedPayload(undefined);
+                                    }}
+                                    className="inline-flex h-12 items-center justify-center rounded-full border border-[var(--store-border,#e5e7eb)] px-6 text-sm font-semibold text-[var(--store-text,#111827)] transition hover:border-[var(--store-primary,#f16d59)] hover:text-[var(--store-primary,#f16d59)]"
+                                >
+                                    Recalculate
+                                </button>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={handleContinue}
+                                disabled={!charge}
+                                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--store-primary,#f16d59)] px-6 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                Continue
+                                <ArrowRight className="size-5" />
+                            </button>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
         </div>
