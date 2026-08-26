@@ -10,6 +10,7 @@ export type CourierQuotePayload = {
   deliveryDivisionName: string;
   specialInstruction?: string;
   deliveryZoneId?: string;
+  customerPhone: string;
 };
 
 export type PaymentPayload = {

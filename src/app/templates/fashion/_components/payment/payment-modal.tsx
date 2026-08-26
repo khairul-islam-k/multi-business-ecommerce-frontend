@@ -35,6 +35,9 @@ const paymentSchema = z
     shippingAddressSnapshot: z.object({
       address: z.string().optional(),
     }),
+    customerPhone: z
+      .string()
+      .min(1, "Customer phone is required"),
     note: z.string().optional(),
   })
   .superRefine((data, ctx) => {
@@ -90,6 +93,7 @@ export default function PaymentModal({
       shippingAddressSnapshot: {
         address: "",
       },
+      customerPhone: "",
       note: "",
     },
   });
@@ -167,6 +171,7 @@ export default function PaymentModal({
             deliveryDivisionName: withoutWeight.deliveryDivisionName,
             specialInstruction: withoutWeight.specialInstruction,
             deliveryZoneId: withoutWeight.deliveryZoneId,
+            customerPhone: values.customerPhone
           },
         };
 
@@ -184,6 +189,7 @@ export default function PaymentModal({
             deliveryDivisionName: withoutWeight.deliveryDivisionName,
             specialInstruction: withoutWeight.specialInstruction,
             deliveryZoneId: withoutWeight.deliveryZoneId,
+            customerPhone: values.customerPhone
           },
           shippingAddressSnapshot: {
             address: values.shippingAddressSnapshot.address?.trim() || "",
@@ -352,6 +358,28 @@ export default function PaymentModal({
                 )}
               </div>
             )}
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
+                Customer Phone <span className="text-red-500">*</span>
+              </label>
+
+              <input
+                type="number"
+                {...register("customerPhone")}
+                placeholder="Enter customer phone number"
+                className={`w-full rounded-xl border bg-transparent px-4 py-3 text-sm text-[var(--store-text,#111827)] outline-none transition placeholder:text-[var(--store-muted,#6b7280)] ${errors.customerPhone
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-[var(--store-border,#e5e7eb)] focus:border-[var(--store-primary,#f16d59)]"
+                  }`}
+              />
+
+              {errors.customerPhone && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.customerPhone.message}
+                </p>
+              )}
+            </div>
 
             <div>
               <label className="mb-2 block text-sm font-semibold text-[var(--store-text,#111827)]">
