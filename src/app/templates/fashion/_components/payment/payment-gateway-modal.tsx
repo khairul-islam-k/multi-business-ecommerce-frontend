@@ -7,6 +7,17 @@ import { PaymentGatewayProvider } from "@/types/payment-gateway";
 import { CreditCard, Loader2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import sslcomerz from "@/assets/payment/sslcommerz.png";
+import shurjoPay from "@/assets/payment/shurjoPay.png";
+import aamarpay from "@/assets/payment/aamarpay_logo.png";
+import Image, { StaticImageData } from "next/image";
+
+const gatewayLogos: Record<string, StaticImageData> = {
+    AAMARPAY: aamarpay,
+    SHURJOPAY: shurjoPay,
+    SSLCOMMERZ: sslcomerz,
+};
+
 export type PaymentGatewayMode = "SANDBOX" | "LIVE";
 
 export type PaymentGateway = {
@@ -33,8 +44,6 @@ export default function PaymentGatewayModal({
     const message = useMessage();
 
     const baseUrl = window.location.origin ?? '';
-
-    console.log('url', baseUrl);
 
     const router = useRouter()
 
@@ -113,27 +122,44 @@ export default function PaymentGatewayModal({
                             <Loader2 className="size-6 animate-spin text-[var(--store-primary,#f16d59)]" />
                         </div>
                     ) : gatewayLength > 0 ? (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
-                            {gateways?.map((gateway) => (
-                                <button
-                                    key={gateway.id}
-                                    type="button"
-                                    onClick={() => handleSelectGateway(gateway)}
-                                    className="group rounded-xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] p-3 text-center shadow-sm transition hover:-translate-y-1 hover:border-[var(--store-primary,#f16d59)] hover:shadow-md"
-                                >
-                                    <div className="mx-auto mb-3 grid size-10 place-items-center rounded-full bg-[var(--store-primary,#f16d59)]/10 text-[var(--store-primary,#f16d59)] transition group-hover:bg-[var(--store-primary,#f16d59)] group-hover:text-white">
-                                        <CreditCard className="size-5" />
-                                    </div>
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3">
+                            {gateways?.map((gateway) => {
+                                const logo = gatewayLogos[gateway.code];
 
-                                    <h3 className="truncate text-xs font-bold text-[var(--store-text,#111827)] sm:text-sm">
-                                        {gateway.name}
-                                    </h3>
+                                return (
+                                    <button
+                                        key={gateway.id}
+                                        type="button"
+                                        onClick={() => handleSelectGateway(gateway)}
+                                        className="group rounded-xl border border-[var(--store-border,#e5e7eb)] bg-[var(--store-bg-1)] p-3 text-center shadow-sm transition hover:-translate-y-1 hover:border-[var(--store-primary,#f16d59)] hover:shadow-md"
+                                    >
+                                        {/* Gateway Logo */}
+                                        <div className="mx-auto mb-3 flex h-12 w-20 items-center justify-center rounded-lg bg-[var(--store-primary,#f16d59)]/10 p-2">
+                                            {logo ? (
+                                                <Image
+                                                    src={logo}
+                                                    alt={`${gateway.name} logo`}
+                                                    width={80}
+                                                    height={40}
+                                                    className="h-auto max-h-8 w-auto max-w-full object-contain"
+                                                />
+                                            ) : (
+                                                <CreditCard className="size-5 text-[var(--store-primary,#f16d59)]" />
+                                            )}
+                                        </div>
 
-                                    <p className="mt-1 line-clamp-2 text-[10px] font-medium leading-4 text-red-500 sm:text-xs">
-                                        {gateway.description}
-                                    </p>
-                                </button>
-                            ))}
+                                        {/* Gateway Name */}
+                                        <h3 className="truncate text-xs font-bold text-[var(--store-text,#111827)] sm:text-sm">
+                                            {gateway.name}
+                                        </h3>
+
+                                        {/* Description */}
+                                        <p className="mt-1 line-clamp-2 text-[10px] font-medium leading-4 text-red-500 sm:text-xs">
+                                            {gateway.description}
+                                        </p>
+                                    </button>
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="rounded-2xl border border-dashed border-[var(--store-border,#e5e7eb)] p-8 text-center">
