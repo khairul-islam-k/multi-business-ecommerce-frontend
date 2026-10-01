@@ -32,6 +32,8 @@ export default function CreateRole() {
     if (!businessId) return;
 
     try {
+      console.log('permission',permissions, values);
+
       await createRole.mutateAsync({
         name: values.name,
         description: values.description,
@@ -40,7 +42,7 @@ export default function CreateRole() {
       });
 
       message.success("Role created successfully.");
-      router.push("/admin/dashboard/access-control/roles");
+      // router.push("/admin/dashboard/access-control/roles");
     } catch (error) {
       message.error(getApiErrorMessage(error));
     }
